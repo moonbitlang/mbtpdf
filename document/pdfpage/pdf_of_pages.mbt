@@ -42,7 +42,7 @@ fn buildnode(kids : ArrayView[Int], parent : Int, count : Int) -> PdfObject {
   if parent != 0 {
     entries.push(("/Parent", Indirect(parent)))
   }
-  Dictionary(entries)
+  @pdf.d(entries)
 }
 
 ///|
@@ -206,10 +206,6 @@ pub fn PdfPageDoc::pdf_of_pages(
   if process_struct_tree {
     @pdfst.PdfStructTree::new(pdf).trim_structure_tree(range)
   }
-  let existing_root_entries = match basepdf.lookup_obj(basepdf.root) {
-    Dictionary(d) => d
-    _ => []
-  }
   let objnumbers : Array[Int] = Array::new(capacity=range.length())
   for page in range {
     objnumbers.push(select_page_ref(page_numbers, page))
@@ -246,9 +242,7 @@ pub fn PdfPageDoc::pdf_of_pages(
   })
   let new_pagetree = pdf_of_pages_build_pagetree(thetree, objnumbers, pdf)
   pdf.addobj_given_num((old_pagetree_root_num, new_pagetree))
-  let pdf = PdfPageDoc::new(pdf).add_root(
-    old_pagetree_root_num, existing_root_entries,
-  )
+  let pdf = PdfPageDoc::new(pdf).add_root(old_pagetree_root_num, [])
   @pdfpagelabels.PageLabel::write_all(page_labels, pdf)
   let pdf = @pdfmarks.PdfMarks::new(pdf).add_bookmarks(marks)
   PdfPageDoc::new(pdf).fixup_duplicate_pages()

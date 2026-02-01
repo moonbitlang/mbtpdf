@@ -76,7 +76,7 @@ test "textwidth handles missing widths and kerning" {
   assert_true(kerns.get((999, 998)) is None)
   let pdf = @pdf.Pdf::empty()
   let ctx = @pdftext.PdfText::new(pdf)
-  let implicit_font : @pdf.PdfObject = Dictionary([
+  let implicit_font : @pdf.PdfObject = @pdf.d([
     ("/Subtype", Name(PdfName("/Type1"))),
   ])
   let implicit_encoding = ctx.read_encoding(implicit_font)
@@ -88,11 +88,11 @@ test "textwidth handles missing widths and kerning" {
   let no_slash = @pdfe.with_silenced_logs(fn() {
     @pdf.PdfName::of_string("NoSlash")
   })
-  let custom_font : @pdf.PdfObject = Dictionary([
+  let custom_font : @pdf.PdfObject = @pdf.d([
     ("/Subtype", Name(PdfName("/Type1"))),
     (
       "/Encoding",
-      Dictionary([
+      @pdf.d([
         ("/BaseEncoding", Name(PdfName("/WinAnsiEncoding"))),
         ("/Differences", Array([Integer(65), Name(no_slash)])),
       ]),
@@ -110,7 +110,7 @@ test "textwidth handles empty string and unicode fallback" {
   let font = @pdffont.StandardFont::Helvetica
   let pdf = @pdf.Pdf::empty()
   let ctx = @pdftext.PdfText::new(pdf)
-  let winansi_font : @pdf.PdfObject = Dictionary([
+  let winansi_font : @pdf.PdfObject = @pdf.d([
     ("/Subtype", Name(PdfName("/Type1"))),
     ("/Encoding", Name(PdfName("/WinAnsiEncoding"))),
   ])
@@ -131,7 +131,7 @@ test "textwidth applies kerning for standard fonts" {
   let font = @pdffont.StandardFont::TimesRoman
   let pdf = @pdf.Pdf::empty()
   let ctx = @pdftext.PdfText::new(pdf)
-  let implicit_font : @pdf.PdfObject = Dictionary([
+  let implicit_font : @pdf.PdfObject = @pdf.d([
     ("/Subtype", Name(PdfName("/Type1"))),
   ])
   let encoding = ctx.read_encoding(implicit_font)

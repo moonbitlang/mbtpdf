@@ -205,15 +205,18 @@ fn read_annotation(pdf : @pdf.Pdf, annot : PdfObject) -> Annotation raise {
   }
   let annotrest : PdfObject = match pdf.direct(annot) {
     Dictionary(entries) => {
-      let filtered = entries.filter(pair => match pair.0 {
-        "/Subtype"
-        | "/Contents"
-        | "/Rect"
-        | "/Border"
-        | "/Subj"
-        | "/BS"
-        | "/C" => false
-        _ => true
+      let filtered = entries.filter(pair => {
+        let key = pair.0.to_string_bytes()
+        match key {
+          "/Subtype"
+          | "/Contents"
+          | "/Rect"
+          | "/Border"
+          | "/Subj"
+          | "/BS"
+          | "/C" => false
+          _ => true
+        }
       })
       Dictionary(filtered)
     }
@@ -313,7 +316,7 @@ fn Subtype::to_string(self : Subtype) -> String {
 
 ///|
 fn Annotation::to_pdf_object(self : Annotation) -> PdfObject raise {
-  let dict_entries : Array[(String, PdfObject)] = [
+  let dict_entries = @pdf.dk([
     ("/Subtype", Name(@pdf.PdfName::of_string(self.subtype.to_string()))),
     (
       "/Contents",
@@ -347,7 +350,7 @@ fn Annotation::to_pdf_object(self : Annotation) -> PdfObject raise {
           ])
       },
     ),
-  ]
+  ])
   let dict_entries = match (self.annotrest : PdfObject) {
     Null => dict_entries
     Dictionary(extra) => dict_entries + extra
@@ -356,11 +359,12 @@ fn Annotation::to_pdf_object(self : Annotation) -> PdfObject raise {
   let dict_entries = match self.colour {
     None => dict_entries
     Some((r, g, b)) =>
-      [("/C", Array([Integer(r), Integer(g), Integer(b)]))] + dict_entries
+      @pdf.dk([("/C", Array([Integer(r), Integer(g), Integer(b)]))]) +
+      dict_entries
   }
   let dict_entries = match self.subject {
     None => dict_entries
-    Some(s) => [("/Subj", String(s))] + dict_entries
+    Some(s) => @pdf.dk([("/Subj", String(s))]) + dict_entries
   }
   Dictionary(dict_entries)
 }

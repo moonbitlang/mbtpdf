@@ -281,7 +281,7 @@ fn write_pdf_object(
         if i > 0 {
           sb.write_char(' ')
         }
-        sb.write_string(make_pdf_name(key))
+        sb.write_string(make_pdf_name(key.to_string_bytes()))
         sb.write_char(' ')
         write_pdf_object(value, include_stream_data, warn_on_toget, sb)
       }

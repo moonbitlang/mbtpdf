@@ -62,6 +62,9 @@ pub fn ColourSpace::name(self : ColourSpace) -> String? {
 type PdfObject = @pdf.PdfObject
 
 ///|
+type PdfName = @pdf.PdfName
+
+///|
 fn read_point(pdf : @pdf.Pdf, dict : PdfObject, key : String) -> Point raise {
   match (pdf.lookup_direct(key, dict) : PdfObject?) {
     Some(Array([a, b, c])) => (pdf.getnum(a), pdf.getnum(b), pdf.getnum(c))
@@ -279,7 +282,7 @@ pub fn ColourSpace::read(
       }
       let alt_space = ColourSpace::read(pdf, resources, alternate)
       let tint_transform = @pdffun.PdfFunction::parse(pdf, tint)
-      let empty_dict : PdfObject = Dictionary([])
+      let empty_dict : PdfObject = @pdf.d([])
       DeviceN(out_names, alt_space, tint_transform, empty_dict)
     }
     Array(
@@ -329,7 +332,7 @@ fn array_of_point(point : Point) -> PdfObject {
 }
 
 ///|
-fn dict_entries(obj : PdfObject) -> Array[(String, PdfObject)] {
+fn dict_entries(obj : PdfObject) -> Array[(PdfName, PdfObject)] {
   match (obj : PdfObject) {
     Dictionary(entries) => entries
     _ => []
@@ -337,37 +340,38 @@ fn dict_entries(obj : PdfObject) -> Array[(String, PdfObject)] {
 }
 
 ///|
-fn dict_has_key(entries : Array[(String, PdfObject)], key : String) -> Bool {
-  entries.search_by(pair => pair.0 == key) is Some(_)
+fn dict_has_key(entries : Array[(PdfName, PdfObject)], key : String) -> Bool {
+  entries.search_by(pair => pair.0.equal_string_bytes(key)) is Some(_)
 }
 
 ///|
 fn dict_set(
-  entries : Array[(String, PdfObject)],
+  entries : Array[(PdfName, PdfObject)],
   key : String,
   value : PdfObject,
-) -> Array[(String, PdfObject)] {
+) -> Array[(PdfName, PdfObject)] {
+  let key_name = @pdf.PdfName::of_string(key)
   let out = Array::new(capacity=entries.length() + 1)
   let mut found = false
   for pair in entries {
-    if pair.0 == key {
-      out.push((key, value))
+    if pair.0.equal_string_bytes(key) {
+      out.push((key_name, value))
       found = true
     } else {
       out.push(pair)
     }
   }
   if !found {
-    out.push((key, value))
+    out.push((key_name, value))
   }
   out
 }
 
 ///|
 fn ensure_length(
-  entries : Array[(String, PdfObject)],
+  entries : Array[(PdfName, PdfObject)],
   stream_data : @pdf.Stream,
-) -> Array[(String, PdfObject)] {
+) -> Array[(PdfName, PdfObject)] {
   if dict_has_key(entries, "/Length") {
     return entries
   }
@@ -485,7 +489,7 @@ pub fn ColourSpace::to_pdf_object(
     CalGray(white, black, gamma) =>
       Array([
         Name(PdfName("/CalGray")),
-        Dictionary([
+        @pdf.d([
           ("/WhitePoint", array_of_point(white)),
           ("/BlackPoint", array_of_point(black)),
           ("/Gamma", @pdf.ToPdfNumber::to_pdf_number(gamma)),
@@ -494,7 +498,7 @@ pub fn ColourSpace::to_pdf_object(
     CalRGB(white, black, gamma, matrix) =>
       Array([
         Name(PdfName("/CalRGB")),
-        Dictionary([
+        @pdf.d([
           ("/WhitePoint", array_of_point(white)),
           ("/BlackPoint", array_of_point(black)),
           ("/Gamma", Array(gamma.map(x => @pdf.ToPdfNumber::to_pdf_number(x)))),
@@ -507,7 +511,7 @@ pub fn ColourSpace::to_pdf_object(
     Lab(white, black, range) =>
       Array([
         Name(PdfName("/Lab")),
-        Dictionary([
+        @pdf.d([
           ("/WhitePoint", array_of_point(white)),
           ("/BlackPoint", array_of_point(black)),
           ("/Range", Array(range.map(x => @pdf.ToPdfNumber::to_pdf_number(x)))),

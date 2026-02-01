@@ -44,12 +44,13 @@ fn write_pdf_object_to_output(
       write_str("<<")
       for i in 0..<entries.length() {
         let (key, value) = entries[i]
+        let key_str = key.to_string_bytes()
         if i > 0 {
           write_str(" ")
         }
-        write_str(make_pdf_name(ctx, key))
+        write_str(make_pdf_name(ctx, key_str))
         write_str(" ")
-        let value_hex = hex_strings && key == "/ID"
+        let value_hex = hex_strings && key_str == "/ID"
         write_pdf_object_to_output(
           ctx, value, output, include_stream_data, value_hex,
         )
@@ -107,10 +108,11 @@ fn write_pdf_object(
       sb.write_string("<<")
       for i in 0..<entries.length() {
         let (key, value) = entries[i]
+        let key_str = key.to_string_bytes()
         if i > 0 {
           sb.write_char(' ')
         }
-        sb.write_string(make_pdf_name(ctx, key))
+        sb.write_string(make_pdf_name(ctx, key_str))
         sb.write_char(' ')
         write_pdf_object(ctx, value, include_stream_data, warn_on_toget, sb)
       }

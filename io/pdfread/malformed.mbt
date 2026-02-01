@@ -196,7 +196,7 @@ fn read_malformed_pdf(
   let mut trailerdict = if trailers.length() > 0 {
     trailers[trailers.length() - 1]
   } else {
-    Dictionary([])
+    @pdf.d([])
   }
   let root = match trailerdict.lookup_immediate("/Root") {
     Some(Indirect(i)) => i

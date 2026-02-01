@@ -43,7 +43,7 @@ fn hsv_to_rgb(h : Double, s : Double, v : Double) -> (Double, Double, Double) {
 
 ///|
 fn font_type1(base_font : String) -> @pdf.PdfObject {
-  Dictionary([
+  @pdf.d([
     ("/Type", Name(PdfName("/Font"))),
     ("/Subtype", Name(PdfName("/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
@@ -52,10 +52,10 @@ fn font_type1(base_font : String) -> @pdf.PdfObject {
 
 ///|
 fn default_resources() -> @pdf.PdfObject {
-  Dictionary([
+  @pdf.d([
     (
       "/Font",
-      Dictionary([
+      @pdf.d([
         ("/F0", font_type1("Helvetica-Bold")),
         ("/F1", font_type1("Helvetica")),
         ("/F2", font_type1("Courier")),
@@ -591,7 +591,7 @@ fn page_of_ops(ops : Array[@pdfops.Op]) -> @pdfpage.Page raise {
     mediabox=a4_mediabox(),
     resources=default_resources(),
     rotate=Rotate0,
-    rest=Dictionary([]),
+    rest=@pdf.d([]),
   )
 }
 
@@ -610,24 +610,24 @@ fn set_catalog_entry(
 
 ///|
 fn add_day_night_layers(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
-  let ocg_day : @pdf.PdfObject = Dictionary([
+  let ocg_day : @pdf.PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/OCG"))),
     ("/Name", String("DAY")),
   ])
-  let ocg_night : @pdf.PdfObject = Dictionary([
+  let ocg_night : @pdf.PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/OCG"))),
     ("/Name", String("NIGHT")),
   ])
   let day_num = pdf.addobj(ocg_day)
   let night_num = pdf.addobj(ocg_night)
-  let default_dict : @pdf.PdfObject = Dictionary([
+  let default_dict : @pdf.PdfObject = @pdf.d([
     ("/BaseState", Name(PdfName("/ON"))),
     ("/Intent", Name(PdfName("/View"))),
     ("/Name", String("Default")),
     ("/OFF", Array([Indirect(night_num)])),
     ("/ON", Array([Indirect(day_num)])),
   ])
-  let ocprops : @pdf.PdfObject = Dictionary([
+  let ocprops : @pdf.PdfObject = @pdf.d([
     ("/OCGs", Array([Indirect(day_num), Indirect(night_num)])),
     ("/D", default_dict),
   ])
@@ -638,7 +638,7 @@ fn add_day_night_layers(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
     return pdf
   }
   let layer_page = pages[2]
-  let props : @pdf.PdfObject = Dictionary([
+  let props : @pdf.PdfObject = @pdf.d([
     ("/DAY", Indirect(day_num)),
     ("/NIGHT", Indirect(night_num)),
   ])
@@ -688,12 +688,12 @@ fn add_bookmarks(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
 ///|
 fn goto_action(refnum : Int) -> @pdf.PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  @pdf.d([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
 }
 
 ///|
 fn uri_action(uri : String) -> @pdf.PdfObject {
-  Dictionary([("/S", Name(PdfName("/URI"))), ("/URI", String(uri))])
+  @pdf.d([("/S", Name(PdfName("/URI"))), ("/URI", String(uri))])
 }
 
 ///|
@@ -720,7 +720,7 @@ fn add_nav_links(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
         rectangle: rect,
         border: @pdfannot.Border::new(0.0),
         colour: None,
-        annotrest: Dictionary([("/A", goto_action(prev_ref))]),
+        annotrest: @pdf.d([("/A", goto_action(prev_ref))]),
       }
       page = @pdfannot.PdfAnnot::new(pdf).add_annotation(page, annot)
     }
@@ -741,7 +741,7 @@ fn add_nav_links(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
         rectangle: rect,
         border: @pdfannot.Border::new(0.0),
         colour: None,
-        annotrest: Dictionary([("/A", goto_action(next_ref))]),
+        annotrest: @pdf.d([("/A", goto_action(next_ref))]),
       }
       page = @pdfannot.PdfAnnot::new(pdf).add_annotation(page, annot)
     }
@@ -756,9 +756,7 @@ fn add_nav_links(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
         rectangle: rect,
         border: @pdfannot.Border::new(0.0),
         colour: None,
-        annotrest: Dictionary([
-          ("/A", uri_action("https://docs.moonbitlang.com")),
-        ]),
+        annotrest: @pdf.d([("/A", uri_action("https://docs.moonbitlang.com"))]),
       }
       page = @pdfannot.PdfAnnot::new(pdf).add_annotation(page, annot)
     }
@@ -785,7 +783,7 @@ fn add_nav_links(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
         rectangle: rect,
         border: @pdfannot.Border::new(0.0),
         colour: None,
-        annotrest: Dictionary([("/A", goto_action(refs[target]))]),
+        annotrest: @pdf.d([("/A", goto_action(refs[target]))]),
       }
       page = @pdfannot.PdfAnnot::new(pdf).add_annotation(page, annot)
     }

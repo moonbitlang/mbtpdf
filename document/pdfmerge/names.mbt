@@ -38,7 +38,7 @@ fn apply_namechanges_to_destination_nametree(
       _ => return dict
     }
     let mut updated = entries
-    match lookup("/Names", updated) {
+    match lookup(@pdf.PdfName::of_string("/Names"), updated) {
       Some(Array(values)) =>
         match pairs_of_array(values) {
           Some(pairs) => {
@@ -57,7 +57,7 @@ fn apply_namechanges_to_destination_nametree(
         }
       _ => ()
     }
-    match lookup("/Limits", updated) {
+    match lookup(@pdf.PdfName::of_string("/Limits"), updated) {
       Some(Array([String(a), String(b)])) =>
         updated = add_entry(
           updated,
@@ -66,7 +66,7 @@ fn apply_namechanges_to_destination_nametree(
         )
       _ => ()
     }
-    match lookup("/Kids", updated) {
+    match lookup(@pdf.PdfName::of_string("/Kids"), updated) {
       Some(Array(kids)) =>
         for kid in kids {
           match kid {
@@ -83,7 +83,7 @@ fn apply_namechanges_to_destination_nametree(
   let catalog = pdf.catalog_of_pdf()
   match pdf.lookup_direct("/Names", catalog) {
     Some(Dictionary(d)) =>
-      match lookup("/Dests", d) {
+      match lookup(@pdf.PdfName::of_string("/Dests"), d) {
         Some(Dictionary(dest_dict)) => {
           let newdest = rewrite(Dictionary(dest_dict))
           let newcatalog = catalog.add_entry("/Dests", newdest)
@@ -132,16 +132,16 @@ fn apply_namechanges_at_destination_callsites(
         for entry in entries {
           updated.push((entry.0, f(entry.1)))
         }
-        let updated = match lookup("/S", updated) {
+        let updated = match lookup(@pdf.PdfName::of_string("/S"), updated) {
           Some(Name(PdfName("/GoTo"))) =>
-            match lookup("/D", updated) {
+            match lookup(@pdf.PdfName::of_string("/D"), updated) {
               Some(String(s)) =>
                 add_entry(updated, "/D", String(rewrite_string(s)))
               _ => updated
             }
           _ => updated
         }
-        match lookup("/Dest", updated) {
+        match lookup(@pdf.PdfName::of_string("/Dest"), updated) {
           Some(String(s)) =>
             Dictionary(add_entry(updated, "/Dest", String(rewrite_string(s))))
           _ => Dictionary(updated)

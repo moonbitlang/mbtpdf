@@ -135,7 +135,7 @@ pub fn PdfFunction::to_pdf_object(
       let entries_with_length = concat_arrays(entries_with_order, [
         ("/Length", Integer(@pdfio.bytes_size(data))),
       ])
-      Stream(Ref::new((Dictionary(entries_with_length), Got(data))))
+      Stream(Ref::new((@pdf.d(entries_with_length), Got(data))))
     }
     Calculator(ops) => {
       let entries = concat_arrays(base, range_entry)
@@ -143,11 +143,11 @@ pub fn PdfFunction::to_pdf_object(
       let entries_with_length = concat_arrays(entries, [
         ("/Length", Integer(@pdfio.bytes_size(data))),
       ])
-      Stream(Ref::new((Dictionary(entries_with_length), Got(data))))
+      Stream(Ref::new((@pdf.d(entries_with_length), Got(data))))
     }
     _ => {
       let extras = extra_entries_of_function(pdf, self)
-      Dictionary(concat_arrays(concat_arrays(base, range_entry), extras))
+      @pdf.d(concat_arrays(concat_arrays(base, range_entry), extras))
     }
   }
 }

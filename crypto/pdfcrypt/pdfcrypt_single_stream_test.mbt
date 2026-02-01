@@ -14,7 +14,7 @@ fn first_stream(pdf : @pdf.Pdf) -> (Int, Int, @pdf.PdfObject) raise {
 ///|
 fn pdf_with_stream() -> @pdf.Pdf raise {
   let data = @pdfio.bytes_of_string("q Q")
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Length", Integer(@pdfio.bytes_size(data))),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -27,9 +27,9 @@ fn pdf_with_stream() -> @pdf.Pdf raise {
   let page = @pdfpage.Page(
     content=[stream],
     mediabox~,
-    resources=Dictionary([]),
+    resources=@pdf.d([]),
     rotate=Rotate0,
-    rest=Dictionary([]),
+    rest=@pdf.d([]),
   )
   let (pdf0, pageroot) = @pdfpage.PdfPageDoc::new(@pdf.Pdf::empty()).add_pagetree([
       page,

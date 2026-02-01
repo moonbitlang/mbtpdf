@@ -45,7 +45,7 @@ fn xyz_dest_for_page(page_objnum : Int) -> @pdf.PdfObject {
 
 ///|
 fn action_for_dest(dest : @pdf.PdfObject) -> @pdf.PdfObject {
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  @pdf.d([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
 }
 
 ///|
@@ -125,22 +125,22 @@ test "change_pages rewrites bookmarks annotations and openaction" {
   pdf.objects.object_stream_ids.set(page1, page1)
   pdf = add_bookmarks_for_pages(pdf, page1, page2)
   let dest_page2 = dest_for_page(page2)
-  let annot_dest : @pdf.PdfObject = Dictionary([
+  let annot_dest : @pdf.PdfObject = @pdf.d([
     ("/Subtype", Name(PdfName("/Link"))),
     ("/Dest", dest_page2),
   ])
   let annot_dest_num = pdf.addobj(annot_dest)
-  let annot_action : @pdf.PdfObject = Dictionary([
+  let annot_action : @pdf.PdfObject = @pdf.d([
     ("/Subtype", Name(PdfName("/Link"))),
     ("/A", action_for_dest(dest_page2)),
   ])
   let annot_action_num = pdf.addobj(annot_action)
-  let annot_action_invalid : @pdf.PdfObject = Dictionary([
+  let annot_action_invalid : @pdf.PdfObject = @pdf.d([
     ("/Subtype", Name(PdfName("/Link"))),
     ("/A", Null),
   ])
   let annot_action_invalid_num = pdf.addobj(annot_action_invalid)
-  let annot_not_link : @pdf.PdfObject = Dictionary([
+  let annot_not_link : @pdf.PdfObject = @pdf.d([
     ("/Subtype", Name(PdfName("/Text"))),
   ])
   let annot_not_link_num = pdf.addobj(annot_not_link)
@@ -293,7 +293,7 @@ test "change_pages ignores unsupported openaction dictionaries" {
   set_catalog_entry(
     pdf,
     "/OpenAction",
-    Dictionary([("/S", Name(PdfName("/URI"))), ("/URI", String("x"))]),
+    @pdf.d([("/S", Name(PdfName("/URI"))), ("/URI", String("x"))]),
   )
   let pages = @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree()
   let matrices = [
@@ -379,7 +379,7 @@ test "change_pages catches failures in annotations and openaction rewriting" {
     Null,
     Null,
   ])
-  let bad_dest_annot : @pdf.PdfObject = Dictionary([
+  let bad_dest_annot : @pdf.PdfObject = @pdf.d([
     ("/Subtype", Name(PdfName("/Link"))),
     ("/Dest", bad_dest),
   ])
@@ -388,7 +388,7 @@ test "change_pages catches failures in annotations and openaction rewriting" {
   set_catalog_entry(
     pdf,
     "/OpenAction",
-    Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", bad_dest)]),
+    @pdf.d([("/S", Name(PdfName("/GoTo"))), ("/D", bad_dest)]),
   )
   let pages = @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree()
   let matrices = [

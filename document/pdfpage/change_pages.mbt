@@ -300,17 +300,13 @@ pub fn PdfPageDoc::change_pages(
   let pdf : @pdf.Pdf = {
     major: basepdf.major,
     minor: basepdf.minor,
-    root: pdf.root,
+    root: basepdf.root,
     objects: pdf.objects,
     trailerdict: basepdf.trailerdict,
     was_linearized: basepdf.was_linearized,
     saved_encryption: basepdf.saved_encryption,
   }
-  let existing_root_entries = match basepdf.lookup_obj(basepdf.root) {
-    Dictionary(d) => d
-    _ => []
-  }
-  let pdf = PdfPageDoc::new(pdf).add_root(pagetree_num, existing_root_entries)
+  let pdf = PdfPageDoc::new(pdf).add_root(pagetree_num, [])
   if !change_references {
     pdf
   } else {

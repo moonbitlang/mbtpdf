@@ -154,7 +154,7 @@ fn flatten_tree(
 ) -> (Array[(Int, PdfObject)], Int) raise {
   if tree.length() == 0 {
     let n = fresh(source, pdf)
-    return ([(n, Dictionary([]))], n)
+    return ([(n, @pdf.d([]))], n)
   }
   let root_objnum = fresh(source, pdf)
   let tree = tree.map(node => add_root_parent(root_objnum, node))
@@ -177,7 +177,7 @@ fn flatten_tree(
   if any_open_nodes(tree) {
     entries.push(("/Count", Integer(total_visible(tree))))
   }
-  let top = (root_objnum, PdfObject::Dictionary(entries))
+  let top = (root_objnum, @pdf.d(entries))
   ([top] + all_but_top, root_objnum)
 }
 
@@ -345,7 +345,7 @@ fn node_of_line(
   if flags != 0 {
     entries.push(("/F", Integer(flags)))
   }
-  Dictionary(entries)
+  @pdf.d(entries)
 }
 
 ///|

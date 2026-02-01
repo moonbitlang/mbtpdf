@@ -74,15 +74,15 @@ fn mkpage(
       }
     }
   }
-  let entries : Array[(String, PdfObject)] = [
+  let entries : Array[(@pdf.PdfName, PdfObject)] = @pdf.dk([
     ("/Type", Name(PdfName("/Page"))),
     ("/Parent", Indirect(parent)),
     ("/Resources", page.resources),
     ("/MediaBox", page.mediabox),
-  ]
+  ])
   let rotation = page.rotate.to_int()
   if rotation != 0 {
-    entries.push(("/Rotate", Integer(rotation)))
+    entries.push((@pdf.PdfName::of_string("/Rotate"), Integer(rotation)))
   }
   let rest_entries = match page.rest {
     Dictionary(d) => d
@@ -90,7 +90,7 @@ fn mkpage(
   }
   entries.append(rest_entries[:])
   if indirects.length() > 0 {
-    entries.push(("/Contents", Array(indirects)))
+    entries.push((@pdf.PdfName::of_string("/Contents"), Array(indirects)))
   }
   let page_obj = PdfObject::Dictionary(entries)
   let objnum = getobjnum()
@@ -139,7 +139,7 @@ fn objects_of_ptree(
         ("/Count", Integer(pages.length())),
       ]
       node_entries.append(parent_entry[:])
-      let node = PdfObject::Dictionary(node_entries)
+      let node = @pdf.d(node_entries)
       let result = Array::new(capacity=1 + page_objects.length())
       result.push((this, node))
       result.append(page_objects[:])
@@ -172,7 +172,7 @@ fn objects_of_ptree(
         ("/Count", Integer(count_left + count_right + page_objects.length())),
       ]
       node_entries.append(parent_entry[:])
-      let node = PdfObject::Dictionary(node_entries)
+      let node = @pdf.d(node_entries)
       let result = Array::new()
       result.push((this, node))
       result.append(page_objects[:])
@@ -222,9 +222,9 @@ pub fn PdfPageDoc::add_root(
     Dictionary(d) => d
     _ => []
   }
-  let mut root = PdfObject::Dictionary(extras)
+  let mut root = @pdf.d(extras)
   for entry in existing_entries {
-    root = root.add_entry(entry.0, entry.1)
+    root = root.add_entry(entry.0.to_string_bytes(), entry.1)
   }
   root = root.add_entry("/Type", Name(PdfName("/Catalog")))
   root = root.add_entry("/Pages", Indirect(pageroot))

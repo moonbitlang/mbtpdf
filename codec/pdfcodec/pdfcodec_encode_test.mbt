@@ -5,7 +5,7 @@ let ctx : @pdfcodec.PdfCodec = PdfCodec::new()
 test "encode/decode flate stream" {
   let pdf = @pdf.Pdf::empty()
   let original = @pdfio.bytes_of_string("hello flate")
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Length", Integer(@pdfio.bytes_size(original))),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(original)))
@@ -51,7 +51,7 @@ fn roundtrip_encoding(
   original : Array[Byte],
 ) -> Array[Byte] raise {
   let pdf = @pdf.Pdf::empty()
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Length", Integer(@pdfio.bytes_size(original))),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(original)))
@@ -83,7 +83,7 @@ test "encode/decode ASCII85 roundtrips short chunks (1..3 bytes)" {
   let ctx = @pdfcodec.PdfCodec::new()
   let pdf = @pdf.Pdf::empty()
   fn roundtrip(original : Array[Byte]) -> Unit raise {
-    let dict : @pdf.PdfObject = Dictionary([
+    let dict : @pdf.PdfObject = @pdf.d([
       ("/Length", Integer(@pdfio.bytes_size(original))),
     ])
     let stream_ref = Ref::new((dict, @pdf.Stream::Got(original)))
@@ -111,7 +111,7 @@ test "encode/decode ASCII85 roundtrips short chunks (1..3 bytes)" {
 
 ///|
 test "decode_from_bytes ASCIIHex handles odd nibble" {
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Filter", Name(PdfName("/ASCIIHexDecode"))),
   ])
   let out = @pdfcodec.PdfCodec::new().decode_from_bytes(
@@ -131,7 +131,7 @@ test "decode_from_bytes ASCIIHex handles odd nibble" {
 test "encode ASCII85 uses z for zero tuple" {
   let pdf = @pdf.Pdf::empty()
   let zeros = @pdfio.bytes_of_list([0, 0, 0, 0])
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Length", Integer(@pdfio.bytes_size(zeros))),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(zeros)))
@@ -146,7 +146,7 @@ test "encode ASCII85 uses z for zero tuple" {
 
 ///|
 test "decode_from_bytes ASCII85 handles z tuple" {
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Filter", Name(PdfName("/ASCII85Decode"))),
   ])
   let out = @pdfcodec.PdfCodec::new().decode_from_bytes(
@@ -166,7 +166,7 @@ test "decode_from_bytes ASCII85 handles z tuple" {
 
 ///|
 test "decode_from_bytes ASCII85 flushes full groups and ignores 1-digit tail" {
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Filter", Name(PdfName("/ASCII85Decode"))),
   ])
   let out = @pdfcodec.PdfCodec::new().decode_from_bytes(
@@ -186,7 +186,7 @@ test "decode_from_bytes ASCII85 flushes full groups and ignores 1-digit tail" {
 
 ///|
 test "decode_from_bytes ASCII85 returns None on invalid characters" {
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Filter", Name(PdfName("/ASCII85Decode"))),
   ])
   let out = @pdfcodec.PdfCodec::new().decode_from_bytes(
@@ -214,7 +214,7 @@ test "encode/decode LZW stream" {
 test "encode_pdfstream prepends filter when name already set" {
   let pdf = @pdf.Pdf::empty()
   let data = @pdfio.bytes_of_string("filter chain")
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Length", Integer(@pdfio.bytes_size(data))),
     ("/Filter", Name(PdfName("/ASCII85Decode"))),
   ])
@@ -237,7 +237,7 @@ test "encode_pdfstream prepends filter when name already set" {
 test "encode_pdfstream prepends filter when array already set" {
   let pdf = @pdf.Pdf::empty()
   let data = @pdfio.bytes_of_string("array filter")
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Length", Integer(@pdfio.bytes_size(data))),
     ("/Filter", Array([Name(PdfName("/ASCIIHexDecode"))])),
   ])
@@ -258,7 +258,7 @@ test "encode_pdfstream prepends filter when array already set" {
 test "encode_pdfstream keeps data when only_if_smaller" {
   let pdf = @pdf.Pdf::empty()
   let data = @pdfio.bytes_of_string("x")
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Length", Integer(@pdfio.bytes_size(data))),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(data)))
@@ -274,7 +274,7 @@ test "encode_pdfstream keeps data when only_if_smaller" {
 test "decode_pdfstream handles filter arrays" {
   let pdf = @pdf.Pdf::empty()
   let original = @pdfio.bytes_of_string("decode chain")
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Length", Integer(@pdfio.bytes_size(original))),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(original)))

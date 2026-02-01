@@ -3,10 +3,10 @@ let predictor_ctx : PdfCodec = PdfCodec::new()
 
 ///|
 fn lookup_int_entry(
-  entries : Array[(String, @pdf.PdfObject)],
+  entries : Array[(@pdf.PdfName, @pdf.PdfObject)],
   key : String,
 ) -> Int? {
-  match entries.search_by(pair => pair.0 == key) {
+  match entries.search_by(pair => pair.0.equal_string_bytes(key)) {
     Some(idx) =>
       match entries[idx].1 {
         Integer(value) => Some(value)
@@ -50,9 +50,7 @@ fn assert_decode_parms(
 fn roundtrip_predictor(pred : Predictor, pred_value : Int) -> Unit raise {
   let pdf = @pdf.Pdf::empty()
   let original = @pdfio.bytes_of_string("abcdefghi")
-  let dict = @pdf.PdfObject::Dictionary([
-    ("/Length", Integer(@pdfio.bytes_size(original))),
-  ])
+  let dict = @pdf.d([("/Length", Integer(@pdfio.bytes_size(original)))])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(original)))
   let stream_obj = @pdf.PdfObject::Stream(stream_ref)
   predictor_ctx.encode_pdfstream(

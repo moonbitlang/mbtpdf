@@ -8,13 +8,13 @@ fn[T] assert_is_err(res : Result[T, Error]) -> Unit raise {
 
 ///|
 fn dict_entries_has_int(
-  entries : Array[(String, @pdf.PdfObject)],
+  entries : Array[(@pdf.PdfName, @pdf.PdfObject)],
   key : String,
   value : Int,
 ) -> Bool {
   entries[:].any(fn(entry) {
     match entry {
-      (k, Integer(i)) => k == key && i == value
+      (k, Integer(i)) => k.equal_string_bytes(key) && i == value
       _ => false
     }
   })
@@ -22,12 +22,12 @@ fn dict_entries_has_int(
 
 ///|
 fn dict_entries_has_key(
-  entries : Array[(String, @pdf.PdfObject)],
+  entries : Array[(@pdf.PdfName, @pdf.PdfObject)],
   key : String,
 ) -> Bool {
   entries[:].any(fn(entry) {
     match entry {
-      (k, _) => k == key
+      (k, _) => k.equal_string_bytes(key)
     }
   })
 }
@@ -39,7 +39,7 @@ fn sample_rect() -> @pdf.PdfObject {
 
 ///|
 fn empty_stream(pdf : @pdf.Pdf) -> Int {
-  let dict : @pdf.PdfObject = Dictionary([("/Length", Integer(0))])
+  let dict : @pdf.PdfObject = @pdf.d([("/Length", Integer(0))])
   pdf.addobj(Stream(Ref::new((dict, Got(@pdfio.mkbytes(0))))))
 }
 
@@ -55,15 +55,15 @@ test "pages_of_pagetree reads inherited resources and contents shapes" {
 
   // /Contents -> indirect non-array -> should be treated as a singleton array.
   let bad_contents_num = pdf0.addobj(Integer(0))
-  let resources_parent : @pdf.PdfObject = Dictionary([("/Font", Dictionary([]))])
-  let page1_dict : @pdf.PdfObject = Dictionary([
+  let resources_parent : @pdf.PdfObject = @pdf.d([("/Font", @pdf.d([]))])
+  let page1_dict : @pdf.PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/Page"))),
     ("/MediaBox", sample_rect()),
     ("/Contents", Indirect(contents_array_num)),
     ("/Extra", Integer(1)),
   ])
   let page2_num = pdf0.addobj(
-    Dictionary([
+    @pdf.d([
       ("/Type", Name(PdfName("/Page"))),
       ("/Contents", Indirect(bad_contents_num)),
       ("/Extra2", Integer(2)),
@@ -72,14 +72,14 @@ test "pages_of_pagetree reads inherited resources and contents shapes" {
 
   // Intermediate page tree node with no /Type: exercises the typ=None branch.
   let intermediate_num = pdf0.addobj(
-    Dictionary([
+    @pdf.d([
       ("/Kids", Array([page1_dict, Indirect(page2_num)])),
       ("/Resources", resources_parent),
       ("/Rotate", Integer(90)),
     ]),
   )
   let pages_root_num = pdf0.addobj(
-    Dictionary([
+    @pdf.d([
       ("/Type", Name(PdfName("/Pages"))),
       ("/Kids", Array([Indirect(intermediate_num)])),
       ("/Count", Integer(2)),
@@ -119,21 +119,21 @@ test "pages_of_pagetree reads inherited resources and contents shapes" {
 ///|
 test "pages_of_pagetree inherits resources and rotate through typ-none nodes" {
   let pdf0 = @pdf.Pdf::empty()
-  let resources_parent : @pdf.PdfObject = Dictionary([("/Font", Dictionary([]))])
+  let resources_parent : @pdf.PdfObject = @pdf.d([("/Font", @pdf.d([]))])
   let mediabox_parent : @pdf.PdfObject = sample_rect()
   let stream_num = empty_stream(pdf0)
-  let page_dict : @pdf.PdfObject = Dictionary([
+  let page_dict : @pdf.PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/Page"))),
     ("/Contents", Indirect(stream_num)),
   ])
   let intermediate_num = pdf0.addobj(
-    Dictionary([
+    @pdf.d([
       // No /Type, and no /Resources /MediaBox /Rotate: should inherit from args.
       ("/Kids", Array([page_dict])),
     ]),
   )
   let pages_root_num = pdf0.addobj(
-    Dictionary([
+    @pdf.d([
       ("/Type", Name(PdfName("/Pages"))),
       ("/Kids", Array([Indirect(intermediate_num)])),
       ("/Resources", resources_parent),
@@ -158,13 +158,13 @@ test "pages_of_pagetree inherits resources and rotate through typ-none nodes" {
 test "pages_of_pagetree errors on malformed and missing kids" {
   let base = @pdf.Pdf::empty()
   let bad_kids_num = base.addobj(
-    Dictionary([("/Type", Name(PdfName("/Pages"))), ("/Kids", Integer(1))]),
+    @pdf.d([("/Type", Name(PdfName("/Pages"))), ("/Kids", Integer(1))]),
   )
   let pdf_bad_kids = @pdfpage.PdfPageDoc::new(base).add_root(bad_kids_num, [])
   assert_is_err(try? @pdfpage.PdfPageDoc::new(pdf_bad_kids).pages_of_pagetree())
   let base2 = @pdf.Pdf::empty()
   let missing_kid_num = base2.addobj(
-    Dictionary([
+    @pdf.d([
       ("/Type", Name(PdfName("/Pages"))),
       ("/Kids", Array([Indirect(999999)])),
     ]),
@@ -178,10 +178,7 @@ test "pages_of_pagetree errors on malformed and missing kids" {
   )
   let base3 = @pdf.Pdf::empty()
   let malformed_kid_num = base3.addobj(
-    Dictionary([
-      ("/Type", Name(PdfName("/Pages"))),
-      ("/Kids", Array([Integer(0)])),
-    ]),
+    @pdf.d([("/Type", Name(PdfName("/Pages"))), ("/Kids", Array([Integer(0)]))]),
   )
   let pdf_malformed_kid = @pdfpage.PdfPageDoc::new(base3).add_root(
     malformed_kid_num,
@@ -196,13 +193,13 @@ test "pages_of_pagetree errors on malformed and missing kids" {
 test "pages_of_pagetree errors when typ is missing and /Kids malformed" {
   let base = @pdf.Pdf::empty()
   let bad_node_num = base.addobj(
-    Dictionary([
+    @pdf.d([
       // No /Type entry -> typ=None branch.
       ("/Kids", Integer(0)),
     ]),
   )
   let root_num = base.addobj(
-    Dictionary([
+    @pdf.d([
       ("/Type", Name(PdfName("/Pages"))),
       ("/Kids", Array([Indirect(bad_node_num)])),
       ("/Count", Integer(1)),
@@ -224,7 +221,7 @@ test "add_pagetree errors on empty page list and bad rest" {
   let bad_page = @pdfpage.Page(
     content=[],
     mediabox=sample_rect(),
-    resources=Dictionary([]),
+    resources=@pdf.d([]),
     rotate=Rotate0,
     rest=Integer(0),
   )
@@ -239,7 +236,7 @@ test "add_root errors when trailer is not a dictionary" {
   let pdf0 = @pdf.Pdf::empty()
   pdf0.trailerdict = Integer(0)
   let pages_root_num = pdf0.addobj(
-    Dictionary([
+    @pdf.d([
       ("/Type", Name(PdfName("/Pages"))),
       ("/Kids", Array([])),
       ("/Count", Integer(0)),

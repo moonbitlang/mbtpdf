@@ -2,10 +2,10 @@
 test "string_of_ops handles comments and inline filters" {
   let old = write_comments.val
   write_comments.val = true
-  let dict_filter_array : @pdf.PdfObject = Dictionary([
+  let dict_filter_array : @pdf.PdfObject = @pdf.d([
     ("/Filter", Array([Name(PdfName("/ASCII85Decode"))])),
   ])
-  let dict_filter_name : @pdf.PdfObject = Dictionary([
+  let dict_filter_name : @pdf.PdfObject = @pdf.d([
     ("/Filter", Name(PdfName("/FlateDecode"))),
   ])
   let bytes = @pdfio.bytes_of_list([0x61, 0x62])
@@ -31,7 +31,7 @@ test "string_of_op delegates to string_of_ops" {
 test "parse_single_stream ignores comments and yields unknown" {
   @pdfe.with_silenced_logs(fn() {
     let pdf = @pdf.Pdf::empty()
-    let resources : @pdf.PdfObject = Dictionary([])
+    let resources : @pdf.PdfObject = @pdf.d([])
     let data = @pdfio.bytes_of_string("%c\ntrue false ZZ q Q")
     let ops = Op::parse_single_stream(pdf, resources, data)
     assert_true(ops.exists(fn(op : Op) { op is OpUnknown(_) }))
@@ -44,14 +44,10 @@ test "parse_single_stream ignores comments and yields unknown" {
 test "components handles extra branches and errors" {
   @pdfe.with_logger(_ => (), fn() {
     let pdf = @pdf.Pdf::empty()
-    let resources : @pdf.PdfObject = Dictionary([])
+    let resources : @pdf.PdfObject = @pdf.d([])
     assert_eq(Op::components(pdf, resources, Name(PdfName("/CalCMYK"))), 4)
     assert_eq(
-      Op::components(
-        pdf,
-        resources,
-        Array([Name(PdfName("/Lab")), Dictionary([])]),
-      ),
+      Op::components(pdf, resources, Array([Name(PdfName("/Lab")), @pdf.d([])])),
       3,
     )
     assert_eq(
@@ -73,9 +69,7 @@ test "components handles extra branches and errors" {
       Name(PdfName("/MyCS")),
     )
     assert_true(missing_dict is Err(_))
-    let resources_empty : @pdf.PdfObject = Dictionary([
-      ("/ColorSpace", Dictionary([])),
-    ])
+    let resources_empty : @pdf.PdfObject = @pdf.d([("/ColorSpace", @pdf.d([]))])
     let missing_entry : Result[Int, Error] = try? Op::components(
       pdf,
       resources_empty,
@@ -85,7 +79,7 @@ test "components handles extra branches and errors" {
     let bad_icc : Result[Int, Error] = try? Op::components(
       pdf,
       resources,
-      Array([Name(PdfName("/ICCBased")), Dictionary([])]),
+      Array([Name(PdfName("/ICCBased")), @pdf.d([])]),
     )
     assert_true(bad_icc is Err(_))
     let bad_device_n : Result[Int, Error] = try? Op::components(
@@ -107,7 +101,7 @@ test "components handles extra branches and errors" {
 ///|
 test "components handles /I alias" {
   let pdf = @pdf.Pdf::empty()
-  let resources : @pdf.PdfObject = Dictionary([])
+  let resources : @pdf.PdfObject = @pdf.d([])
   assert_eq(
     Op::components(
       pdf,
@@ -122,7 +116,7 @@ test "components handles /I alias" {
 test "components errors on array without name leader" {
   @pdfe.with_logger(_ => (), fn() {
     let pdf = @pdf.Pdf::empty()
-    let resources : @pdf.PdfObject = Dictionary([])
+    let resources : @pdf.PdfObject = @pdf.d([])
     let res : Result[Int, Error] = try? Op::components(
       pdf,
       resources,
@@ -202,9 +196,9 @@ test "string_of_ops covers operator variants" {
     Opsh("/Sh1"),
     OpDo("/X1"),
     OpMP("/Tag"),
-    OpDP("/Tag", Dictionary([])),
+    OpDP("/Tag", @pdf.d([])),
     OpBMC("/Span"),
-    OpBDC("/Span", Dictionary([])),
+    OpBDC("/Span", @pdf.d([])),
     OpEMC,
     OpBX,
     OpEX,

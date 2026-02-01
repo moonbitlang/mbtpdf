@@ -36,7 +36,7 @@ test "write_encoding covers mac and custom encodings" {
     }
     _ => fail("expected custom encoding dictionary")
   }
-  let font_dict : @pdf.PdfObject = Dictionary([
+  let font_dict : @pdf.PdfObject = @pdf.d([
     ("/Subtype", Name(PdfName("/Type1"))),
     ("/BaseFont", Name(PdfName("/CustomFont"))),
   ])
@@ -51,7 +51,7 @@ test "write_encoding covers mac and custom encodings" {
 test "write_font errors on unsupported fonts" {
   let pdf = @pdf.Pdf::empty()
   let ctx = @pdftext.PdfText::new(pdf)
-  let simple_dict : @pdf.PdfObject = Dictionary([
+  let simple_dict : @pdf.PdfObject = @pdf.d([
     ("/Subtype", Name(PdfName("/Type1"))),
     ("/BaseFont", Name(PdfName("/CustomFont"))),
   ])
@@ -76,13 +76,13 @@ fn add_font_descriptor(pdf : @pdf.Pdf, fontfile_obj : Int?) -> Int {
     Some(objnum) => entries.push(("/FontFile2", Indirect(objnum)))
     None => ()
   }
-  pdf.addobj(Dictionary(entries))
+  pdf.addobj(@pdf.d(entries))
 }
 
 ///|
 fn add_fontfile_stream(pdf : @pdf.Pdf) -> Int {
   let data = @pdfio.bytes_of_string("ttf")
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Length", Integer(@pdfio.bytes_size(data))),
   ])
   pdf.addobj(Stream(Ref::new((dict, Got(data)))))
@@ -91,7 +91,7 @@ fn add_fontfile_stream(pdf : @pdf.Pdf) -> Int {
 ///|
 fn add_tounicode_stream(pdf : @pdf.Pdf) -> Int {
   let bytes = @pdftext.PdfTextUtil::new().tounicode_map(33, ["A"])
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Length", Integer(@pdfio.bytes_size(bytes))),
   ])
   pdf.addobj(Stream(Ref::new((dict, Got(bytes)))))
@@ -119,7 +119,7 @@ fn truetype_font_dict(
     Some(objnum) => entries.push(("/ToUnicode", Indirect(objnum)))
     None => ()
   }
-  Dictionary(entries)
+  @pdf.d(entries)
 }
 
 ///|
@@ -132,8 +132,8 @@ fn type3_font_dict_extra(font_descriptor : Int?) -> @pdf.PdfObject {
       "/FontMatrix",
       Array([Real(1.0), Real(0.0), Real(0.0), Real(1.0), Real(0.0), Real(0.0)]),
     ),
-    ("/CharProcs", Dictionary([("/A", Null)])),
-    ("/Resources", Dictionary([])),
+    ("/CharProcs", @pdf.d([("/A", Null)])),
+    ("/Resources", @pdf.d([])),
     ("/FirstChar", Integer(0)),
     ("/LastChar", Integer(0)),
     ("/Widths", Array([Integer(0)])),
@@ -142,7 +142,7 @@ fn type3_font_dict_extra(font_descriptor : Int?) -> @pdf.PdfObject {
     Some(objnum) => entries.push(("/FontDescriptor", Indirect(objnum)))
     None => ()
   }
-  Dictionary(entries)
+  @pdf.d(entries)
 }
 
 ///|

@@ -138,7 +138,7 @@ test "pdf_of_pages retains page labels when requested" {
 ///|
 test "pdf_of_pages trims structure tree" {
   let pdf = pdf_of_pages_make_pdf(2)
-  let struct_tree : @pdf.PdfObject = Dictionary([
+  let struct_tree : @pdf.PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/StructTreeRoot"))),
   ])
   let struct_num = pdf.addobj(struct_tree)
@@ -173,12 +173,12 @@ test "pdf_of_pages fails without root" {
 test "endpage_fast handles missing count" {
   let pdf0 = @pdf.Pdf::empty()
   let rect = pdf_of_pages_rect()
-  let page : @pdf.PdfObject = Dictionary([
+  let page : @pdf.PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/Page"))),
     ("/MediaBox", rect),
   ])
   let page_num = pdf0.addobj(page)
-  let pages : @pdf.PdfObject = Dictionary([
+  let pages : @pdf.PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/Pages"))),
     ("/Kids", Array([Indirect(page_num)])),
   ])
@@ -191,7 +191,7 @@ test "endpage_fast handles missing count" {
 test "pdf_of_pages errors when trailer missing /Root" {
   let pdf = pdf_of_pages_make_pdf(2)
   // Make trailer dict malformed for pdf_of_pages.
-  pdf.trailerdict = Dictionary([])
+  pdf.trailerdict = @pdf.d([])
   let res : Result[@pdf.Pdf, Error] = try? @pdfpage.PdfPageDoc::new(pdf).pdf_of_pages([
       1,
     ],

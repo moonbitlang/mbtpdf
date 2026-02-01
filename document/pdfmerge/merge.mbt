@@ -128,10 +128,14 @@ pub fn PdfMerger::merge_pdfs(
       match first.lookup_direct("/Info", first.trailerdict) {
         None => ()
         Some(info) =>
-          pdf.trailerdict = Dictionary([("/Info", Indirect(pdf.addobj(info)))])
+          pdf.trailerdict = @pdf.d([("/Info", Indirect(pdf.addobj(info)))])
       }
     [] => ()
   }
+  let extra_catalog_entries = extra_catalog_entries.map(entry => (
+    entry.0.to_string_bytes(),
+    entry.1,
+  ))
   let pdf = @pdfpage.PdfPageDoc::new(pdf).add_root(
     pagetree_num, extra_catalog_entries,
   )

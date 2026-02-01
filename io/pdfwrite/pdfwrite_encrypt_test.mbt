@@ -10,39 +10,39 @@ fn build_minimal_pdf_for_encrypt() -> @pdf.Pdf {
       objects: @pdf.pdfobjmap_empty(),
       object_stream_ids: Map::new(),
     },
-    trailerdict: Dictionary([]),
+    trailerdict: @pdf.d([]),
     was_linearized: false,
     saved_encryption: None,
   }
   let content = "BT /F0 12 Tf (Hello) Tj ET\n"
   let stream_bytes = @pdfio.bytes_of_string(content)
-  let stream_dict : @pdf.PdfObject = Dictionary([
+  let stream_dict : @pdf.PdfObject = @pdf.d([
     ("/Length", Integer(@pdfio.bytes_size(stream_bytes))),
   ])
   let stream_obj : @pdf.PdfObject = Stream(
     Ref::new((stream_dict, Got(stream_bytes))),
   )
-  let font_dict : @pdf.PdfObject = Dictionary([
+  let font_dict : @pdf.PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/Font"))),
     ("/Subtype", Name(PdfName("/Type1"))),
     ("/BaseFont", Name(PdfName("/Times-Roman"))),
   ])
-  let resources : @pdf.PdfObject = Dictionary([
-    ("/Font", Dictionary([("/F0", font_dict)])),
+  let resources : @pdf.PdfObject = @pdf.d([
+    ("/Font", @pdf.d([("/F0", font_dict)])),
   ])
-  let page : @pdf.PdfObject = Dictionary([
+  let page : @pdf.PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/Page"))),
     ("/Parent", Indirect(1)),
     ("/Resources", resources),
     ("/MediaBox", Array([Integer(0), Integer(0), Integer(300), Integer(300)])),
     ("/Contents", Indirect(2)),
   ])
-  let pages : @pdf.PdfObject = Dictionary([
+  let pages : @pdf.PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/Pages"))),
     ("/Kids", Array([Indirect(3)])),
     ("/Count", Integer(1)),
   ])
-  let catalog : @pdf.PdfObject = Dictionary([
+  let catalog : @pdf.PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/Catalog"))),
     ("/Pages", Indirect(1)),
   ])

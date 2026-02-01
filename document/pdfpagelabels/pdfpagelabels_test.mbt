@@ -40,7 +40,7 @@ fn make_pdf_with_pages(count : Int) -> @pdf.Pdf raise {
   ])
   let pdf = @pdf.Pdf::empty()
   let pages_root_num = pdf.addobj(
-    Dictionary([
+    @pdf.d([
       ("/Type", Name(PdfName("/Pages"))),
       ("/Kids", Array([])),
       ("/Count", Integer(count)),
@@ -49,7 +49,7 @@ fn make_pdf_with_pages(count : Int) -> @pdf.Pdf raise {
   let kids : Array[@pdf.PdfObject] = []
   for _ in 0..<count {
     let page_num = pdf.addobj(
-      Dictionary([
+      @pdf.d([
         ("/Type", Name(PdfName("/Page"))),
         ("/Parent", Indirect(pages_root_num)),
         ("/MediaBox", rect),
@@ -60,7 +60,7 @@ fn make_pdf_with_pages(count : Int) -> @pdf.Pdf raise {
   pdf.addobj_given_num(
     (
       pages_root_num,
-      Dictionary([
+      @pdf.d([
         ("/Type", Name(PdfName("/Pages"))),
         ("/Kids", Array(kids)),
         ("/Count", Integer(count)),
@@ -68,7 +68,7 @@ fn make_pdf_with_pages(count : Int) -> @pdf.Pdf raise {
     ),
   )
   let catalog_num = pdf.addobj(
-    Dictionary([
+    @pdf.d([
       ("/Type", Name(PdfName("/Catalog"))),
       ("/Pages", Indirect(pages_root_num)),
     ]),
@@ -265,7 +265,7 @@ test "string_of_labelstyle covers all styles" {
 fn set_page_labels(pdf : @pdf.Pdf, nums : Array[@pdf.PdfObject]) -> Unit raise {
   let rootnum = pdf.root
   let root = pdf.lookup_obj(rootnum)
-  let labels : @pdf.PdfObject = Dictionary([("/Nums", Array(nums))])
+  let labels : @pdf.PdfObject = @pdf.d([("/Nums", Array(nums))])
   let updated = root.add_entry("/PageLabels", labels)
   pdf.addobj_given_num((rootnum, updated))
   pdf.trailerdict = pdf.trailerdict.add_entry("/Root", Indirect(rootnum))
@@ -276,17 +276,17 @@ test "read handles label styles and bad startpage" {
   let pdf = make_pdf_with_pages(1)
   let nums : Array[@pdf.PdfObject] = [
     Name(PdfName("/Bad")),
-    Dictionary([("/S", Name(PdfName("/R")))]),
+    @pdf.d([("/S", Name(PdfName("/R")))]),
     Integer(0),
-    Dictionary([("/S", Name(PdfName("/r")))]),
+    @pdf.d([("/S", Name(PdfName("/r")))]),
     Integer(1),
-    Dictionary([("/S", Name(PdfName("/A")))]),
+    @pdf.d([("/S", Name(PdfName("/A")))]),
     Integer(2),
-    Dictionary([("/S", Name(PdfName("/a")))]),
+    @pdf.d([("/S", Name(PdfName("/a")))]),
     Integer(3),
-    Dictionary([("/S", Name(PdfName("/D")))]),
+    @pdf.d([("/S", Name(PdfName("/D")))]),
     Integer(4),
-    Dictionary([("/P", String("P"))]),
+    @pdf.d([("/P", String("P"))]),
   ]
   set_page_labels(pdf, nums)
   let labels = @pdfe.with_logger(_ => (), fn() {

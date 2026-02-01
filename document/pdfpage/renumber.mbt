@@ -23,7 +23,12 @@ fn make_changes(
       Some(Dictionary(es)) => es
       _ => []
     }
-    entries.map(pair => (entry, pageseq, pair.0, freshname(src)))
+    entries.map(pair => (
+      entry,
+      pageseq,
+      pair.0.to_string_bytes(),
+      freshname(src),
+    ))
   }
 
   let pagenums = Array::makei(pages.length(), i => i + 1)
@@ -160,9 +165,14 @@ pub fn PdfPageDoc::renumber_pages(
       match pdf.lookup_direct(name, resources) {
         Some(Dictionary(entries)) =>
           Dictionary(
-            entries.map(pair => (lookup(name, seqnum, pair.0), pair.1)),
+            entries.map(pair => (
+              @pdf.PdfName::of_string(
+                lookup(name, seqnum, pair.0.to_string_bytes()),
+              ),
+              pair.1,
+            )),
           )
-        _ => Dictionary([])
+        _ => @pdf.d([])
       }
     }
 

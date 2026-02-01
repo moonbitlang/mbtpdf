@@ -3,7 +3,7 @@ fn font_with_encoding_name(
   encoding_name : String,
   subtype? : String = "/Type1",
 ) -> @pdf.PdfObject {
-  Dictionary([
+  @pdf.d([
     ("/Subtype", Name(@pdf.PdfName::of_string(subtype))),
     ("/BaseFont", Name(PdfName("/CustomFont"))),
     ("/Encoding", Name(@pdf.PdfName::of_string(encoding_name))),
@@ -12,37 +12,37 @@ fn font_with_encoding_name(
 
 ///|
 fn truetype_font_with_encoding_dict() -> @pdf.PdfObject {
-  Dictionary([
+  @pdf.d([
     ("/Subtype", Name(PdfName("/TrueType"))),
     ("/BaseFont", Name(PdfName("/CustomFont"))),
     (
       "/Encoding",
-      Dictionary([("/BaseEncoding", Name(PdfName("/MacRomanEncoding")))]),
+      @pdf.d([("/BaseEncoding", Name(PdfName("/MacRomanEncoding")))]),
     ),
   ])
 }
 
 ///|
 fn embedded_font_with_custom_encoding() -> @pdf.PdfObject {
-  Dictionary([
+  @pdf.d([
     ("/Subtype", Name(PdfName("/Type1"))),
     ("/BaseFont", Name(PdfName("/CustomFont"))),
-    ("/FontDescriptor", Dictionary([("/FontFile2", Indirect(10))])),
+    ("/FontDescriptor", @pdf.d([("/FontFile2", Indirect(10))])),
     (
       "/Encoding",
-      Dictionary([("/Differences", Array([Integer(65), Name(PdfName("/A"))]))]),
+      @pdf.d([("/Differences", Array([Integer(65), Name(PdfName("/A"))]))]),
     ),
   ])
 }
 
 ///|
 fn font_with_difference(name : String) -> @pdf.PdfObject {
-  Dictionary([
+  @pdf.d([
     ("/Subtype", Name(PdfName("/Type1"))),
     ("/BaseFont", Name(PdfName("/CustomFont"))),
     (
       "/Encoding",
-      Dictionary([
+      @pdf.d([
         (
           "/Differences",
           Array([Integer(70), Name(@pdf.PdfName::of_string(name))]),
@@ -79,7 +79,7 @@ test "encoding tables include mac variants and filled standards" {
 test "reverse tables handle implicit and mac encodings" {
   let pdf = @pdf.Pdf::empty()
   let ctx = @pdftext.PdfText::new(pdf)
-  let font_dict : @pdf.PdfObject = Dictionary([
+  let font_dict : @pdf.PdfObject = @pdf.d([
     ("/Subtype", Name(PdfName("/Type1"))),
     ("/BaseFont", Name(PdfName("/CustomFont"))),
   ])

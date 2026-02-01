@@ -7,7 +7,7 @@ test "ColourSpace::to_string basic" {
 ///|
 test "read_colourspace device rgb" {
   let pdf = @pdf.Pdf::empty()
-  let resources : @pdf.PdfObject = Dictionary([])
+  let resources : @pdf.PdfObject = @pdf.d([])
   let space = ColourSpace::read(pdf, resources, Name(PdfName("/DeviceRGB")))
   match space {
     DeviceRGB => ()
@@ -18,7 +18,7 @@ test "read_colourspace device rgb" {
 ///|
 test "read_colourspace indexed" {
   let pdf = @pdf.Pdf::empty()
-  let resources : @pdf.PdfObject = Dictionary([])
+  let resources : @pdf.PdfObject = @pdf.d([])
   let lookup_bytes = @pdfio.bytes_of_list([1, 2, 3])
   let lookup : @pdf.PdfObject = String(@pdfio.string_of_bytes(lookup_bytes))
   let space = ColourSpace::read(

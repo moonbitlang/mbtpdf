@@ -12,15 +12,15 @@ fn encrypt_pdf_AES256_inner(
   key : String,
   pdf : @pdf.Pdf,
 ) -> @pdf.Pdf raise {
-  let crypt_dict = @pdf.PdfObject::Dictionary([
+  let crypt_dict = @pdf.d([
     ("/Filter", Name(PdfName("/Standard"))),
     ("/V", Integer(5)),
     (
       "/CF",
-      Dictionary([
+      @pdf.d([
         (
           "/StdCF",
-          Dictionary([
+          @pdf.d([
             ("/Length", Integer(32)),
             ("/AuthEvent", Name(PdfName("/DocOpen"))),
             ("/CFM", Name(PdfName("/AESV3"))),

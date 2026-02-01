@@ -24,7 +24,7 @@ fn add_names_dests(
   entries : Array[(String, @pdf.PdfObject)],
 ) -> Unit raise {
   let tree = @pdftree.PdfTree::new(pdf).build_name_tree(false, entries)
-  let names_dict : @pdf.PdfObject = Dictionary([("/Dests", tree)])
+  let names_dict : @pdf.PdfObject = @pdf.d([("/Dests", tree)])
   set_catalog_entry(pdf, "/Names", names_dict)
 }
 
@@ -38,12 +38,12 @@ fn page_ref(pdf : @pdf.Pdf, index : Int) -> Int raise {
 fn dest_dict_for_page(pdf : @pdf.Pdf, index : Int) -> @pdf.PdfObject raise {
   let target = @pdfdest.TargetPage::PageObject(page_ref(pdf, index))
   let dest = @pdfdest.Destination::Fit(target)
-  Dictionary([("/D", dest.to_pdf_object())])
+  @pdf.d([("/D", dest.to_pdf_object())])
 }
 
 ///|
 fn dest_dict(dest : @pdfdest.Destination) -> @pdf.PdfObject {
-  Dictionary([("/D", dest.to_pdf_object())])
+  @pdf.d([("/D", dest.to_pdf_object())])
 }
 
 ///|
@@ -67,7 +67,7 @@ test "merge_pdfs keeps named and action bookmarks while dropping out of range" {
     ("DestB", dest_dict_for_page(pdf, 1)),
   ]
   add_names_dests(pdf, entries)
-  let action : @pdf.PdfObject = Dictionary([
+  let action : @pdf.PdfObject = @pdf.d([
     ("/S", Name(PdfName("/GoTo"))),
     ("/D", String("DestB")),
   ])
@@ -114,18 +114,18 @@ test "merge_pdfs keeps named and action bookmarks while dropping out of range" {
 test "merge_pdfs handles malformed names and optional catalog entries" {
   let pdf1 = make_pdf_pages(1)
   let pdf2 = make_pdf_pages(1)
-  let bad_tree : @pdf.PdfObject = Dictionary([
+  let bad_tree : @pdf.PdfObject = @pdf.d([
     ("/Names", Array([String("A"), Null, String("B")])),
   ])
-  let names_dict : @pdf.PdfObject = Dictionary([("/Dests", bad_tree)])
+  let names_dict : @pdf.PdfObject = @pdf.d([("/Dests", bad_tree)])
   set_catalog_entry(pdf1, "/Names", names_dict)
   set_catalog_entry(
     pdf1,
     "/OCProperties",
-    Dictionary([("/OCGs", Array([Name(PdfName("/OCG1"))]))]),
+    @pdf.d([("/OCGs", Array([Name(PdfName("/OCG1"))]))]),
   )
   set_catalog_entry(pdf1, "/AcroForm", Null)
-  set_catalog_entry(pdf2, "/AcroForm", Dictionary([("/Fields", Array([Null]))]))
+  set_catalog_entry(pdf2, "/AcroForm", @pdf.d([("/Fields", Array([Null]))]))
   let merged = @pdfe.with_logger(_ => (), fn() {
     PdfMerger::new(["one", "two"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
       false,
@@ -180,7 +180,7 @@ test "merge_pdfs rewrites string and legacy named bookmarks" {
   // Legacy catalog /Dests dictionary for name destinations.
   let target = @pdfdest.TargetPage::PageObject(page_ref(pdf, 1))
   let dest_obj = @pdfdest.Destination::Fit(target).to_pdf_object()
-  set_catalog_entry(pdf, "/Dests", Dictionary([("/DestA", dest_obj)]))
+  set_catalog_entry(pdf, "/Dests", @pdf.d([("/DestA", dest_obj)]))
   let bookmarks : Array[@pdfmarks.Bookmark] = [
     {
       level: 0,
@@ -247,7 +247,7 @@ test "merge_pdfs uses highest version and removes duplicates" {
 ///|
 test "remove_duplicate_fonts updates object_stream_ids" {
   let pdf = @pdf.Pdf::empty()
-  let dict : @pdf.PdfObject = Dictionary([("/Length", Integer(1))])
+  let dict : @pdf.PdfObject = @pdf.d([("/Length", Integer(1))])
   let stream1 : @pdf.PdfObject = Stream(Ref::new((dict, Got([0x01]))))
   let stream2 : @pdf.PdfObject = Stream(Ref::new((dict, Got([0x01]))))
   let obj1 = pdf.addobj(stream1)
@@ -261,7 +261,7 @@ test "remove_duplicate_fonts updates object_stream_ids" {
 ///|
 test "remove_duplicate_fonts keeps distinct stream lengths" {
   let pdf = @pdf.Pdf::empty()
-  let dict : @pdf.PdfObject = Dictionary([("/Length", Integer(1))])
+  let dict : @pdf.PdfObject = @pdf.d([("/Length", Integer(1))])
   let stream1 : @pdf.PdfObject = Stream(Ref::new((dict, Got([0x01]))))
   let stream2 : @pdf.PdfObject = Stream(Ref::new((dict, Got([0x01, 0x02]))))
   ignore(pdf.addobj(stream1))
@@ -350,7 +350,7 @@ test "merge_pdfs rewrites and preserves diverse destination bookmark targets" {
   set_catalog_entry(
     pdf,
     "/Dests",
-    Dictionary([("/LegacyFit", legacy_fit), ("/LegacyOther", legacy_other)]),
+    @pdf.d([("/LegacyFit", legacy_fit), ("/LegacyOther", legacy_other)]),
   )
   let bookmarks : Array[@pdfmarks.Bookmark] = [
     mk_mark("LegacyFit", NamedDestination(PdfName("/LegacyFit"))),
@@ -392,27 +392,27 @@ test "merge_pdfs resolves NamedDestination via name tree when /Dests missing" {
     ("/OnlyInTree", dest_dict(Fit(tp1))),
     ("TreeStr", dest_dict(FitH(tp1, Some(0.0)))),
     ("/OtherDocNamed", dest_dict(Fit(OtherDocPageNumber(1)))),
-    ("/NoDNamed", Dictionary([])),
+    ("/NoDNamed", @pdf.d([])),
     ("OtherDocStr", dest_dict(Fit(OtherDocPageNumber(1)))),
-    ("NoDStr", Dictionary([])),
+    ("NoDStr", @pdf.d([])),
   ])
-  let action_goto : @pdf.PdfObject = Dictionary([
+  let action_goto : @pdf.PdfObject = @pdf.d([
     ("/S", Name(PdfName("/GoTo"))),
     ("/D", String("TreeStr")),
   ])
-  let action_bad_d : @pdf.PdfObject = Dictionary([
+  let action_bad_d : @pdf.PdfObject = @pdf.d([
     ("/S", Name(PdfName("/GoTo"))),
     ("/D", Integer(0)),
   ])
-  let action_bad_s : @pdf.PdfObject = Dictionary([
+  let action_bad_s : @pdf.PdfObject = @pdf.d([
     ("/S", Name(PdfName("/NotGoTo"))),
     ("/D", String("TreeStr")),
   ])
-  let action_missing_dest : @pdf.PdfObject = Dictionary([
+  let action_missing_dest : @pdf.PdfObject = @pdf.d([
     ("/S", Name(PdfName("/GoTo"))),
     ("/D", String("MissingStr")),
   ])
-  let action_no_d : @pdf.PdfObject = Dictionary([
+  let action_no_d : @pdf.PdfObject = @pdf.d([
     ("/S", Name(PdfName("/GoTo"))),
     ("/D", String("NoDStr")),
   ])

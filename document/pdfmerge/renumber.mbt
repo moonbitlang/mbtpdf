@@ -81,6 +81,6 @@ fn merge_namedicts(pdf : @pdf.Pdf, pdfs : Array[@pdf.Pdf]) -> Int raise {
     let num = pdf.addobj(merged)
     new_entries.push((pair.0, PdfObject::Indirect(num)))
   }
-  let newdict = PdfObject::Dictionary(new_entries)
+  let newdict = @pdf.d(new_entries)
   pdf.addobj(newdict)
 }

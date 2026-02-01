@@ -1,12 +1,12 @@
 ///|
 fn make_basic_pdf() -> Pdf {
   let base = Pdf::empty()
-  let pages = PdfObject::Dictionary([
+  let pages = d([
     ("/Type", Name(PdfName("/Pages"))),
     ("/Kids", Array([Indirect(2)])),
   ])
-  let page = PdfObject::Dictionary([("/Type", Name(PdfName("/Page")))])
-  let catalog = PdfObject::Dictionary([
+  let page = d([("/Type", Name(PdfName("/Page")))])
+  let catalog = d([
     ("/Type", Name(PdfName("/Catalog"))),
     ("/Pages", Indirect(1)),
   ])
@@ -18,7 +18,7 @@ fn make_basic_pdf() -> Pdf {
     minor: base.minor,
     root: 3,
     objects: base.objects,
-    trailerdict: Dictionary([("/Root", Indirect(3))]),
+    trailerdict: d([("/Root", Indirect(3))]),
     was_linearized: base.was_linearized,
     saved_encryption: base.saved_encryption,
   }
@@ -27,12 +27,12 @@ fn make_basic_pdf() -> Pdf {
 ///|
 test "lookup helpers and catalog" {
   let pdf = Pdf::empty()
-  let dict = PdfObject::Dictionary([("/A", Integer(1))])
+  let dict = d([("/A", Integer(1))])
   assert_integer(pdf.lookup_fail("err", "/A", dict), 1)
   assert_is_err(try? pdf.lookup_fail("err", "/B", dict))
-  let dict_indirect = PdfObject::Dictionary([("/A", Indirect(5))])
+  let dict_indirect = d([("/A", Indirect(5))])
   assert_eq(dict_indirect.find_indirect("/A"), Some(5))
-  let dict_non_indirect = PdfObject::Dictionary([("/A", Integer(7))])
+  let dict_non_indirect = d([("/A", Integer(7))])
   assert_eq(dict_non_indirect.find_indirect("/A"), None)
   assert_is_err(try? PdfObject::Integer(1).find_indirect("/A"))
   let catalog_pdf = make_basic_pdf()
@@ -75,7 +75,7 @@ test "recurse and iterators" {
     _ => obj
   })
   assert_integer(pdf.lookup_obj(3), 6)
-  let stream = make_stream(Dictionary([]), @pdfio.bytes_of_string("x"))
+  let stream = make_stream(d([]), @pdfio.bytes_of_string("x"))
   pdf.addobj_given_num((4, stream))
   let selected = pdf.objselect(obj => match obj {
     Integer(_) => true
@@ -111,7 +111,7 @@ test "references and renumbering" {
   assert_true(second_nums.length() > 0)
   assert_true(first_nums.last().unwrap() < second_nums[0])
   let copied = pdf.deep_copy()
-  pdf.trailerdict = Dictionary([])
+  pdf.trailerdict = d([])
   match copied.trailerdict {
     Dictionary(entries) => assert_true(entries.length() > 0)
     _ => fail("expected dictionary")

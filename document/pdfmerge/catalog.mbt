@@ -1,8 +1,8 @@
 ///|
 fn catalog_items_from_original_documents(
   pdfs : Array[@pdf.Pdf],
-) -> Array[(String, PdfObject)] raise {
-  let out : Array[(String, PdfObject)] = Array::new()
+) -> Array[(PdfName, PdfObject)] raise {
+  let out : Array[(PdfName, PdfObject)] = Array::new()
   for pdf in pdfs {
     match pdf.catalog_of_pdf() {
       Dictionary(entries) =>
@@ -114,11 +114,11 @@ fn merge_optional_content_groups(
   let merged_default_dictionary = merge_default_dictionaries(pdf, default_dicts)
   let entries = Array::new(capacity=3)
   entries.push(("/OCGs", PdfObject::Array(merged_ocg_arrays)))
-  entries.push(("/D", Dictionary(merged_default_dictionary)))
+  entries.push(("/D", @pdf.d(merged_default_dictionary)))
   if merged_config_arrays.length() > 0 {
     entries.push(("/Configs", Array(merged_config_arrays)))
   }
-  let new_ocproperties = PdfObject::Dictionary(entries)
+  let new_ocproperties = @pdf.d(entries)
   Some(pdf.addobj(new_ocproperties))
 }
 
@@ -141,13 +141,13 @@ fn merge_acroforms(pdf : @pdf.Pdf, pdfs : Array[@pdf.Pdf]) -> Int? raise {
       _ => ()
     }
   }
-  let mut merged_nonfield_items = PdfObject::Dictionary([])
+  let mut merged_nonfield_items = @pdf.d([])
   for dict in form_dicts {
     match dict {
       Dictionary(entries) =>
         for entry in entries {
           merged_nonfield_items = merged_nonfield_items.add_entry(
-            entry.0,
+            entry.0.to_string_bytes(),
             entry.1,
           )
         }

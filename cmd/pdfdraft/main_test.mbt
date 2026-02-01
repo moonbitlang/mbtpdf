@@ -18,16 +18,16 @@ async test "run removes image xobjects and writes output" {
       let out_file = "cmd_pdfdraft_out.pdf"
       cleanup(in_file)
       cleanup(out_file)
-      let img_xobj : @pdf.PdfObject = Dictionary([
+      let img_xobj : @pdf.PdfObject = @pdf.d([
         ("/Subtype", Name(PdfName("/Image"))),
       ])
-      let form_xobj : @pdf.PdfObject = Dictionary([
+      let form_xobj : @pdf.PdfObject = @pdf.d([
         ("/Subtype", Name(PdfName("/Form"))),
       ])
-      let resources : @pdf.PdfObject = Dictionary([
-        ("/XObject", Dictionary([("/Im0", img_xobj), ("/Form0", form_xobj)])),
+      let resources : @pdf.PdfObject = @pdf.d([
+        ("/XObject", @pdf.d([("/Im0", img_xobj), ("/Form0", form_xobj)])),
       ])
-      let inline_dict : @pdf.PdfObject = Dictionary([
+      let inline_dict : @pdf.PdfObject = @pdf.d([
         ("/W", Integer(1)),
         ("/H", Integer(1)),
         ("/BPC", Integer(8)),
@@ -49,7 +49,7 @@ async test "run removes image xobjects and writes output" {
         mediabox=sample_rect(),
         resources~,
         rotate=Rotate0,
-        rest=Dictionary([]),
+        rest=@pdf.d([]),
       )
       let (pdf1, pageroot) = @pdfpage.PdfPageDoc::new(@pdf.Pdf::empty()).add_pagetree([
           page,

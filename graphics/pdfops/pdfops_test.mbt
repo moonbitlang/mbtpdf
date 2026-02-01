@@ -33,8 +33,8 @@ test "stream_of_ops builds a stream" {
 ///|
 test "components resolves color spaces" {
   let pdf = @pdf.Pdf::empty()
-  let resources : @pdf.PdfObject = Dictionary([
-    ("/ColorSpace", Dictionary([("/MyCS", Name(PdfName("/DeviceGray")))])),
+  let resources : @pdf.PdfObject = @pdf.d([
+    ("/ColorSpace", @pdf.d([("/MyCS", Name(PdfName("/DeviceGray")))])),
   ])
   assert_eq(
     @pdfops.Op::components(pdf, resources, Name(PdfName("/DeviceRGB"))),
@@ -53,7 +53,7 @@ test "components resolves color spaces" {
     @pdfops.Op::components(
       pdf,
       resources,
-      Array([Name(PdfName("/ICCBased")), Dictionary([("/N", Integer(4))])]),
+      Array([Name(PdfName("/ICCBased")), @pdf.d([("/N", Integer(4))])]),
     ),
     4,
   )
@@ -76,7 +76,7 @@ test "components resolves color spaces" {
         Name(PdfName("/Separation")),
         Name(PdfName("/Spot")),
         Name(PdfName("/DeviceRGB")),
-        Dictionary([]),
+        @pdf.d([]),
       ]),
     ),
     1,
@@ -92,7 +92,7 @@ test "components resolves color spaces" {
 ///|
 test "parse_single_stream reads basic ops" {
   let pdf = @pdf.Pdf::empty()
-  let resources : @pdf.PdfObject = Dictionary([])
+  let resources : @pdf.PdfObject = @pdf.d([])
   let data = @pdfio.bytes_of_string("1 w q 0 0 m 10 0 l S Q")
   let ops = @pdfops.Op::parse_single_stream(pdf, resources, data)
   match ops[0] {
@@ -109,7 +109,7 @@ test "parse_single_stream reads basic ops" {
 ///|
 test "parse_operators roundtrips stream_of_ops" {
   let pdf = @pdf.Pdf::empty()
-  let resources : @pdf.PdfObject = Dictionary([])
+  let resources : @pdf.PdfObject = @pdf.d([])
   let ops_in : Array[@pdfops.Op] = [Opq, Opw(2.0), OpQ]
   let stream = @pdfops.Op::stream_of_ops(ops_in)
   let ops = @pdfops.Op::parse_operators(pdf, resources, [stream])
@@ -131,7 +131,7 @@ test "parse_operators roundtrips stream_of_ops" {
 ///|
 test "parse_stream concatenates multiple streams" {
   let pdf = @pdf.Pdf::empty()
-  let resources : @pdf.PdfObject = Dictionary([])
+  let resources : @pdf.PdfObject = @pdf.d([])
   let ops = @pdfops.Op::parse_stream(pdf, resources, [
     @pdfio.bytes_of_string("q"),
     @pdfio.bytes_of_string("Q"),
@@ -150,7 +150,7 @@ test "parse_stream concatenates multiple streams" {
 ///|
 test "parse_operators handles diverse ops" {
   let pdf = @pdf.Pdf::empty()
-  let resources : @pdf.PdfObject = Dictionary([])
+  let resources : @pdf.PdfObject = @pdf.d([])
   let ops : Array[@pdfops.Op] = [
     Opw(2.0),
     OpJ(1),
@@ -218,9 +218,9 @@ test "parse_operators handles diverse ops" {
     Opsh("/Sh1"),
     OpDo("/X1"),
     OpMP("/Tag"),
-    OpDP("/Tag", Dictionary([("/K", Integer(1))])),
+    OpDP("/Tag", @pdf.d([("/K", Integer(1))])),
     OpBMC("/Span"),
-    OpBDC("/Span", Dictionary([("/Lang", String("en"))])),
+    OpBDC("/Span", @pdf.d([("/Lang", String("en"))])),
     OpEMC,
     OpBX,
     OpEX,
@@ -237,7 +237,7 @@ test "parse_operators handles diverse ops" {
 
 ///|
 test "string_of_ops renders inline image" {
-  let inline_dict : @pdf.PdfObject = Dictionary([
+  let inline_dict : @pdf.PdfObject = @pdf.d([
     ("/W", Integer(1)),
     ("/H", Integer(1)),
     ("/BPC", Integer(8)),
@@ -256,7 +256,7 @@ test "string_of_ops renders inline image" {
 test "parse_single_stream returns OpUnknown for bad ops" {
   @pdfe.with_silenced_logs(() => {
     let pdf = @pdf.Pdf::empty()
-    let resources : @pdf.PdfObject = Dictionary([])
+    let resources : @pdf.PdfObject = @pdf.d([])
     let data = @pdfio.bytes_of_string("1 2 ZZ")
     let ops = @pdfops.Op::parse_single_stream(pdf, resources, data)
     assert_true(ops.exists(fn(op : @pdfops.Op) { op is OpUnknown(_) }))

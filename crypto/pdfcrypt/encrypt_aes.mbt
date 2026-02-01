@@ -8,15 +8,15 @@ fn encrypt_pdf_AES_inner(
   encrypt_metadata : Bool,
   pdf : @pdf.Pdf,
 ) -> @pdf.Pdf raise {
-  let crypt_dict = @pdf.PdfObject::Dictionary([
+  let crypt_dict = @pdf.d([
     ("/Filter", Name(PdfName("/Standard"))),
     ("/V", Integer(4)),
     (
       "/CF",
-      Dictionary([
+      @pdf.d([
         (
           "/StdCF",
-          Dictionary([
+          @pdf.d([
             ("/Length", Integer(16)),
             ("/AuthEvent", Name(PdfName("/DocOpen"))),
             ("/CFM", Name(PdfName("/AESV2"))),

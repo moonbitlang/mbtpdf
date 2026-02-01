@@ -8,9 +8,9 @@ fn ops_page_with_ops(ops : Array[@pdfops.Op]) -> @pdfpage.Page raise {
   Page(
     content=[@pdfops.Op::stream_of_ops(ops)],
     mediabox=ops_sample_rect(),
-    resources=Dictionary([]),
+    resources=@pdf.d([]),
     rotate=Rotate0,
-    rest=Dictionary([]),
+    rest=@pdf.d([]),
   )
 }
 

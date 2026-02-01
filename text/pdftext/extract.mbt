@@ -113,7 +113,8 @@ fn PdfText::append_text_from_streams(
   fn append_text_from_xobject(name : String) -> Unit raise {
     match self.pdf.lookup_direct("/XObject", resources) {
       Some(Dictionary(entries)) =>
-        if entries.search_by(pair => pair.0 == name) is Some(idx) {
+        if entries.search_by(pair => pair.0.equal_string_bytes(name))
+          is Some(idx) {
           let obj_ref = entries[idx].1
           let obj_num : Int? = if obj_ref is Indirect(i) {
             Some(i)

@@ -2,6 +2,9 @@
 type PdfObject = @pdf.PdfObject
 
 ///|
+type PdfName = @pdf.PdfName
+
+///|
 pub struct PdfMergeDoc {
   pdf : @pdf.Pdf
 }

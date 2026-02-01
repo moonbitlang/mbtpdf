@@ -159,7 +159,7 @@ pub fn PdfStructTree::trim_structure_tree(
   }
 
   fn process_indirect(
-    d : Array[(String, @pdf.PdfObject)],
+    d : Array[(@pdf.PdfName, @pdf.PdfObject)],
     objs : Array[@pdf.PdfObject],
     n : Int,
   ) -> Unit raise {
@@ -379,12 +379,12 @@ pub fn PdfStructTree::merge_structure_trees(
   }
 
   fn merge_dicts(dicts : Array[@pdf.PdfObject]) -> @pdf.PdfObject raise {
-    let mut merged = @pdf.PdfObject::Dictionary([])
+    let mut merged = @pdf.d([])
     for dict in dicts {
       match dict {
         Dictionary(entries) =>
           for entry in entries {
-            merged = merged.add_entry(entry.0, entry.1)
+            merged = merged.add_entry(entry.0.to_string_bytes(), entry.1)
           }
         _ => @pdfe.log("merge_dicts: not a dict\n")
       }
@@ -499,7 +499,7 @@ pub fn PdfStructTree::merge_structure_trees(
   standard_entries.append(optional("/AF", merged_af)[:])
   if add_toplevel_document {
     let namespace_objnum = pdf.addobj(
-      Dictionary([("/NS", String("http://iso.org/pdf2/ssn"))]),
+      @pdf.d([("/NS", String("http://iso.org/pdf2/ssn"))]),
     )
     let merged_namespaces = match merged_namespaces {
       Array(items) => {
@@ -511,7 +511,7 @@ pub fn PdfStructTree::merge_structure_trees(
       _ => merged_namespaces
     }
     let top_level_objnum = pdf.addobj(
-      Dictionary([
+      @pdf.d([
         ("/NS", Indirect(namespace_objnum)),
         ("/S", Name(PdfName("/Document"))),
         ("/P", Indirect(struct_tree_objnum)),
@@ -522,14 +522,14 @@ pub fn PdfStructTree::merge_structure_trees(
     new_entries.append(standard_entries[:])
     new_entries.append(optional("/Namespaces", merged_namespaces)[:])
     new_entries.push(("/K", Indirect(top_level_objnum)))
-    pdf.addobj_given_num((struct_tree_objnum, Dictionary(new_entries)))
+    pdf.addobj_given_num((struct_tree_objnum, @pdf.d(new_entries)))
     Some(struct_tree_objnum)
   } else {
     let new_entries = Array::new()
     new_entries.append(standard_entries[:])
     new_entries.append(optional("/Namespaces", merged_namespaces)[:])
     new_entries.append(optional("/K", merged_k)[:])
-    pdf.addobj_given_num((struct_tree_objnum, Dictionary(new_entries)))
+    pdf.addobj_given_num((struct_tree_objnum, @pdf.d(new_entries)))
     Some(struct_tree_objnum)
   }
 }

@@ -31,12 +31,12 @@ fn assert_some_integer(obj : @pdf.PdfObject?, expected : Int) -> Unit raise {
 ///|
 fn make_basic_pdf() -> @pdf.Pdf {
   let base = @pdf.Pdf::empty()
-  let pages = @pdf.PdfObject::Dictionary([
+  let pages = d([
     ("/Type", Name(PdfName("/Pages"))),
     ("/Kids", Array([Indirect(2)])),
   ])
-  let page = @pdf.PdfObject::Dictionary([("/Type", Name(PdfName("/Page")))])
-  let catalog = @pdf.PdfObject::Dictionary([
+  let page = d([("/Type", Name(PdfName("/Page")))])
+  let catalog = d([
     ("/Type", Name(PdfName("/Catalog"))),
     ("/Pages", Indirect(1)),
   ])
@@ -48,7 +48,7 @@ fn make_basic_pdf() -> @pdf.Pdf {
     minor: base.minor,
     root: 3,
     objects: base.objects,
-    trailerdict: Dictionary([("/Root", Indirect(3))]),
+    trailerdict: d([("/Root", Indirect(3))]),
     was_linearized: base.was_linearized,
     saved_encryption: base.saved_encryption,
   }

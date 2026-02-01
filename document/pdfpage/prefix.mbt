@@ -55,7 +55,7 @@ fn names_used(pdf : @pdf.Pdf) -> Array[String] {
                 match pdf.lookup_direct(key, resources) {
                   Some(Dictionary(d)) =>
                     for entry in d {
-                      names.push(unslash(entry.0))
+                      names.push(unslash(entry.0.to_string_bytes()))
                     }
                   _ => ()
                 }
@@ -88,7 +88,7 @@ pub fn PdfPageDoc::shortest_unused_prefix(self : PdfPageDoc) -> String {
 
 ///|
 fn addp(prefix : String, name : String) -> String raise {
-  if name == "" {
+  if name == "" || name == "/" {
     raise @pdf.PdfError::Msg("addp: blank name")
   }
   "/" + prefix + (try! name[1:]).to_string()
@@ -155,8 +155,13 @@ fn change_resources(
   fn newdict(name : String) -> @pdf.PdfObject raise {
     match pdf.lookup_direct(name, resources) {
       Some(Dictionary(dict)) =>
-        Dictionary(dict.map(pair => (addp(prefix, pair.0), pair.1)))
-      _ => Dictionary([])
+        Dictionary(
+          dict.map(pair => (
+            @pdf.PdfName::of_string(addp(prefix, pair.0.to_string_bytes())),
+            pair.1,
+          )),
+        )
+      _ => @pdf.d([])
     }
   }
 
@@ -215,7 +220,7 @@ fn add_prefix_impl(pdf : @pdf.Pdf, prefix : String) -> Unit raise {
             }
             let resources_obj = match resources {
               Some(res) => res
-              None => Dictionary([])
+              None => @pdf.d([])
             }
             match dict.search_by(pair => pair.0 == "/Contents") {
               Some(index) =>
@@ -325,7 +330,7 @@ fn merge_content_streams(pdf : @pdf.Pdf) -> Unit raise {
                       let stream = @pdf.PdfObject::Stream(
                         Ref::new(
                           (
-                            Dictionary([
+                            @pdf.d([
                               ("/Length", Integer(@pdfio.bytes_size(merged))),
                             ]),
                             Got(merged),

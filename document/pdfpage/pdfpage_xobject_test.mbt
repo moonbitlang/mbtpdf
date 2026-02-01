@@ -1,22 +1,22 @@
 ///|
 test "process_xobjects updates form xobject stream" {
   let pdf = @pdf.Pdf::empty()
-  let stream_dict : @pdf.PdfObject = Dictionary([
+  let stream_dict : @pdf.PdfObject = @pdf.d([
     ("/Subtype", Name(PdfName("/Form"))),
     ("/Filter", Name(PdfName("/FlateDecode"))),
   ])
   let data = @pdfio.bytes_of_list([0x01, 0x02])
   let stream : @pdf.PdfObject = Stream(Ref::new((stream_dict, Got(data))))
   let xobj_num = pdf.addobj(stream)
-  let resources : @pdf.PdfObject = Dictionary([
-    ("/XObject", Dictionary([("/X1", Indirect(xobj_num))])),
+  let resources : @pdf.PdfObject = @pdf.d([
+    ("/XObject", @pdf.d([("/X1", Indirect(xobj_num))])),
   ])
   let page = @pdfpage.Page(
     content=[],
     mediabox=Array([Real(0.0), Real(0.0), Real(10.0), Real(20.0)]),
     resources~,
     rotate=Rotate0,
-    rest=Dictionary([]),
+    rest=@pdf.d([]),
   )
   let bbox : @pdf.PdfObject = Array([
     Real(0.0),
@@ -29,7 +29,7 @@ test "process_xobjects updates form xobject stream" {
     _ : @pdf.PdfObject,
     _ : Array[@pdf.PdfObject],
   ) -> Array[@pdf.PdfObject] {
-    let dict_updated : @pdf.PdfObject = Dictionary([
+    let dict_updated : @pdf.PdfObject = @pdf.d([
       ("/BBox", bbox),
       ("/Filter", Name(PdfName("/ASCIIHexDecode"))),
     ])
@@ -57,12 +57,12 @@ test "process_xobjects updates form xobject stream" {
 ///|
 test "combine_pdf_resources merges known and keeps unknown" {
   let pdf = @pdf.Pdf::empty()
-  let a : @pdf.PdfObject = Dictionary([
-    ("/Font", Dictionary([("/F1", Null)])),
+  let a : @pdf.PdfObject = @pdf.d([
+    ("/Font", @pdf.d([("/F1", Null)])),
     ("/Foo", Integer(1)),
   ])
-  let b : @pdf.PdfObject = Dictionary([
-    ("/Font", Dictionary([("/F2", Null)])),
+  let b : @pdf.PdfObject = @pdf.d([
+    ("/Font", @pdf.d([("/F2", Null)])),
     ("/Bar", Name(PdfName("/Baz"))),
   ])
   let combined = @pdfpage.PdfPageDoc::new(pdf).combine_pdf_resources(a, b)
@@ -83,21 +83,21 @@ test "combine_pdf_resources merges known and keeps unknown" {
 ///|
 test "process_xobjects errors when xobject subtype missing" {
   let pdf = @pdf.Pdf::empty()
-  let stream_dict : @pdf.PdfObject = Dictionary([
+  let stream_dict : @pdf.PdfObject = @pdf.d([
     ("/Filter", Name(PdfName("/FlateDecode"))),
   ])
   let data = @pdfio.bytes_of_list([0x01])
   let stream : @pdf.PdfObject = Stream(Ref::new((stream_dict, Got(data))))
   let xobj_num = pdf.addobj(stream)
-  let resources : @pdf.PdfObject = Dictionary([
-    ("/XObject", Dictionary([("/X1", Indirect(xobj_num))])),
+  let resources : @pdf.PdfObject = @pdf.d([
+    ("/XObject", @pdf.d([("/X1", Indirect(xobj_num))])),
   ])
   let page = @pdfpage.Page(
     content=[],
     mediabox=Array([Real(0.0), Real(0.0), Real(10.0), Real(20.0)]),
     resources~,
     rotate=Rotate0,
-    rest=Dictionary([]),
+    rest=@pdf.d([]),
   )
   let update = fn(
     _ : @pdf.Pdf,
@@ -113,22 +113,22 @@ test "process_xobjects errors when xobject subtype missing" {
 ///|
 test "process_xobjects accepts updated stream with non-dict metadata" {
   let pdf = @pdf.Pdf::empty()
-  let stream_dict : @pdf.PdfObject = Dictionary([
+  let stream_dict : @pdf.PdfObject = @pdf.d([
     ("/Subtype", Name(PdfName("/Form"))),
     ("/Filter", Name(PdfName("/FlateDecode"))),
   ])
   let data = @pdfio.bytes_of_list([0x01, 0x02])
   let stream : @pdf.PdfObject = Stream(Ref::new((stream_dict, Got(data))))
   let xobj_num = pdf.addobj(stream)
-  let resources : @pdf.PdfObject = Dictionary([
-    ("/XObject", Dictionary([("/X1", Indirect(xobj_num))])),
+  let resources : @pdf.PdfObject = @pdf.d([
+    ("/XObject", @pdf.d([("/X1", Indirect(xobj_num))])),
   ])
   let page = @pdfpage.Page(
     content=[],
     mediabox=Array([Real(0.0), Real(0.0), Real(10.0), Real(20.0)]),
     resources~,
     rotate=Rotate0,
-    rest=Dictionary([]),
+    rest=@pdf.d([]),
   )
   let update = fn(
     _ : @pdf.Pdf,
@@ -152,15 +152,15 @@ test "process_xobjects accepts updated stream with non-dict metadata" {
 ///|
 test "process_xobjects errors on non-indirect xobject references" {
   let pdf = @pdf.Pdf::empty()
-  let resources : @pdf.PdfObject = Dictionary([
-    ("/XObject", Dictionary([("/X1", Integer(0))])),
+  let resources : @pdf.PdfObject = @pdf.d([
+    ("/XObject", @pdf.d([("/X1", Integer(0))])),
   ])
   let page = @pdfpage.Page(
     content=[],
     mediabox=Array([Real(0.0), Real(0.0), Real(10.0), Real(20.0)]),
     resources~,
     rotate=Rotate0,
-    rest=Dictionary([]),
+    rest=@pdf.d([]),
   )
   let update = fn(
     _ : @pdf.Pdf,
@@ -176,19 +176,19 @@ test "process_xobjects errors on non-indirect xobject references" {
 ///|
 test "process_xobjects ignores non-form xobjects" {
   let pdf = @pdf.Pdf::empty()
-  let xobj_dict : @pdf.PdfObject = Dictionary([
+  let xobj_dict : @pdf.PdfObject = @pdf.d([
     ("/Subtype", Name(PdfName("/Image"))),
   ])
   let xobj_num = pdf.addobj(xobj_dict)
-  let resources : @pdf.PdfObject = Dictionary([
-    ("/XObject", Dictionary([("/Im0", Indirect(xobj_num))])),
+  let resources : @pdf.PdfObject = @pdf.d([
+    ("/XObject", @pdf.d([("/Im0", Indirect(xobj_num))])),
   ])
   let page = @pdfpage.Page(
     content=[],
     mediabox=Array([Real(0.0), Real(0.0), Real(10.0), Real(20.0)]),
     resources~,
     rotate=Rotate0,
-    rest=Dictionary([]),
+    rest=@pdf.d([]),
   )
   let calls : Ref[Int] = { val: 0 }
   let update = fn(
@@ -206,13 +206,13 @@ test "process_xobjects ignores non-form xobjects" {
 ///|
 test "process_xobjects does nothing when /XObject is missing" {
   let pdf = @pdf.Pdf::empty()
-  let resources : @pdf.PdfObject = Dictionary([])
+  let resources : @pdf.PdfObject = @pdf.d([])
   let page = @pdfpage.Page(
     content=[],
     mediabox=Array([Real(0.0), Real(0.0), Real(10.0), Real(20.0)]),
     resources~,
     rotate=Rotate0,
-    rest=Dictionary([]),
+    rest=@pdf.d([]),
   )
   page.process_xobjects(pdf, fn(_, _, _) { [] })
 }
@@ -222,7 +222,7 @@ test "combine_pdf_resources handles non-dictionary inputs" {
   let pdf = @pdf.Pdf::empty()
   let combined = @pdfpage.PdfPageDoc::new(pdf).combine_pdf_resources(
     Integer(1),
-    Dictionary([("/Font", Dictionary([("/F1", Null)]))]),
+    @pdf.d([("/Font", @pdf.d([("/F1", Null)]))]),
   )
   match (pdf.lookup_direct("/Font", combined) : @pdf.PdfObject?) {
     Some(Dictionary(_)) => ()
@@ -234,7 +234,7 @@ test "combine_pdf_resources handles non-dictionary inputs" {
 test "combine_pdf_resources ignores non-dictionary rhs" {
   let pdf = @pdf.Pdf::empty()
   let combined = @pdfpage.PdfPageDoc::new(pdf).combine_pdf_resources(
-    Dictionary([("/Font", Dictionary([("/F1", Null)]))]),
+    @pdf.d([("/Font", @pdf.d([("/F1", Null)]))]),
     Integer(0),
   )
   match (pdf.lookup_direct("/Font", combined) : @pdf.PdfObject?) {
@@ -246,10 +246,10 @@ test "combine_pdf_resources ignores non-dictionary rhs" {
 ///|
 test "process_xobject errors when form xobject is not a stream" {
   let pdf = @pdf.Pdf::empty()
-  let xobj_num = pdf.addobj(Dictionary([("/Subtype", Name(PdfName("/Form")))]))
+  let xobj_num = pdf.addobj(@pdf.d([("/Subtype", Name(PdfName("/Form")))]))
   let res : Result[Unit, Error] = try? @pdfpage.PdfPageDoc::new(pdf).process_xobject(
     fn(_, _, _) { [] },
-    Dictionary([]),
+    @pdf.d([]),
     xobj_num,
   )
   assert_true(res is Err(_))
@@ -258,21 +258,21 @@ test "process_xobject errors when form xobject is not a stream" {
 ///|
 test "process_xobjects errors when updater returns non-stream" {
   let pdf = @pdf.Pdf::empty()
-  let stream_dict : @pdf.PdfObject = Dictionary([
+  let stream_dict : @pdf.PdfObject = @pdf.d([
     ("/Subtype", Name(PdfName("/Form"))),
   ])
   let data = @pdfio.bytes_of_list([0x01])
   let stream : @pdf.PdfObject = Stream(Ref::new((stream_dict, Got(data))))
   let xobj_num = pdf.addobj(stream)
-  let resources : @pdf.PdfObject = Dictionary([
-    ("/XObject", Dictionary([("/X1", Indirect(xobj_num))])),
+  let resources : @pdf.PdfObject = @pdf.d([
+    ("/XObject", @pdf.d([("/X1", Indirect(xobj_num))])),
   ])
   let page = @pdfpage.Page(
     content=[],
     mediabox=Array([Real(0.0), Real(0.0), Real(10.0), Real(20.0)]),
     resources~,
     rotate=Rotate0,
-    rest=Dictionary([]),
+    rest=@pdf.d([]),
   )
   let update = fn(
     _ : @pdf.Pdf,

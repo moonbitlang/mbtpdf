@@ -43,21 +43,21 @@ test "pages_of_pagetree returns empty when /Pages resolves to Null" {
 test "pages_of_pagetree treats stream /Contents as singleton array" {
   let pdf0 = @pdf.Pdf::empty()
   let data = @pdfio.bytes_of_string("q Q")
-  let stream_dict : @pdf.PdfObject = Dictionary([
+  let stream_dict : @pdf.PdfObject = @pdf.d([
     ("/Length", Integer(@pdfio.bytes_size(data))),
   ])
   let stream_num = pdf0.addobj(Stream(Ref::new((stream_dict, Got(data)))))
   let page_num = pdf0.addobj(
-    Dictionary([
+    @pdf.d([
       ("/Type", Name(PdfName("/Page"))),
       ("/MediaBox", coverage_rect()),
       ("/Rotate", Integer(180)),
       ("/Contents", Indirect(stream_num)),
-      ("/Resources", Dictionary([])),
+      ("/Resources", @pdf.d([])),
     ]),
   )
   let pages_root_num = pdf0.addobj(
-    Dictionary([
+    @pdf.d([
       ("/Type", Name(PdfName("/Pages"))),
       ("/Kids", Array([Indirect(page_num)])),
       ("/Count", Integer(1)),

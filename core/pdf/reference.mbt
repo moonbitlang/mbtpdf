@@ -29,8 +29,8 @@ fn contains_string(xs : Array[String], key : String) -> Bool {
 
 ///|
 fn dict_contains_name_entry(
-  dict : Array[(String, PdfObject)],
-  entry : (String, PdfObject),
+  dict : Array[(PdfName, PdfObject)],
+  entry : (PdfName, PdfObject),
 ) -> Bool {
   match entry {
     (key, Name(name)) =>
@@ -46,8 +46,8 @@ fn dict_contains_name_entry(
 ///|
 fn tocontinue(
   no_follow_entries : Array[String],
-  no_follow_contains : Array[(String, PdfObject)],
-  dict : Array[(String, PdfObject)],
+  no_follow_contains : Array[(PdfName, PdfObject)],
+  dict : Array[(PdfName, PdfObject)],
 ) -> Bool {
   if no_follow_entries.length() == 0 && no_follow_contains.length() == 0 {
     return true
@@ -64,7 +64,7 @@ fn tocontinue(
 fn Pdf::referenced_pdfobj(
   self : Pdf,
   no_follow_entries : Array[String],
-  no_follow_contains : Array[(String, PdfObject)],
+  no_follow_contains : Array[(PdfName, PdfObject)],
   found : Map[Int, Bool],
   obj : PdfObject,
 ) -> Unit {
@@ -92,7 +92,7 @@ fn Pdf::referenced_pdfobj(
       for pair in d {
         let (k, v) = pair
         if no_follow_entries.length() == 0 ||
-          !contains_string(no_follow_entries, k) {
+          !contains_string(no_follow_entries, k.to_string_bytes()) {
           self.referenced_pdfobj(
             no_follow_entries, no_follow_contains, found, v,
           )
@@ -117,7 +117,7 @@ fn Pdf::referenced_pdfobj(
 pub fn Pdf::objects_referenced(
   self : Pdf,
   no_follow_entries : Array[String],
-  no_follow_contains : Array[(String, PdfObject)],
+  no_follow_contains : Array[(PdfName, PdfObject)],
   pdfobject : PdfObject,
 ) -> Array[Int] {
   let found = refset_empty()

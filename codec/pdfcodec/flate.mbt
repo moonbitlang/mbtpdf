@@ -87,7 +87,7 @@ pub fn PdfCodec::encode_pdfstream(
         let predicted = encode_predictor(
           pred_value, colors, bpc, predictor_columns, data,
         )
-        let decodeparms = @pdf.PdfObject::Dictionary([
+        let decodeparms = @pdf.d([
           ("/Columns", Integer(predictor_columns)),
           ("/Predictor", Integer(pred_value)),
           ("/Colors", Integer(colors)),

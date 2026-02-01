@@ -60,9 +60,9 @@ pub fn Page::custom(rectangle : PdfObject) -> Page {
   Page(
     content=[],
     mediabox=rectangle,
-    resources=Dictionary([]),
+    resources=@pdf.d([]),
     rotate=Rotate0,
-    rest=Dictionary([]),
+    rest=@pdf.d([]),
   )
 }
 

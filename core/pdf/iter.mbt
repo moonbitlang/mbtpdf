@@ -11,7 +11,7 @@ pub fn recurse_array(
 /// Recursively rebuild a dictionary.
 fn recurse_dict(
   f : (PdfObject) -> PdfObject,
-  elts : Array[(String, PdfObject)],
+  elts : Array[(PdfName, PdfObject)],
   preserve_order? : Bool = false,
 ) -> PdfObject {
   let _ = preserve_order

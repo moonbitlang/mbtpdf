@@ -162,7 +162,7 @@ fn bake_object_streams(
       data_sb.write_string(s)
     }
     let data = @pdfio.bytes_of_string(data_sb.to_string())
-    let dict = PdfObject::Dictionary([
+    let dict = @pdf.d([
       ("/Type", Name(PdfName("/ObjStm"))),
       ("/Length", Integer(@pdfio.bytes_size(data))),
       ("/N", Integer(objs.length())),

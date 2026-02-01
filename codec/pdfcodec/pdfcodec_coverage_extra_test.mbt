@@ -14,7 +14,7 @@ fn mk_stream(
   dict_entries : Array[(String, @pdf.PdfObject)],
 ) -> (@pdf.Pdf, Ref[(@pdf.PdfObject, @pdf.Stream)], @pdf.PdfObject) {
   let pdf = @pdf.Pdf::empty()
-  let dict : @pdf.PdfObject = Dictionary(
+  let dict : @pdf.PdfObject = @pdf.d(
     dict_entries.add([("/Length", Integer(@pdfio.bytes_size(data)))]),
   )
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(data)))
@@ -31,9 +31,9 @@ test "decode_from_bytes handles LZW clear codes mid-stream" {
   bw.putval(9, 66)
   bw.putval(9, 257)
   let encoded = bw.bytes()
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Filter", Name(PdfName("/LZWDecode"))),
-    ("/DecodeParms", Dictionary([("/EarlyChange", Integer(1))])),
+    ("/DecodeParms", @pdf.d([("/EarlyChange", Integer(1))])),
   ])
   match
     (@pdfcodec.PdfCodec::new().decode_from_bytes(encoded, dict) : Array[Byte]?) {
@@ -50,9 +50,9 @@ test "decode_from_bytes finishes when clear code is followed by EOD" {
   bw.putval(9, 256)
   bw.putval(9, 257)
   let encoded = bw.bytes()
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Filter", Name(PdfName("/LZWDecode"))),
-    ("/DecodeParms", Dictionary([("/EarlyChange", Integer(1))])),
+    ("/DecodeParms", @pdf.d([("/EarlyChange", Integer(1))])),
   ])
   match
     (@pdfcodec.PdfCodec::new().decode_from_bytes(encoded, dict) : Array[Byte]?) {
@@ -71,9 +71,9 @@ test "decode_from_bytes LZW handles code == next_code (KwKwK)" {
   bw.putval(9, 258)
   bw.putval(9, 257)
   let encoded = bw.bytes()
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Filter", Name(PdfName("/LZWDecode"))),
-    ("/DecodeParms", Dictionary([("/EarlyChange", Integer(1))])),
+    ("/DecodeParms", @pdf.d([("/EarlyChange", Integer(1))])),
   ])
   match
     (@pdfcodec.PdfCodec::new().decode_from_bytes(encoded, dict) : Array[Byte]?) {
@@ -102,9 +102,9 @@ test "decode_from_bytes LZW bumps code length past 9 bits (literal-only stream)"
   }
   bw.putval(code_length, 257)
   let encoded = bw.bytes()
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Filter", Name(PdfName("/LZWDecode"))),
-    ("/DecodeParms", Dictionary([("/EarlyChange", Integer(1))])),
+    ("/DecodeParms", @pdf.d([("/EarlyChange", Integer(1))])),
   ])
   match
     (@pdfcodec.PdfCodec::new().decode_from_bytes(encoded, dict) : Array[Byte]?) {
@@ -115,9 +115,9 @@ test "decode_from_bytes LZW bumps code length past 9 bits (literal-only stream)"
 
 ///|
 test "decode_from_bytes LZW returns None on truncated input" {
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Filter", Name(PdfName("/LZWDecode"))),
-    ("/DecodeParms", Dictionary([("/EarlyChange", Integer(1))])),
+    ("/DecodeParms", @pdf.d([("/EarlyChange", Integer(1))])),
   ])
   // One byte is too short to contain a full clear + data + EOD sequence.
   let out = @pdfcodec.PdfCodec::new().decode_from_bytes(
@@ -240,7 +240,7 @@ test "encode_pdfstream LZW grows code length past 9 bits" {
 
 ///|
 test "decode_from_bytes RunLength returns empty output on EOF" {
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Filter", Name(PdfName("/RunLengthDecode"))),
   ])
   let out = @pdfcodec.PdfCodec::new().decode_from_bytes(@pdfio.mkbytes(0), dict)
@@ -284,7 +284,7 @@ test "encode/decode RunLength flush_literal returns early when empty" {
 
 ///|
 test "decode_from_bytes RunLength returns on truncated literal chunks" {
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Filter", Name(PdfName("/RunLengthDecode"))),
   ])
   let out = @pdfcodec.PdfCodec::new().decode_from_bytes(
@@ -299,7 +299,7 @@ test "decode_from_bytes RunLength returns on truncated literal chunks" {
 
 ///|
 test "decode_from_bytes RunLength returns on truncated repeat chunks" {
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Filter", Name(PdfName("/RunLengthDecode"))),
   ])
   let out = @pdfcodec.PdfCodec::new().decode_from_bytes(
@@ -314,7 +314,7 @@ test "decode_from_bytes RunLength returns on truncated repeat chunks" {
 
 ///|
 test "decode_from_bytes returns None on empty filter arrays" {
-  let dict : @pdf.PdfObject = Dictionary([("/Filter", Array([]))])
+  let dict : @pdf.PdfObject = @pdf.d([("/Filter", Array([]))])
   let out = @pdfcodec.PdfCodec::new().decode_from_bytes(
     @pdfio.bytes_of_string("x"),
     dict,
@@ -324,9 +324,9 @@ test "decode_from_bytes returns None on empty filter arrays" {
 
 ///|
 test "decode_from_bytes handles non-array DecodeParms for multi-stage filters" {
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Filter", Array([Name(PdfName("/Crypt")), Name(PdfName("/Crypt"))])),
-    ("/DecodeParms", Dictionary([("/Columns", Integer(1))])),
+    ("/DecodeParms", @pdf.d([("/Columns", Integer(1))])),
   ])
   match
     (
@@ -341,9 +341,9 @@ test "decode_from_bytes handles non-array DecodeParms for multi-stage filters" {
 
 ///|
 test "decode_from_bytes trims DecodeParms arrays shorter than Filter arrays" {
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Filter", Array([Name(PdfName("/Crypt")), Name(PdfName("/Crypt"))])),
-    ("/DecodeParms", Array([Dictionary([])])),
+    ("/DecodeParms", Array([@pdf.d([])])),
   ])
   match
     (
@@ -424,7 +424,7 @@ test "decode Flate errors on PNG predictor with unsupported bpc" {
   let ctx = @pdfcodec.PdfCodec::new()
   let raw = @pdfio.bytes_of_list([0, 7])
   let encoded = ctx.encode_flate(raw)
-  let parms : @pdf.PdfObject = Dictionary([
+  let parms : @pdf.PdfObject = @pdf.d([
     ("/Predictor", Integer(12)),
     ("/Colors", Integer(1)),
     ("/BitsPerComponent", Integer(4)),
@@ -445,7 +445,7 @@ test "decode Flate errors on TIFF predictor with unsupported bpc" {
   let ctx = @pdfcodec.PdfCodec::new()
   let raw = @pdfio.bytes_of_list([1, 2, 3])
   let encoded = ctx.encode_flate(raw)
-  let parms : @pdf.PdfObject = Dictionary([
+  let parms : @pdf.PdfObject = @pdf.d([
     ("/Predictor", Integer(2)),
     ("/Colors", Integer(1)),
     ("/BitsPerComponent", Integer(4)),
@@ -467,7 +467,7 @@ test "decode Flate breaks when PNG predictor scanline is truncated" {
   // Decompressed bytes: predictor byte (0) + only 1 data byte; columns=2 => scanline_width=2.
   let raw = @pdfio.bytes_of_list([0, 7])
   let encoded = ctx.encode_flate(raw)
-  let parms : @pdf.PdfObject = Dictionary([
+  let parms : @pdf.PdfObject = @pdf.d([
     ("/Predictor", Integer(12)),
     ("/Colors", Integer(1)),
     ("/BitsPerComponent", Integer(8)),
@@ -493,7 +493,7 @@ test "decode Flate TIFF predictor handles zero columns as empty scanlines" {
   let ctx = @pdfcodec.PdfCodec::new()
   let raw = @pdfio.bytes_of_list([1, 2, 3])
   let encoded = ctx.encode_flate(raw)
-  let parms : @pdf.PdfObject = Dictionary([
+  let parms : @pdf.PdfObject = @pdf.d([
     ("/Predictor", Integer(2)),
     ("/Colors", Integer(1)),
     ("/BitsPerComponent", Integer(8)),
@@ -517,7 +517,7 @@ test "decode Flate errors on unknown PNG predictor bytes" {
   // predictor byte 9 is invalid (valid: 0..4).
   let raw = @pdfio.bytes_of_list([9, 7, 8])
   let encoded = ctx.encode_flate(raw)
-  let parms : @pdf.PdfObject = Dictionary([
+  let parms : @pdf.PdfObject = @pdf.d([
     ("/Predictor", Integer(12)),
     ("/Colors", Integer(1)),
     ("/BitsPerComponent", Integer(8)),
@@ -578,7 +578,7 @@ test "decode_pdfstream_onestage removes singleton filter and decode parms arrays
   let encoded = ctx.encode_flate(raw)
   let (pdf, stream_ref, stream_obj) = mk_stream(encoded, [
     ("/Filter", Array([Name(PdfName("/FlateDecode"))])),
-    ("/DecodeParms", Array([Dictionary([("/Predictor", Integer(1))])])),
+    ("/DecodeParms", Array([@pdf.d([("/Predictor", Integer(1))])])),
   ])
   ctx.decode_pdfstream_onestage(pdf, stream_obj)
   let dict = stream_ref.val.0
@@ -618,7 +618,7 @@ test "decode_pdfstream_onestage handles null DecodeParms" {
 
 ///|
 test "decode_from_bytes treats null DecodeParms as missing" {
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Filter", Name(PdfName("/Crypt"))),
     ("/DecodeParms", Null),
   ])
@@ -650,11 +650,11 @@ test "encode_pdfstream maps PdfError via map_pdf_error" {
 
 ///|
 test "decode_from_bytes reads boolean decode parameters" {
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/Filter", Name(PdfName("/CCITTFaxDecode"))),
     (
       "/DecodeParms",
-      Dictionary([("/BlackIs1", Boolean(true)), ("/Columns", Integer(1))]),
+      @pdf.d([("/BlackIs1", Boolean(true)), ("/Columns", Integer(1))]),
     ),
   ])
   let out = @pdfcodec.PdfCodec::new().decode_from_bytes(@pdfio.mkbytes(0), dict)

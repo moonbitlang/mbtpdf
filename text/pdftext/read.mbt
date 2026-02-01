@@ -46,11 +46,11 @@ pub fn PdfText::read_type3_data(
     ),
     fontmatrix: self.parse_matrix("/FontMatrix", font),
     charprocs: match self.pdf.lookup_fail("Bad Charprocs", "/CharProcs", font) {
-      Dictionary(l) => l
+      Dictionary(l) => l.map(pair => (pair.0.to_string_bytes(), pair.1))
       _ => raise @pdf.PdfError::Msg("Bad charprocs")
     },
     type3_resources: match self.pdf.lookup_direct("/Resources", font) {
-      None => Dictionary([])
+      None => @pdf.d([])
       Some(d) => d
     },
   }

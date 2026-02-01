@@ -12,7 +12,7 @@ const TAB_H : Double = 30.0
 
 ///|
 fn font_type1(base_font : String) -> PdfObject {
-  Dictionary([
+  @pdf.d([
     ("/Type", Name(PdfName("/Font"))),
     ("/Subtype", Name(PdfName("/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
@@ -21,10 +21,10 @@ fn font_type1(base_font : String) -> PdfObject {
 
 ///|
 fn resources() -> PdfObject {
-  Dictionary([
+  @pdf.d([
     (
       "/Font",
-      Dictionary([
+      @pdf.d([
         ("/F0", font_type1("Helvetica-Bold")),
         ("/F1", font_type1("Helvetica")),
         ("/F2", font_type1("Courier")),
@@ -160,7 +160,7 @@ fn page_of_ops(ops : Array[Op]) -> @pdfpage.Page raise {
     mediabox=mediabox(),
     resources=resources(),
     rotate=Rotate0,
-    rest=Dictionary([]),
+    rest=@pdf.d([]),
   )
 }
 
@@ -179,23 +179,23 @@ fn set_catalog_entry(
 
 ///|
 fn add_layers(pdf : @pdf.Pdf) -> (Int, Int) raise {
-  let night : PdfObject = Dictionary([
+  let night : PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/OCG"))),
     ("/Name", String("NIGHT MODE")),
   ])
-  let surprise : PdfObject = Dictionary([
+  let surprise : PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/OCG"))),
     ("/Name", String("SURPRISE")),
   ])
   let night_num = pdf.addobj(night)
   let surprise_num = pdf.addobj(surprise)
-  let default_dict : PdfObject = Dictionary([
+  let default_dict : PdfObject = @pdf.d([
     ("/BaseState", Name(PdfName("/ON"))),
     ("/Intent", Name(PdfName("/View"))),
     ("/Name", String("Default")),
     ("/OFF", Array([Indirect(night_num), Indirect(surprise_num)])),
   ])
-  let ocprops : PdfObject = Dictionary([
+  let ocprops : PdfObject = @pdf.d([
     ("/OCGs", Array([Indirect(night_num), Indirect(surprise_num)])),
     ("/D", default_dict),
   ])
@@ -213,7 +213,7 @@ fn add_layer_properties_to_pages(
   let pages = @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree()
   for i in 0..<pages.length() {
     let page = pages[i]
-    let props : PdfObject = Dictionary([
+    let props : PdfObject = @pdf.d([
       ("/NIGHT", Indirect(night_num)),
       ("/SURPRISE", Indirect(surprise_num)),
     ])
@@ -232,12 +232,12 @@ fn add_layer_properties_to_pages(
 ///|
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  @pdf.d([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
 }
 
 ///|
 fn uri_action(uri : String) -> PdfObject {
-  Dictionary([("/S", Name(PdfName("/URI"))), ("/URI", String(uri))])
+  @pdf.d([("/S", Name(PdfName("/URI"))), ("/URI", String(uri))])
 }
 
 ///|
@@ -254,7 +254,7 @@ fn add_link(
     rectangle: rect,
     border: @pdfannot.Border::new(0.0),
     colour: None,
-    annotrest: Dictionary([("/A", action)]),
+    annotrest: @pdf.d([("/A", action)]),
   }
   @pdfannot.PdfAnnot::new(pdf).add_annotation(page, annot)
 }

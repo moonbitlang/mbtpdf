@@ -108,7 +108,7 @@ test "pdf_to_output generates object streams with indirect lengths" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   let length_obj = pdf.addobj(Integer(3))
   let data = @pdfio.bytes_of_string("abc")
-  let dict : @pdf.PdfObject = Dictionary([("/Length", Indirect(length_obj))])
+  let dict : @pdf.PdfObject = @pdf.d([("/Length", Indirect(length_obj))])
   let stream_num = pdf.addobj(Stream(Ref::new((dict, Got(data)))))
   let marked_obj = pdf.addobj(Integer(123))
   pdf.objects.object_stream_ids.set(marked_obj, stream_num)
@@ -176,7 +176,7 @@ test "pdf_to_output skips indirect length objects for objstm hints" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   let length_obj = pdf.addobj(Integer(4))
   let data = @pdfio.bytes_of_string("data")
-  let dict : @pdf.PdfObject = Dictionary([("/Length", Indirect(length_obj))])
+  let dict : @pdf.PdfObject = @pdf.d([("/Length", Indirect(length_obj))])
   let stream_num = pdf.addobj(Stream(Ref::new((dict, Got(data)))))
   pdf.objects.object_stream_ids.set(stream_num, stream_num)
   pdf.objects.object_stream_ids.set(length_obj, stream_num)
@@ -212,7 +212,7 @@ test "pdf_to_output drops invalid object stream ids and writes toget" {
     r: 5,
   }
   let toget = @pdf.ToGet::new(input, 0, 4, crypt=ToDecrypt(deferred))
-  let dict : @pdf.PdfObject = Dictionary([("/Length", Integer(4))])
+  let dict : @pdf.PdfObject = @pdf.d([("/Length", Integer(4))])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, ToGet(toget))))
   let stream_num = pdf.addobj(stream)
   pdf.objects.object_stream_ids.set(9999, stream_num)

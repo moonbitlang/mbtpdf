@@ -6,7 +6,7 @@ type Op = @pdfops.Op
 
 ///|
 fn font_type1(base_font : String) -> PdfObject {
-  Dictionary([
+  @pdf.d([
     ("/Type", Name(PdfName("/Font"))),
     ("/Subtype", Name(PdfName("/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
@@ -15,10 +15,10 @@ fn font_type1(base_font : String) -> PdfObject {
 
 ///|
 fn resources() -> PdfObject {
-  Dictionary([
+  @pdf.d([
     (
       "/Font",
-      Dictionary([
+      @pdf.d([
         ("/F0", font_type1("Helvetica-Bold")),
         ("/F1", font_type1("Helvetica")),
         ("/F2", font_type1("Courier")),
@@ -153,7 +153,7 @@ fn page_of_ops(ops : Array[Op]) -> @pdfpage.Page raise {
     mediabox=mediabox(),
     resources=resources(),
     rotate=Rotate0,
-    rest=Dictionary([]),
+    rest=@pdf.d([]),
   )
 }
 
@@ -172,23 +172,23 @@ fn set_catalog_entry(
 
 ///|
 fn add_layers(pdf : @pdf.Pdf) -> (Int, Int, Int, Int, Int) raise {
-  let dress : PdfObject = Dictionary([
+  let dress : PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/OCG"))),
     ("/Name", String("DRESS")),
   ])
-  let space : PdfObject = Dictionary([
+  let space : PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/OCG"))),
     ("/Name", String("SPACE SUIT")),
   ])
-  let hero : PdfObject = Dictionary([
+  let hero : PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/OCG"))),
     ("/Name", String("HERO CAPE")),
   ])
-  let hat : PdfObject = Dictionary([
+  let hat : PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/OCG"))),
     ("/Name", String("HAT")),
   ])
-  let sparkles : PdfObject = Dictionary([
+  let sparkles : PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/OCG"))),
     ("/Name", String("SPARKLES")),
   ])
@@ -197,7 +197,7 @@ fn add_layers(pdf : @pdf.Pdf) -> (Int, Int, Int, Int, Int) raise {
   let hero_num = pdf.addobj(hero)
   let hat_num = pdf.addobj(hat)
   let sparkles_num = pdf.addobj(sparkles)
-  let default_dict : PdfObject = Dictionary([
+  let default_dict : PdfObject = @pdf.d([
     ("/BaseState", Name(PdfName("/ON"))),
     ("/Intent", Name(PdfName("/View"))),
     ("/Name", String("Default")),
@@ -212,7 +212,7 @@ fn add_layers(pdf : @pdf.Pdf) -> (Int, Int, Int, Int, Int) raise {
       ]),
     ),
   ])
-  let ocprops : PdfObject = Dictionary([
+  let ocprops : PdfObject = @pdf.d([
     (
       "/OCGs",
       Array([
@@ -242,7 +242,7 @@ fn add_layer_properties_to_pages(
   let pages = @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree()
   for i in 0..<pages.length() {
     let page = pages[i]
-    let props : PdfObject = Dictionary([
+    let props : PdfObject = @pdf.d([
       ("/DRESS", Indirect(dress_num)),
       ("/SPACE", Indirect(space_num)),
       ("/HERO", Indirect(hero_num)),
@@ -264,7 +264,7 @@ fn add_layer_properties_to_pages(
 ///|
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  @pdf.d([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
 }
 
 ///|
@@ -281,7 +281,7 @@ fn add_link(
     rectangle: rect,
     border: @pdfannot.Border::new(0.0),
     colour: None,
-    annotrest: Dictionary([("/A", action)]),
+    annotrest: @pdf.d([("/A", action)]),
   }
   @pdfannot.PdfAnnot::new(pdf).add_annotation(page, annot)
 }

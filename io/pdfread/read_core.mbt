@@ -124,7 +124,7 @@ fn read_pdf_internal(
     let mut got_all_xref_sections = false
     let mut xref_offset = read_startxref(input)
     let mut first_trailer = true
-    let mut trailerdict = @pdf.PdfObject::Dictionary([])
+    let mut trailerdict = @pdf.d([])
     let xrefs : Map[Int, XRef] = Map::new()
     let postdeletes : Map[Int, Bool] = Map::new()
     fn add_entries(
@@ -146,7 +146,7 @@ fn read_pdf_internal(
         None => false
         Some(r) => r > current_revision
       }
-      let mut trailerdict_current = @pdf.PdfObject::Dictionary([])
+      let mut trailerdict_current = @pdf.d([])
       if input.peek_char() is Some('x') {
         let entries = read_xref(input)
         if !skip {

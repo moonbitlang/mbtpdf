@@ -9,6 +9,10 @@ import {
 }
 
 // Values
+pub fn d(Array[(String, PdfObject)]) -> PdfObject
+
+pub fn dk(Array[(String, PdfObject)]) -> Array[(PdfName, PdfObject)]
+
 pub fn input_pdferror(@pdfio.Input, String) -> String
 
 pub fn is_whitespace(Char) -> Bool
@@ -77,7 +81,7 @@ pub fn Pdf::lookup_fail(Self, String, String, PdfObject) -> PdfObject raise
 pub fn Pdf::lookup_obj(Self, Int) -> PdfObject
 pub fn Pdf::nametree_lookup(Self, PdfObject, PdfObject) -> PdfObject? raise
 pub fn Pdf::objcard(Self) -> Int
-pub fn Pdf::objects_referenced(Self, Array[String], Array[(String, PdfObject)], PdfObject) -> Array[Int]
+pub fn Pdf::objects_referenced(Self, Array[String], Array[(PdfName, PdfObject)], PdfObject) -> Array[Int]
 pub fn Pdf::objiter(Self, (Int, PdfObject) -> Unit raise?) -> Unit raise?
 pub fn Pdf::objiter_gen(Self, (Int, Int, PdfObject) -> Unit raise?) -> Unit raise?
 pub fn Pdf::objiter_inorder(Self, (Int, PdfObject) -> Unit raise?) -> Unit raise?
@@ -118,7 +122,7 @@ pub(all) enum PdfObject {
   String(String)
   Name(PdfName)
   Array(Array[PdfObject])
-  Dictionary(Array[(String, PdfObject)])
+  Dictionary(Array[(PdfName, PdfObject)])
   Stream(Ref[(PdfObject, Stream)])
   Indirect(Int)
 }

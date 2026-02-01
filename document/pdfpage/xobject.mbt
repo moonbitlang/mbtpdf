@@ -1,11 +1,11 @@
 ///|
 fn merge_dict_entries(
   base : @pdf.PdfObject,
-  extras : Array[(String, @pdf.PdfObject)],
+  extras : Array[(@pdf.PdfName, @pdf.PdfObject)],
 ) -> @pdf.PdfObject raise {
   let mut updated = base
   for entry in extras {
-    updated = updated.add_entry(entry.0, entry.1)
+    updated = updated.add_entry(entry.0.to_string_bytes(), entry.1)
   }
   updated
 }
@@ -104,18 +104,18 @@ pub fn PdfPageDoc::combine_pdf_resources(
   }
 
   let unknown_keys_a = a_entries.filter(entry => !resource_keys.contains(
-    entry.0,
+    entry.0.to_string_bytes(),
   ))
   let unknown_keys_b = b_entries.filter(entry => !resource_keys.contains(
-    entry.0,
+    entry.0.to_string_bytes(),
   ))
   let combined_known = resource_keys.filter_map(combine_entries)
-  let mut out = @pdf.PdfObject::Dictionary([])
+  let mut out = @pdf.d([])
   for entry in unknown_keys_a {
-    out = out.add_entry(entry.0, entry.1)
+    out = out.add_entry(entry.0.to_string_bytes(), entry.1)
   }
   for entry in unknown_keys_b {
-    out = out.add_entry(entry.0, entry.1)
+    out = out.add_entry(entry.0.to_string_bytes(), entry.1)
   }
   for entry in combined_known {
     out = out.add_entry(entry.0, entry.1)

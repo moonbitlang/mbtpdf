@@ -1,15 +1,15 @@
 ///|
 fn remove_dict_entries(
-  entries : Array[(String, PdfObject)],
-) -> Array[(String, PdfObject)] {
+  entries : Array[(@pdf.PdfName, PdfObject)],
+) -> Array[(@pdf.PdfName, PdfObject)] {
   entries.filter(entry => {
     let key = entry.0
-    let keep = key != "/Resources" &&
-      key != "/Contents" &&
-      key != "/MediaBox" &&
-      key != "/Rotate" &&
-      key != "/Parent" &&
-      key != "/Type"
+    let keep = !key.equal_string_bytes("/Resources") &&
+      !key.equal_string_bytes("/Contents") &&
+      !key.equal_string_bytes("/MediaBox") &&
+      !key.equal_string_bytes("/Rotate") &&
+      !key.equal_string_bytes("/Parent") &&
+      !key.equal_string_bytes("/Type")
     keep
   })
 }
@@ -160,7 +160,7 @@ fn find_pages(
           }
           let resources = match resources {
             Some(r) => r
-            None => Dictionary([])
+            None => @pdf.d([])
           }
           let rest = match pages {
             Dictionary(d) => PdfObject::Dictionary(remove_dict_entries(d))

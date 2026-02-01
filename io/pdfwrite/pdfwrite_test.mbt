@@ -7,7 +7,7 @@ test "string_of_pdf basic" {
 
 ///|
 test "string_of_pdf dictionary" {
-  let obj : @pdf.PdfObject = Dictionary([
+  let obj : @pdf.PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/Example"))),
     ("/Count", Integer(2)),
   ])

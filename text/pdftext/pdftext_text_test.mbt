@@ -1,15 +1,15 @@
 ///|
 fn standard_font_dict() -> @pdf.PdfObject {
-  Dictionary([
+  @pdf.d([
     ("/Subtype", Name(PdfName("/Type1"))),
     ("/BaseFont", Name(PdfName("/Helvetica"))),
-    ("/Encoding", Dictionary([])),
+    ("/Encoding", @pdf.d([])),
   ])
 }
 
 ///|
 fn win_ansi_font_dict() -> @pdf.PdfObject {
-  Dictionary([
+  @pdf.d([
     ("/Subtype", Name(PdfName("/Type1"))),
     ("/BaseFont", Name(PdfName("/Helvetica"))),
     ("/Encoding", Name(PdfName("/WinAnsiEncoding"))),
@@ -18,12 +18,12 @@ fn win_ansi_font_dict() -> @pdf.PdfObject {
 
 ///|
 fn custom_encoding_font_dict() -> @pdf.PdfObject {
-  Dictionary([
+  @pdf.d([
     ("/Subtype", Name(PdfName("/Type1"))),
     ("/BaseFont", Name(PdfName("/Helvetica"))),
     (
       "/Encoding",
-      Dictionary([
+      @pdf.d([
         ("/BaseEncoding", Name(PdfName("/WinAnsiEncoding"))),
         ("/Differences", Array([Integer(65), Name(PdfName("/A"))])),
       ]),
@@ -33,7 +33,7 @@ fn custom_encoding_font_dict() -> @pdf.PdfObject {
 
 ///|
 fn simple_font_with_tounicode(tounicode_ref : Int) -> @pdf.PdfObject {
-  Dictionary([
+  @pdf.d([
     ("/Subtype", Name(PdfName("/Type1"))),
     ("/BaseFont", Name(PdfName("/Helvetica"))),
     ("/FirstChar", Integer(33)),
@@ -45,19 +45,19 @@ fn simple_font_with_tounicode(tounicode_ref : Int) -> @pdf.PdfObject {
 
 ///|
 fn cid_font_dict(encoding_name : String) -> @pdf.PdfObject {
-  let descendant : @pdf.PdfObject = Dictionary([
+  let descendant : @pdf.PdfObject = @pdf.d([
     (
       "/CIDSystemInfo",
-      Dictionary([
+      @pdf.d([
         ("/Registry", String("Adobe")),
         ("/Ordering", String("Identity")),
         ("/Supplement", Integer(0)),
       ]),
     ),
     ("/BaseFont", Name(PdfName("/CIDFont"))),
-    ("/FontDescriptor", Dictionary([])),
+    ("/FontDescriptor", @pdf.d([])),
   ])
-  Dictionary([
+  @pdf.d([
     ("/Subtype", Name(PdfName("/Type0"))),
     ("/BaseFont", Name(PdfName("/CIDFontType0"))),
     ("/DescendantFonts", Array([descendant])),

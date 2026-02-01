@@ -33,7 +33,7 @@ pub(all) enum PdfObject {
   /// - Keeps insertion order stable for serialization.
   /// - Key encoding: `String` is treated as a "bytes-in-String" byte string,
   ///   matching the parser/serializer (each UTF-16 code unit stores one byte).
-  Dictionary(Array[(String, PdfObject)])
+  Dictionary(Array[(PdfName, PdfObject)])
   /// PDF stream object.
   ///
   /// Streams are represented as a `(stream_dict, stream_data)` pair stored in a
@@ -42,6 +42,25 @@ pub(all) enum PdfObject {
   /// PDF indirect reference (`n 0 R`) to an object number.
   Indirect(Int)
 } derive(Debug)
+
+///|
+/// Convenience constructor for a PDF dictionary from "name keys" written as
+/// `String` (byte-string).
+///
+/// This maps each key to `PdfName::of_string` and returns `PdfObject::Dictionary`.
+///
+/// This is primarily for construction sites that want ergonomic literals like:
+/// `d([("/Type", Name(PdfName("/Page")))])`.
+pub fn d(entries : Array[(String, PdfObject)]) -> PdfObject {
+  Dictionary(dk(entries))
+}
+
+///|
+/// Convert dictionary entries keyed by `String` (byte-string) to entries keyed
+/// by `PdfName`.
+pub fn dk(entries : Array[(String, PdfObject)]) -> Array[(PdfName, PdfObject)] {
+  entries.map(pair => (PdfName::of_string(pair.0), pair.1))
+}
 
 ///|
 /// Convert primitive numeric types into PDF numeric objects.
@@ -68,9 +87,10 @@ pub fn PdfObject::remove_entry(
   self : PdfObject,
   key : String,
 ) -> PdfObject raise {
+  let k = PdfName::of_string(key)
   match self {
     Dictionary(entries) => {
-      let out = entries.filter(pair => pair.0 != key)
+      let out = entries.filter(pair => pair.0 != k)
       Dictionary(out)
     }
     Stream(r) => {
@@ -89,18 +109,19 @@ pub fn PdfObject::replace_entry(
   key : String,
   value : PdfObject,
 ) -> PdfObject raise {
+  let kk = PdfName::of_string(key)
   match self {
-    Null => Dictionary([(key, value)])
+    Null => Dictionary([(kk, value)])
     Dictionary(entries) => {
       let mut replaced = false
       let out = Array::new(capacity=entries.length())
       for entry in entries {
-        let (k, v) = entry
-        if k == key {
-          out.push((k, value))
+        let (k2, v) = entry
+        if k2 == kk {
+          out.push((k2, value))
           replaced = true
         } else {
-          out.push((k, v))
+          out.push((k2, v))
         }
       }
       if !replaced {
@@ -124,22 +145,23 @@ pub fn PdfObject::add_entry(
   key : String,
   value : PdfObject,
 ) -> PdfObject raise {
+  let kk = PdfName::of_string(key)
   match self {
-    Null => Dictionary([(key, value)])
+    Null => Dictionary([(kk, value)])
     Dictionary(entries) => {
       let mut replaced = false
       let out = Array::new(capacity=entries.length() + 1)
       for entry in entries {
-        let (k, v) = entry
-        if k == key {
-          out.push((k, value))
+        let (k2, v) = entry
+        if k2 == kk {
+          out.push((k2, value))
           replaced = true
         } else {
-          out.push((k, v))
+          out.push((k2, v))
         }
       }
       if !replaced {
-        out.push((key, value))
+        out.push((kk, value))
       }
       Dictionary(out)
     }
@@ -158,8 +180,9 @@ pub fn PdfObject::lookup_immediate(
   self : PdfObject,
   key : String,
 ) -> PdfObject? {
-  fn lookup_entries(entries : Array[(String, PdfObject)]) -> PdfObject? {
-    match entries.search_by(pair => pair.0 == key) {
+  let k = PdfName::of_string(key)
+  fn lookup_entries(entries : Array[(PdfName, PdfObject)]) -> PdfObject? {
+    match entries.search_by(pair => pair.0 == k) {
       None => None
       Some(i) => Some(entries[i].1)
     }
@@ -187,11 +210,12 @@ pub fn PdfObject::lookup_immediate_all(
   self : PdfObject,
   key : String,
 ) -> Array[PdfObject] {
-  fn collect(entries : Array[(String, PdfObject)]) -> Array[PdfObject] {
+  let needle = PdfName::of_string(key)
+  fn collect(entries : Array[(PdfName, PdfObject)]) -> Array[PdfObject] {
     let out = Array::new(capacity=entries.length())
     for entry in entries {
       let (k, v) = entry
-      if k == key {
+      if k == needle {
         out.push(v)
       }
     }

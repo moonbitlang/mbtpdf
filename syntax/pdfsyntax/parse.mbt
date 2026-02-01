@@ -46,7 +46,9 @@ fn parse_dictionary(
   start : Int,
 ) -> (ParseItem, Int) raise {
   let remaining = items.length() - start
-  let entries = Array::new(capacity=remaining / 2)
+  let entries : Array[(@pdf.PdfName, PdfObject)] = Array::new(
+    capacity=remaining / 2,
+  )
   let mut i = start + 1
   while i < items.length() {
     match items[i] {
@@ -55,7 +57,7 @@ fn parse_dictionary(
         let (key_item, next_i) = parse_value(items, i)
         let (val_item, next_i2) = parse_value(items, next_i)
         match (key_item, val_item) {
-          (Parsed(Name(k)), Parsed(v)) => entries.push((k.to_string_bytes(), v))
+          (Parsed(Name(k)), Parsed(v)) => entries.push((k, v))
           _ => raise @pdf.PdfError::Msg("parse_dictionary")
         }
         i = next_i2

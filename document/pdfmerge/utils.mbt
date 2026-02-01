@@ -120,25 +120,30 @@ fn setify_strings(values : Array[String]) -> Array[String] {
 
 ///|
 fn remove_entry(
-  entries : Array[(String, PdfObject)],
+  entries : Array[(PdfName, PdfObject)],
   key : String,
-) -> Array[(String, PdfObject)] {
-  entries.filter(entry => entry.0 != key)
+) -> Array[(PdfName, PdfObject)] {
+  entries.filter(entry => !entry.0.equal_string_bytes(key))
 }
 
 ///|
 fn add_entry(
-  entries : Array[(String, PdfObject)],
+  entries : Array[(PdfName, PdfObject)],
   key : String,
   value : PdfObject,
-) -> Array[(String, PdfObject)] {
-  match entries.search_by(entry => entry.0 == key) {
+) -> Array[(PdfName, PdfObject)] {
+  let key_name = @pdf.PdfName::of_string(key)
+  match entries.search_by(entry => entry.0.equal_string_bytes(key)) {
     None => {
       let out = entries[:].to_array()
-      out.push((key, value))
+      out.push((key_name, value))
       out
     }
     Some(_) =>
-      entries.map(entry => if entry.0 == key { (key, value) } else { entry })
+      entries.map(entry => if entry.0.equal_string_bytes(key) {
+        (key_name, value)
+      } else {
+        entry
+      })
   }
 }

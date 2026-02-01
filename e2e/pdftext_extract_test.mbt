@@ -769,7 +769,7 @@ fn build_unicode_pdf() -> @pdf.Pdf raise {
   let codepoints : Array[Int] = ['你', '好', '世', '界', '☺']
   let pdf = @pdf.Pdf::empty()
   let text = @pdftext.PdfTextUtil::new().utf16be_of_codepoints(codepoints)
-  let font : @pdf.PdfObject = Dictionary([
+  let font : @pdf.PdfObject = @pdf.d([
     ("/Type", Name(PdfName("/Font"))),
     ("/Subtype", Name(PdfName("/Type1"))),
     ("/BaseFont", Name(PdfName("/CustomUnicodeFont"))),
@@ -786,9 +786,9 @@ fn build_unicode_pdf() -> @pdf.Pdf raise {
   let page = @pdfpage.Page(
     content=[stream],
     mediabox~,
-    resources=Dictionary([("/Font", Dictionary([("/F0", font)]))]),
+    resources=@pdf.d([("/Font", @pdf.d([("/F0", font)]))]),
     rotate=Rotate0,
-    rest=Dictionary([]),
+    rest=@pdf.d([]),
   )
   let (pdf, pageroot) = @pdfpage.PdfPageDoc::new(pdf).add_pagetree([page])
   @pdfpage.PdfPageDoc::new(pdf).add_root(pageroot, [])
@@ -816,7 +816,7 @@ fn extract_test_page(
     mediabox=extract_test_mediabox(),
     resources~,
     rotate=Rotate0,
-    rest=Dictionary([]),
+    rest=@pdf.d([]),
   )
 }
 
@@ -839,19 +839,19 @@ fn form_xobject_stream(text : String) -> @pdf.PdfObject raise {
 
 ///|
 fn cid_font_dict(encoding_name : String) -> @pdf.PdfObject {
-  let descendant : @pdf.PdfObject = Dictionary([
+  let descendant : @pdf.PdfObject = @pdf.d([
     (
       "/CIDSystemInfo",
-      Dictionary([
+      @pdf.d([
         ("/Registry", String("Adobe")),
         ("/Ordering", String("Identity")),
         ("/Supplement", Integer(0)),
       ]),
     ),
     ("/BaseFont", Name(PdfName("/CIDFont"))),
-    ("/FontDescriptor", Dictionary([])),
+    ("/FontDescriptor", @pdf.d([])),
   ])
-  Dictionary([
+  @pdf.d([
     ("/Subtype", Name(PdfName("/Type0"))),
     ("/BaseFont", Name(PdfName("/CIDFontType0"))),
     ("/DescendantFonts", Array([descendant])),
@@ -875,7 +875,7 @@ test "extract text handles text ops and arrays" {
     OpTJ(Array([String("F"), Integer(120), String("")])),
     OpET,
   ]
-  let page = extract_test_page(ops, Dictionary([]))
+  let page = extract_test_page(ops, @pdf.d([]))
   let pdf = add_pages_to_pdf([page], @pdf.Pdf::empty())
   let pages = @pdftext.PdfText::new(pdf).extract_text()
   inspect(
@@ -902,7 +902,7 @@ test "extract text handles invalid unicode and missing xobjects" {
     OpET,
     OpDo("/NoXObject"),
   ]
-  let page = extract_test_page(ops, Dictionary([]))
+  let page = extract_test_page(ops, @pdf.d([]))
   let pdf = add_pages_to_pdf([page], @pdf.Pdf::empty())
   let pages = @pdftext.PdfText::new(pdf).extract_text(page_break="\n--------\n")
   inspect(pages, content="þÿ\u{0}")
@@ -914,12 +914,12 @@ test "extract text visits xobjects once" {
   let form_indirect = form_xobject_stream("X1")
   let form_indirect_id = pdf.addobj(form_indirect)
   let form_direct = form_xobject_stream("X2")
-  let xobjects : @pdf.PdfObject = Dictionary([
+  let xobjects : @pdf.PdfObject = @pdf.d([
     ("/X1", Indirect(form_indirect_id)),
     ("/X2", form_direct),
-    ("/X3", Dictionary([("/Subtype", Name(PdfName("/Image")))])),
+    ("/X3", @pdf.d([("/Subtype", Name(PdfName("/Image")))])),
   ])
-  let resources : @pdf.PdfObject = Dictionary([("/XObject", xobjects)])
+  let resources : @pdf.PdfObject = @pdf.d([("/XObject", xobjects)])
   let ops : Array[@pdfops.Op] = [
     OpDo("/X1"),
     OpDo("/X1"),
@@ -935,9 +935,9 @@ test "extract text visits xobjects once" {
 
 ///|
 test "extract text ignores missing or invalid fonts" {
-  let bad_font : @pdf.PdfObject = Dictionary([])
-  let resources_bad : @pdf.PdfObject = Dictionary([
-    ("/Font", Dictionary([("/Bad", bad_font)])),
+  let bad_font : @pdf.PdfObject = @pdf.d([])
+  let resources_bad : @pdf.PdfObject = @pdf.d([
+    ("/Font", @pdf.d([("/Bad", bad_font)])),
   ])
   let ops_missing_font : Array[@pdfops.Op] = [
     OpBT,
@@ -957,7 +957,7 @@ test "extract text ignores missing or invalid fonts" {
     OpTj("C"),
     OpET,
   ]
-  let page1 = extract_test_page(ops_missing_font, Dictionary([]))
+  let page1 = extract_test_page(ops_missing_font, @pdf.d([]))
   let page2 = extract_test_page(ops_bad_font, resources_bad)
   let page3 = extract_test_page(ops_unknown_font, resources_bad)
   let pdf = add_pages_to_pdf([page1, page2, page3], @pdf.Pdf::empty())
@@ -977,9 +977,7 @@ test "extract text ignores missing or invalid fonts" {
 ///|
 test "extract text falls back for odd identity-h text bytes" {
   let font = cid_font_dict("/Identity-H")
-  let resources : @pdf.PdfObject = Dictionary([
-    ("/Font", Dictionary([("/F1", font)])),
-  ])
+  let resources : @pdf.PdfObject = @pdf.d([("/Font", @pdf.d([("/F1", font)]))])
   let ops : Array[@pdfops.Op] = [OpBT, OpTf("/F1", 12.0), OpTj("A"), OpET]
   let page = extract_test_page(ops, resources)
   let pdf = add_pages_to_pdf([page], @pdf.Pdf::empty())

@@ -7,7 +7,7 @@ fn encrypt_pdf_128bit_inner(
   id : String,
   pdf : @pdf.Pdf,
 ) -> @pdf.Pdf raise {
-  let crypt_dict = @pdf.PdfObject::Dictionary([
+  let crypt_dict = @pdf.d([
     ("/Filter", Name(PdfName("/Standard"))),
     ("/V", Integer(2)),
     ("/R", Integer(3)),
@@ -53,15 +53,15 @@ fn encrypt_pdf_128bit_inner_r4(
   pdf : @pdf.Pdf,
   encrypt_metadata : Bool,
 ) -> @pdf.Pdf raise {
-  let crypt_dict = @pdf.PdfObject::Dictionary([
+  let crypt_dict = @pdf.d([
     ("/Filter", Name(PdfName("/Standard"))),
     ("/V", Integer(4)),
     (
       "/CF",
-      Dictionary([
+      @pdf.d([
         (
           "/StdCF",
-          Dictionary([
+          @pdf.d([
             ("/Length", Integer(16)),
             ("/AuthEvent", Name(PdfName("/DocOpen"))),
             ("/CFM", Name(PdfName("/V2"))),

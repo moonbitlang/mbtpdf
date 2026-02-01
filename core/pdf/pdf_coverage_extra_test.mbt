@@ -24,9 +24,7 @@ test "serialization escapes extra cases" {
 ///|
 test "serialization includes stream data when requested" {
   let bytes = @pdfio.bytes_of_string("abc")
-  let dict : PdfObject = Dictionary([
-    ("/Length", Integer(@pdfio.bytes_size(bytes))),
-  ])
+  let dict : PdfObject = d([("/Length", Integer(@pdfio.bytes_size(bytes)))])
   let stream_ref = Ref::new((dict, Stream::Got(bytes)))
   let obj = PdfObject::Stream(stream_ref)
   let rendered = obj.to_string_including_data()
@@ -44,7 +42,7 @@ test "bigarray_of_stream rejects non-stream objects" {
 ///|
 test "lookup_chain treats malformed array key as dictionary key" {
   let pdf = Pdf::empty()
-  let start : PdfObject = Dictionary([("/[", Integer(7))])
+  let start : PdfObject = d([("/[", Integer(7))])
   let out = pdf.lookup_chain(start, ["/["])
   match (out : PdfObject?) {
     Some(Integer(7)) => ()

@@ -70,7 +70,7 @@ pub fn Pdf::lookup_direct(
   let dict_obj = self.direct(dict)
   let entry = match dict_obj {
     Dictionary(entries) =>
-      match entries.search_by(pair => pair.0 == key) {
+      match entries.search_by(pair => pair.0.equal_string_bytes(key)) {
         None => None
         Some(i) => Some(entries[i].1)
       }
@@ -78,7 +78,7 @@ pub fn Pdf::lookup_direct(
       let (inner, _) = r.val
       match inner {
         Dictionary(entries) =>
-          match entries.search_by(pair => pair.0 == key) {
+          match entries.search_by(pair => pair.0.equal_string_bytes(key)) {
             None => None
             Some(i) => Some(entries[i].1)
           }
@@ -194,15 +194,15 @@ pub fn Pdf::replace_chain(
       None =>
         match current {
           Null => {
-            let child = replace_in_obj(pdf, Dictionary([]), rest, obj)
-            Dictionary([(key, child)])
+            let child = replace_in_obj(pdf, d([]), rest, obj)
+            d([(key, child)])
           }
           Dictionary(entries) => {
             let mut found = false
             let out = Array::new(capacity=entries.length() + 1)
             for entry in entries {
               let (k, v) = entry
-              if k == key {
+              if k.equal_string_bytes(key) {
                 let child = replace_in_obj(pdf, v, rest, obj)
                 out.push((k, child))
                 found = true
@@ -211,8 +211,8 @@ pub fn Pdf::replace_chain(
               }
             }
             if !found {
-              let child = replace_in_obj(pdf, Dictionary([]), rest, obj)
-              out.push((key, child))
+              let child = replace_in_obj(pdf, d([]), rest, obj)
+              out.push((PdfName::of_string(key), child))
             }
             Dictionary(out)
           }
@@ -235,7 +235,7 @@ pub fn Pdf::replace_chain(
 pub fn Pdf::indirect_number(self : Pdf, key : String, dict : PdfObject) -> Int? {
   match self.direct(dict) {
     Dictionary(entries) =>
-      match entries.search_by(pair => pair.0 == key) {
+      match entries.search_by(pair => pair.0.equal_string_bytes(key)) {
         None => None
         Some(i) =>
           match entries[i].1 {

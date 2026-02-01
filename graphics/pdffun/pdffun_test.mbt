@@ -21,7 +21,7 @@ fn eval_calc(ops : Array[Calculator]) -> Array[Double] raise {
 ///|
 test "eval calculator function" {
   let pdf = @pdf.Pdf::empty()
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(4)),
     ("/Domain", Array([Real(0.0), Real(10.0)])),
   ])
@@ -94,7 +94,7 @@ test "serialize calculator function" {
 ///|
 test "parse sampled function stream" {
   let pdf = @pdf.Pdf::empty()
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(0)),
     ("/Domain", Array([Real(0.0), Real(1.0)])),
     ("/Range", Array([Real(0.0), Real(1.0)])),
@@ -218,21 +218,21 @@ test "serialize calculator covers opcode strings" {
 ///|
 test "eval stitching function" {
   let pdf = @pdf.Pdf::empty()
-  let f1 : @pdf.PdfObject = Dictionary([
+  let f1 : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(2)),
     ("/Domain", Array([Real(0.0), Real(1.0)])),
     ("/C0", Array([Real(0.0)])),
     ("/C1", Array([Real(1.0)])),
     ("/N", Real(1.0)),
   ])
-  let f2 : @pdf.PdfObject = Dictionary([
+  let f2 : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(2)),
     ("/Domain", Array([Real(0.0), Real(1.0)])),
     ("/C0", Array([Real(1.0)])),
     ("/C1", Array([Real(2.0)])),
     ("/N", Real(1.0)),
   ])
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(3)),
     ("/Domain", Array([Real(0.0), Real(1.0)])),
     ("/Functions", Array([f1, f2])),
@@ -325,7 +325,7 @@ test "PdfFunction::print covers kinds and array sizes" {
 ///|
 test "parse calculator keywords from stream" {
   let pdf = @pdf.Pdf::empty()
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(4)),
     ("/Domain", Array([Real(0.0), Real(1.0)])),
   ])
@@ -380,7 +380,7 @@ test "parse calculator keywords from stream" {
 ///|
 test "parse calculator rejects multi-token group" {
   let pdf = @pdf.Pdf::empty()
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(4)),
     ("/Domain", Array([Real(0.0), Real(1.0)])),
   ])
@@ -541,7 +541,7 @@ test "calculator boolean and comparison ops" {
 ///|
 test "calculator if and ifelse parse" {
   let pdf = @pdf.Pdf::empty()
-  let dict_if : @pdf.PdfObject = Dictionary([
+  let dict_if : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(4)),
     ("/Domain", Array([])),
   ])
@@ -551,7 +551,7 @@ test "calculator if and ifelse parse" {
   let out_if = PdfFunction::eval(fun_if, [])
   assert_eq(out_if.length(), 1)
   assert_close(out_if[0], 5.0)
-  let dict_ifelse : @pdf.PdfObject = Dictionary([
+  let dict_ifelse : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(4)),
     ("/Domain", Array([])),
   ])
@@ -615,7 +615,7 @@ test "eval_function clamps range and rejects bad domain" {
 test "parse function rejects bad inputs" {
   @pdfe.with_logger(_ => (), fn() {
     let pdf = @pdf.Pdf::empty()
-    let bad_type : @pdf.PdfObject = Dictionary([
+    let bad_type : @pdf.PdfObject = @pdf.d([
       ("/FunctionType", Integer(9)),
       ("/Domain", Array([])),
     ])
@@ -623,7 +623,7 @@ test "parse function rejects bad inputs" {
       pdf, bad_type,
     )
     assert_true(bad_type_result is Err(_))
-    let bad_calc_dict : @pdf.PdfObject = Dictionary([
+    let bad_calc_dict : @pdf.PdfObject = @pdf.d([
       ("/FunctionType", Integer(4)),
       ("/Domain", Array([])),
     ])
@@ -635,7 +635,7 @@ test "parse function rejects bad inputs" {
       pdf, bad_calc_stream,
     )
     assert_true(bad_calc_result is Err(_))
-    let sampled_dict : @pdf.PdfObject = Dictionary([
+    let sampled_dict : @pdf.PdfObject = @pdf.d([
       ("/FunctionType", Integer(0)),
       ("/Domain", Array([Real(0.0), Real(1.0)])),
       ("/Size", Array([Integer(2)])),
@@ -694,7 +694,7 @@ test "PdfFunction::print covers extra calculator strings" {
 ///|
 test "parse calculator keywords covers remaining ops" {
   let pdf = @pdf.Pdf::empty()
-  let dict : @pdf.PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(4)),
     ("/Domain", Array([])),
   ])
@@ -887,27 +887,27 @@ test "calculator comparisons across types" {
 ///|
 test "parse_function hits error branches" {
   let pdf = @pdf.Pdf::empty()
-  let bad_domain : @pdf.PdfObject = Dictionary([
+  let bad_domain : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(2)),
     ("/Domain", Integer(1)),
     ("/N", Real(1.0)),
   ])
   assert_is_err(try? PdfFunction::parse(pdf, bad_domain))
-  let bad_size : @pdf.PdfObject = Dictionary([
+  let bad_size : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(0)),
     ("/Domain", Array([])),
     ("/Size", Array([Real(2.0)])),
     ("/BitsPerSample", Integer(8)),
   ])
   assert_is_err(try? PdfFunction::parse(pdf, bad_size))
-  let bad_size_type : @pdf.PdfObject = Dictionary([
+  let bad_size_type : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(0)),
     ("/Domain", Array([])),
     ("/Size", Integer(1)),
     ("/BitsPerSample", Integer(8)),
   ])
   assert_is_err(try? PdfFunction::parse(pdf, bad_size_type))
-  let bad_bps : @pdf.PdfObject = Dictionary([
+  let bad_bps : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(0)),
     ("/Domain", Array([])),
     ("/Size", Array([Integer(2)])),
@@ -915,7 +915,7 @@ test "parse_function hits error branches" {
   ])
   assert_is_err(try? PdfFunction::parse(pdf, bad_bps))
   let to_get = @pdf.ToGet::new(@pdfio.Input::of_string("x"), 0, 1)
-  let sample_dict : @pdf.PdfObject = Dictionary([
+  let sample_dict : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(0)),
     ("/Domain", Array([])),
     ("/Size", Array([Integer(1)])),
@@ -926,7 +926,7 @@ test "parse_function hits error branches" {
     Ref::new((sample_dict, ToGet(to_get))),
   )
   assert_is_err(try? PdfFunction::parse(pdf, sample_stream))
-  let calc_dict : @pdf.PdfObject = Dictionary([
+  let calc_dict : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(4)),
     ("/Domain", Array([])),
   ])
@@ -934,7 +934,7 @@ test "parse_function hits error branches" {
     Ref::new((calc_dict, ToGet(to_get))),
   )
   assert_is_err(try? PdfFunction::parse(pdf, calc_stream))
-  let bad_functions : @pdf.PdfObject = Dictionary([
+  let bad_functions : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(3)),
     ("/Domain", Array([])),
     ("/Functions", Integer(1)),
@@ -942,7 +942,7 @@ test "parse_function hits error branches" {
     ("/Encode", Array([])),
   ])
   assert_is_err(try? PdfFunction::parse(pdf, bad_functions))
-  let bad_bounds : @pdf.PdfObject = Dictionary([
+  let bad_bounds : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(3)),
     ("/Domain", Array([])),
     ("/Functions", Array([])),
@@ -950,7 +950,7 @@ test "parse_function hits error branches" {
     ("/Encode", Array([])),
   ])
   assert_is_err(try? PdfFunction::parse(pdf, bad_bounds))
-  let bad_encode : @pdf.PdfObject = Dictionary([
+  let bad_encode : @pdf.PdfObject = @pdf.d([
     ("/FunctionType", Integer(3)),
     ("/Domain", Array([])),
     ("/Functions", Array([])),
