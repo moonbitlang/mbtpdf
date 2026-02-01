@@ -74,14 +74,17 @@ pub fn PdfFunction::to_pdf_object(
     Some(values) =>
       [
         (
-          @pdf.n("/Range"),
+          @pdf.PdfName::of_bytes("/Range"),
           PdfObject::Array(values.map(x => @pdf.ToPdfNumber::to_pdf_number(x))),
         ),
       ]
   }
   let base = [
-    (@pdf.n("/FunctionType"), PdfObject::Integer(funtype_of_function(self))),
-    (@pdf.n("/Domain"), domain),
+    (
+      @pdf.PdfName::of_bytes("/FunctionType"),
+      PdfObject::Integer(funtype_of_function(self)),
+    ),
+    (@pdf.PdfName::of_bytes("/Domain"), domain),
   ]
   match self.func {
     Sampled(s) => {
@@ -103,19 +106,19 @@ pub fn PdfFunction::to_pdf_object(
       }
       let sampled_entries = [
         (
-          @pdf.n("/Size"),
+          @pdf.PdfName::of_bytes("/Size"),
           PdfObject::Array(s.size.map(x => @pdf.ToPdfNumber::to_pdf_number(x))),
         ),
-        (@pdf.n("/BitsPerSample"), Integer(s.bps)),
+        (@pdf.PdfName::of_bytes("/BitsPerSample"), Integer(s.bps)),
         (
-          @pdf.n("/Encode"),
+          @pdf.PdfName::of_bytes("/Encode"),
           Array(encode_vals.map(x => @pdf.ToPdfNumber::to_pdf_number(x))),
         ),
       ]
       let sampled_entries = if decode_vals.length() > 0 {
         concat_arrays(sampled_entries, [
           (
-            @pdf.n("/Decode"),
+            @pdf.PdfName::of_bytes("/Decode"),
             Array(decode_vals.map(x => @pdf.ToPdfNumber::to_pdf_number(x))),
           ),
         ])
@@ -127,13 +130,15 @@ pub fn PdfFunction::to_pdf_object(
         sampled_entries,
       )
       let entries_with_order = if s.order != 1 {
-        concat_arrays(entries, [(@pdf.n("/Order"), Integer(s.order))])
+        concat_arrays(entries, [
+          (@pdf.PdfName::of_bytes("/Order"), Integer(s.order)),
+        ])
       } else {
         entries
       }
       let data = sampled_bytes(s.samples, s.bps)
       let entries_with_length = concat_arrays(entries_with_order, [
-        (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
+        (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(data))),
       ])
       Stream(
         Ref::new((@pdf.PdfObject::Dictionary(entries_with_length), Got(data))),
@@ -143,7 +148,7 @@ pub fn PdfFunction::to_pdf_object(
       let entries = concat_arrays(base, range_entry)
       let data = @pdfio.bytes_of_string(calculator_ops_to_string(ops))
       let entries_with_length = concat_arrays(entries, [
-        (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
+        (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(data))),
       ])
       Stream(
         Ref::new((@pdf.PdfObject::Dictionary(entries_with_length), Got(data))),

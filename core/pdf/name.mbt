@@ -35,17 +35,6 @@ pub fn PdfName::of_bytes(bytes : Bytes) -> PdfName {
 }
 
 ///|
-/// Convenience constructor for `PdfName` literals.
-///
-/// MoonBit string literals can overload to `Bytes` when the expected type is
-/// known, so this lets call sites write:
-/// - `@pdf.n("/Type")` instead of `@pdf.PdfName::of_bytes("/Type")`
-/// - `@pdf.PdfObject::Dictionary([(@pdf.n("/Type"), ...)])`
-pub fn n(bytes : Bytes) -> PdfName {
-  PdfName::of_bytes(bytes)
-}
-
-///|
 /// Build a `PdfName` from a "bytes-in-String" representation.
 ///
 /// This is mainly for internal construction sites and tests. Each UTF-16 code

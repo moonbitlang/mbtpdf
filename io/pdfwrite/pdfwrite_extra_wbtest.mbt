@@ -78,10 +78,10 @@ test "string_of_pdf encodes greater-than in names" {
 ///|
 test "string_of_pdf encodes delimiter bytes in names" {
   let cases = [
-    (@pdf.n("/["), "/#5B"),
-    (@pdf.n("/]"), "/#5D"),
-    (@pdf.n("/{"), "/#7B"),
-    (@pdf.n("/}"), "/#7D"),
+    (@pdf.PdfName::of_bytes("/["), "/#5B"),
+    (@pdf.PdfName::of_bytes("/]"), "/#5D"),
+    (@pdf.PdfName::of_bytes("/{"), "/#7B"),
+    (@pdf.PdfName::of_bytes("/}"), "/#7D"),
   ]
   for pair in cases {
     let rendered = write_ctx.string_of_pdf(Name(pair.0))
@@ -112,7 +112,7 @@ test "pdf_to_output generates object streams with indirect lengths" {
   let length_obj = pdf.addobj(Integer(3))
   let data = @pdfio.bytes_of_string("abc")
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Indirect(length_obj)),
+    (@pdf.PdfName::of_bytes("/Length"), Indirect(length_obj)),
   ])
   let stream_num = pdf.addobj(Stream(Ref::new((dict, Got(data)))))
   let marked_obj = pdf.addobj(Integer(123))
@@ -182,7 +182,7 @@ test "pdf_to_output skips indirect length objects for objstm hints" {
   let length_obj = pdf.addobj(Integer(4))
   let data = @pdfio.bytes_of_string("data")
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Indirect(length_obj)),
+    (@pdf.PdfName::of_bytes("/Length"), Indirect(length_obj)),
   ])
   let stream_num = pdf.addobj(Stream(Ref::new((dict, Got(data)))))
   pdf.objects.object_stream_ids.set(stream_num, stream_num)
@@ -220,7 +220,7 @@ test "pdf_to_output drops invalid object stream ids and writes toget" {
   }
   let toget = @pdf.ToGet::new(input, 0, 4, crypt=ToDecrypt(deferred))
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(4)),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(4)),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, ToGet(toget))))
   let stream_num = pdf.addobj(stream)

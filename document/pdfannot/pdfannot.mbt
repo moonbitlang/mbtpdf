@@ -318,25 +318,25 @@ fn Subtype::to_string(self : Subtype) -> String {
 fn Annotation::to_pdf_object(self : Annotation) -> PdfObject raise {
   let dict_entries : Array[(@pdf.PdfName, PdfObject)] = [
     (
-      @pdf.n("/Subtype"),
+      @pdf.PdfName::of_bytes("/Subtype"),
       Name(@pdf.PdfName::of_string(self.subtype.to_string())),
     ),
     (
-      @pdf.n("/Contents"),
+      @pdf.PdfName::of_bytes("/Contents"),
       match self.annot_contents {
         None => Null
         Some(s) => String(s)
       },
     ),
     (
-      @pdf.n("/Rect"),
+      @pdf.PdfName::of_bytes("/Rect"),
       {
         let (a, b, c, d) = self.rectangle
         Array([Real(a), Real(b), Real(c), Real(d)])
       },
     ),
     (
-      @pdf.n("/Border"),
+      @pdf.PdfName::of_bytes("/Border"),
       match self.border.dasharray {
         [] =>
           Array([
@@ -362,12 +362,17 @@ fn Annotation::to_pdf_object(self : Annotation) -> PdfObject raise {
   let dict_entries = match self.colour {
     None => dict_entries
     Some((r, g, b)) =>
-      [(@pdf.n("/C"), Array([Integer(r), Integer(g), Integer(b)]))] +
+      [
+        (
+          @pdf.PdfName::of_bytes("/C"),
+          Array([Integer(r), Integer(g), Integer(b)]),
+        ),
+      ] +
       dict_entries
   }
   let dict_entries = match self.subject {
     None => dict_entries
-    Some(s) => [(@pdf.n("/Subj"), String(s))] + dict_entries
+    Some(s) => [(@pdf.PdfName::of_bytes("/Subj"), String(s))] + dict_entries
   }
   Dictionary(dict_entries)
 }

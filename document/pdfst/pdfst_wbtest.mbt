@@ -10,18 +10,18 @@ fn build_page_pdf(count : Int) -> @pdf.Pdf raise {
   // Create placeholder /Pages root so pages can reference it as /Parent.
   let pages_root_num = pdf.addobj(
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/Type"), Name(PdfName("/Pages"))),
-      (@pdf.n("/Kids"), Array([])),
-      (@pdf.n("/Count"), Integer(count)),
+      (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Pages"))),
+      (@pdf.PdfName::of_bytes("/Kids"), Array([])),
+      (@pdf.PdfName::of_bytes("/Count"), Integer(count)),
     ]),
   )
   let kids : Array[@pdf.PdfObject] = []
   let mut i = 0
   while i < count {
     let page_obj : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-      (@pdf.n("/Type"), Name(PdfName("/Page"))),
-      (@pdf.n("/Parent"), Indirect(pages_root_num)),
-      (@pdf.n("/MediaBox"), sample_rect()),
+      (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Page"))),
+      (@pdf.PdfName::of_bytes("/Parent"), Indirect(pages_root_num)),
+      (@pdf.PdfName::of_bytes("/MediaBox"), sample_rect()),
     ])
     let page_num = pdf.addobj(page_obj)
     kids.push(Indirect(page_num))
@@ -33,16 +33,16 @@ fn build_page_pdf(count : Int) -> @pdf.Pdf raise {
     (
       pages_root_num,
       @pdf.PdfObject::Dictionary([
-        (@pdf.n("/Type"), Name(PdfName("/Pages"))),
-        (@pdf.n("/Kids"), Array(kids)),
-        (@pdf.n("/Count"), Integer(count)),
+        (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Pages"))),
+        (@pdf.PdfName::of_bytes("/Kids"), Array(kids)),
+        (@pdf.PdfName::of_bytes("/Count"), Integer(count)),
       ]),
     ),
   )
   let catalog_num = pdf.addobj(
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/Type"), Name(PdfName("/Catalog"))),
-      (@pdf.n("/Pages"), Indirect(pages_root_num)),
+      (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Catalog"))),
+      (@pdf.PdfName::of_bytes("/Pages"), Indirect(pages_root_num)),
     ]),
   )
   let trailerdict = pdf.trailerdict.add_entry("/Root", Indirect(catalog_num))
@@ -80,15 +80,18 @@ fn install_struct_root(pdf : @pdf.Pdf, root : @pdf.PdfObject) -> Int raise {
 fn add_struct_tree(pdf : @pdf.Pdf) -> (Int, Int) raise {
   let page_refs = pdf.page_reference_numbers()
   let struct1 : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Pg"), Indirect(page_refs[0])),
+    (@pdf.PdfName::of_bytes("/Pg"), Indirect(page_refs[0])),
   ])
   let struct2 : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Pg"), Indirect(page_refs[1])),
+    (@pdf.PdfName::of_bytes("/Pg"), Indirect(page_refs[1])),
   ])
   let struct1_num = pdf.addobj(struct1)
   let struct2_num = pdf.addobj(struct2)
   let root : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/K"), Array([Indirect(struct1_num), Indirect(struct2_num)])),
+    (
+      @pdf.PdfName::of_bytes("/K"),
+      Array([Indirect(struct1_num), Indirect(struct2_num)]),
+    ),
   ])
   let root_num = pdf.addobj(root)
   let catalog_num = match
@@ -121,20 +124,20 @@ test "trim_structure_tree updates nested k arrays" {
   let pdf = build_page_pdf(3)
   let page_refs = pdf.page_reference_numbers()
   let keep_obj : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Pg"), Indirect(page_refs[0])),
+    (@pdf.PdfName::of_bytes("/Pg"), Indirect(page_refs[0])),
   ])
   let keep = pdf.addobj(keep_obj)
   let remove_pg_obj : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Pg"), Indirect(page_refs[1])),
+    (@pdf.PdfName::of_bytes("/Pg"), Indirect(page_refs[1])),
   ])
   let remove_pg = pdf.addobj(remove_pg_obj)
   let remove_obj_obj : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Obj"), Indirect(page_refs[2])),
+    (@pdf.PdfName::of_bytes("/Obj"), Indirect(page_refs[2])),
   ])
   let remove_obj = pdf.addobj(remove_obj_obj)
   let parent_keep_obj : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/K"),
+      @pdf.PdfName::of_bytes("/K"),
       Array([
         Indirect(keep),
         Indirect(remove_pg),
@@ -146,16 +149,16 @@ test "trim_structure_tree updates nested k arrays" {
   ])
   let parent_keep = pdf.addobj(parent_keep_obj)
   let parent_remove_obj : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/K"), Array([Indirect(remove_pg)])),
+    (@pdf.PdfName::of_bytes("/K"), Array([Indirect(remove_pg)])),
   ])
   let parent_remove = pdf.addobj(parent_remove_obj)
   let parent_int_obj : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/K"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/K"), Integer(1)),
   ])
   let parent_int = pdf.addobj(parent_int_obj)
   let root_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/K"),
+      @pdf.PdfName::of_bytes("/K"),
       Array([
         Indirect(parent_keep),
         Indirect(parent_remove),
@@ -165,7 +168,7 @@ test "trim_structure_tree updates nested k arrays" {
   ])
   let root_num = install_struct_root(pdf, root_dict)
   let stream_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(0)),
   ])
   let stream_obj : @pdf.PdfObject = Stream(
     Ref::new((stream_dict, Got(([] : Array[Byte])))),
@@ -206,21 +209,21 @@ test "renumber_parent_trees remaps struct parents" {
   let pdf1 = build_page_pdf(1)
   let pdf2 = build_page_pdf(1)
   let obj1_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/StructParent"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/StructParent"), Integer(0)),
   ])
   let obj1 = pdf1.addobj(obj1_dict)
   let obj2_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/StructParent"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/StructParent"), Integer(0)),
   ])
   let obj2 = pdf2.addobj(obj2_dict)
   let obj3_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/StructParents"), Array([Integer(0)])),
+    (@pdf.PdfName::of_bytes("/StructParents"), Array([Integer(0)])),
   ])
   let obj3 = pdf2.addobj(obj3_dict)
   ignore(obj3)
   let stream_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(0)),
-    (@pdf.n("/StructParent"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/StructParent"), Integer(0)),
   ])
   let stream : @pdf.PdfObject = Stream(
     Ref::new((stream_dict, Got(([] : Array[Byte])))),
@@ -231,11 +234,11 @@ test "renumber_parent_trees remaps struct parents" {
   let tree1_num = pdf1.addobj(tree1)
   let tree2_num = pdf2.addobj(tree2)
   let root1 : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/ParentTree"), Indirect(tree1_num)),
+    (@pdf.PdfName::of_bytes("/ParentTree"), Indirect(tree1_num)),
   ])
   ignore(install_struct_root(pdf1, root1))
   let root2 : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/ParentTree"), Indirect(tree2_num)),
+    (@pdf.PdfName::of_bytes("/ParentTree"), Indirect(tree2_num)),
   ])
   ignore(install_struct_root(pdf2, root2))
   PdfStructTrees::new([pdf1, pdf2]).renumber_parent_trees()
@@ -302,7 +305,7 @@ test "merge_structure_trees merges roots" {
   let page_refs1 = pdf1.page_reference_numbers()
   let page_refs2 = pdf2.page_reference_numbers()
   let kid1_obj : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Pg"), Indirect(page_refs1[0])),
+    (@pdf.PdfName::of_bytes("/Pg"), Indirect(page_refs1[0])),
   ])
   let kid1 = pdf1.addobj(kid1_obj)
   let idtree1 = @pdftree.PdfTree::new(pdf1).build_name_tree(false, [("A", Null)])
@@ -310,38 +313,46 @@ test "merge_structure_trees merges roots" {
     ("0", Null),
   ])
   let root1 : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/K"), Indirect(kid1)),
-    (@pdf.n("/IDTree"), idtree1),
-    (@pdf.n("/ParentTree"), parenttree1),
+    (@pdf.PdfName::of_bytes("/K"), Indirect(kid1)),
+    (@pdf.PdfName::of_bytes("/IDTree"), idtree1),
+    (@pdf.PdfName::of_bytes("/ParentTree"), parenttree1),
     (
-      @pdf.n("/RoleMap"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/Sect"), Name(PdfName("/Div")))]),
+      @pdf.PdfName::of_bytes("/RoleMap"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/Sect"), Name(PdfName("/Div"))),
+      ]),
     ),
     (
-      @pdf.n("/Namespaces"),
-      Array([@pdf.PdfObject::Dictionary([(@pdf.n("/NS"), String("ns1"))])]),
+      @pdf.PdfName::of_bytes("/Namespaces"),
+      Array([
+        @pdf.PdfObject::Dictionary([
+          (@pdf.PdfName::of_bytes("/NS"), String("ns1")),
+        ]),
+      ]),
     ),
-    (@pdf.n("/PronunciationLexicon"), Array([])),
+    (@pdf.PdfName::of_bytes("/PronunciationLexicon"), Array([])),
   ])
   ignore(install_struct_root(pdf1, root1))
   let kid2 : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Pg"), Indirect(page_refs2[0])),
+    (@pdf.PdfName::of_bytes("/Pg"), Indirect(page_refs2[0])),
   ])
   let idtree2 = @pdftree.PdfTree::new(pdf2).build_name_tree(false, [("B", Null)])
   let parenttree2 = @pdftree.PdfTree::new(pdf2).build_name_tree(true, [
     ("0", Null),
   ])
   let root2 : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/K"), Array([kid2, Integer(3)])),
-    (@pdf.n("/IDTree"), idtree2),
-    (@pdf.n("/ParentTree"), parenttree2),
-    (@pdf.n("/RoleMap"), Name(PdfName("/NotADict"))),
+    (@pdf.PdfName::of_bytes("/K"), Array([kid2, Integer(3)])),
+    (@pdf.PdfName::of_bytes("/IDTree"), idtree2),
+    (@pdf.PdfName::of_bytes("/ParentTree"), parenttree2),
+    (@pdf.PdfName::of_bytes("/RoleMap"), Name(PdfName("/NotADict"))),
     (
-      @pdf.n("/ClassMap"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/Class"), Name(PdfName("/Span")))]),
+      @pdf.PdfName::of_bytes("/ClassMap"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/Class"), Name(PdfName("/Span"))),
+      ]),
     ),
-    (@pdf.n("/Namespaces"), @pdf.PdfObject::Dictionary([])),
-    (@pdf.n("/AF"), Array([Name(PdfName("/File"))])),
+    (@pdf.PdfName::of_bytes("/Namespaces"), @pdf.PdfObject::Dictionary([])),
+    (@pdf.PdfName::of_bytes("/AF"), Array([Name(PdfName("/File"))])),
   ])
   ignore(install_struct_root(pdf2, root2))
   let merged = @pdfe.with_logger(_ => (), fn() {

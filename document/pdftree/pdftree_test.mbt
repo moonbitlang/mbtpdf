@@ -97,7 +97,7 @@ test "read_name_tree skips malformed keys" {
   let pdf = @pdf.Pdf::empty()
   let tree : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/Names"),
+      @pdf.PdfName::of_bytes("/Names"),
       Array([
         Integer(1),
         Name(PdfName("/One")),
@@ -117,7 +117,7 @@ test "read_number_tree handles duplicate keys" {
   let pdf = @pdf.Pdf::empty()
   let tree : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/Nums"),
+      @pdf.PdfName::of_bytes("/Nums"),
       Array([
         Integer(1),
         Name(PdfName("/One")),
@@ -162,7 +162,7 @@ test "read_number_tree returns empty on non-integer keys" {
   let pdf = @pdf.Pdf::empty()
   let tree : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/Nums"),
+      @pdf.PdfName::of_bytes("/Nums"),
       Array([
         String("x"),
         Name(PdfName("/X")),

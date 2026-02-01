@@ -7,13 +7,13 @@ test "check_object_contains_renumbering detects indirects" {
   let arr = Array([Integer(1), Indirect(2)])
   assert_true(check_object_contains_renumbering(changes, arr))
   let dict = PdfObject::Dictionary([
-    (n("/A"), Integer(1)),
-    (n("/B"), Indirect(2)),
+    (PdfName::of_bytes("/A"), Integer(1)),
+    (PdfName::of_bytes("/B"), Indirect(2)),
   ])
   assert_true(check_object_contains_renumbering(changes, dict))
   let stream_dict = PdfObject::Dictionary([
-    (n("/Length"), Integer(0)),
-    (n("/B"), Indirect(2)),
+    (PdfName::of_bytes("/Length"), Integer(0)),
+    (PdfName::of_bytes("/B"), Indirect(2)),
   ])
   let stream = Stream(Ref::new((stream_dict, Got([]))))
   assert_true(check_object_contains_renumbering(changes, stream))

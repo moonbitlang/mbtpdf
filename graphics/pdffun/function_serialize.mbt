@@ -72,9 +72,15 @@ fn entries_of_interpolation(
   i : Interpolation,
 ) -> Array[(@pdf.PdfName, PdfObject)] {
   [
-    (@pdf.n("/C0"), Array(i.c0.map(x => @pdf.ToPdfNumber::to_pdf_number(x)))),
-    (@pdf.n("/C1"), Array(i.c1.map(x => @pdf.ToPdfNumber::to_pdf_number(x)))),
-    (@pdf.n("/N"), @pdf.ToPdfNumber::to_pdf_number(i.n)),
+    (
+      @pdf.PdfName::of_bytes("/C0"),
+      Array(i.c0.map(x => @pdf.ToPdfNumber::to_pdf_number(x))),
+    ),
+    (
+      @pdf.PdfName::of_bytes("/C1"),
+      Array(i.c1.map(x => @pdf.ToPdfNumber::to_pdf_number(x))),
+    ),
+    (@pdf.PdfName::of_bytes("/N"), @pdf.ToPdfNumber::to_pdf_number(i.n)),
   ]
 }
 
@@ -87,13 +93,13 @@ fn entries_of_stitching(
     pdf.addobj(fun.to_pdf_object(pdf)),
   ))
   [
-    (@pdf.n("/Functions"), Array(numbers)),
+    (@pdf.PdfName::of_bytes("/Functions"), Array(numbers)),
     (
-      @pdf.n("/Bounds"),
+      @pdf.PdfName::of_bytes("/Bounds"),
       Array(s.bounds.map(x => @pdf.ToPdfNumber::to_pdf_number(x))),
     ),
     (
-      @pdf.n("/Encode"),
+      @pdf.PdfName::of_bytes("/Encode"),
       Array(s.stitch_encode.map(x => @pdf.ToPdfNumber::to_pdf_number(x))),
     ),
   ]

@@ -3,7 +3,7 @@ test "colspace uses image mask" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let image : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/ImageMask"), Boolean(true)),
+    (@pdf.PdfName::of_bytes("/ImageMask"), Boolean(true)),
   ])
   let space = @pdfimage.Image::colspace(pdf, image, resources)
   match (space : @pdfspace.ColourSpace) {
@@ -17,12 +17,14 @@ test "colspace resolves named resource" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/ColorSpace"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/CS1"), Name(PdfName("/DeviceRGB")))]),
+      @pdf.PdfName::of_bytes("/ColorSpace"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/CS1"), Name(PdfName("/DeviceRGB"))),
+      ]),
     ),
   ])
   let image : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/CS"), Name(PdfName("/CS1"))),
+    (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/CS1"))),
   ])
   let space = @pdfimage.Image::colspace(pdf, image, resources)
   match (space : @pdfspace.ColourSpace) {
@@ -35,10 +37,10 @@ test "colspace resolves named resource" {
 test "colspace falls back to unresolved name when resource entry missing" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/ColorSpace"), @pdf.PdfObject::Dictionary([])),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), @pdf.PdfObject::Dictionary([])),
   ])
   let image : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/CS"), Name(PdfName("/Missing"))),
+    (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/Missing"))),
   ])
   let res : Result[@pdfspace.ColourSpace, Error] = try? @pdfimage.Image::colspace(
     pdf, image, resources,
@@ -51,12 +53,14 @@ test "colspace uses direct ColorSpace object when provided" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/ColorSpace"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/CS1"), Name(PdfName("/DeviceRGB")))]),
+      @pdf.PdfName::of_bytes("/ColorSpace"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/CS1"), Name(PdfName("/DeviceRGB"))),
+      ]),
     ),
   ])
   let image : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/ColorSpace"), @pdf.PdfObject::Dictionary([])),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), @pdf.PdfObject::Dictionary([])),
   ])
   let res : Result[@pdfspace.ColourSpace, Error] = try? @pdfimage.Image::colspace(
     pdf, image, resources,
@@ -68,7 +72,7 @@ test "colspace uses direct ColorSpace object when provided" {
 test "colspace errors when resources has colorspaces but image omits entry" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/ColorSpace"), @pdf.PdfObject::Dictionary([])),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), @pdf.PdfObject::Dictionary([])),
   ])
   let image : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let res : Result[@pdfspace.ColourSpace, Error] = try? @pdfimage.Image::colspace(
@@ -92,7 +96,7 @@ test "colspace errors when colorspace missing in both image and resources" {
 test "bpc returns component bits" {
   let pdf = @pdf.Pdf::empty()
   let image : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
   ])
   match (@pdfimage.Image::bpc(pdf, image) : @pdf.PdfObject?) {
     Some(Integer(8)) => ()
@@ -104,7 +108,7 @@ test "bpc returns component bits" {
 test "bpc defaults to image mask" {
   let pdf = @pdf.Pdf::empty()
   let image : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/ImageMask"), Boolean(true)),
+    (@pdf.PdfName::of_bytes("/ImageMask"), Boolean(true)),
   ])
   match (@pdfimage.Image::bpc(pdf, image) : @pdf.PdfObject?) {
     Some(Integer(1)) => ()
@@ -128,10 +132,10 @@ test "get_image_24bpp raw rgb" {
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let data = @pdfio.bytes_of_list([255, 0, 0, 0, 255, 0])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(2)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(2)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
   match
@@ -169,10 +173,10 @@ test "get_image_24bpp errors on missing height" {
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let data = @pdfio.bytes_of_list([0])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(1)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceGray"))),
-    (@pdf.n("/ImageMask"), Boolean(true)),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceGray"))),
+    (@pdf.PdfName::of_bytes("/ImageMask"), Boolean(true)),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
   let res : Result[@pdfimage.Image, Error] = try? @pdfimage.Image::get_image_24bpp(
@@ -187,11 +191,11 @@ test "get_image_24bpp errors on non-array decode entry" {
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let data = @pdfio.bytes_of_list([0])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(1)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceGray"))),
-    (@pdf.n("/Decode"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceGray"))),
+    (@pdf.PdfName::of_bytes("/Decode"), Integer(1)),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
   let res : Result[@pdfimage.Image, Error] = try? @pdfimage.Image::get_image_24bpp(
@@ -207,14 +211,14 @@ test "get_image_24bpp reads JBIG2 globals for filter array" {
   let globals_num = pdf.addobj(String("globals"))
   let data = @pdfio.bytes_of_list([1, 2, 3, 4])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(1)),
-    (@pdf.n("/Filter"), Array([Name(PdfName("/JBIG2Decode"))])),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Filter"), Array([Name(PdfName("/JBIG2Decode"))])),
     (
-      @pdf.n("/DecodeParms"),
+      @pdf.PdfName::of_bytes("/DecodeParms"),
       @pdf.PdfObject::Dictionary([
-        (@pdf.n("/JBIG2Globals"), Indirect(globals_num)),
+        (@pdf.PdfName::of_bytes("/JBIG2Globals"), Indirect(globals_num)),
       ]),
     ),
   ])
@@ -236,13 +240,15 @@ test "get_image_24bpp JBIG2 filter array ignores non-indirect globals entry" {
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let data = @pdfio.bytes_of_list([1, 2, 3, 4])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(1)),
-    (@pdf.n("/Filter"), Array([Name(PdfName("/JBIG2Decode"))])),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Filter"), Array([Name(PdfName("/JBIG2Decode"))])),
     (
-      @pdf.n("/DecodeParms"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/JBIG2Globals"), Integer(1))]),
+      @pdf.PdfName::of_bytes("/DecodeParms"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/JBIG2Globals"), Integer(1)),
+      ]),
     ),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -259,11 +265,11 @@ test "get_image_24bpp applies decode for 1bpp" {
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let data = @pdfio.bytes_of_list([128])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(1)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceGray"))),
-    (@pdf.n("/Decode"), Array([Real(1.0), Real(0.0)])),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceGray"))),
+    (@pdf.PdfName::of_bytes("/Decode"), Array([Real(1.0), Real(0.0)])),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
   match
@@ -282,12 +288,12 @@ test "get_image_24bpp applies decode for 8bpp" {
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let data = @pdfio.bytes_of_list([0, 255, 0])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
     (
-      @pdf.n("/Decode"),
+      @pdf.PdfName::of_bytes("/Decode"),
       Array([Real(1.0), Real(0.0), Real(1.0), Real(0.0), Real(1.0), Real(0.0)]),
     ),
   ])
@@ -309,11 +315,11 @@ test "get_image_24bpp returns jpeg for DCT filter" {
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let data = @pdfio.bytes_of_list([1, 2, 3, 4])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
-    (@pdf.n("/Filter"), Name(PdfName("/DCTDecode"))),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/DCTDecode"))),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
   match
@@ -335,11 +341,11 @@ test "get_image_24bpp returns jpeg2000 for JPX filter" {
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let data = @pdfio.bytes_of_list([1, 2, 3])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
-    (@pdf.n("/Filter"), Name(PdfName("/JPXDecode"))),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/JPXDecode"))),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
   match
@@ -355,11 +361,11 @@ test "get_image_24bpp returns jpeg2000 for JPX filter array" {
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let data = @pdfio.bytes_of_list([1, 2, 3])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
-    (@pdf.n("/Filter"), Array([Name(PdfName("/JPXDecode"))])),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Array([Name(PdfName("/JPXDecode"))])),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
   match
@@ -377,14 +383,16 @@ test "get_image_24bpp returns JBIG2 with globals" {
   let globals = pdf.addobj(globals_obj)
   let data = @pdfio.bytes_of_list([9, 8, 7])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(1)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceGray"))),
-    (@pdf.n("/Filter"), Name(PdfName("/JBIG2Decode"))),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceGray"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/JBIG2Decode"))),
     (
-      @pdf.n("/DecodeParms"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/JBIG2Globals"), Indirect(globals))]),
+      @pdf.PdfName::of_bytes("/DecodeParms"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/JBIG2Globals"), Indirect(globals)),
+      ]),
     ),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -407,14 +415,16 @@ test "get_image_24bpp JBIG2 ignores non-indirect globals entry" {
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let data = @pdfio.bytes_of_list([9, 8, 7])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(1)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceGray"))),
-    (@pdf.n("/Filter"), Name(PdfName("/JBIG2Decode"))),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceGray"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/JBIG2Decode"))),
     (
-      @pdf.n("/DecodeParms"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/JBIG2Globals"), Integer(1))]),
+      @pdf.PdfName::of_bytes("/DecodeParms"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/JBIG2Globals"), Integer(1)),
+      ]),
     ),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -431,12 +441,12 @@ test "get_image_24bpp JBIG2 ignores malformed decodeparms" {
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let data = @pdfio.bytes_of_list([9, 8, 7])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(1)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceGray"))),
-    (@pdf.n("/Filter"), Name(PdfName("/JBIG2Decode"))),
-    (@pdf.n("/DecodeParms"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceGray"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/JBIG2Decode"))),
+    (@pdf.PdfName::of_bytes("/DecodeParms"), Integer(1)),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
   match
@@ -451,9 +461,9 @@ test "get_image_24bpp reads image mask when BitsPerComponent missing" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/ImageMask"), Boolean(true)),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/ImageMask"), Boolean(true)),
   ])
   let data = @pdfio.bytes_of_list([0])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -476,11 +486,11 @@ test "get_image_24bpp ignores decode for indexed colourspace" {
     String(table),
   ])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), colorspace),
-    (@pdf.n("/Decode"), Array([Real(1.0), Real(0.0)])),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), colorspace),
+    (@pdf.PdfName::of_bytes("/Decode"), Array([Real(1.0), Real(0.0)])),
   ])
   let data = @pdfio.bytes_of_list([0])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -528,20 +538,26 @@ test "get_image_24bpp default decode for Lab" {
   let lab : @pdf.PdfObject = Array([
     Name(PdfName("/Lab")),
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/WhitePoint"), Array([1.0, 1.0, 1.0].map(fn(v) { Real(v) }))),
-      (@pdf.n("/BlackPoint"), Array([0.0, 0.0, 0.0].map(fn(v) { Real(v) }))),
       (
-        @pdf.n("/Range"),
+        @pdf.PdfName::of_bytes("/WhitePoint"),
+        Array([1.0, 1.0, 1.0].map(fn(v) { Real(v) })),
+      ),
+      (
+        @pdf.PdfName::of_bytes("/BlackPoint"),
+        Array([0.0, 0.0, 0.0].map(fn(v) { Real(v) })),
+      ),
+      (
+        @pdf.PdfName::of_bytes("/Range"),
         Array([Real(-128.0), Real(127.0), Real(-128.0), Real(127.0)]),
       ),
     ]),
   ])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), lab),
-    (@pdf.n("/Filter"), Name(PdfName("/DCTDecode"))),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), lab),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/DCTDecode"))),
   ])
   let data = @pdfio.bytes_of_list([1, 2, 3])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -809,9 +825,9 @@ test "get_image_24bpp default decode for ICCBased" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let icc_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/N"), Integer(3)),
+    (@pdf.PdfName::of_bytes("/N"), Integer(3)),
     (
-      @pdf.n("/Range"),
+      @pdf.PdfName::of_bytes("/Range"),
       Array([Real(0.0), Real(1.0), Real(0.0), Real(1.0), Real(0.0), Real(1.0)]),
     ),
   ])
@@ -823,11 +839,11 @@ test "get_image_24bpp default decode for ICCBased" {
     icc_stream,
   ])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), colorspace),
-    (@pdf.n("/Filter"), Name(PdfName("/DCTDecode"))),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), colorspace),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/DCTDecode"))),
   ])
   let data = @pdfio.bytes_of_list([1, 2, 3])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -850,11 +866,11 @@ test "get_image_24bpp default decode for DeviceN" {
     tint,
   ])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), colorspace),
-    (@pdf.n("/Filter"), Name(PdfName("/DCTDecode"))),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), colorspace),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/DCTDecode"))),
   ])
   let data = @pdfio.bytes_of_list([1, 2, 3])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -877,12 +893,12 @@ test "get_image_24bpp decode ignored for indexed DCT" {
     String(table),
   ])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), colorspace),
-    (@pdf.n("/Filter"), Name(PdfName("/DCTDecode"))),
-    (@pdf.n("/Decode"), Array([Real(0.0), Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), colorspace),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/DCTDecode"))),
+    (@pdf.PdfName::of_bytes("/Decode"), Array([Real(0.0), Real(1.0)])),
   ])
   let data = @pdfio.bytes_of_list([1, 2, 3])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -898,11 +914,11 @@ test "get_image_24bpp default decode none for Pattern" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/Pattern"))),
-    (@pdf.n("/Filter"), Name(PdfName("/DCTDecode"))),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/Pattern"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/DCTDecode"))),
   ])
   let data = @pdfio.bytes_of_list([1, 2, 3])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -919,10 +935,10 @@ test "get_image_24bpp converts gray to rgb" {
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let data = @pdfio.bytes_of_list([128])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceGray"))),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceGray"))),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
   match
@@ -943,10 +959,10 @@ test "get_image_24bpp converts cmyk to rgb" {
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let data = @pdfio.bytes_of_list([0, 0, 0, 0])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceCMYK"))),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceCMYK"))),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
   match
@@ -967,11 +983,11 @@ test "get_image_24bpp handles indexed RGB" {
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let table = @pdfio.string_of_bytes(@pdfio.bytes_of_list([0, 0, 0, 255, 0, 0]))
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
     (
-      @pdf.n("/ColorSpace"),
+      @pdf.PdfName::of_bytes("/ColorSpace"),
       Array([
         Name(PdfName("/Indexed")),
         Name(PdfName("/DeviceRGB")),
@@ -1002,11 +1018,11 @@ test "get_image_24bpp handles indexed CMYK" {
     @pdfio.bytes_of_list([0, 0, 0, 255, 0, 0, 0, 0]),
   )
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
     (
-      @pdf.n("/ColorSpace"),
+      @pdf.PdfName::of_bytes("/ColorSpace"),
       Array([
         Name(PdfName("/Indexed")),
         Name(PdfName("/DeviceCMYK")),
@@ -1036,17 +1052,23 @@ test "get_image_24bpp handles indexed Lab" {
   let lab : @pdf.PdfObject = Array([
     Name(PdfName("/Lab")),
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/WhitePoint"), Array([1.0, 1.0, 1.0].map(fn(v) { Real(v) }))),
-      (@pdf.n("/BlackPoint"), Array([0.0, 0.0, 0.0].map(fn(v) { Real(v) }))),
+      (
+        @pdf.PdfName::of_bytes("/WhitePoint"),
+        Array([1.0, 1.0, 1.0].map(fn(v) { Real(v) })),
+      ),
+      (
+        @pdf.PdfName::of_bytes("/BlackPoint"),
+        Array([0.0, 0.0, 0.0].map(fn(v) { Real(v) })),
+      ),
     ]),
   ])
   let table = @pdfio.string_of_bytes(@pdfio.bytes_of_list([127, 127, 127]))
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
     (
-      @pdf.n("/ColorSpace"),
+      @pdf.PdfName::of_bytes("/ColorSpace"),
       Array([Name(PdfName("/Indexed")), lab, Integer(0), String(table)]),
     ),
   ])
@@ -1068,19 +1090,22 @@ test "get_image_24bpp clamps indexed Lab conversions" {
     @pdf.PdfObject::Dictionary([
       // Large values trigger clamp branches during conversion.
       (
-        @pdf.n("/WhitePoint"),
+        @pdf.PdfName::of_bytes("/WhitePoint"),
         Array([Real(5000.0), Real(-5000.0), Real(5000.0)]),
       ),
-      (@pdf.n("/BlackPoint"), Array([Real(0.0), Real(0.0), Real(0.0)])),
+      (
+        @pdf.PdfName::of_bytes("/BlackPoint"),
+        Array([Real(0.0), Real(0.0), Real(0.0)]),
+      ),
     ]),
   ])
   let table = @pdfio.string_of_bytes(@pdfio.bytes_of_list([0, 0, 0]))
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
     (
-      @pdf.n("/ColorSpace"),
+      @pdf.PdfName::of_bytes("/ColorSpace"),
       Array([Name(PdfName("/Indexed")), lab, Integer(0), String(table)]),
     ),
   ])
@@ -1161,11 +1186,11 @@ test "get_image_24bpp JBIG2 ignores non-dictionary DecodeParms" {
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let data = @pdfio.bytes_of_list([1, 2, 3, 4])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(1)),
-    (@pdf.n("/Filter"), Name(PdfName("/JBIG2Decode"))),
-    (@pdf.n("/DecodeParms"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/JBIG2Decode"))),
+    (@pdf.PdfName::of_bytes("/DecodeParms"), Integer(0)),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
   match
@@ -1180,10 +1205,10 @@ test "get_image_24bpp errors when Decode present but BitsPerComponent missing fo
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(8)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/ImageMask"), Boolean(true)),
-    (@pdf.n("/Decode"), Array([Real(1.0), Real(0.0)])),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/ImageMask"), Boolean(true)),
+    (@pdf.PdfName::of_bytes("/Decode"), Array([Real(1.0), Real(0.0)])),
   ])
   let data = @pdfio.bytes_of_list([0xff])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -1199,11 +1224,11 @@ test "get_image_24bpp indexed rgb missing table entry" {
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let table = @pdfio.string_of_bytes(@pdfio.bytes_of_list([0, 0, 0]))
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
     (
-      @pdf.n("/ColorSpace"),
+      @pdf.PdfName::of_bytes("/ColorSpace"),
       Array([
         Name(PdfName("/Indexed")),
         Name(PdfName("/DeviceRGB")),
@@ -1225,10 +1250,10 @@ test "get_image_24bpp handles 4bpp gray" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(2)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(4)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceGray"))),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(2)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(4)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceGray"))),
   ])
   let data = @pdfio.bytes_of_list([0xf0])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -1248,11 +1273,14 @@ test "get_image_24bpp rejects bad decode" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
-    (@pdf.n("/Decode"), Array([Real(0.0), Real(1.0), Real(0.0)])),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
+    (
+      @pdf.PdfName::of_bytes("/Decode"),
+      Array([Real(0.0), Real(1.0), Real(0.0)]),
+    ),
   ])
   let data = @pdfio.bytes_of_list([0, 0, 0])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -1267,7 +1295,7 @@ test "get_image_24bpp handles ICCBased raw" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let icc_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/N"), Integer(3)),
+    (@pdf.PdfName::of_bytes("/N"), Integer(3)),
   ])
   let icc_stream : @pdf.PdfObject = Stream(
     Ref::new((icc_dict, Got(@pdfio.bytes_of_list([0])))),
@@ -1277,10 +1305,10 @@ test "get_image_24bpp handles ICCBased raw" {
     icc_stream,
   ])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), colorspace),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), colorspace),
   ])
   let data = @pdfio.bytes_of_list([0, 0, 0])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -1311,10 +1339,10 @@ test "get_image_24bpp handles separation cmyk" {
     tint,
   ])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), colorspace),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), colorspace),
   ])
   let data = @pdfio.bytes_of_list([0])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -1337,10 +1365,10 @@ test "get_image_24bpp rejects bad separation function" {
     tint,
   ])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), colorspace),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), colorspace),
   ])
   let data = @pdfio.bytes_of_list([0])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -1359,11 +1387,11 @@ test "get_image_24bpp default decode for separation DCT" {
     tint,
   ])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), colorspace),
-    (@pdf.n("/Filter"), Name(PdfName("/DCTDecode"))),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), colorspace),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/DCTDecode"))),
   ])
   let data = @pdfio.bytes_of_list([1, 2, 3])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -1383,11 +1411,11 @@ test "get_image_24bpp loads ToGet stream" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
-    (@pdf.n("/Length"), Integer(3)),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(3)),
   ])
   let data = @pdfio.bytes_of_list([0, 255, 0])
   let input = @pdfio.Input::of_bytes(data)
@@ -1405,9 +1433,9 @@ test "get_image_24bpp rejects missing width" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
   ])
   let data = @pdfio.bytes_of_list([0, 0, 0])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -1430,11 +1458,11 @@ test "get_image_24bpp raw with empty filter array" {
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let data = @pdfio.bytes_of_list([128])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceGray"))),
-    (@pdf.n("/Filter"), Array([])),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceGray"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Array([])),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
   match
@@ -1450,11 +1478,11 @@ test "get_image_24bpp accepts DCT filter array" {
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let data = @pdfio.bytes_of_list([4, 5, 6])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
-    (@pdf.n("/Filter"), Array([Name(PdfName("/DCTDecode"))])),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Array([Name(PdfName("/DCTDecode"))])),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
   match
@@ -1471,11 +1499,11 @@ test "get_image_24bpp rejects flate filter" {
   let raw = @pdfio.bytes_of_list([1, 2, 3])
   let encoded = @pdfcodec.PdfCodec::new().encode_flate(raw)
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
-    (@pdf.n("/Filter"), Name(PdfName("/FlateDecode"))),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/FlateDecode"))),
   ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(encoded))))
   assert_is_err(try? @pdfimage.Image::get_image_24bpp(pdf, resources, stream))
@@ -1489,10 +1517,10 @@ test "get_image_24bpp indexed 8bpp rgb" {
     0, 0, 0, 255, 0, 0,
   ])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(2)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), colorspace),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(2)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), colorspace),
   ])
   let data = @pdfio.bytes_of_list([0, 1])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -1515,10 +1543,10 @@ test "get_image_24bpp indexed 8bpp cmyk" {
     0, 0, 0, 0,
   ])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), colorspace),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), colorspace),
   ])
   let data = @pdfio.bytes_of_list([0])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -1541,10 +1569,10 @@ test "get_image_24bpp indexed 4bpp rgb" {
     0, 0, 0, 255, 0, 0,
   ])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(2)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(4)),
-    (@pdf.n("/ColorSpace"), colorspace),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(2)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(4)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), colorspace),
   ])
   let data = @pdfio.bytes_of_list([0x01])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -1567,10 +1595,10 @@ test "get_image_24bpp indexed 4bpp cmyk" {
     0, 0, 0, 0,
   ])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(2)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(4)),
-    (@pdf.n("/ColorSpace"), colorspace),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(2)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(4)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), colorspace),
   ])
   let data = @pdfio.bytes_of_list([0x00])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -1593,10 +1621,10 @@ test "get_image_24bpp indexed 4bpp rejects missing entry" {
     0, 0, 0, 255, 0, 0,
   ])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(2)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(4)),
-    (@pdf.n("/ColorSpace"), colorspace),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(2)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(4)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), colorspace),
   ])
   let data = @pdfio.bytes_of_list([0x20])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -1608,11 +1636,11 @@ test "get_image_24bpp 4bpp gray decode no-op" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(2)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(4)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceGray"))),
-    (@pdf.n("/Decode"), Array([Real(1.0), Real(0.0)])),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(2)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(4)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceGray"))),
+    (@pdf.PdfName::of_bytes("/Decode"), Array([Real(1.0), Real(0.0)])),
   ])
   let data = @pdfio.bytes_of_list([0x0f])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -1632,11 +1660,11 @@ test "get_image_24bpp rejects odd decode length" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
-    (@pdf.n("/Decode"), Array([Real(0.0)])),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), Name(PdfName("/DeviceRGB"))),
+    (@pdf.PdfName::of_bytes("/Decode"), Array([Real(0.0)])),
   ])
   let data = @pdfio.bytes_of_list([0, 0, 0])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -1648,10 +1676,10 @@ test "get_image_24bpp decode defaults to none without colorspace" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/Filter"), Name(PdfName("/DCTDecode"))),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/DCTDecode"))),
   ])
   let data = @pdfio.bytes_of_list([1, 2, 3])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -1667,11 +1695,11 @@ test "get_image_24bpp keeps decode when colorspace missing" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Width"), Integer(1)),
-    (@pdf.n("/Height"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/Filter"), Name(PdfName("/DCTDecode"))),
-    (@pdf.n("/Decode"), Array([Real(0.0), Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/Width"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Height"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/DCTDecode"))),
+    (@pdf.PdfName::of_bytes("/Decode"), Array([Real(0.0), Real(1.0)])),
   ])
   let data = @pdfio.bytes_of_list([1, 2, 3])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))

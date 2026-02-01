@@ -171,11 +171,13 @@ fn flatten_tree(
   let all_but_top = flatten(tree.map(really_flatten))
   let (first_node, last_node) = extremes(tree)
   let entries : Array[(@pdf.PdfName, PdfObject)] = [
-    (@pdf.n("/First"), Indirect(ntree_objnum(first_node))),
-    (@pdf.n("/Last"), Indirect(ntree_objnum(last_node))),
+    (@pdf.PdfName::of_bytes("/First"), Indirect(ntree_objnum(first_node))),
+    (@pdf.PdfName::of_bytes("/Last"), Indirect(ntree_objnum(last_node))),
   ]
   if any_open_nodes(tree) {
-    entries.push((@pdf.n("/Count"), Integer(total_visible(tree))))
+    entries.push(
+      (@pdf.PdfName::of_bytes("/Count"), Integer(total_visible(tree))),
+    )
   }
   let top = (root_objnum, @pdf.PdfObject::Dictionary(entries))
   ([top] + all_but_top, root_objnum)
@@ -329,23 +331,25 @@ fn node_of_line(
   flags : Int,
 ) -> PdfObject {
   let entries : Array[(@pdf.PdfName, PdfObject)] = [
-    (@pdf.n("/Title"), String(title)),
+    (@pdf.PdfName::of_bytes("/Title"), String(title)),
   ]
   let dest = target.to_pdf_object()
   match (dest : PdfObject) {
     Null => ()
     _ =>
       match (target : @pdfdest.Destination) {
-        Action(action) => entries.push((@pdf.n("/A"), action))
-        _ => entries.push((@pdf.n("/Dest"), dest))
+        Action(action) => entries.push((@pdf.PdfName::of_bytes("/A"), action))
+        _ => entries.push((@pdf.PdfName::of_bytes("/Dest"), dest))
       }
   }
   let (r, g, b) = colour
   if !(r == 0.0 && g == 0.0 && b == 0.0) {
-    entries.push((@pdf.n("/C"), Array([Real(r), Real(g), Real(b)])))
+    entries.push(
+      (@pdf.PdfName::of_bytes("/C"), Array([Real(r), Real(g), Real(b)])),
+    )
   }
   if flags != 0 {
-    entries.push((@pdf.n("/F"), Integer(flags)))
+    entries.push((@pdf.PdfName::of_bytes("/F"), Integer(flags)))
   }
   @pdf.PdfObject::Dictionary(entries)
 }

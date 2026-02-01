@@ -13,7 +13,7 @@ fn stream_of_bytes(values : Array[Int]) -> @pdf.PdfObject {
 ///|
 fn icc_stream_with_n(n : Int) -> @pdf.PdfObject {
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/N"), Integer(n)),
+    (@pdf.PdfName::of_bytes("/N"), Integer(n)),
   ])
   let data = @pdfio.bytes_of_list([0, 1, 2, 3])
   Stream(Ref::new((dict, Got(data))))
@@ -24,9 +24,9 @@ test "read_colourspace resolves named entry from resources" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/ColorSpace"),
+      @pdf.PdfName::of_bytes("/ColorSpace"),
       @pdf.PdfObject::Dictionary([
-        (@pdf.n("/CS1"), Name(PdfName("/DeviceCMYK"))),
+        (@pdf.PdfName::of_bytes("/CS1"), Name(PdfName("/DeviceCMYK"))),
       ]),
     ),
   ])
@@ -41,8 +41,8 @@ test "read_colourspace resolves named entry from resources" {
 test "read_colourspace uses default gamma for CalGray" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/WhitePoint"), mk_point(1.0, 1.0, 1.0)),
-    (@pdf.n("/BlackPoint"), mk_point(0.0, 0.0, 0.0)),
+    (@pdf.PdfName::of_bytes("/WhitePoint"), mk_point(1.0, 1.0, 1.0)),
+    (@pdf.PdfName::of_bytes("/BlackPoint"), mk_point(0.0, 0.0, 0.0)),
   ])
   let space = ColourSpace::read(
     pdf,
@@ -59,8 +59,8 @@ test "read_colourspace uses default gamma for CalGray" {
 test "read_colourspace uses default gamma and matrix for CalRGB" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/WhitePoint"), mk_point(1.0, 1.0, 1.0)),
-    (@pdf.n("/BlackPoint"), mk_point(0.0, 0.0, 0.0)),
+    (@pdf.PdfName::of_bytes("/WhitePoint"), mk_point(1.0, 1.0, 1.0)),
+    (@pdf.PdfName::of_bytes("/BlackPoint"), mk_point(0.0, 0.0, 0.0)),
   ])
   let space = ColourSpace::read(
     pdf,
@@ -80,8 +80,8 @@ test "read_colourspace uses default gamma and matrix for CalRGB" {
 test "read_colourspace uses default range for Lab" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/WhitePoint"), mk_point(1.0, 1.0, 1.0)),
-    (@pdf.n("/BlackPoint"), mk_point(0.0, 0.0, 0.0)),
+    (@pdf.PdfName::of_bytes("/WhitePoint"), mk_point(1.0, 1.0, 1.0)),
+    (@pdf.PdfName::of_bytes("/BlackPoint"), mk_point(0.0, 0.0, 0.0)),
   ])
   let space = ColourSpace::read(
     pdf,
@@ -253,7 +253,7 @@ test "read_colourspace Indexed errors on invalid inputs" {
 test "read_colourspace ICCBased invalid N errors" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/N"), Integer(2)),
+    (@pdf.PdfName::of_bytes("/N"), Integer(2)),
   ])
   let data = @pdfio.bytes_of_list([1, 2, 3])
   let stream_obj : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -416,8 +416,8 @@ test "write_colourspace returns pattern name" {
 test "write_colourspace ICCBased preserves length and skips bad range" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/N"), Integer(1)),
-    (@pdf.n("/Length"), Integer(3)),
+    (@pdf.PdfName::of_bytes("/N"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(3)),
   ])
   let stream_obj : @pdf.PdfObject = Stream(
     Ref::new((dict, Got(@pdfio.bytes_of_string("icc")))),
@@ -561,7 +561,7 @@ test "read_colourspace handles indirect and singleton array" {
 test "read_colourspace errors on missing named entry" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/ColorSpace"), @pdf.PdfObject::Dictionary([])),
+    (@pdf.PdfName::of_bytes("/ColorSpace"), @pdf.PdfObject::Dictionary([])),
   ])
   let res : Result[ColourSpace, Error] = try? ColourSpace::read(
     pdf,
@@ -635,7 +635,7 @@ test "read_colourspace DeviceN attributes and name validation" {
   let pdf = @pdf.Pdf::empty()
   let tint = sample_tint_function().to_pdf_object(pdf)
   let attrs : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/DeviceN"))),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/DeviceN"))),
   ])
   let space_arr : Array[@pdf.PdfObject] = [
     Name(PdfName("/DeviceN")),
@@ -678,7 +678,7 @@ test "read_colourspace DeviceN attributes and name validation" {
 test "write_colourspace writes ICCBased metadata and range" {
   let pdf = @pdf.Pdf::empty()
   let metadata : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Type"), Name(PdfName("/Metadata"))),
+    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Metadata"))),
   ])
   let stream_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let stream_obj : @pdf.PdfObject = Stream(
@@ -723,7 +723,7 @@ test "write_colourspace handles indexed empty table and deviceN attrs" {
     _ => fail("expected Indexed array")
   }
   let attrs : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/DeviceN"))),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/DeviceN"))),
   ])
   let device_n = ColourSpace::DeviceN(
     ["C1"],
@@ -753,7 +753,7 @@ test "write_colourspace handles Pattern with base" {
 test "read_colourspace missing whitepoint defaults to zeros" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/BlackPoint"), mk_point(0.0, 0.0, 0.0)),
+    (@pdf.PdfName::of_bytes("/BlackPoint"), mk_point(0.0, 0.0, 0.0)),
   ])
   let space = ColourSpace::read(
     pdf,
@@ -770,7 +770,7 @@ test "read_colourspace missing whitepoint defaults to zeros" {
 test "read_colourspace indexed handles ICCBased base" {
   let pdf = @pdf.Pdf::empty()
   let icc_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/N"), Integer(3)),
+    (@pdf.PdfName::of_bytes("/N"), Integer(3)),
   ])
   let icc_stream : @pdf.PdfObject = Stream(
     Ref::new((icc_dict, Got(@pdfio.bytes_of_list([0])))),

@@ -3,7 +3,7 @@ test "deep_copy copies streams and object data" {
   let pdf = make_basic_pdf()
   let bytes = @pdfio.bytes_of_string("data")
   let stream = make_stream(
-    PdfObject::Dictionary([(n("/Ref"), Indirect(2))]),
+    PdfObject::Dictionary([(PdfName::of_bytes("/Ref"), Indirect(2))]),
     bytes,
   )
   pdf.addobj_given_num((4, stream))
@@ -12,7 +12,7 @@ test "deep_copy copies streams and object data" {
   let toget_stream = PdfObject::Stream(
     Ref::new(
       (
-        PdfObject::Dictionary([(n("/Length"), Integer(3))]),
+        PdfObject::Dictionary([(PdfName::of_bytes("/Length"), Integer(3))]),
         ToGet(ToGet::new(input, 0, 3)),
       ),
     ),

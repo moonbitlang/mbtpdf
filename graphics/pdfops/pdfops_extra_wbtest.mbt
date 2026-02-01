@@ -3,10 +3,13 @@ test "string_of_ops handles comments and inline filters" {
   let old = write_comments.val
   write_comments.val = true
   let dict_filter_array : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Filter"), Array([Name(PdfName("/ASCII85Decode"))])),
+    (
+      @pdf.PdfName::of_bytes("/Filter"),
+      Array([Name(PdfName("/ASCII85Decode"))]),
+    ),
   ])
   let dict_filter_name : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Filter"), Name(PdfName("/FlateDecode"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/FlateDecode"))),
   ])
   let bytes = @pdfio.bytes_of_list([0x61, 0x62])
   let rendered = Op::string_of_ops([
@@ -74,7 +77,7 @@ test "components handles extra branches and errors" {
     )
     assert_true(missing_dict is Err(_))
     let resources_empty : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-      (@pdf.n("/ColorSpace"), @pdf.PdfObject::Dictionary([])),
+      (@pdf.PdfName::of_bytes("/ColorSpace"), @pdf.PdfObject::Dictionary([])),
     ])
     let missing_entry : Result[Int, Error] = try? Op::components(
       pdf,

@@ -3,10 +3,10 @@ test "parse inline image flate data" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
-    (@pdf.n("/CS"), Name(PdfName("/DeviceGray"))),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/DeviceGray"))),
   ])
   let rendered = @pdfops.Op::string_of_ops([
     InlineImage((dict, None, @pdfio.bytes_of_list([0x7f]))),
@@ -35,15 +35,17 @@ test "parse inline image uses resources for colorspace" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/ColorSpace"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/Cs1"), Name(PdfName("/DeviceRGB")))]),
+      @pdf.PdfName::of_bytes("/ColorSpace"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/Cs1"), Name(PdfName("/DeviceRGB"))),
+      ]),
     ),
   ])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
-    (@pdf.n("/CS"), Name(PdfName("/Cs1"))),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/Cs1"))),
   ])
   let rendered = @pdfops.Op::string_of_ops([
     InlineImage((dict, None, @pdfio.bytes_of_string("RGB"))),
@@ -68,11 +70,11 @@ test "parse inline image handles DCT data" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
-    (@pdf.n("/CS"), Name(PdfName("/DeviceRGB"))),
-    (@pdf.n("/Filter"), Name(PdfName("/DCT"))),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/DeviceRGB"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/DCT"))),
   ])
   let rendered = @pdfops.Op::string_of_ops([
     InlineImage((dict, None, @pdfio.bytes_of_list([0xFF, 0xD9]))),
@@ -95,7 +97,7 @@ test "parse inline image handles DCT data" {
 ///|
 test "string_of_ops ignores non-name inline filters" {
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Filter"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Filter"), Integer(1)),
   ])
   let rendered = @pdfops.Op::string_of_ops([
     InlineImage((dict, None, @pdfio.bytes_of_list([0x61]))),
@@ -109,11 +111,11 @@ test "parse inline image handles colorspace array" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
     (
-      @pdf.n("/CS"),
+      @pdf.PdfName::of_bytes("/CS"),
       Array([
         Name(PdfName("/Indexed")),
         Name(PdfName("/DeviceRGB")),
@@ -148,10 +150,10 @@ test "parse inline image uses ImageMask when colorspace missing" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(2)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(1)),
-    (@pdf.n("/IM"), Boolean(true)),
+    (@pdf.PdfName::of_bytes("/W"), Integer(2)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/IM"), Boolean(true)),
   ])
   let rendered = @pdfops.Op::string_of_ops([
     InlineImage((dict, None, @pdfio.bytes_of_list([0x80]))),
@@ -181,11 +183,11 @@ test "parse inline image decodes flate filter" {
   let raw = @pdfio.bytes_of_list([0x7f])
   let encoded = @pdfcodec.PdfCodec::new().encode_flate(raw)
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
-    (@pdf.n("/CS"), Name(PdfName("/DeviceGray"))),
-    (@pdf.n("/Filter"), Name(PdfName("/FlateDecode"))),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/DeviceGray"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/FlateDecode"))),
   ])
   let rendered = @pdfops.Op::string_of_ops([InlineImage((dict, None, encoded))])
   let ops = @pdfops.Op::parse_single_stream(
@@ -260,21 +262,21 @@ fn parse_inline_image_error(dict : @pdf.PdfObject) -> Unit raise {
 ///|
 test "parse inline image errors on missing width/height/BPC" {
   let dict1 : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
-    (@pdf.n("/CS"), Name(PdfName("/DeviceGray"))),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/DeviceGray"))),
   ])
   parse_inline_image_error(dict1)
   let dict2 : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
-    (@pdf.n("/CS"), Name(PdfName("/DeviceGray"))),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/DeviceGray"))),
   ])
   parse_inline_image_error(dict2)
   let dict3 : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/CS"), Name(PdfName("/DeviceGray"))),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/DeviceGray"))),
   ])
   parse_inline_image_error(dict3)
 }
@@ -282,9 +284,9 @@ test "parse inline image errors on missing width/height/BPC" {
 ///|
 test "parse inline image errors on missing colorspace" {
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
   ])
   parse_inline_image_error(dict)
 }
@@ -296,11 +298,11 @@ test "parse inline image cleans filter arrays" {
   let raw = @pdfio.bytes_of_list([0x7f])
   let encoded = @pdfcodec.PdfCodec::new().encode_flate(raw)
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
-    (@pdf.n("/CS"), Name(PdfName("/DeviceGray"))),
-    (@pdf.n("/Filter"), Array([Name(PdfName("/FlateDecode"))])),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/DeviceGray"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Array([Name(PdfName("/FlateDecode"))])),
   ])
   let rendered = @pdfops.Op::string_of_ops([InlineImage((dict, None, encoded))])
   let ops = @pdfops.Op::parse_single_stream(
@@ -328,11 +330,11 @@ test "parse inline image decode failures raise" {
     let pdf = @pdf.Pdf::empty()
     let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
     let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-      (@pdf.n("/W"), Integer(1)),
-      (@pdf.n("/H"), Integer(1)),
-      (@pdf.n("/BPC"), Integer(8)),
-      (@pdf.n("/CS"), Name(PdfName("/DeviceGray"))),
-      (@pdf.n("/Filter"), Name(PdfName("/FlateDecode"))),
+      (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+      (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/DeviceGray"))),
+      (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/FlateDecode"))),
     ])
     let rendered = @pdfops.Op::string_of_ops([
       InlineImage((dict, None, @pdfio.bytes_of_list([0x00]))),
@@ -351,16 +353,16 @@ test "parse inline image errors on missing colorspace entry and type" {
   @pdfe.with_silenced_logs(() => {
     let pdf = @pdf.Pdf::empty()
     let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-      (@pdf.n("/W"), Integer(1)),
-      (@pdf.n("/H"), Integer(1)),
-      (@pdf.n("/BPC"), Integer(8)),
-      (@pdf.n("/CS"), Name(PdfName("/CS1"))),
+      (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+      (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/CS1"))),
     ])
     let rendered = @pdfops.Op::string_of_ops([
       InlineImage((dict, None, @pdfio.bytes_of_list([0x00]))),
     ])
     let resources1 : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-      (@pdf.n("/ColorSpace"), @pdf.PdfObject::Dictionary([])),
+      (@pdf.PdfName::of_bytes("/ColorSpace"), @pdf.PdfObject::Dictionary([])),
     ])
     let missing_entry : Result[Array[@pdfops.Op], Error] = try? @pdfops.Op::parse_single_stream(
       pdf,
@@ -369,7 +371,7 @@ test "parse inline image errors on missing colorspace entry and type" {
     )
     assert_true(missing_entry is Err(_))
     let resources2 : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-      (@pdf.n("/ColorSpace"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/ColorSpace"), Integer(1)),
     ])
     let bad_type : Result[Array[@pdfops.Op], Error] = try? @pdfops.Op::parse_single_stream(
       pdf,
@@ -378,10 +380,10 @@ test "parse inline image errors on missing colorspace entry and type" {
     )
     assert_true(bad_type is Err(_))
     let bad_cs : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-      (@pdf.n("/W"), Integer(1)),
-      (@pdf.n("/H"), Integer(1)),
-      (@pdf.n("/BPC"), Integer(8)),
-      (@pdf.n("/CS"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+      (@pdf.PdfName::of_bytes("/CS"), Integer(1)),
     ])
     let bad_rendered = @pdfops.Op::string_of_ops([
       InlineImage((bad_cs, None, @pdfio.bytes_of_list([0x00]))),
@@ -417,11 +419,11 @@ test "parse inline image handles bad filters" {
     let pdf = @pdf.Pdf::empty()
     let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
     let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-      (@pdf.n("/W"), Integer(1)),
-      (@pdf.n("/H"), Integer(1)),
-      (@pdf.n("/BPC"), Integer(8)),
-      (@pdf.n("/CS"), Name(PdfName("/DeviceGray"))),
-      (@pdf.n("/Filter"), Name(PdfName("/BadFilter"))),
+      (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+      (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/DeviceGray"))),
+      (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/BadFilter"))),
     ])
     let rendered = @pdfops.Op::string_of_ops([
       InlineImage((dict, None, @pdfio.bytes_of_list([0x00]))),
@@ -433,11 +435,11 @@ test "parse inline image handles bad filters" {
     )
     assert_true(res is Err(_))
     let dict_array : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-      (@pdf.n("/W"), Integer(1)),
-      (@pdf.n("/H"), Integer(1)),
-      (@pdf.n("/BPC"), Integer(8)),
-      (@pdf.n("/CS"), Name(PdfName("/DeviceGray"))),
-      (@pdf.n("/Filter"), Array([Integer(1)])),
+      (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+      (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/DeviceGray"))),
+      (@pdf.PdfName::of_bytes("/Filter"), Array([Integer(1)])),
     ])
     let rendered_array = @pdfops.Op::string_of_ops([
       InlineImage((dict_array, None, @pdfio.bytes_of_list([0x00]))),
@@ -449,12 +451,12 @@ test "parse inline image handles bad filters" {
     )
     assert_true(res_array is Err(_))
     let dict_multi : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-      (@pdf.n("/W"), Integer(1)),
-      (@pdf.n("/H"), Integer(1)),
-      (@pdf.n("/BPC"), Integer(8)),
-      (@pdf.n("/CS"), Name(PdfName("/DeviceGray"))),
+      (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+      (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/DeviceGray"))),
       (
-        @pdf.n("/Filter"),
+        @pdf.PdfName::of_bytes("/Filter"),
         Array([Name(PdfName("/FlateDecode")), Name(PdfName("/ASCIIHexDecode"))]),
       ),
     ])
@@ -542,11 +544,11 @@ test "parse inline image errors on invalid filter array" {
     let pdf = @pdf.Pdf::empty()
     let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
     let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-      (@pdf.n("/W"), Integer(1)),
-      (@pdf.n("/H"), Integer(1)),
-      (@pdf.n("/BPC"), Integer(8)),
-      (@pdf.n("/CS"), Name(PdfName("/DeviceGray"))),
-      (@pdf.n("/Filter"), Array([Integer(1)])),
+      (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+      (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/DeviceGray"))),
+      (@pdf.PdfName::of_bytes("/Filter"), Array([Integer(1)])),
     ])
     let rendered = @pdfops.Op::string_of_ops([
       InlineImage((dict, None, @pdfio.bytes_of_list([0x00]))),

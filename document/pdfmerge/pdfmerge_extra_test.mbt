@@ -25,7 +25,7 @@ fn add_names_dests(
 ) -> Unit raise {
   let tree = @pdftree.PdfTree::new(pdf).build_name_tree(false, entries)
   let names_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Dests"), tree),
+    (@pdf.PdfName::of_bytes("/Dests"), tree),
   ])
   set_catalog_entry(pdf, "/Names", names_dict)
 }
@@ -40,12 +40,16 @@ fn page_ref(pdf : @pdf.Pdf, index : Int) -> Int raise {
 fn dest_dict_for_page(pdf : @pdf.Pdf, index : Int) -> @pdf.PdfObject raise {
   let target = @pdfdest.TargetPage::PageObject(page_ref(pdf, index))
   let dest = @pdfdest.Destination::Fit(target)
-  @pdf.PdfObject::Dictionary([(@pdf.n("/D"), dest.to_pdf_object())])
+  @pdf.PdfObject::Dictionary([
+    (@pdf.PdfName::of_bytes("/D"), dest.to_pdf_object()),
+  ])
 }
 
 ///|
 fn dest_dict(dest : @pdfdest.Destination) -> @pdf.PdfObject {
-  @pdf.PdfObject::Dictionary([(@pdf.n("/D"), dest.to_pdf_object())])
+  @pdf.PdfObject::Dictionary([
+    (@pdf.PdfName::of_bytes("/D"), dest.to_pdf_object()),
+  ])
 }
 
 ///|
@@ -70,8 +74,8 @@ test "merge_pdfs keeps named and action bookmarks while dropping out of range" {
   ]
   add_names_dests(pdf, entries)
   let action : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/S"), Name(PdfName("/GoTo"))),
-    (@pdf.n("/D"), String("DestB")),
+    (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/GoTo"))),
+    (@pdf.PdfName::of_bytes("/D"), String("DestB")),
   ])
   let bookmarks : Array[@pdfmarks.Bookmark] = [
     {
@@ -117,24 +121,26 @@ test "merge_pdfs handles malformed names and optional catalog entries" {
   let pdf1 = make_pdf_pages(1)
   let pdf2 = make_pdf_pages(1)
   let bad_tree : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Names"), Array([String("A"), Null, String("B")])),
+    (@pdf.PdfName::of_bytes("/Names"), Array([String("A"), Null, String("B")])),
   ])
   let names_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Dests"), bad_tree),
+    (@pdf.PdfName::of_bytes("/Dests"), bad_tree),
   ])
   set_catalog_entry(pdf1, "/Names", names_dict)
   set_catalog_entry(
     pdf1,
     "/OCProperties",
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/OCGs"), Array([Name(PdfName("/OCG1"))])),
+      (@pdf.PdfName::of_bytes("/OCGs"), Array([Name(PdfName("/OCG1"))])),
     ]),
   )
   set_catalog_entry(pdf1, "/AcroForm", Null)
   set_catalog_entry(
     pdf2,
     "/AcroForm",
-    @pdf.PdfObject::Dictionary([(@pdf.n("/Fields"), Array([Null]))]),
+    @pdf.PdfObject::Dictionary([
+      (@pdf.PdfName::of_bytes("/Fields"), Array([Null])),
+    ]),
   )
   let merged = @pdfe.with_logger(_ => (), fn() {
     PdfMerger::new(["one", "two"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
@@ -193,7 +199,7 @@ test "merge_pdfs rewrites string and legacy named bookmarks" {
   set_catalog_entry(
     pdf,
     "/Dests",
-    @pdf.PdfObject::Dictionary([(@pdf.n("/DestA"), dest_obj)]),
+    @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/DestA"), dest_obj)]),
   )
   let bookmarks : Array[@pdfmarks.Bookmark] = [
     {
@@ -262,7 +268,7 @@ test "merge_pdfs uses highest version and removes duplicates" {
 test "remove_duplicate_fonts updates object_stream_ids" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(1)),
   ])
   let stream1 : @pdf.PdfObject = Stream(Ref::new((dict, Got([0x01]))))
   let stream2 : @pdf.PdfObject = Stream(Ref::new((dict, Got([0x01]))))
@@ -278,7 +284,7 @@ test "remove_duplicate_fonts updates object_stream_ids" {
 test "remove_duplicate_fonts keeps distinct stream lengths" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(1)),
   ])
   let stream1 : @pdf.PdfObject = Stream(Ref::new((dict, Got([0x01]))))
   let stream2 : @pdf.PdfObject = Stream(Ref::new((dict, Got([0x01, 0x02]))))
@@ -369,8 +375,8 @@ test "merge_pdfs rewrites and preserves diverse destination bookmark targets" {
     pdf,
     "/Dests",
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/LegacyFit"), legacy_fit),
-      (@pdf.n("/LegacyOther"), legacy_other),
+      (@pdf.PdfName::of_bytes("/LegacyFit"), legacy_fit),
+      (@pdf.PdfName::of_bytes("/LegacyOther"), legacy_other),
     ]),
   )
   let bookmarks : Array[@pdfmarks.Bookmark] = [
@@ -418,24 +424,24 @@ test "merge_pdfs resolves NamedDestination via name tree when /Dests missing" {
     ("NoDStr", @pdf.PdfObject::Dictionary([])),
   ])
   let action_goto : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/S"), Name(PdfName("/GoTo"))),
-    (@pdf.n("/D"), String("TreeStr")),
+    (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/GoTo"))),
+    (@pdf.PdfName::of_bytes("/D"), String("TreeStr")),
   ])
   let action_bad_d : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/S"), Name(PdfName("/GoTo"))),
-    (@pdf.n("/D"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/GoTo"))),
+    (@pdf.PdfName::of_bytes("/D"), Integer(0)),
   ])
   let action_bad_s : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/S"), Name(PdfName("/NotGoTo"))),
-    (@pdf.n("/D"), String("TreeStr")),
+    (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/NotGoTo"))),
+    (@pdf.PdfName::of_bytes("/D"), String("TreeStr")),
   ])
   let action_missing_dest : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/S"), Name(PdfName("/GoTo"))),
-    (@pdf.n("/D"), String("MissingStr")),
+    (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/GoTo"))),
+    (@pdf.PdfName::of_bytes("/D"), String("MissingStr")),
   ])
   let action_no_d : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/S"), Name(PdfName("/GoTo"))),
-    (@pdf.n("/D"), String("NoDStr")),
+    (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/GoTo"))),
+    (@pdf.PdfName::of_bytes("/D"), String("NoDStr")),
   ])
   let bookmarks : Array[@pdfmarks.Bookmark] = [
     {

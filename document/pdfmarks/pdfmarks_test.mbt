@@ -3,17 +3,17 @@ fn minimum_valid_pdf() -> @pdf.Pdf raise {
   let pdf = @pdf.Pdf::empty()
   let pages_root_num = pdf.addobj(
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/Type"), Name(PdfName("/Pages"))),
-      (@pdf.n("/Kids"), Array([])),
-      (@pdf.n("/Count"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Pages"))),
+      (@pdf.PdfName::of_bytes("/Kids"), Array([])),
+      (@pdf.PdfName::of_bytes("/Count"), Integer(1)),
     ]),
   )
   let page_num = pdf.addobj(
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/Type"), Name(PdfName("/Page"))),
-      (@pdf.n("/Parent"), Indirect(pages_root_num)),
+      (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Page"))),
+      (@pdf.PdfName::of_bytes("/Parent"), Indirect(pages_root_num)),
       (
-        @pdf.n("/MediaBox"),
+        @pdf.PdfName::of_bytes("/MediaBox"),
         Array([Integer(0), Integer(0), Integer(100), Integer(100)]),
       ),
     ]),
@@ -22,16 +22,16 @@ fn minimum_valid_pdf() -> @pdf.Pdf raise {
     (
       pages_root_num,
       @pdf.PdfObject::Dictionary([
-        (@pdf.n("/Type"), Name(PdfName("/Pages"))),
-        (@pdf.n("/Kids"), Array([Indirect(page_num)])),
-        (@pdf.n("/Count"), Integer(1)),
+        (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Pages"))),
+        (@pdf.PdfName::of_bytes("/Kids"), Array([Indirect(page_num)])),
+        (@pdf.PdfName::of_bytes("/Count"), Integer(1)),
       ]),
     ),
   )
   let catalog_num = pdf.addobj(
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/Type"), Name(PdfName("/Catalog"))),
-      (@pdf.n("/Pages"), Indirect(pages_root_num)),
+      (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Catalog"))),
+      (@pdf.PdfName::of_bytes("/Pages"), Indirect(pages_root_num)),
     ]),
   )
   let trailerdict = pdf.trailerdict.add_entry("/Root", Indirect(catalog_num))
@@ -229,8 +229,8 @@ test "add_bookmarks links siblings and counts" {
 test "read_bookmarks toggles action preservation" {
   let pdf = minimum_valid_pdf()
   let action : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/S"), Name(PdfName("/GoTo"))),
-    (@pdf.n("/D"), String("dest")),
+    (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/GoTo"))),
+    (@pdf.PdfName::of_bytes("/D"), String("dest")),
   ])
   let marks : Array[@pdfmarks.Bookmark] = [
     {

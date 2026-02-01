@@ -15,8 +15,6 @@ pub fn is_whitespace(Char) -> Bool
 
 pub fn make_matrix(@pdftransform.TransformMatrix) -> PdfObject
 
-pub fn n(Bytes) -> PdfName
-
 pub fn pdfobjmap_bindings(Map[Int, (Ref[ObjectData], Int)]) -> Array[(Int, (Ref[ObjectData], Int))]
 
 pub fn pdfobjmap_empty() -> Map[Int, (Ref[ObjectData], Int)]

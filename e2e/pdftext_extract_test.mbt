@@ -268,7 +268,6 @@ async test "extract text intro pdf" {
       #|ForanintroductiontoOCaml,theauthor’sbookisavailable:
       #|http://ocaml-book.comoratAmazon.com
       #|8
-
     ),
   )
 }
@@ -771,10 +770,10 @@ fn build_unicode_pdf() -> @pdf.Pdf raise {
   let pdf = @pdf.Pdf::empty()
   let text = @pdftext.PdfTextUtil::new().utf16be_of_codepoints(codepoints)
   let font : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Type"), Name(PdfName("/Font"))),
-    (@pdf.n("/Subtype"), Name(PdfName("/Type1"))),
-    (@pdf.n("/BaseFont"), Name(PdfName("/CustomUnicodeFont"))),
-    (@pdf.n("/Encoding"), Name(PdfName("/WinAnsiEncoding"))),
+    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Font"))),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Type1"))),
+    (@pdf.PdfName::of_bytes("/BaseFont"), Name(PdfName("/CustomUnicodeFont"))),
+    (@pdf.PdfName::of_bytes("/Encoding"), Name(PdfName("/WinAnsiEncoding"))),
   ])
   let ops : Array[@pdfops.Op] = [OpBT, OpTf("/F0", 24.0), OpTj(text), OpET]
   let stream = @pdfops.Op::stream_of_ops(ops)
@@ -788,7 +787,10 @@ fn build_unicode_pdf() -> @pdf.Pdf raise {
     content=[stream],
     mediabox~,
     resources=@pdf.PdfObject::Dictionary([
-      (@pdf.n("/Font"), @pdf.PdfObject::Dictionary([(@pdf.n("/F0"), font)])),
+      (
+        @pdf.PdfName::of_bytes("/Font"),
+        @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/F0"), font)]),
+      ),
     ]),
     rotate=Rotate0,
     rest=@pdf.PdfObject::Dictionary([]),
@@ -844,21 +846,24 @@ fn form_xobject_stream(text : String) -> @pdf.PdfObject raise {
 fn cid_font_dict(encoding_name : String) -> @pdf.PdfObject {
   let descendant : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/CIDSystemInfo"),
+      @pdf.PdfName::of_bytes("/CIDSystemInfo"),
       @pdf.PdfObject::Dictionary([
-        (@pdf.n("/Registry"), String("Adobe")),
-        (@pdf.n("/Ordering"), String("Identity")),
-        (@pdf.n("/Supplement"), Integer(0)),
+        (@pdf.PdfName::of_bytes("/Registry"), String("Adobe")),
+        (@pdf.PdfName::of_bytes("/Ordering"), String("Identity")),
+        (@pdf.PdfName::of_bytes("/Supplement"), Integer(0)),
       ]),
     ),
-    (@pdf.n("/BaseFont"), Name(PdfName("/CIDFont"))),
-    (@pdf.n("/FontDescriptor"), @pdf.PdfObject::Dictionary([])),
+    (@pdf.PdfName::of_bytes("/BaseFont"), Name(PdfName("/CIDFont"))),
+    (@pdf.PdfName::of_bytes("/FontDescriptor"), @pdf.PdfObject::Dictionary([])),
   ])
   @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Type0"))),
-    (@pdf.n("/BaseFont"), Name(PdfName("/CIDFontType0"))),
-    (@pdf.n("/DescendantFonts"), Array([descendant])),
-    (@pdf.n("/Encoding"), Name(@pdf.PdfName::of_string(encoding_name))),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Type0"))),
+    (@pdf.PdfName::of_bytes("/BaseFont"), Name(PdfName("/CIDFontType0"))),
+    (@pdf.PdfName::of_bytes("/DescendantFonts"), Array([descendant])),
+    (
+      @pdf.PdfName::of_bytes("/Encoding"),
+      Name(@pdf.PdfName::of_string(encoding_name)),
+    ),
   ])
 }
 
@@ -918,15 +923,17 @@ test "extract text visits xobjects once" {
   let form_indirect_id = pdf.addobj(form_indirect)
   let form_direct = form_xobject_stream("X2")
   let xobjects : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/X1"), Indirect(form_indirect_id)),
-    (@pdf.n("/X2"), form_direct),
+    (@pdf.PdfName::of_bytes("/X1"), Indirect(form_indirect_id)),
+    (@pdf.PdfName::of_bytes("/X2"), form_direct),
     (
-      @pdf.n("/X3"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/Subtype"), Name(PdfName("/Image")))]),
+      @pdf.PdfName::of_bytes("/X3"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Image"))),
+      ]),
     ),
   ])
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/XObject"), xobjects),
+    (@pdf.PdfName::of_bytes("/XObject"), xobjects),
   ])
   let ops : Array[@pdfops.Op] = [
     OpDo("/X1"),
@@ -945,7 +952,10 @@ test "extract text visits xobjects once" {
 test "extract text ignores missing or invalid fonts" {
   let bad_font : @pdf.PdfObject = @pdf.PdfObject::Dictionary([])
   let resources_bad : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Font"), @pdf.PdfObject::Dictionary([(@pdf.n("/Bad"), bad_font)])),
+    (
+      @pdf.PdfName::of_bytes("/Font"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/Bad"), bad_font)]),
+    ),
   ])
   let ops_missing_font : Array[@pdfops.Op] = [
     OpBT,
@@ -989,7 +999,10 @@ test "extract text ignores missing or invalid fonts" {
 test "extract text falls back for odd identity-h text bytes" {
   let font = cid_font_dict("/Identity-H")
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Font"), @pdf.PdfObject::Dictionary([(@pdf.n("/F1"), font)])),
+    (
+      @pdf.PdfName::of_bytes("/Font"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/F1"), font)]),
+    ),
   ])
   let ops : Array[@pdfops.Op] = [OpBT, OpTf("/F1", 12.0), OpTj("A"), OpET]
   let page = extract_test_page(ops, resources)

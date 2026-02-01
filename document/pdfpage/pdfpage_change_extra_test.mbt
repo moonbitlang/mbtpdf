@@ -46,8 +46,8 @@ fn xyz_dest_for_page(page_objnum : Int) -> @pdf.PdfObject {
 ///|
 fn action_for_dest(dest : @pdf.PdfObject) -> @pdf.PdfObject {
   @pdf.PdfObject::Dictionary([
-    (@pdf.n("/S"), Name(PdfName("/GoTo"))),
-    (@pdf.n("/D"), dest),
+    (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/GoTo"))),
+    (@pdf.PdfName::of_bytes("/D"), dest),
   ])
 }
 
@@ -129,22 +129,22 @@ test "change_pages rewrites bookmarks annotations and openaction" {
   pdf = add_bookmarks_for_pages(pdf, page1, page2)
   let dest_page2 = dest_for_page(page2)
   let annot_dest : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Link"))),
-    (@pdf.n("/Dest"), dest_page2),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Link"))),
+    (@pdf.PdfName::of_bytes("/Dest"), dest_page2),
   ])
   let annot_dest_num = pdf.addobj(annot_dest)
   let annot_action : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Link"))),
-    (@pdf.n("/A"), action_for_dest(dest_page2)),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Link"))),
+    (@pdf.PdfName::of_bytes("/A"), action_for_dest(dest_page2)),
   ])
   let annot_action_num = pdf.addobj(annot_action)
   let annot_action_invalid : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Link"))),
-    (@pdf.n("/A"), Null),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Link"))),
+    (@pdf.PdfName::of_bytes("/A"), Null),
   ])
   let annot_action_invalid_num = pdf.addobj(annot_action_invalid)
   let annot_not_link : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Text"))),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Text"))),
   ])
   let annot_not_link_num = pdf.addobj(annot_not_link)
   let annots : Array[@pdf.PdfObject] = [
@@ -297,8 +297,8 @@ test "change_pages ignores unsupported openaction dictionaries" {
     pdf,
     "/OpenAction",
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/S"), Name(PdfName("/URI"))),
-      (@pdf.n("/URI"), String("x")),
+      (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/URI"))),
+      (@pdf.PdfName::of_bytes("/URI"), String("x")),
     ]),
   )
   let pages = @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree()
@@ -386,8 +386,8 @@ test "change_pages catches failures in annotations and openaction rewriting" {
     Null,
   ])
   let bad_dest_annot : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Link"))),
-    (@pdf.n("/Dest"), bad_dest),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Link"))),
+    (@pdf.PdfName::of_bytes("/Dest"), bad_dest),
   ])
   let bad_annot_num = pdf.addobj(bad_dest_annot)
   update_page_annots(pdf, page1, [Indirect(bad_annot_num)])
@@ -395,8 +395,8 @@ test "change_pages catches failures in annotations and openaction rewriting" {
     pdf,
     "/OpenAction",
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/S"), Name(PdfName("/GoTo"))),
-      (@pdf.n("/D"), bad_dest),
+      (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/GoTo"))),
+      (@pdf.PdfName::of_bytes("/D"), bad_dest),
     ]),
   )
   let pages = @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree()

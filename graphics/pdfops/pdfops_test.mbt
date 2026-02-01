@@ -35,9 +35,9 @@ test "components resolves color spaces" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/ColorSpace"),
+      @pdf.PdfName::of_bytes("/ColorSpace"),
       @pdf.PdfObject::Dictionary([
-        (@pdf.n("/MyCS"), Name(PdfName("/DeviceGray"))),
+        (@pdf.PdfName::of_bytes("/MyCS"), Name(PdfName("/DeviceGray"))),
       ]),
     ),
   ])
@@ -60,7 +60,7 @@ test "components resolves color spaces" {
       resources,
       Array([
         Name(PdfName("/ICCBased")),
-        @pdf.PdfObject::Dictionary([(@pdf.n("/N"), Integer(4))]),
+        @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/N"), Integer(4))]),
       ]),
     ),
     4,
@@ -226,11 +226,16 @@ test "parse_operators handles diverse ops" {
     Opsh("/Sh1"),
     OpDo("/X1"),
     OpMP("/Tag"),
-    OpDP("/Tag", @pdf.PdfObject::Dictionary([(@pdf.n("/K"), Integer(1))])),
+    OpDP(
+      "/Tag",
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/K"), Integer(1))]),
+    ),
     OpBMC("/Span"),
     OpBDC(
       "/Span",
-      @pdf.PdfObject::Dictionary([(@pdf.n("/Lang"), String("en"))]),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/Lang"), String("en")),
+      ]),
     ),
     OpEMC,
     OpBX,
@@ -249,10 +254,10 @@ test "parse_operators handles diverse ops" {
 ///|
 test "string_of_ops renders inline image" {
   let inline_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
-    (@pdf.n("/CS"), Name(PdfName("/DeviceGray"))),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/DeviceGray"))),
   ])
   let inline_data = @pdfio.bytes_of_list([128])
   let rendered = @pdfops.Op::string_of_ops([

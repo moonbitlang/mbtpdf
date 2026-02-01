@@ -13,32 +13,32 @@ fn encrypt_pdf_AES256_inner(
   pdf : @pdf.Pdf,
 ) -> @pdf.Pdf raise {
   let crypt_dict = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Filter"), Name(PdfName("/Standard"))),
-    (@pdf.n("/V"), Integer(5)),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/Standard"))),
+    (@pdf.PdfName::of_bytes("/V"), Integer(5)),
     (
-      @pdf.n("/CF"),
+      @pdf.PdfName::of_bytes("/CF"),
       @pdf.PdfObject::Dictionary([
         (
-          @pdf.n("/StdCF"),
+          @pdf.PdfName::of_bytes("/StdCF"),
           @pdf.PdfObject::Dictionary([
-            (@pdf.n("/Length"), Integer(32)),
-            (@pdf.n("/AuthEvent"), Name(PdfName("/DocOpen"))),
-            (@pdf.n("/CFM"), Name(PdfName("/AESV3"))),
+            (@pdf.PdfName::of_bytes("/Length"), Integer(32)),
+            (@pdf.PdfName::of_bytes("/AuthEvent"), Name(PdfName("/DocOpen"))),
+            (@pdf.PdfName::of_bytes("/CFM"), Name(PdfName("/AESV3"))),
           ]),
         ),
       ]),
     ),
-    (@pdf.n("/EncryptMetadata"), Boolean(encrypt_metadata)),
-    (@pdf.n("/Length"), Integer(256)),
-    (@pdf.n("/R"), Integer(if iso { 6 } else { 5 })),
-    (@pdf.n("/O"), String(owner)),
-    (@pdf.n("/U"), String(user)),
-    (@pdf.n("/P"), Integer(p)),
-    (@pdf.n("/StrF"), Name(PdfName("/StdCF"))),
-    (@pdf.n("/StmF"), Name(PdfName("/StdCF"))),
-    (@pdf.n("/Perms"), String(perms)),
-    (@pdf.n("/OE"), String(oe)),
-    (@pdf.n("/UE"), String(ue)),
+    (@pdf.PdfName::of_bytes("/EncryptMetadata"), Boolean(encrypt_metadata)),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(256)),
+    (@pdf.PdfName::of_bytes("/R"), Integer(if iso { 6 } else { 5 })),
+    (@pdf.PdfName::of_bytes("/O"), String(owner)),
+    (@pdf.PdfName::of_bytes("/U"), String(user)),
+    (@pdf.PdfName::of_bytes("/P"), Integer(p)),
+    (@pdf.PdfName::of_bytes("/StrF"), Name(PdfName("/StdCF"))),
+    (@pdf.PdfName::of_bytes("/StmF"), Name(PdfName("/StdCF"))),
+    (@pdf.PdfName::of_bytes("/Perms"), String(perms)),
+    (@pdf.PdfName::of_bytes("/OE"), String(oe)),
+    (@pdf.PdfName::of_bytes("/UE"), String(ue)),
   ])
   match
     process_cryption(

@@ -88,10 +88,10 @@ pub fn PdfCodec::encode_pdfstream(
           pred_value, colors, bpc, predictor_columns, data,
         )
         let decodeparms = @pdf.PdfObject::Dictionary([
-          (@pdf.n("/Columns"), Integer(predictor_columns)),
-          (@pdf.n("/Predictor"), Integer(pred_value)),
-          (@pdf.n("/Colors"), Integer(colors)),
-          (@pdf.n("/BitsPerComponent"), Integer(bpc)),
+          (@pdf.PdfName::of_bytes("/Columns"), Integer(predictor_columns)),
+          (@pdf.PdfName::of_bytes("/Predictor"), Integer(pred_value)),
+          (@pdf.PdfName::of_bytes("/Colors"), Integer(colors)),
+          (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(bpc)),
         ])
         let dict_with_parms = set_dict_entry(dict, "/DecodeParms", decodeparms)
         (dict_with_parms, predicted)

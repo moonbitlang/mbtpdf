@@ -32,13 +32,15 @@ fn assert_some_integer(obj : @pdf.PdfObject?, expected : Int) -> Unit raise {
 fn make_basic_pdf() -> @pdf.Pdf {
   let base = @pdf.Pdf::empty()
   let pages = PdfObject::Dictionary([
-    (n("/Type"), Name(PdfName("/Pages"))),
-    (n("/Kids"), Array([Indirect(2)])),
+    (PdfName::of_bytes("/Type"), Name(PdfName("/Pages"))),
+    (PdfName::of_bytes("/Kids"), Array([Indirect(2)])),
   ])
-  let page = PdfObject::Dictionary([(n("/Type"), Name(PdfName("/Page")))])
+  let page = PdfObject::Dictionary([
+    (PdfName::of_bytes("/Type"), Name(PdfName("/Page"))),
+  ])
   let catalog = PdfObject::Dictionary([
-    (n("/Type"), Name(PdfName("/Catalog"))),
-    (n("/Pages"), Indirect(1)),
+    (PdfName::of_bytes("/Type"), Name(PdfName("/Catalog"))),
+    (PdfName::of_bytes("/Pages"), Indirect(1)),
   ])
   base.addobj_given_num((1, pages))
   base.addobj_given_num((2, page))
@@ -48,7 +50,9 @@ fn make_basic_pdf() -> @pdf.Pdf {
     minor: base.minor,
     root: 3,
     objects: base.objects,
-    trailerdict: PdfObject::Dictionary([(n("/Root"), Indirect(3))]),
+    trailerdict: PdfObject::Dictionary([
+      (PdfName::of_bytes("/Root"), Indirect(3)),
+    ]),
     was_linearized: base.was_linearized,
     saved_encryption: base.saved_encryption,
   }

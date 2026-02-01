@@ -19,25 +19,25 @@ async test "run removes image xobjects and writes output" {
       cleanup(in_file)
       cleanup(out_file)
       let img_xobj : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-        (@pdf.n("/Subtype"), Name(PdfName("/Image"))),
+        (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Image"))),
       ])
       let form_xobj : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-        (@pdf.n("/Subtype"), Name(PdfName("/Form"))),
+        (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Form"))),
       ])
       let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
         (
-          @pdf.n("/XObject"),
+          @pdf.PdfName::of_bytes("/XObject"),
           @pdf.PdfObject::Dictionary([
-            (@pdf.n("/Im0"), img_xobj),
-            (@pdf.n("/Form0"), form_xobj),
+            (@pdf.PdfName::of_bytes("/Im0"), img_xobj),
+            (@pdf.PdfName::of_bytes("/Form0"), form_xobj),
           ]),
         ),
       ])
       let inline_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-        (@pdf.n("/W"), Integer(1)),
-        (@pdf.n("/H"), Integer(1)),
-        (@pdf.n("/BPC"), Integer(8)),
-        (@pdf.n("/CS"), Name(PdfName("/DeviceGray"))),
+        (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+        (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+        (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+        (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/DeviceGray"))),
       ])
       let inline_data = @pdfops.Op::InlineImage(
         (inline_dict, None, [(0).to_byte()]),

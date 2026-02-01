@@ -75,13 +75,13 @@ test "encode_pdfstream ccitt g3 roundtrip" {
   let rows_bits = [[1, 1, 1, 1, 0, 0, 1, 0], [1, 0, 1, 0, 1, 0, 1, 0]]
   let raw = bitmap_bytes(rows_bits, columns)
   let decodeparms = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/K"), Integer(0)),
-    (@pdf.n("/Columns"), Integer(columns)),
-    (@pdf.n("/Rows"), Integer(rows)),
+    (@pdf.PdfName::of_bytes("/K"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/Columns"), Integer(columns)),
+    (@pdf.PdfName::of_bytes("/Rows"), Integer(rows)),
   ])
   let dict = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(raw))),
-    (@pdf.n("/DecodeParms"), decodeparms),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(raw))),
+    (@pdf.PdfName::of_bytes("/DecodeParms"), decodeparms),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(raw)))
   let stream_obj = @pdf.PdfObject::Stream(stream_ref)
@@ -109,13 +109,13 @@ test "encode_pdfstream ccitt g4 roundtrip" {
   let rows_bits = [[1, 0, 1, 0, 1, 0, 1, 0], [1, 1, 0, 0, 1, 1, 0, 0]]
   let raw = bitmap_bytes(rows_bits, columns)
   let decodeparms = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/K"), Integer(-1)),
-    (@pdf.n("/Columns"), Integer(columns)),
-    (@pdf.n("/Rows"), Integer(rows)),
+    (@pdf.PdfName::of_bytes("/K"), Integer(-1)),
+    (@pdf.PdfName::of_bytes("/Columns"), Integer(columns)),
+    (@pdf.PdfName::of_bytes("/Rows"), Integer(rows)),
   ])
   let dict = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(raw))),
-    (@pdf.n("/DecodeParms"), decodeparms),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(raw))),
+    (@pdf.PdfName::of_bytes("/DecodeParms"), decodeparms),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(raw)))
   let stream_obj = @pdf.PdfObject::Stream(stream_ref)

@@ -6,18 +6,35 @@ fn prefix_sample_rect() -> @pdf.PdfObject {
 ///|
 fn prefix_resources() -> @pdf.PdfObject {
   @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Font"), @pdf.PdfObject::Dictionary([(@pdf.n("/F1"), Null)])),
-    (@pdf.n("/ExtGState"), @pdf.PdfObject::Dictionary([(@pdf.n("/GS1"), Null)])),
     (
-      @pdf.n("/ColorSpace"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/Cs1"), Name(PdfName("/DeviceRGB")))]),
+      @pdf.PdfName::of_bytes("/Font"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/F1"), Null)]),
     ),
-    (@pdf.n("/Pattern"), @pdf.PdfObject::Dictionary([(@pdf.n("/P1"), Null)])),
-    (@pdf.n("/Shading"), @pdf.PdfObject::Dictionary([(@pdf.n("/S1"), Null)])),
-    (@pdf.n("/XObject"), @pdf.PdfObject::Dictionary([(@pdf.n("/X1"), Null)])),
     (
-      @pdf.n("/Properties"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/Prop1"), Null)]),
+      @pdf.PdfName::of_bytes("/ExtGState"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/GS1"), Null)]),
+    ),
+    (
+      @pdf.PdfName::of_bytes("/ColorSpace"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/Cs1"), Name(PdfName("/DeviceRGB"))),
+      ]),
+    ),
+    (
+      @pdf.PdfName::of_bytes("/Pattern"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/P1"), Null)]),
+    ),
+    (
+      @pdf.PdfName::of_bytes("/Shading"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/S1"), Null)]),
+    ),
+    (
+      @pdf.PdfName::of_bytes("/XObject"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/X1"), Null)]),
+    ),
+    (
+      @pdf.PdfName::of_bytes("/Properties"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/Prop1"), Null)]),
     ),
   ])
 }
@@ -35,10 +52,10 @@ test "shortest_unused_prefix handles dense prefixes" {
       None => fail("expected ASCII char")
     }
   }
-  font_entries.push((@pdf.n("/az0"), Null))
-  font_entries.push((@pdf.n("/"), Null))
+  font_entries.push((@pdf.PdfName::of_bytes("/az0"), Null))
+  font_entries.push((@pdf.PdfName::of_bytes("/"), Null))
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Font"), @pdf.PdfObject::Dictionary(font_entries)),
+    (@pdf.PdfName::of_bytes("/Font"), @pdf.PdfObject::Dictionary(font_entries)),
   ])
   let page = @pdfpage.Page(
     content=[],
@@ -176,15 +193,17 @@ test "add_prefix rewrites inline image colorspace names" {
   let pdf0 = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/ColorSpace"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/CS1"), Name(PdfName("/DeviceRGB")))]),
+      @pdf.PdfName::of_bytes("/ColorSpace"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/CS1"), Name(PdfName("/DeviceRGB"))),
+      ]),
     ),
   ])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
-    (@pdf.n("/CS"), Name(PdfName("/CS1"))),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/CS1"))),
   ])
   let ops : Array[@pdfops.Op] = [
     InlineImage((dict, None, @pdfio.bytes_of_string("RGB"))),
@@ -227,18 +246,20 @@ test "add_prefix handles filtered inline images with trailing ops" {
   let pdf0 = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/ColorSpace"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/CS1"), Name(PdfName("/DeviceRGB")))]),
+      @pdf.PdfName::of_bytes("/ColorSpace"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/CS1"), Name(PdfName("/DeviceRGB"))),
+      ]),
     ),
   ])
   let raw = @pdfio.bytes_of_list([0x11, 0x22, 0x33])
   let encoded = @pdfcodec.PdfCodec::new().encode_flate(raw)
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
-    (@pdf.n("/CS"), Name(PdfName("/CS1"))),
-    (@pdf.n("/Filter"), Name(PdfName("/FlateDecode"))),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/CS1"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/FlateDecode"))),
   ])
   let ops : Array[@pdfops.Op] = [InlineImage((dict, None, encoded)), Opq, OpQ]
   let page = @pdfpage.Page(
@@ -280,7 +301,7 @@ test "add_prefix handles filtered inline images with trailing ops" {
 test "add_prefix rejects blank resource names" {
   let pdf0 = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Font"), @pdf.PdfObject::Dictionary([("", Null)])),
+    (@pdf.PdfName::of_bytes("/Font"), @pdf.PdfObject::Dictionary([("", Null)])),
   ])
   let page = @pdfpage.Page(
     content=[],
@@ -301,7 +322,10 @@ test "add_prefix rejects blank resource names" {
 test "add_prefix handles single indirect contents" {
   let pdf0 = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Font"), @pdf.PdfObject::Dictionary([(@pdf.n("/F1"), Null)])),
+    (
+      @pdf.PdfName::of_bytes("/Font"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/F1"), Null)]),
+    ),
   ])
   let ops : Array[@pdfops.Op] = [OpTf("/F1", 9.0)]
   let page = @pdfpage.Page(
@@ -341,10 +365,10 @@ test "add_prefix handles single indirect contents" {
 test "add_prefix keeps direct inline colorspace names" {
   let pdf0 = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
-    (@pdf.n("/CS"), Name(PdfName("/DeviceRGB"))),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/DeviceRGB"))),
   ])
   let ops : Array[@pdfops.Op] = [
     InlineImage((dict, None, @pdfio.bytes_of_string("RGB"))),
@@ -386,11 +410,11 @@ test "add_prefix keeps direct inline colorspace names" {
 test "add_prefix preserves inline colorspace arrays" {
   let pdf0 = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
     (
-      @pdf.n("/CS"),
+      @pdf.PdfName::of_bytes("/CS"),
       Array([
         Name(PdfName("/Indexed")),
         Name(PdfName("/DeviceRGB")),
@@ -435,10 +459,10 @@ test "add_prefix preserves inline colorspace arrays" {
 ///|
 test "add_prefix merges non-iso content streams" {
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
-    (@pdf.n("/CS"), Name(PdfName("/DeviceRGB"))),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/DeviceRGB"))),
   ])
   let rendered = @pdfops.Op::string_of_ops([
     InlineImage((dict, None, @pdfio.bytes_of_string("RGB"))),
@@ -451,7 +475,7 @@ test "add_prefix merges non-iso content streams" {
     Ref::new(
       (
         @pdf.PdfObject::Dictionary([
-          (@pdf.n("/Length"), Integer(@pdfio.bytes_size(first))),
+          (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(first))),
         ]),
         Got(first),
       ),
@@ -461,7 +485,10 @@ test "add_prefix merges non-iso content streams" {
     Ref::new(
       (
         @pdf.PdfObject::Dictionary([
-          (@pdf.n("/Length"), Integer(@pdfio.bytes_size(second))),
+          (
+            @pdf.PdfName::of_bytes("/Length"),
+            Integer(@pdfio.bytes_size(second)),
+          ),
         ]),
         Got(second),
       ),
@@ -491,10 +518,10 @@ test "add_prefix merges non-iso content streams" {
 test "add_prefix merge_content_streams tolerates varied /Contents shapes" {
   let pdf0 = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
-    (@pdf.n("/CS"), Name(PdfName("/DeviceRGB"))),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/DeviceRGB"))),
   ])
   let rendered = @pdfops.Op::string_of_ops([
     InlineImage((dict, None, @pdfio.bytes_of_string("RGB"))),
@@ -507,7 +534,7 @@ test "add_prefix merge_content_streams tolerates varied /Contents shapes" {
     Ref::new(
       (
         @pdf.PdfObject::Dictionary([
-          (@pdf.n("/Length"), Integer(@pdfio.bytes_size(first))),
+          (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(first))),
         ]),
         Got(first),
       ),
@@ -517,7 +544,10 @@ test "add_prefix merge_content_streams tolerates varied /Contents shapes" {
     Ref::new(
       (
         @pdf.PdfObject::Dictionary([
-          (@pdf.n("/Length"), Integer(@pdfio.bytes_size(second))),
+          (
+            @pdf.PdfName::of_bytes("/Length"),
+            Integer(@pdfio.bytes_size(second)),
+          ),
         ]),
         Got(second),
       ),

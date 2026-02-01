@@ -22,8 +22,8 @@ fn eval_calc(ops : Array[Calculator]) -> Array[Double] raise {
 test "eval calculator function" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(4)),
-    (@pdf.n("/Domain"), Array([Real(0.0), Real(10.0)])),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(4)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([Real(0.0), Real(10.0)])),
   ])
   let data = @pdfio.bytes_of_string("{ dup mul }")
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(data)))
@@ -95,11 +95,11 @@ test "serialize calculator function" {
 test "parse sampled function stream" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(0)),
-    (@pdf.n("/Domain"), Array([Real(0.0), Real(1.0)])),
-    (@pdf.n("/Range"), Array([Real(0.0), Real(1.0)])),
-    (@pdf.n("/Size"), Array([Integer(2)])),
-    (@pdf.n("/BitsPerSample"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([Real(0.0), Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/Range"), Array([Real(0.0), Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/Size"), Array([Integer(2)])),
+    (@pdf.PdfName::of_bytes("/BitsPerSample"), Integer(8)),
   ])
   let data = @pdfio.bytes_of_list([0, 255])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -219,25 +219,28 @@ test "serialize calculator covers opcode strings" {
 test "eval stitching function" {
   let pdf = @pdf.Pdf::empty()
   let f1 : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(2)),
-    (@pdf.n("/Domain"), Array([Real(0.0), Real(1.0)])),
-    (@pdf.n("/C0"), Array([Real(0.0)])),
-    (@pdf.n("/C1"), Array([Real(1.0)])),
-    (@pdf.n("/N"), Real(1.0)),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(2)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([Real(0.0), Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/C0"), Array([Real(0.0)])),
+    (@pdf.PdfName::of_bytes("/C1"), Array([Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/N"), Real(1.0)),
   ])
   let f2 : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(2)),
-    (@pdf.n("/Domain"), Array([Real(0.0), Real(1.0)])),
-    (@pdf.n("/C0"), Array([Real(1.0)])),
-    (@pdf.n("/C1"), Array([Real(2.0)])),
-    (@pdf.n("/N"), Real(1.0)),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(2)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([Real(0.0), Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/C0"), Array([Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/C1"), Array([Real(2.0)])),
+    (@pdf.PdfName::of_bytes("/N"), Real(1.0)),
   ])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(3)),
-    (@pdf.n("/Domain"), Array([Real(0.0), Real(1.0)])),
-    (@pdf.n("/Functions"), Array([f1, f2])),
-    (@pdf.n("/Bounds"), Array([Real(0.5)])),
-    (@pdf.n("/Encode"), Array([Real(0.0), Real(1.0), Real(0.0), Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(3)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([Real(0.0), Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/Functions"), Array([f1, f2])),
+    (@pdf.PdfName::of_bytes("/Bounds"), Array([Real(0.5)])),
+    (
+      @pdf.PdfName::of_bytes("/Encode"),
+      Array([Real(0.0), Real(1.0), Real(0.0), Real(1.0)]),
+    ),
   ])
   let fun = PdfFunction::parse(pdf, dict)
   let out1 = PdfFunction::eval(fun, [0.25])
@@ -326,8 +329,8 @@ test "PdfFunction::print covers kinds and array sizes" {
 test "parse calculator keywords from stream" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(4)),
-    (@pdf.n("/Domain"), Array([Real(0.0), Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(4)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([Real(0.0), Real(1.0)])),
   ])
   let data = @pdfio.bytes_of_string(
     "{ true 1.5 add 2 round 3 1 roll 2 atan 30 sin ceiling sqrt cos sub 2 abs 1 neg 0 index { 1 } if { 0 } { 1 } ifelse }",
@@ -381,8 +384,8 @@ test "parse calculator keywords from stream" {
 test "parse calculator rejects multi-token group" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(4)),
-    (@pdf.n("/Domain"), Array([Real(0.0), Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(4)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([Real(0.0), Real(1.0)])),
   ])
   let data = @pdfio.bytes_of_string("{ 0 { 1 2 } }")
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -542,8 +545,8 @@ test "calculator boolean and comparison ops" {
 test "calculator if and ifelse parse" {
   let pdf = @pdf.Pdf::empty()
   let dict_if : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(4)),
-    (@pdf.n("/Domain"), Array([])),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(4)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([])),
   ])
   let data_if = @pdfio.bytes_of_string("{ true { 5 } if }")
   let if_stream : @pdf.PdfObject = Stream(Ref::new((dict_if, Got(data_if))))
@@ -552,8 +555,8 @@ test "calculator if and ifelse parse" {
   assert_eq(out_if.length(), 1)
   assert_close(out_if[0], 5.0)
   let dict_ifelse : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(4)),
-    (@pdf.n("/Domain"), Array([])),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(4)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([])),
   ])
   let data_ifelse = @pdfio.bytes_of_string("{ false { 1 } { 2 } ifelse }")
   let ifelse_stream : @pdf.PdfObject = Stream(
@@ -616,16 +619,16 @@ test "parse function rejects bad inputs" {
   @pdfe.with_logger(_ => (), fn() {
     let pdf = @pdf.Pdf::empty()
     let bad_type : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-      (@pdf.n("/FunctionType"), Integer(9)),
-      (@pdf.n("/Domain"), Array([])),
+      (@pdf.PdfName::of_bytes("/FunctionType"), Integer(9)),
+      (@pdf.PdfName::of_bytes("/Domain"), Array([])),
     ])
     let bad_type_result : Result[PdfFunction, Error] = try? PdfFunction::parse(
       pdf, bad_type,
     )
     assert_true(bad_type_result is Err(_))
     let bad_calc_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-      (@pdf.n("/FunctionType"), Integer(4)),
-      (@pdf.n("/Domain"), Array([])),
+      (@pdf.PdfName::of_bytes("/FunctionType"), Integer(4)),
+      (@pdf.PdfName::of_bytes("/Domain"), Array([])),
     ])
     let bad_calc_data = @pdfio.bytes_of_string("{ nope }")
     let bad_calc_stream : @pdf.PdfObject = Stream(
@@ -636,10 +639,10 @@ test "parse function rejects bad inputs" {
     )
     assert_true(bad_calc_result is Err(_))
     let sampled_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-      (@pdf.n("/FunctionType"), Integer(0)),
-      (@pdf.n("/Domain"), Array([Real(0.0), Real(1.0)])),
-      (@pdf.n("/Size"), Array([Integer(2)])),
-      (@pdf.n("/BitsPerSample"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/FunctionType"), Integer(0)),
+      (@pdf.PdfName::of_bytes("/Domain"), Array([Real(0.0), Real(1.0)])),
+      (@pdf.PdfName::of_bytes("/Size"), Array([Integer(2)])),
+      (@pdf.PdfName::of_bytes("/BitsPerSample"), Integer(1)),
     ])
     let sampled_data = @pdfio.bytes_of_list([0, 1])
     let sampled_stream : @pdf.PdfObject = Stream(
@@ -695,8 +698,8 @@ test "PdfFunction::print covers extra calculator strings" {
 test "parse calculator keywords covers remaining ops" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(4)),
-    (@pdf.n("/Domain"), Array([])),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(4)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([])),
   ])
   let data = @pdfio.bytes_of_string(
     "{ cvi cvr div exp floor idiv ln log mod mul truncate and bitshift eq ge gt le lt ne not or xor copy exch pop dup index roll }",
@@ -888,74 +891,74 @@ test "calculator comparisons across types" {
 test "parse_function hits error branches" {
   let pdf = @pdf.Pdf::empty()
   let bad_domain : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(2)),
-    (@pdf.n("/Domain"), Integer(1)),
-    (@pdf.n("/N"), Real(1.0)),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(2)),
+    (@pdf.PdfName::of_bytes("/Domain"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/N"), Real(1.0)),
   ])
   assert_is_err(try? PdfFunction::parse(pdf, bad_domain))
   let bad_size : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(0)),
-    (@pdf.n("/Domain"), Array([])),
-    (@pdf.n("/Size"), Array([Real(2.0)])),
-    (@pdf.n("/BitsPerSample"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([])),
+    (@pdf.PdfName::of_bytes("/Size"), Array([Real(2.0)])),
+    (@pdf.PdfName::of_bytes("/BitsPerSample"), Integer(8)),
   ])
   assert_is_err(try? PdfFunction::parse(pdf, bad_size))
   let bad_size_type : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(0)),
-    (@pdf.n("/Domain"), Array([])),
-    (@pdf.n("/Size"), Integer(1)),
-    (@pdf.n("/BitsPerSample"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([])),
+    (@pdf.PdfName::of_bytes("/Size"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerSample"), Integer(8)),
   ])
   assert_is_err(try? PdfFunction::parse(pdf, bad_size_type))
   let bad_bps : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(0)),
-    (@pdf.n("/Domain"), Array([])),
-    (@pdf.n("/Size"), Array([Integer(2)])),
-    (@pdf.n("/BitsPerSample"), Name(PdfName("/Bad"))),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([])),
+    (@pdf.PdfName::of_bytes("/Size"), Array([Integer(2)])),
+    (@pdf.PdfName::of_bytes("/BitsPerSample"), Name(PdfName("/Bad"))),
   ])
   assert_is_err(try? PdfFunction::parse(pdf, bad_bps))
   let to_get = @pdf.ToGet::new(@pdfio.Input::of_string("x"), 0, 1)
   let sample_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(0)),
-    (@pdf.n("/Domain"), Array([])),
-    (@pdf.n("/Size"), Array([Integer(1)])),
-    (@pdf.n("/BitsPerSample"), Integer(8)),
-    (@pdf.n("/Decode"), Array([Real(0.0)])),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([])),
+    (@pdf.PdfName::of_bytes("/Size"), Array([Integer(1)])),
+    (@pdf.PdfName::of_bytes("/BitsPerSample"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/Decode"), Array([Real(0.0)])),
   ])
   let sample_stream : @pdf.PdfObject = Stream(
     Ref::new((sample_dict, ToGet(to_get))),
   )
   assert_is_err(try? PdfFunction::parse(pdf, sample_stream))
   let calc_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(4)),
-    (@pdf.n("/Domain"), Array([])),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(4)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([])),
   ])
   let calc_stream : @pdf.PdfObject = Stream(
     Ref::new((calc_dict, ToGet(to_get))),
   )
   assert_is_err(try? PdfFunction::parse(pdf, calc_stream))
   let bad_functions : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(3)),
-    (@pdf.n("/Domain"), Array([])),
-    (@pdf.n("/Functions"), Integer(1)),
-    (@pdf.n("/Bounds"), Array([])),
-    (@pdf.n("/Encode"), Array([])),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(3)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([])),
+    (@pdf.PdfName::of_bytes("/Functions"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Bounds"), Array([])),
+    (@pdf.PdfName::of_bytes("/Encode"), Array([])),
   ])
   assert_is_err(try? PdfFunction::parse(pdf, bad_functions))
   let bad_bounds : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(3)),
-    (@pdf.n("/Domain"), Array([])),
-    (@pdf.n("/Functions"), Array([])),
-    (@pdf.n("/Bounds"), Integer(1)),
-    (@pdf.n("/Encode"), Array([])),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(3)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([])),
+    (@pdf.PdfName::of_bytes("/Functions"), Array([])),
+    (@pdf.PdfName::of_bytes("/Bounds"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Encode"), Array([])),
   ])
   assert_is_err(try? PdfFunction::parse(pdf, bad_bounds))
   let bad_encode : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(3)),
-    (@pdf.n("/Domain"), Array([])),
-    (@pdf.n("/Functions"), Array([])),
-    (@pdf.n("/Bounds"), Array([])),
-    (@pdf.n("/Encode"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(3)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([])),
+    (@pdf.PdfName::of_bytes("/Functions"), Array([])),
+    (@pdf.PdfName::of_bytes("/Bounds"), Array([])),
+    (@pdf.PdfName::of_bytes("/Encode"), Integer(1)),
   ])
   assert_is_err(try? PdfFunction::parse(pdf, bad_encode))
 }

@@ -51,7 +51,7 @@ fn roundtrip_predictor(pred : Predictor, pred_value : Int) -> Unit raise {
   let pdf = @pdf.Pdf::empty()
   let original = @pdfio.bytes_of_string("abcdefghi")
   let dict = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(original))),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(original))),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(original)))
   let stream_obj = @pdf.PdfObject::Stream(stream_ref)

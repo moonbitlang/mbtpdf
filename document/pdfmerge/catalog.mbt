@@ -113,12 +113,19 @@ fn merge_optional_content_groups(
   }
   let merged_default_dictionary = merge_default_dictionaries(pdf, default_dicts)
   let entries = Array::new(capacity=3)
-  entries.push((@pdf.n("/OCGs"), PdfObject::Array(merged_ocg_arrays)))
   entries.push(
-    (@pdf.n("/D"), @pdf.PdfObject::Dictionary(merged_default_dictionary)),
+    (@pdf.PdfName::of_bytes("/OCGs"), PdfObject::Array(merged_ocg_arrays)),
+  )
+  entries.push(
+    (
+      @pdf.PdfName::of_bytes("/D"),
+      @pdf.PdfObject::Dictionary(merged_default_dictionary),
+    ),
   )
   if merged_config_arrays.length() > 0 {
-    entries.push((@pdf.n("/Configs"), Array(merged_config_arrays)))
+    entries.push(
+      (@pdf.PdfName::of_bytes("/Configs"), Array(merged_config_arrays)),
+    )
   }
   let new_ocproperties = @pdf.PdfObject::Dictionary(entries)
   Some(pdf.addobj(new_ocproperties))

@@ -21,13 +21,13 @@ fn assert_calc_err(ops : Array[Calculator]) -> Unit raise {
 test "parse_function sampled order" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(0)),
-    (@pdf.n("/Domain"), Array([Real(0.0), Real(1.0)])),
-    (@pdf.n("/Range"), Array([Real(0.0), Real(1.0)])),
-    (@pdf.n("/Size"), Array([Integer(1)])),
-    (@pdf.n("/BitsPerSample"), Integer(8)),
-    (@pdf.n("/Order"), Integer(3)),
-    (@pdf.n("/Length"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([Real(0.0), Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/Range"), Array([Real(0.0), Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/Size"), Array([Integer(1)])),
+    (@pdf.PdfName::of_bytes("/BitsPerSample"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/Order"), Integer(3)),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(1)),
   ])
   let data = @pdfio.bytes_of_list([0x80])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -42,9 +42,9 @@ test "parse_function sampled order" {
 test "parse_function defaults c0 c1" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(2)),
-    (@pdf.n("/Domain"), Array([Real(0.0), Real(1.0)])),
-    (@pdf.n("/N"), Real(1.0)),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(2)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([Real(0.0), Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/N"), Real(1.0)),
   ])
   let parsed = PdfFunction::parse(pdf, dict)
   match parsed.func {
@@ -63,9 +63,9 @@ test "parse_function calculator supports nested procedures" {
   let pdf = @pdf.Pdf::empty()
   let program = "{ false { true { 1 } if } { 0 } ifelse }"
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(4)),
-    (@pdf.n("/Domain"), Array([Real(0.0), Real(1.0)])),
-    (@pdf.n("/Length"), Integer(program.length())),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(4)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([Real(0.0), Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(program.length())),
   ])
   let data = @pdfio.bytes_of_string(program)
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -84,11 +84,11 @@ test "parse_function calculator supports nested procedures" {
 test "parse_function rejects bad bits per sample" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/FunctionType"), Integer(0)),
-    (@pdf.n("/Domain"), Array([Real(0.0), Real(1.0)])),
-    (@pdf.n("/Range"), Array([Real(0.0), Real(1.0)])),
-    (@pdf.n("/Size"), Array([Integer(1)])),
-    (@pdf.n("/BitsPerSample"), Name(PdfName("/Bad"))),
+    (@pdf.PdfName::of_bytes("/FunctionType"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/Domain"), Array([Real(0.0), Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/Range"), Array([Real(0.0), Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/Size"), Array([Integer(1)])),
+    (@pdf.PdfName::of_bytes("/BitsPerSample"), Name(PdfName("/Bad"))),
   ])
   let res : Result[PdfFunction, Error] = try? PdfFunction::parse(pdf, dict)
   assert_true(res is Err(_))

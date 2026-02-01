@@ -44,23 +44,23 @@ test "pages_of_pagetree treats stream /Contents as singleton array" {
   let pdf0 = @pdf.Pdf::empty()
   let data = @pdfio.bytes_of_string("q Q")
   let stream_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(data))),
   ])
   let stream_num = pdf0.addobj(Stream(Ref::new((stream_dict, Got(data)))))
   let page_num = pdf0.addobj(
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/Type"), Name(PdfName("/Page"))),
-      (@pdf.n("/MediaBox"), coverage_rect()),
-      (@pdf.n("/Rotate"), Integer(180)),
-      (@pdf.n("/Contents"), Indirect(stream_num)),
-      (@pdf.n("/Resources"), @pdf.PdfObject::Dictionary([])),
+      (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Page"))),
+      (@pdf.PdfName::of_bytes("/MediaBox"), coverage_rect()),
+      (@pdf.PdfName::of_bytes("/Rotate"), Integer(180)),
+      (@pdf.PdfName::of_bytes("/Contents"), Indirect(stream_num)),
+      (@pdf.PdfName::of_bytes("/Resources"), @pdf.PdfObject::Dictionary([])),
     ]),
   )
   let pages_root_num = pdf0.addobj(
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/Type"), Name(PdfName("/Pages"))),
-      (@pdf.n("/Kids"), Array([Indirect(page_num)])),
-      (@pdf.n("/Count"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Pages"))),
+      (@pdf.PdfName::of_bytes("/Kids"), Array([Indirect(page_num)])),
+      (@pdf.PdfName::of_bytes("/Count"), Integer(1)),
     ]),
   )
   let pdf = @pdfpage.PdfPageDoc::new(pdf0).add_root(pages_root_num, [])

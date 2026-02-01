@@ -14,9 +14,9 @@ fn pdf_with_pages(count : Int, mediabox : @pdf.PdfObject) -> @pdf.Pdf raise {
   let pdf = @pdf.Pdf::empty()
   let pages_root_num = pdf.addobj(
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/Type"), Name(PdfName("/Pages"))),
-      (@pdf.n("/Kids"), Array([])),
-      (@pdf.n("/Count"), Integer(count)),
+      (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Pages"))),
+      (@pdf.PdfName::of_bytes("/Kids"), Array([])),
+      (@pdf.PdfName::of_bytes("/Count"), Integer(count)),
     ]),
   )
   let kids : Array[@pdf.PdfObject] = []
@@ -24,9 +24,9 @@ fn pdf_with_pages(count : Int, mediabox : @pdf.PdfObject) -> @pdf.Pdf raise {
   while i < count {
     let page_num = pdf.addobj(
       @pdf.PdfObject::Dictionary([
-        (@pdf.n("/Type"), Name(PdfName("/Page"))),
-        (@pdf.n("/Parent"), Indirect(pages_root_num)),
-        (@pdf.n("/MediaBox"), mediabox),
+        (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Page"))),
+        (@pdf.PdfName::of_bytes("/Parent"), Indirect(pages_root_num)),
+        (@pdf.PdfName::of_bytes("/MediaBox"), mediabox),
       ]),
     )
     kids.push(Indirect(page_num))
@@ -36,16 +36,16 @@ fn pdf_with_pages(count : Int, mediabox : @pdf.PdfObject) -> @pdf.Pdf raise {
     (
       pages_root_num,
       @pdf.PdfObject::Dictionary([
-        (@pdf.n("/Type"), Name(PdfName("/Pages"))),
-        (@pdf.n("/Kids"), Array(kids)),
-        (@pdf.n("/Count"), Integer(count)),
+        (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Pages"))),
+        (@pdf.PdfName::of_bytes("/Kids"), Array(kids)),
+        (@pdf.PdfName::of_bytes("/Count"), Integer(count)),
       ]),
     ),
   )
   let catalog_num = pdf.addobj(
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/Type"), Name(PdfName("/Catalog"))),
-      (@pdf.n("/Pages"), Indirect(pages_root_num)),
+      (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Catalog"))),
+      (@pdf.PdfName::of_bytes("/Pages"), Indirect(pages_root_num)),
     ]),
   )
   let trailerdict = pdf.trailerdict.add_entry("/Root", Indirect(catalog_num))
@@ -141,9 +141,9 @@ test "transform_destination updates GoTo action" {
   let pdf = minimum_valid_pdf()
   let refs = pdf.page_reference_numbers()
   let action : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/S"), Name(PdfName("/GoTo"))),
+    (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/GoTo"))),
     (
-      @pdf.n("/D"),
+      @pdf.PdfName::of_bytes("/D"),
       Array([
         Indirect(refs[0]),
         Name(PdfName("/XYZ")),
@@ -178,7 +178,9 @@ test "read_destination from dictionary /D" {
     Real(20.0),
     Real(1.0),
   ])
-  let obj : @pdf.PdfObject = @pdf.PdfObject::Dictionary([(@pdf.n("/D"), inner)])
+  let obj : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
+    (@pdf.PdfName::of_bytes("/D"), inner),
+  ])
   let dest = Destination::read(pdf, obj)
   match dest {
     XYZ(OtherDocPageNumber(0), Some(left), Some(top), Some(zoom)) => {
@@ -343,7 +345,7 @@ test "read_destination name resolution" {
   let pdf_missing_entry = minimum_valid_pdf()
   let root = pdf_missing_entry.lookup_obj(pdf_missing_entry.root)
   let dests : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Other"), Null),
+    (@pdf.PdfName::of_bytes("/Other"), Null),
   ])
   let root = root.add_entry("/Dests", dests)
   pdf_missing_entry.addobj_given_num((pdf_missing_entry.root, root))
@@ -375,10 +377,10 @@ test "read_destination string resolution" {
   let pdf_with_tree = minimum_valid_pdf()
   let dest : @pdf.PdfObject = Array([Integer(0), Name(PdfName("/Fit"))])
   let dests : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Names"), Array([String("Anchor"), dest])),
+    (@pdf.PdfName::of_bytes("/Names"), Array([String("Anchor"), dest])),
   ])
   let names : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Dests"), dests),
+    (@pdf.PdfName::of_bytes("/Dests"), dests),
   ])
   let root = pdf_with_tree.lookup_obj(pdf_with_tree.root)
   let root = root.add_entry("/Names", names)
@@ -389,10 +391,10 @@ test "read_destination string resolution" {
   }
   let pdf_no_match = minimum_valid_pdf()
   let dests : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Names"), Array([String("Other"), dest])),
+    (@pdf.PdfName::of_bytes("/Names"), Array([String("Other"), dest])),
   ])
   let names : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Dests"), dests),
+    (@pdf.PdfName::of_bytes("/Dests"), dests),
   ])
   let root = pdf_no_match.lookup_obj(pdf_no_match.root)
   let root = root.add_entry("/Names", names)
@@ -488,7 +490,9 @@ test "transform_destination variants" {
     _ => fail("expected FitR transform")
   }
   let action = Destination::Action(
-    @pdf.PdfObject::Dictionary([(@pdf.n("/S"), Name(PdfName("/URI")))]),
+    @pdf.PdfObject::Dictionary([
+      (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/URI"))),
+    ]),
   )
   match action.transform(pdf, tr) {
     Action(dict) =>
@@ -517,7 +521,7 @@ test "read_destination resolves named dests in catalog" {
   let refs = pdf.page_reference_numbers()
   let dest : @pdf.PdfObject = Array([Indirect(refs[0]), Name(PdfName("/Fit"))])
   let dests : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Chapter1"), dest),
+    (@pdf.PdfName::of_bytes("/Chapter1"), dest),
   ])
   let root_obj = pdf.lookup_obj(pdf.root)
   let updated_root = root_obj.add_entry("/Dests", dests)

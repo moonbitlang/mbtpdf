@@ -1,11 +1,14 @@
 ///|
 fn type3_font_dict() -> @pdf.PdfObject {
   @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Type3"))),
-    (@pdf.n("/BaseFont"), Name(PdfName("/TestFont"))),
-    (@pdf.n("/FontBBox"), Array([Real(0.0), Real(0.0), Real(1.0), Real(1.0)])),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Type3"))),
+    (@pdf.PdfName::of_bytes("/BaseFont"), Name(PdfName("/TestFont"))),
     (
-      @pdf.n("/FontMatrix"),
+      @pdf.PdfName::of_bytes("/FontBBox"),
+      Array([Real(0.0), Real(0.0), Real(1.0), Real(1.0)]),
+    ),
+    (
+      @pdf.PdfName::of_bytes("/FontMatrix"),
       Array([
         Real(0.001),
         Real(0.0),
@@ -15,11 +18,14 @@ fn type3_font_dict() -> @pdf.PdfObject {
         Real(0.0),
       ]),
     ),
-    (@pdf.n("/CharProcs"), @pdf.PdfObject::Dictionary([(@pdf.n("/A"), Null)])),
-    (@pdf.n("/FirstChar"), Integer(0)),
-    (@pdf.n("/LastChar"), Integer(0)),
-    (@pdf.n("/Widths"), Array([Integer(0)])),
-    (@pdf.n("/FontDescriptor"), @pdf.PdfObject::Dictionary([])),
+    (
+      @pdf.PdfName::of_bytes("/CharProcs"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/A"), Null)]),
+    ),
+    (@pdf.PdfName::of_bytes("/FirstChar"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/LastChar"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/Widths"), Array([Integer(0)])),
+    (@pdf.PdfName::of_bytes("/FontDescriptor"), @pdf.PdfObject::Dictionary([])),
   ])
 }
 
@@ -44,7 +50,7 @@ test "write_encoding handles builtins and custom diffs" {
     _ => fail("expected encoding dictionary")
   }
   let implicit_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Type0"))),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Type0"))),
   ])
   let implicit = ctx.read_encoding(implicit_dict)
   let implicit_result : Result[Int, Error] = try? ctx.write_encoding(implicit)

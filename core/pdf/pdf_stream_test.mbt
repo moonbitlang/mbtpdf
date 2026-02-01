@@ -4,7 +4,7 @@ test "streams and transforms" {
   pdf.addobj_given_num((1, Integer(7)))
   let input = @pdfio.Input::of_string("abcd", source="stream")
   let t = ToGet::new(input, 0, 4)
-  let dict = PdfObject::Dictionary([(n("/Length"), Integer(0))])
+  let dict = PdfObject::Dictionary([(PdfName::of_bytes("/Length"), Integer(0))])
   let stream_ref = Ref::new((dict, Stream::ToGet(t)))
   let stream_obj = PdfObject::Stream(stream_ref)
   stream_obj.getstream()
@@ -56,13 +56,15 @@ test "streams and transforms" {
   assert_is_err(
     try? pdf.parse_matrix(
       "/Matrix",
-      PdfObject::Dictionary([(n("/Matrix"), Array([Integer(1)]))]),
+      PdfObject::Dictionary([
+        (PdfName::of_bytes("/Matrix"), Array([Integer(1)])),
+      ]),
     ),
   )
   assert_is_err(
     try? pdf.parse_matrix(
       "/Matrix",
-      PdfObject::Dictionary([(n("/Matrix"), Integer(1))]),
+      PdfObject::Dictionary([(PdfName::of_bytes("/Matrix"), Integer(1))]),
     ),
   )
   match make_matrix(@pdftransform.TransformMatrix::identity()) {
@@ -185,9 +187,9 @@ test "getstream error cases" {
 ///|
 test "lookup_immediate_all preserves duplicate dictionary keys" {
   let dict = PdfObject::Dictionary([
-    (n("/A"), Integer(1)),
-    (n("/A"), Integer(2)),
-    (n("/B"), Integer(3)),
+    (PdfName::of_bytes("/A"), Integer(1)),
+    (PdfName::of_bytes("/A"), Integer(2)),
+    (PdfName::of_bytes("/B"), Integer(3)),
   ])
   let values = dict.lookup_immediate_all("/A")
   assert_eq(values.length(), 2)

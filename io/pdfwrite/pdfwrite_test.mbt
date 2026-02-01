@@ -8,8 +8,8 @@ test "string_of_pdf basic" {
 ///|
 test "string_of_pdf dictionary" {
   let obj : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Type"), Name(PdfName("/Example"))),
-    (@pdf.n("/Count"), Integer(2)),
+    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Example"))),
+    (@pdf.PdfName::of_bytes("/Count"), Integer(2)),
   ])
   let s = @pdfwrite.PdfWrite::new().string_of_pdf(obj)
   assert_eq(s, "<</Type /Example /Count 2>>")

@@ -38,9 +38,9 @@ pub fn PdfTree::build_name_tree(
 ) -> @pdf.PdfObject {
   if entries.length() == 0 {
     if isnum {
-      @pdf.PdfObject::Dictionary([(@pdf.n("/Nums"), Array([]))])
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/Nums"), Array([]))])
     } else {
-      @pdf.PdfObject::Dictionary([(@pdf.n("/Names"), Array([]))])
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/Names"), Array([]))])
     }
   } else {
     let sorted = clone_entries(entries)
@@ -318,7 +318,11 @@ fn PdfTree::name_tree_of_nt(
         array_items.push(key_obj)
         array_items.push(pair.1)
       }
-      let entry_key = if isnum { @pdf.n("/Nums") } else { @pdf.n("/Names") }
+      let entry_key = if isnum {
+        @pdf.PdfName::of_bytes("/Nums")
+      } else {
+        @pdf.PdfName::of_bytes("/Names")
+      }
       let entry = (entry_key, PdfObject::Array(array_items))
       let limits = if isnum {
         PdfObject::Array([
@@ -331,7 +335,7 @@ fn PdfTree::name_tree_of_nt(
       let dict_entries = Array::new(capacity=2)
       dict_entries.push(entry)
       if !isroot {
-        dict_entries.push((@pdf.n("/Limits"), limits))
+        dict_entries.push((@pdf.PdfName::of_bytes("/Limits"), limits))
       }
       @pdf.PdfObject::Dictionary(dict_entries)
     }
@@ -356,8 +360,8 @@ fn PdfTree::name_tree_of_nt(
         Array([String(llimit), String(rlimit)])
       }
       @pdf.PdfObject::Dictionary([
-        (@pdf.n("/Kids"), Array(kid_refs)),
-        (@pdf.n("/Limits"), limits),
+        (@pdf.PdfName::of_bytes("/Kids"), Array(kid_refs)),
+        (@pdf.PdfName::of_bytes("/Limits"), limits),
       ])
     }
   }

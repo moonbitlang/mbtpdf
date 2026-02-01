@@ -8,13 +8,13 @@ fn encrypt_pdf_128bit_inner(
   pdf : @pdf.Pdf,
 ) -> @pdf.Pdf raise {
   let crypt_dict = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Filter"), Name(PdfName("/Standard"))),
-    (@pdf.n("/V"), Integer(2)),
-    (@pdf.n("/R"), Integer(3)),
-    (@pdf.n("/O"), String(owner)),
-    (@pdf.n("/U"), String(user)),
-    (@pdf.n("/Length"), Integer(128)),
-    (@pdf.n("/P"), Integer(p)),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/Standard"))),
+    (@pdf.PdfName::of_bytes("/V"), Integer(2)),
+    (@pdf.PdfName::of_bytes("/R"), Integer(3)),
+    (@pdf.PdfName::of_bytes("/O"), String(owner)),
+    (@pdf.PdfName::of_bytes("/U"), String(user)),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(128)),
+    (@pdf.PdfName::of_bytes("/P"), Integer(p)),
   ])
   match
     process_cryption(
@@ -54,29 +54,29 @@ fn encrypt_pdf_128bit_inner_r4(
   encrypt_metadata : Bool,
 ) -> @pdf.Pdf raise {
   let crypt_dict = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Filter"), Name(PdfName("/Standard"))),
-    (@pdf.n("/V"), Integer(4)),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/Standard"))),
+    (@pdf.PdfName::of_bytes("/V"), Integer(4)),
     (
-      @pdf.n("/CF"),
+      @pdf.PdfName::of_bytes("/CF"),
       @pdf.PdfObject::Dictionary([
         (
-          @pdf.n("/StdCF"),
+          @pdf.PdfName::of_bytes("/StdCF"),
           @pdf.PdfObject::Dictionary([
-            (@pdf.n("/Length"), Integer(16)),
-            (@pdf.n("/AuthEvent"), Name(PdfName("/DocOpen"))),
-            (@pdf.n("/CFM"), Name(PdfName("/V2"))),
+            (@pdf.PdfName::of_bytes("/Length"), Integer(16)),
+            (@pdf.PdfName::of_bytes("/AuthEvent"), Name(PdfName("/DocOpen"))),
+            (@pdf.PdfName::of_bytes("/CFM"), Name(PdfName("/V2"))),
           ]),
         ),
       ]),
     ),
-    (@pdf.n("/EncryptMetadata"), Boolean(encrypt_metadata)),
-    (@pdf.n("/Length"), Integer(128)),
-    (@pdf.n("/R"), Integer(4)),
-    (@pdf.n("/O"), String(owner)),
-    (@pdf.n("/U"), String(user)),
-    (@pdf.n("/P"), Integer(p)),
-    (@pdf.n("/StrF"), Name(PdfName("/StdCF"))),
-    (@pdf.n("/StmF"), Name(PdfName("/StdCF"))),
+    (@pdf.PdfName::of_bytes("/EncryptMetadata"), Boolean(encrypt_metadata)),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(128)),
+    (@pdf.PdfName::of_bytes("/R"), Integer(4)),
+    (@pdf.PdfName::of_bytes("/O"), String(owner)),
+    (@pdf.PdfName::of_bytes("/U"), String(user)),
+    (@pdf.PdfName::of_bytes("/P"), Integer(p)),
+    (@pdf.PdfName::of_bytes("/StrF"), Name(PdfName("/StdCF"))),
+    (@pdf.PdfName::of_bytes("/StmF"), Name(PdfName("/StdCF"))),
   ])
   match
     process_cryption(

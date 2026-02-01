@@ -7,9 +7,12 @@ type Op = @pdfops.Op
 ///|
 fn font_type1(base_font : String) -> PdfObject {
   @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Type"), Name(PdfName("/Font"))),
-    (@pdf.n("/Subtype"), Name(PdfName("/Type1"))),
-    (@pdf.n("/BaseFont"), Name(@pdf.PdfName::of_string("/" + base_font))),
+    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Font"))),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Type1"))),
+    (
+      @pdf.PdfName::of_bytes("/BaseFont"),
+      Name(@pdf.PdfName::of_string("/" + base_font)),
+    ),
   ])
 }
 
@@ -17,11 +20,11 @@ fn font_type1(base_font : String) -> PdfObject {
 fn resources() -> PdfObject {
   @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/Font"),
+      @pdf.PdfName::of_bytes("/Font"),
       @pdf.PdfObject::Dictionary([
-        (@pdf.n("/F0"), font_type1("Helvetica-Bold")),
-        (@pdf.n("/F1"), font_type1("Helvetica")),
-        (@pdf.n("/F2"), font_type1("Courier")),
+        (@pdf.PdfName::of_bytes("/F0"), font_type1("Helvetica-Bold")),
+        (@pdf.PdfName::of_bytes("/F1"), font_type1("Helvetica")),
+        (@pdf.PdfName::of_bytes("/F2"), font_type1("Courier")),
       ]),
     ),
   ])
@@ -230,25 +233,28 @@ fn set_catalog_entry(
 ///|
 fn add_layers(pdf : @pdf.Pdf) -> (Int, Int) raise {
   let secret : PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Type"), Name(PdfName("/OCG"))),
-    (@pdf.n("/Name"), String("SECRET")),
+    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/OCG"))),
+    (@pdf.PdfName::of_bytes("/Name"), String("SECRET")),
   ])
   let party : PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Type"), Name(PdfName("/OCG"))),
-    (@pdf.n("/Name"), String("PARTY MODE")),
+    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/OCG"))),
+    (@pdf.PdfName::of_bytes("/Name"), String("PARTY MODE")),
   ])
   let secret_num = pdf.addobj(secret)
   let party_num = pdf.addobj(party)
   let default_dict : PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/BaseState"), Name(PdfName("/ON"))),
-    (@pdf.n("/Intent"), Name(PdfName("/View"))),
-    (@pdf.n("/Name"), String("Default")),
-    (@pdf.n("/OFF"), Array([Indirect(secret_num)])),
-    (@pdf.n("/ON"), Array([Indirect(party_num)])),
+    (@pdf.PdfName::of_bytes("/BaseState"), Name(PdfName("/ON"))),
+    (@pdf.PdfName::of_bytes("/Intent"), Name(PdfName("/View"))),
+    (@pdf.PdfName::of_bytes("/Name"), String("Default")),
+    (@pdf.PdfName::of_bytes("/OFF"), Array([Indirect(secret_num)])),
+    (@pdf.PdfName::of_bytes("/ON"), Array([Indirect(party_num)])),
   ])
   let ocprops : PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/OCGs"), Array([Indirect(secret_num), Indirect(party_num)])),
-    (@pdf.n("/D"), default_dict),
+    (
+      @pdf.PdfName::of_bytes("/OCGs"),
+      Array([Indirect(secret_num), Indirect(party_num)]),
+    ),
+    (@pdf.PdfName::of_bytes("/D"), default_dict),
   ])
   let ocprops_num = pdf.addobj(ocprops)
   set_catalog_entry(pdf, "/OCProperties", Indirect(ocprops_num))
@@ -265,8 +271,8 @@ fn add_layer_properties_to_pages(
   for i in 0..<pages.length() {
     let page = pages[i]
     let props : PdfObject = @pdf.PdfObject::Dictionary([
-      (@pdf.n("/SECRET"), Indirect(secret_num)),
-      (@pdf.n("/PARTY"), Indirect(party_num)),
+      (@pdf.PdfName::of_bytes("/SECRET"), Indirect(secret_num)),
+      (@pdf.PdfName::of_bytes("/PARTY"), Indirect(party_num)),
     ])
     let resources = page.resources.add_entry("/Properties", props)
     pages[i] = Page(
@@ -284,8 +290,8 @@ fn add_layer_properties_to_pages(
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
   @pdf.PdfObject::Dictionary([
-    (@pdf.n("/S"), Name(PdfName("/GoTo"))),
-    (@pdf.n("/D"), dest),
+    (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/GoTo"))),
+    (@pdf.PdfName::of_bytes("/D"), dest),
   ])
 }
 
@@ -303,7 +309,9 @@ fn add_link(
     rectangle: rect,
     border: @pdfannot.Border::new(0.0),
     colour: None,
-    annotrest: @pdf.PdfObject::Dictionary([(@pdf.n("/A"), action)]),
+    annotrest: @pdf.PdfObject::Dictionary([
+      (@pdf.PdfName::of_bytes("/A"), action),
+    ]),
   }
   @pdfannot.PdfAnnot::new(pdf).add_annotation(page, annot)
 }

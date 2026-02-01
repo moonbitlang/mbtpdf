@@ -489,7 +489,7 @@ pub fn Op::stream_of_ops(ops : Array[Op]) -> @pdf.PdfObject raise {
     Ref::new(
       (
         @pdf.PdfObject::Dictionary([
-          (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
+          (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(data))),
         ]),
         Got(data),
       ),

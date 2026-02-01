@@ -32,8 +32,8 @@ test "decrypt_single_stream skips metadata when EncryptMetadata is false" {
     pdf,
   )
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Type"), Name(PdfName("/Metadata"))),
-    (@pdf.n("/Length"), Integer(4)),
+    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Metadata"))),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(4)),
   ])
   let data = @pdfio.bytes_of_string("meta")
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -66,12 +66,14 @@ test "decrypt_single_stream skips identity crypt filters" {
     pdf,
   )
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Filter"), Name(PdfName("/Crypt"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/Crypt"))),
     (
-      @pdf.n("/DecodeParms"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/Name"), Name(PdfName("/Identity")))]),
+      @pdf.PdfName::of_bytes("/DecodeParms"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/Name"), Name(PdfName("/Identity"))),
+      ]),
     ),
-    (@pdf.n("/Length"), Integer(3)),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(3)),
   ])
   let data = @pdfio.bytes_of_string("abc")
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
@@ -92,16 +94,16 @@ test "decrypt_single_stream skips identity crypt filters" {
     _ => fail("expected stream")
   }
   let dict_array : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Filter"), Array([Name(PdfName("/Crypt"))])),
+    (@pdf.PdfName::of_bytes("/Filter"), Array([Name(PdfName("/Crypt"))])),
     (
-      @pdf.n("/DecodeParms"),
+      @pdf.PdfName::of_bytes("/DecodeParms"),
       Array([
         @pdf.PdfObject::Dictionary([
-          (@pdf.n("/Name"), Name(PdfName("/Identity"))),
+          (@pdf.PdfName::of_bytes("/Name"), Name(PdfName("/Identity"))),
         ]),
       ]),
     ),
-    (@pdf.n("/Length"), Integer(3)),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(3)),
   ])
   let stream_array : @pdf.PdfObject = Stream(
     Ref::new((dict_array, Got(@pdfio.bytes_of_string("abc")))),
@@ -135,7 +137,7 @@ test "decrypt_single_stream handles AES256 streams" {
     pdf,
   )
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(4)),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(4)),
   ])
   let got_stream : @pdf.PdfObject = Stream(
     Ref::new((dict, Got(@pdfio.bytes_of_string("data")))),

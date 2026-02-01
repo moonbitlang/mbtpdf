@@ -379,18 +379,24 @@ pub fn PageLabel::write_all(
       match label.labelstyle {
         NoLabelPrefixOnly => ()
         DecimalArabic =>
-          entries.push((@pdf.n("/S"), PdfObject::Name(PdfName("/D"))))
-        UppercaseRoman => entries.push((@pdf.n("/S"), Name(PdfName("/R"))))
-        LowercaseRoman => entries.push((@pdf.n("/S"), Name(PdfName("/r"))))
-        UppercaseLetters => entries.push((@pdf.n("/S"), Name(PdfName("/A"))))
-        LowercaseLetters => entries.push((@pdf.n("/S"), Name(PdfName("/a"))))
+          entries.push(
+            (@pdf.PdfName::of_bytes("/S"), PdfObject::Name(PdfName("/D"))),
+          )
+        UppercaseRoman =>
+          entries.push((@pdf.PdfName::of_bytes("/S"), Name(PdfName("/R"))))
+        LowercaseRoman =>
+          entries.push((@pdf.PdfName::of_bytes("/S"), Name(PdfName("/r"))))
+        UppercaseLetters =>
+          entries.push((@pdf.PdfName::of_bytes("/S"), Name(PdfName("/A"))))
+        LowercaseLetters =>
+          entries.push((@pdf.PdfName::of_bytes("/S"), Name(PdfName("/a"))))
       }
       match label.labelprefix {
-        Some(p) => entries.push((@pdf.n("/P"), String(p)))
+        Some(p) => entries.push((@pdf.PdfName::of_bytes("/P"), String(p)))
         None => ()
       }
       if label.startvalue != 1 {
-        entries.push((@pdf.n("/St"), Integer(label.startvalue)))
+        entries.push((@pdf.PdfName::of_bytes("/St"), Integer(label.startvalue)))
       }
       arr.push(PdfObject::Integer(label.startpage - 1))
       arr.push(@pdf.PdfObject::Dictionary(entries))
@@ -399,7 +405,7 @@ pub fn PageLabel::write_all(
     let root = pdf.lookup_obj(rootnum)
     let updated_root = root.add_entry(
       "/PageLabels",
-      @pdf.PdfObject::Dictionary([(@pdf.n("/Nums"), Array(arr))]),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/Nums"), Array(arr))]),
     )
     pdf.addobj_given_num((rootnum, updated_root))
     pdf.trailerdict = pdf.trailerdict.add_entry("/Root", Indirect(rootnum))

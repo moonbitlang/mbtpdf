@@ -37,8 +37,8 @@ test "write_encoding covers mac and custom encodings" {
     _ => fail("expected custom encoding dictionary")
   }
   let font_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Type1"))),
-    (@pdf.n("/BaseFont"), Name(PdfName("/CustomFont"))),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Type1"))),
+    (@pdf.PdfName::of_bytes("/BaseFont"), Name(PdfName("/CustomFont"))),
   ])
   let implicit_encoding = ctx.read_encoding(font_dict)
   let implicit_result : Result[Int, Error] = try? ctx.write_encoding(
@@ -52,8 +52,8 @@ test "write_font errors on unsupported fonts" {
   let pdf = @pdf.Pdf::empty()
   let ctx = @pdftext.PdfText::new(pdf)
   let simple_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Type1"))),
-    (@pdf.n("/BaseFont"), Name(PdfName("/CustomFont"))),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Type1"))),
+    (@pdf.PdfName::of_bytes("/BaseFont"), Name(PdfName("/CustomFont"))),
   ])
   let simple_font = ctx.read_font(simple_dict)
   let simple_result : Result[Int, Error] = try? ctx.write_font(simple_font)
@@ -66,14 +66,15 @@ test "write_font errors on unsupported fonts" {
 ///|
 fn add_font_descriptor(pdf : @pdf.Pdf, fontfile_obj : Int?) -> Int {
   let entries : Array[(@pdf.PdfName, @pdf.PdfObject)] = [
-    (@pdf.n("/Type"), Name(PdfName("/FontDescriptor"))),
-    (@pdf.n("/Ascent"), Integer(700)),
-    (@pdf.n("/Descent"), Integer(-200)),
-    (@pdf.n("/AvgWidth"), Integer(500)),
-    (@pdf.n("/MaxWidth"), Integer(1000)),
+    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/FontDescriptor"))),
+    (@pdf.PdfName::of_bytes("/Ascent"), Integer(700)),
+    (@pdf.PdfName::of_bytes("/Descent"), Integer(-200)),
+    (@pdf.PdfName::of_bytes("/AvgWidth"), Integer(500)),
+    (@pdf.PdfName::of_bytes("/MaxWidth"), Integer(1000)),
   ]
   match fontfile_obj {
-    Some(objnum) => entries.push((@pdf.n("/FontFile2"), Indirect(objnum)))
+    Some(objnum) =>
+      entries.push((@pdf.PdfName::of_bytes("/FontFile2"), Indirect(objnum)))
     None => ()
   }
   pdf.addobj(@pdf.PdfObject::Dictionary(entries))
@@ -83,7 +84,7 @@ fn add_font_descriptor(pdf : @pdf.Pdf, fontfile_obj : Int?) -> Int {
 fn add_fontfile_stream(pdf : @pdf.Pdf) -> Int {
   let data = @pdfio.bytes_of_string("ttf")
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(data))),
   ])
   pdf.addobj(Stream(Ref::new((dict, Got(data)))))
 }
@@ -92,7 +93,7 @@ fn add_fontfile_stream(pdf : @pdf.Pdf) -> Int {
 fn add_tounicode_stream(pdf : @pdf.Pdf) -> Int {
   let bytes = @pdftext.PdfTextUtil::new().tounicode_map(33, ["A"])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(bytes))),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(bytes))),
   ])
   pdf.addobj(Stream(Ref::new((dict, Got(bytes)))))
 }
@@ -104,19 +105,26 @@ fn truetype_font_dict(
   tounicode_obj : Int?,
 ) -> @pdf.PdfObject {
   let entries : Array[(@pdf.PdfName, @pdf.PdfObject)] = [
-    (@pdf.n("/Subtype"), Name(PdfName("/TrueType"))),
-    (@pdf.n("/BaseFont"), Name(PdfName("/DummyTTF"))),
-    (@pdf.n("/FirstChar"), Integer(0)),
-    (@pdf.n("/LastChar"), Integer(1)),
-    (@pdf.n("/Widths"), Array([Integer(500), Integer(600)])),
-    (@pdf.n("/Encoding"), Name(@pdf.PdfName::of_string(encoding_name))),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/TrueType"))),
+    (@pdf.PdfName::of_bytes("/BaseFont"), Name(PdfName("/DummyTTF"))),
+    (@pdf.PdfName::of_bytes("/FirstChar"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/LastChar"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Widths"), Array([Integer(500), Integer(600)])),
+    (
+      @pdf.PdfName::of_bytes("/Encoding"),
+      Name(@pdf.PdfName::of_string(encoding_name)),
+    ),
   ]
   match font_descriptor {
-    Some(objnum) => entries.push((@pdf.n("/FontDescriptor"), Indirect(objnum)))
+    Some(objnum) =>
+      entries.push(
+        (@pdf.PdfName::of_bytes("/FontDescriptor"), Indirect(objnum)),
+      )
     None => ()
   }
   match tounicode_obj {
-    Some(objnum) => entries.push((@pdf.n("/ToUnicode"), Indirect(objnum)))
+    Some(objnum) =>
+      entries.push((@pdf.PdfName::of_bytes("/ToUnicode"), Indirect(objnum)))
     None => ()
   }
   @pdf.PdfObject::Dictionary(entries)
@@ -125,21 +133,30 @@ fn truetype_font_dict(
 ///|
 fn type3_font_dict_extra(font_descriptor : Int?) -> @pdf.PdfObject {
   let entries : Array[(@pdf.PdfName, @pdf.PdfObject)] = [
-    (@pdf.n("/Subtype"), Name(PdfName("/Type3"))),
-    (@pdf.n("/BaseFont"), Name(PdfName("/DummyType3"))),
-    (@pdf.n("/FontBBox"), Array([Real(0.0), Real(0.0), Real(0.0), Real(0.0)])),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Type3"))),
+    (@pdf.PdfName::of_bytes("/BaseFont"), Name(PdfName("/DummyType3"))),
     (
-      @pdf.n("/FontMatrix"),
+      @pdf.PdfName::of_bytes("/FontBBox"),
+      Array([Real(0.0), Real(0.0), Real(0.0), Real(0.0)]),
+    ),
+    (
+      @pdf.PdfName::of_bytes("/FontMatrix"),
       Array([Real(1.0), Real(0.0), Real(0.0), Real(1.0), Real(0.0), Real(0.0)]),
     ),
-    (@pdf.n("/CharProcs"), @pdf.PdfObject::Dictionary([(@pdf.n("/A"), Null)])),
-    (@pdf.n("/Resources"), @pdf.PdfObject::Dictionary([])),
-    (@pdf.n("/FirstChar"), Integer(0)),
-    (@pdf.n("/LastChar"), Integer(0)),
-    (@pdf.n("/Widths"), Array([Integer(0)])),
+    (
+      @pdf.PdfName::of_bytes("/CharProcs"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/A"), Null)]),
+    ),
+    (@pdf.PdfName::of_bytes("/Resources"), @pdf.PdfObject::Dictionary([])),
+    (@pdf.PdfName::of_bytes("/FirstChar"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/LastChar"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/Widths"), Array([Integer(0)])),
   ]
   match font_descriptor {
-    Some(objnum) => entries.push((@pdf.n("/FontDescriptor"), Indirect(objnum)))
+    Some(objnum) =>
+      entries.push(
+        (@pdf.PdfName::of_bytes("/FontDescriptor"), Indirect(objnum)),
+      )
     None => ()
   }
   @pdf.PdfObject::Dictionary(entries)

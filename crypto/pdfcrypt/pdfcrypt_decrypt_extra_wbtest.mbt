@@ -26,7 +26,7 @@ test "already_decrypted returns true for ParsedAlreadyDecrypted" {
 test "is_identity handles decodeparms shapes" {
   let pdf = @pdf.Pdf::empty()
   let base : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Filter"), Name(PdfName("/Crypt"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/Crypt"))),
   ])
   let dict_none_name = base.add_entry(
     "/DecodeParms",
@@ -36,7 +36,7 @@ test "is_identity handles decodeparms shapes" {
   let dict_bad_name = base.add_entry(
     "/DecodeParms",
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/Name"), Name(PdfName("/NotIdentity"))),
+      (@pdf.PdfName::of_bytes("/Name"), Name(PdfName("/NotIdentity"))),
     ]),
   )
   assert_false(is_identity(false, pdf, dict_bad_name))

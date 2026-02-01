@@ -163,10 +163,10 @@ fn bake_object_streams(
     }
     let data = @pdfio.bytes_of_string(data_sb.to_string())
     let dict = @pdf.PdfObject::Dictionary([
-      (@pdf.n("/Type"), Name(PdfName("/ObjStm"))),
-      (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
-      (@pdf.n("/N"), Integer(objs.length())),
-      (@pdf.n("/First"), Integer(first)),
+      (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/ObjStm"))),
+      (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(data))),
+      (@pdf.PdfName::of_bytes("/N"), Integer(objs.length())),
+      (@pdf.PdfName::of_bytes("/First"), Integer(first)),
     ])
     let mut stream_obj = PdfObject::Stream(Ref::new((dict, Got(data))))
     if compress {

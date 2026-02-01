@@ -129,7 +129,7 @@ pub fn PdfMerger::merge_pdfs(
         None => ()
         Some(info) =>
           pdf.trailerdict = @pdf.PdfObject::Dictionary([
-            (@pdf.n("/Info"), Indirect(pdf.addobj(info))),
+            (@pdf.PdfName::of_bytes("/Info"), Indirect(pdf.addobj(info))),
           ])
       }
     [] => ()

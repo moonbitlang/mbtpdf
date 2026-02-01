@@ -35,12 +35,12 @@ fn buildnode(kids : ArrayView[Int], parent : Int, count : Int) -> PdfObject {
     kid_refs.push(PdfObject::Indirect(kid))
   }
   let entries : Array[(@pdf.PdfName, PdfObject)] = [
-    (@pdf.n("/Type"), Name(PdfName("/Pages"))),
-    (@pdf.n("/Kids"), Array(kid_refs)),
-    (@pdf.n("/Count"), Integer(count)),
+    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Pages"))),
+    (@pdf.PdfName::of_bytes("/Kids"), Array(kid_refs)),
+    (@pdf.PdfName::of_bytes("/Count"), Integer(count)),
   ]
   if parent != 0 {
-    entries.push((@pdf.n("/Parent"), Indirect(parent)))
+    entries.push((@pdf.PdfName::of_bytes("/Parent"), Indirect(parent)))
   }
   @pdf.PdfObject::Dictionary(entries)
 }

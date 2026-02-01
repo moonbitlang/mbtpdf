@@ -107,39 +107,43 @@ test "change_pages rewrites bookmarks and mixed annotations" {
   let dest1 : @pdf.PdfObject = Array([Indirect(refs[0]), Name(PdfName("/Fit"))])
   let dest2 : @pdf.PdfObject = Array([Indirect(refs[1]), Name(PdfName("/Fit"))])
   let annot_dest1 : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Link"))),
-    (@pdf.n("/Rect"), rect),
-    (@pdf.n("/Dest"), dest1),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Link"))),
+    (@pdf.PdfName::of_bytes("/Rect"), rect),
+    (@pdf.PdfName::of_bytes("/Dest"), dest1),
   ])
   let annot_dest2 : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Link"))),
-    (@pdf.n("/Rect"), rect),
-    (@pdf.n("/Dest"), dest2),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Link"))),
+    (@pdf.PdfName::of_bytes("/Rect"), rect),
+    (@pdf.PdfName::of_bytes("/Dest"), dest2),
   ])
   let annot_action_missing : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Link"))),
-    (@pdf.n("/Rect"), rect),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Link"))),
+    (@pdf.PdfName::of_bytes("/Rect"), rect),
     (
-      @pdf.n("/A"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/S"), Name(PdfName("/GoTo")))]),
+      @pdf.PdfName::of_bytes("/A"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/GoTo"))),
+      ]),
     ),
   ])
   let annot_action_other : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Link"))),
-    (@pdf.n("/Rect"), rect),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Link"))),
+    (@pdf.PdfName::of_bytes("/Rect"), rect),
     (
-      @pdf.n("/A"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/S"), Name(PdfName("/URI")))]),
+      @pdf.PdfName::of_bytes("/A"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/URI"))),
+      ]),
     ),
   ])
   let annot_action_none : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Link"))),
-    (@pdf.n("/Rect"), rect),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Link"))),
+    (@pdf.PdfName::of_bytes("/Rect"), rect),
     (
-      @pdf.n("/A"),
+      @pdf.PdfName::of_bytes("/A"),
       @pdf.PdfObject::Dictionary([
-        (@pdf.n("/S"), Name(PdfName("/GoTo"))),
-        (@pdf.n("/D"), dest2),
+        (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/GoTo"))),
+        (@pdf.PdfName::of_bytes("/D"), dest2),
       ]),
     ),
   ])
@@ -289,14 +293,14 @@ test "fixup_duplicate_pages creates unique refs" {
     Real(100.0),
   ])
   let page : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Type"), Name(PdfName("/Page"))),
-    (@pdf.n("/MediaBox"), rect),
-    (@pdf.n("/Parent"), Indirect(2)),
+    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Page"))),
+    (@pdf.PdfName::of_bytes("/MediaBox"), rect),
+    (@pdf.PdfName::of_bytes("/Parent"), Indirect(2)),
   ])
   let pages : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Type"), Name(PdfName("/Pages"))),
-    (@pdf.n("/Kids"), Array([Indirect(1), Indirect(1)])),
-    (@pdf.n("/Count"), Integer(2)),
+    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Pages"))),
+    (@pdf.PdfName::of_bytes("/Kids"), Array([Indirect(1), Indirect(1)])),
+    (@pdf.PdfName::of_bytes("/Count"), Integer(2)),
   ])
   pdf0.addobj_given_num((1, page))
   pdf0.addobj_given_num((2, pages))
@@ -317,14 +321,14 @@ test "replace_inherit fills mediabox" {
     Real(100.0),
   ])
   let page : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Type"), Name(PdfName("/Page"))),
-    (@pdf.n("/Parent"), Indirect(2)),
+    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Page"))),
+    (@pdf.PdfName::of_bytes("/Parent"), Indirect(2)),
   ])
   let pages : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Type"), Name(PdfName("/Pages"))),
-    (@pdf.n("/Kids"), Array([Indirect(1)])),
-    (@pdf.n("/Count"), Integer(1)),
-    (@pdf.n("/MediaBox"), rect),
+    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Pages"))),
+    (@pdf.PdfName::of_bytes("/Kids"), Array([Indirect(1)])),
+    (@pdf.PdfName::of_bytes("/Count"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/MediaBox"), rect),
   ])
   pdf0.addobj_given_num((1, page))
   pdf0.addobj_given_num((2, pages))
@@ -341,7 +345,10 @@ test "replace_inherit fills mediabox" {
 test "renumber_pages updates resources and operators" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Font"), @pdf.PdfObject::Dictionary([(@pdf.n("/F1"), Null)])),
+    (
+      @pdf.PdfName::of_bytes("/Font"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/F1"), Null)]),
+    ),
   ])
   let ops : Array[@pdfops.Op] = [OpBT, OpTf("/F1", 12.0), OpTj("Hi"), OpET]
   let page = @pdfpage.Page(
@@ -375,7 +382,10 @@ test "renumber_pages updates resources and operators" {
 test "add_prefix rewrites resources and content" {
   let pdf0 = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Font"), @pdf.PdfObject::Dictionary([(@pdf.n("/F1"), Null)])),
+    (
+      @pdf.PdfName::of_bytes("/Font"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/F1"), Null)]),
+    ),
   ])
   let ops : Array[@pdfops.Op] = [OpBT, OpTf("/F1", 12.0), OpTj("Hi"), OpET]
   let page = @pdfpage.Page(
@@ -412,7 +422,10 @@ test "add_prefix rewrites resources and content" {
 test "shortest_unused_prefix skips used names" {
   let pdf0 = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Font"), @pdf.PdfObject::Dictionary([(@pdf.n("/a1"), Null)])),
+    (
+      @pdf.PdfName::of_bytes("/Font"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/a1"), Null)]),
+    ),
   ])
   let page = @pdfpage.Page(
     content=[],
@@ -447,16 +460,16 @@ test "change_pages rewrites annotation and openaction" {
     Real(1.0),
   ])
   let annot_dest : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Link"))),
-    (@pdf.n("/Dest"), dest_array),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Link"))),
+    (@pdf.PdfName::of_bytes("/Dest"), dest_array),
   ])
   let annot_action : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Link"))),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Link"))),
     (
-      @pdf.n("/A"),
+      @pdf.PdfName::of_bytes("/A"),
       @pdf.PdfObject::Dictionary([
-        (@pdf.n("/S"), Name(PdfName("/GoTo"))),
-        (@pdf.n("/D"), dest_array),
+        (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/GoTo"))),
+        (@pdf.PdfName::of_bytes("/D"), dest_array),
       ]),
     ),
   ])

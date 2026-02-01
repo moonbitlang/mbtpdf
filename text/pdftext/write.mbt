@@ -11,13 +11,16 @@ pub fn PdfTextUtil::make_font(
   encoding : @pdffont.Encoding,
 ) -> @pdf.PdfObject {
   @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Type"), Name(PdfName("/Font"))),
-    (@pdf.n("/Subtype"), Name(PdfName("/Type1"))),
+    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Font"))),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Type1"))),
     (
-      @pdf.n("/Encoding"),
+      @pdf.PdfName::of_bytes("/Encoding"),
       Name(@pdf.PdfName::of_string("/" + encoding.to_string())),
     ),
-    (@pdf.n("/BaseFont"), Name(@pdf.PdfName::of_string("/" + fontname))),
+    (
+      @pdf.PdfName::of_bytes("/BaseFont"),
+      Name(@pdf.PdfName::of_string("/" + fontname)),
+    ),
   ])
 }
 
@@ -54,8 +57,8 @@ pub fn PdfText::write_encoding(
         diff_array.push(Name(@pdf.PdfName::of_string(diff.0)))
       }
       let mut encoding_dict = @pdf.PdfObject::Dictionary([
-        (@pdf.n("/Type"), Name(PdfName("/Encoding"))),
-        (@pdf.n("/Differences"), Array(diff_array)),
+        (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Encoding"))),
+        (@pdf.PdfName::of_bytes("/Differences"), Array(diff_array)),
       ])
       match encoding_name(base) {
         Some(name) =>
@@ -159,7 +162,7 @@ pub fn PdfText::write_tounicode(self : PdfText, u : Map[Int, String]) -> Int {
   let strings = pairs.map(pair => pair.1)
   let bytes = PdfTextUtil::new().tounicode_map(33, strings)
   let dict = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(bytes))),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(bytes))),
   ])
   self.pdf.addobj(Stream(Ref::new((dict, Got(bytes)))))
 }
@@ -181,21 +184,24 @@ pub fn PdfText::write_font(
                 _ =>
                   [
                     (
-                      @pdf.n("/Encoding"),
+                      @pdf.PdfName::of_bytes("/Encoding"),
                       PdfObject::Indirect(self.write_encoding(simple.encoding)),
                     ),
                   ]
               }
               let dict = @pdf.PdfObject::Dictionary(
                 [
-                  (@pdf.n("/Type"), PdfObject::Name(PdfName("/Font"))),
-                  (@pdf.n("/Subtype"), Name(PdfName("/Type3"))),
                   (
-                    @pdf.n("/FontBBox"),
+                    @pdf.PdfName::of_bytes("/Type"),
+                    PdfObject::Name(PdfName("/Font")),
+                  ),
+                  (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Type3"))),
+                  (
+                    @pdf.PdfName::of_bytes("/FontBBox"),
                     Array([Real(0.0), Real(0.0), Real(0.0), Real(0.0)]),
                   ),
                   (
-                    @pdf.n("/FontMatrix"),
+                    @pdf.PdfName::of_bytes("/FontMatrix"),
                     Array([
                       Real(0.0),
                       Real(0.0),
@@ -206,7 +212,7 @@ pub fn PdfText::write_font(
                     ]),
                   ),
                   (
-                    @pdf.n("/CharProcs"),
+                    @pdf.PdfName::of_bytes("/CharProcs"),
                     @pdf.PdfObject::Dictionary(
                       type3.charprocs.map(pair => (
                         @pdf.PdfName::of_string(pair.0),
@@ -214,9 +220,9 @@ pub fn PdfText::write_font(
                       )),
                     ),
                   ),
-                  (@pdf.n("/FirstChar"), Integer(0)),
-                  (@pdf.n("/LastChar"), Integer(0)),
-                  (@pdf.n("/Widths"), Array([Real(0.0)])),
+                  (@pdf.PdfName::of_bytes("/FirstChar"), Integer(0)),
+                  (@pdf.PdfName::of_bytes("/LastChar"), Integer(0)),
+                  (@pdf.PdfName::of_bytes("/Widths"), Array([Real(0.0)])),
                 ].add(encoding_entry),
               )
               self.pdf.addobj(dict)
@@ -230,14 +236,17 @@ pub fn PdfText::write_font(
                 Some(FontFile2(ttf)) => {
                   let (minx, miny, maxx, maxy) = fd.fontbbox
                   let fontdesc = @pdf.PdfObject::Dictionary([
-                    (@pdf.n("/Type"), Name(PdfName("/FontDescriptor"))),
                     (
-                      @pdf.n("/FontName"),
+                      @pdf.PdfName::of_bytes("/Type"),
+                      Name(PdfName("/FontDescriptor")),
+                    ),
+                    (
+                      @pdf.PdfName::of_bytes("/FontName"),
                       Name(@pdf.PdfName::of_string(simple.basefont)),
                     ),
-                    (@pdf.n("/Flags"), Integer(fd.flags)),
+                    (@pdf.PdfName::of_bytes("/Flags"), Integer(fd.flags)),
                     (
-                      @pdf.n("/FontBBox"),
+                      @pdf.PdfName::of_bytes("/FontBBox"),
                       Array([
                         Integer(minx.to_int()),
                         Integer(miny.to_int()),
@@ -245,31 +254,67 @@ pub fn PdfText::write_font(
                         Integer(maxy.to_int()),
                       ]),
                     ),
-                    (@pdf.n("/ItalicAngle"), Integer(fd.italicangle.to_int())),
-                    (@pdf.n("/Ascent"), Integer(fd.ascent.to_int())),
-                    (@pdf.n("/Descent"), Integer(fd.descent.to_int())),
-                    (@pdf.n("/CapHeight"), Integer(fd.capheight.to_int())),
-                    (@pdf.n("/StemV"), Integer(fd.stemv.to_int())),
-                    (@pdf.n("/XHeight"), Integer(fd.xheight.to_int())),
-                    (@pdf.n("/AvgWidth"), Integer(fd.avgwidth.to_int())),
-                    (@pdf.n("/MaxWidth"), Integer(fd.maxwidth.to_int())),
-                    (@pdf.n("/FontFile2"), Indirect(ttf)),
+                    (
+                      @pdf.PdfName::of_bytes("/ItalicAngle"),
+                      Integer(fd.italicangle.to_int()),
+                    ),
+                    (
+                      @pdf.PdfName::of_bytes("/Ascent"),
+                      Integer(fd.ascent.to_int()),
+                    ),
+                    (
+                      @pdf.PdfName::of_bytes("/Descent"),
+                      Integer(fd.descent.to_int()),
+                    ),
+                    (
+                      @pdf.PdfName::of_bytes("/CapHeight"),
+                      Integer(fd.capheight.to_int()),
+                    ),
+                    (
+                      @pdf.PdfName::of_bytes("/StemV"),
+                      Integer(fd.stemv.to_int()),
+                    ),
+                    (
+                      @pdf.PdfName::of_bytes("/XHeight"),
+                      Integer(fd.xheight.to_int()),
+                    ),
+                    (
+                      @pdf.PdfName::of_bytes("/AvgWidth"),
+                      Integer(fd.avgwidth.to_int()),
+                    ),
+                    (
+                      @pdf.PdfName::of_bytes("/MaxWidth"),
+                      Integer(fd.maxwidth.to_int()),
+                    ),
+                    (@pdf.PdfName::of_bytes("/FontFile2"), Indirect(ttf)),
                   ])
                   let fontdesc_num = self.pdf.addobj(fontdesc)
                   let mut font_dict_entries : Array[
                     (@pdf.PdfName, @pdf.PdfObject),
                   ] = [
-                    (@pdf.n("/Type"), Name(PdfName("/Font"))),
-                    (@pdf.n("/Subtype"), Name(PdfName("/TrueType"))),
+                    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Font"))),
                     (
-                      @pdf.n("/BaseFont"),
+                      @pdf.PdfName::of_bytes("/Subtype"),
+                      Name(PdfName("/TrueType")),
+                    ),
+                    (
+                      @pdf.PdfName::of_bytes("/BaseFont"),
                       Name(@pdf.PdfName::of_string(simple.basefont)),
                     ),
-                    (@pdf.n("/FontDescriptor"), Indirect(fontdesc_num)),
-                    (@pdf.n("/FirstChar"), Integer(simple.firstchar)),
-                    (@pdf.n("/LastChar"), Integer(simple.lastchar)),
                     (
-                      @pdf.n("/Widths"),
+                      @pdf.PdfName::of_bytes("/FontDescriptor"),
+                      Indirect(fontdesc_num),
+                    ),
+                    (
+                      @pdf.PdfName::of_bytes("/FirstChar"),
+                      Integer(simple.firstchar),
+                    ),
+                    (
+                      @pdf.PdfName::of_bytes("/LastChar"),
+                      Integer(simple.lastchar),
+                    ),
+                    (
+                      @pdf.PdfName::of_bytes("/Widths"),
                       Array(simple.widths.map(w => Integer(w))),
                     ),
                   ]
@@ -277,7 +322,7 @@ pub fn PdfText::write_font(
                     None =>
                       font_dict_entries.add([
                         (
-                          @pdf.n("/Encoding"),
+                          @pdf.PdfName::of_bytes("/Encoding"),
                           Name(
                             @pdf.PdfName::of_string(
                               "/" + simple.encoding.to_string(),
@@ -288,7 +333,7 @@ pub fn PdfText::write_font(
                     Some(u) =>
                       font_dict_entries.add([
                         (
-                          @pdf.n("/ToUnicode"),
+                          @pdf.PdfName::of_bytes("/ToUnicode"),
                           Indirect(self.write_tounicode(u)),
                         ),
                       ])

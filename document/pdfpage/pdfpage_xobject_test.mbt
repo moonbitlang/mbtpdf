@@ -2,16 +2,18 @@
 test "process_xobjects updates form xobject stream" {
   let pdf = @pdf.Pdf::empty()
   let stream_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Form"))),
-    (@pdf.n("/Filter"), Name(PdfName("/FlateDecode"))),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Form"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/FlateDecode"))),
   ])
   let data = @pdfio.bytes_of_list([0x01, 0x02])
   let stream : @pdf.PdfObject = Stream(Ref::new((stream_dict, Got(data))))
   let xobj_num = pdf.addobj(stream)
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/XObject"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/X1"), Indirect(xobj_num))]),
+      @pdf.PdfName::of_bytes("/XObject"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/X1"), Indirect(xobj_num)),
+      ]),
     ),
   ])
   let page = @pdfpage.Page(
@@ -33,8 +35,8 @@ test "process_xobjects updates form xobject stream" {
     _ : Array[@pdf.PdfObject],
   ) -> Array[@pdf.PdfObject] {
     let dict_updated : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-      (@pdf.n("/BBox"), bbox),
-      (@pdf.n("/Filter"), Name(PdfName("/ASCIIHexDecode"))),
+      (@pdf.PdfName::of_bytes("/BBox"), bbox),
+      (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/ASCIIHexDecode"))),
     ])
     let updated_data = @pdfio.bytes_of_list([0x41, 0x42])
     [Stream(Ref::new((dict_updated, Got(updated_data))))]
@@ -61,12 +63,18 @@ test "process_xobjects updates form xobject stream" {
 test "combine_pdf_resources merges known and keeps unknown" {
   let pdf = @pdf.Pdf::empty()
   let a : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Font"), @pdf.PdfObject::Dictionary([(@pdf.n("/F1"), Null)])),
-    (@pdf.n("/Foo"), Integer(1)),
+    (
+      @pdf.PdfName::of_bytes("/Font"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/F1"), Null)]),
+    ),
+    (@pdf.PdfName::of_bytes("/Foo"), Integer(1)),
   ])
   let b : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Font"), @pdf.PdfObject::Dictionary([(@pdf.n("/F2"), Null)])),
-    (@pdf.n("/Bar"), Name(PdfName("/Baz"))),
+    (
+      @pdf.PdfName::of_bytes("/Font"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/F2"), Null)]),
+    ),
+    (@pdf.PdfName::of_bytes("/Bar"), Name(PdfName("/Baz"))),
   ])
   let combined = @pdfpage.PdfPageDoc::new(pdf).combine_pdf_resources(a, b)
   match (pdf.lookup_direct("/Font", combined) : @pdf.PdfObject?) {
@@ -87,15 +95,17 @@ test "combine_pdf_resources merges known and keeps unknown" {
 test "process_xobjects errors when xobject subtype missing" {
   let pdf = @pdf.Pdf::empty()
   let stream_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Filter"), Name(PdfName("/FlateDecode"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/FlateDecode"))),
   ])
   let data = @pdfio.bytes_of_list([0x01])
   let stream : @pdf.PdfObject = Stream(Ref::new((stream_dict, Got(data))))
   let xobj_num = pdf.addobj(stream)
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/XObject"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/X1"), Indirect(xobj_num))]),
+      @pdf.PdfName::of_bytes("/XObject"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/X1"), Indirect(xobj_num)),
+      ]),
     ),
   ])
   let page = @pdfpage.Page(
@@ -120,16 +130,18 @@ test "process_xobjects errors when xobject subtype missing" {
 test "process_xobjects accepts updated stream with non-dict metadata" {
   let pdf = @pdf.Pdf::empty()
   let stream_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Form"))),
-    (@pdf.n("/Filter"), Name(PdfName("/FlateDecode"))),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Form"))),
+    (@pdf.PdfName::of_bytes("/Filter"), Name(PdfName("/FlateDecode"))),
   ])
   let data = @pdfio.bytes_of_list([0x01, 0x02])
   let stream : @pdf.PdfObject = Stream(Ref::new((stream_dict, Got(data))))
   let xobj_num = pdf.addobj(stream)
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/XObject"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/X1"), Indirect(xobj_num))]),
+      @pdf.PdfName::of_bytes("/XObject"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/X1"), Indirect(xobj_num)),
+      ]),
     ),
   ])
   let page = @pdfpage.Page(
@@ -163,8 +175,8 @@ test "process_xobjects errors on non-indirect xobject references" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/XObject"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/X1"), Integer(0))]),
+      @pdf.PdfName::of_bytes("/XObject"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/X1"), Integer(0))]),
     ),
   ])
   let page = @pdfpage.Page(
@@ -189,13 +201,15 @@ test "process_xobjects errors on non-indirect xobject references" {
 test "process_xobjects ignores non-form xobjects" {
   let pdf = @pdf.Pdf::empty()
   let xobj_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Image"))),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Image"))),
   ])
   let xobj_num = pdf.addobj(xobj_dict)
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/XObject"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/Im0"), Indirect(xobj_num))]),
+      @pdf.PdfName::of_bytes("/XObject"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/Im0"), Indirect(xobj_num)),
+      ]),
     ),
   ])
   let page = @pdfpage.Page(
@@ -238,7 +252,10 @@ test "combine_pdf_resources handles non-dictionary inputs" {
   let combined = @pdfpage.PdfPageDoc::new(pdf).combine_pdf_resources(
     Integer(1),
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/Font"), @pdf.PdfObject::Dictionary([(@pdf.n("/F1"), Null)])),
+      (
+        @pdf.PdfName::of_bytes("/Font"),
+        @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/F1"), Null)]),
+      ),
     ]),
   )
   match (pdf.lookup_direct("/Font", combined) : @pdf.PdfObject?) {
@@ -252,7 +269,10 @@ test "combine_pdf_resources ignores non-dictionary rhs" {
   let pdf = @pdf.Pdf::empty()
   let combined = @pdfpage.PdfPageDoc::new(pdf).combine_pdf_resources(
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/Font"), @pdf.PdfObject::Dictionary([(@pdf.n("/F1"), Null)])),
+      (
+        @pdf.PdfName::of_bytes("/Font"),
+        @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/F1"), Null)]),
+      ),
     ]),
     Integer(0),
   )
@@ -266,7 +286,9 @@ test "combine_pdf_resources ignores non-dictionary rhs" {
 test "process_xobject errors when form xobject is not a stream" {
   let pdf = @pdf.Pdf::empty()
   let xobj_num = pdf.addobj(
-    @pdf.PdfObject::Dictionary([(@pdf.n("/Subtype"), Name(PdfName("/Form")))]),
+    @pdf.PdfObject::Dictionary([
+      (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Form"))),
+    ]),
   )
   let res : Result[Unit, Error] = try? @pdfpage.PdfPageDoc::new(pdf).process_xobject(
     fn(_, _, _) { [] },
@@ -280,15 +302,17 @@ test "process_xobject errors when form xobject is not a stream" {
 test "process_xobjects errors when updater returns non-stream" {
   let pdf = @pdf.Pdf::empty()
   let stream_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Subtype"), Name(PdfName("/Form"))),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Form"))),
   ])
   let data = @pdfio.bytes_of_list([0x01])
   let stream : @pdf.PdfObject = Stream(Ref::new((stream_dict, Got(data))))
   let xobj_num = pdf.addobj(stream)
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/XObject"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/X1"), Indirect(xobj_num))]),
+      @pdf.PdfName::of_bytes("/XObject"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/X1"), Indirect(xobj_num)),
+      ]),
     ),
   ])
   let page = @pdfpage.Page(

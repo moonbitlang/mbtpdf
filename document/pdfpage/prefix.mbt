@@ -332,7 +332,7 @@ fn merge_content_streams(pdf : @pdf.Pdf) -> Unit raise {
                           (
                             @pdf.PdfObject::Dictionary([
                               (
-                                @pdf.n("/Length"),
+                                @pdf.PdfName::of_bytes("/Length"),
                                 Integer(@pdfio.bytes_size(merged)),
                               ),
                             ]),

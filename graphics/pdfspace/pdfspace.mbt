@@ -490,23 +490,26 @@ pub fn ColourSpace::to_pdf_object(
       Array([
         Name(PdfName("/CalGray")),
         @pdf.PdfObject::Dictionary([
-          (@pdf.n("/WhitePoint"), array_of_point(white)),
-          (@pdf.n("/BlackPoint"), array_of_point(black)),
-          (@pdf.n("/Gamma"), @pdf.ToPdfNumber::to_pdf_number(gamma)),
+          (@pdf.PdfName::of_bytes("/WhitePoint"), array_of_point(white)),
+          (@pdf.PdfName::of_bytes("/BlackPoint"), array_of_point(black)),
+          (
+            @pdf.PdfName::of_bytes("/Gamma"),
+            @pdf.ToPdfNumber::to_pdf_number(gamma),
+          ),
         ]),
       ])
     CalRGB(white, black, gamma, matrix) =>
       Array([
         Name(PdfName("/CalRGB")),
         @pdf.PdfObject::Dictionary([
-          (@pdf.n("/WhitePoint"), array_of_point(white)),
-          (@pdf.n("/BlackPoint"), array_of_point(black)),
+          (@pdf.PdfName::of_bytes("/WhitePoint"), array_of_point(white)),
+          (@pdf.PdfName::of_bytes("/BlackPoint"), array_of_point(black)),
           (
-            @pdf.n("/Gamma"),
+            @pdf.PdfName::of_bytes("/Gamma"),
             Array(gamma.map(x => @pdf.ToPdfNumber::to_pdf_number(x))),
           ),
           (
-            @pdf.n("/Matrix"),
+            @pdf.PdfName::of_bytes("/Matrix"),
             Array(matrix.map(x => @pdf.ToPdfNumber::to_pdf_number(x))),
           ),
         ]),
@@ -515,10 +518,10 @@ pub fn ColourSpace::to_pdf_object(
       Array([
         Name(PdfName("/Lab")),
         @pdf.PdfObject::Dictionary([
-          (@pdf.n("/WhitePoint"), array_of_point(white)),
-          (@pdf.n("/BlackPoint"), array_of_point(black)),
+          (@pdf.PdfName::of_bytes("/WhitePoint"), array_of_point(white)),
+          (@pdf.PdfName::of_bytes("/BlackPoint"), array_of_point(black)),
           (
-            @pdf.n("/Range"),
+            @pdf.PdfName::of_bytes("/Range"),
             Array(range.map(x => @pdf.ToPdfNumber::to_pdf_number(x))),
           ),
         ]),

@@ -14,11 +14,11 @@ fn decode_stream(
 ) -> Array[Byte] raise {
   let pdf = @pdf.Pdf::empty()
   let entries : Array[(@pdf.PdfName, @pdf.PdfObject)] = [
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
-    (@pdf.n("/Filter"), filter),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(data))),
+    (@pdf.PdfName::of_bytes("/Filter"), filter),
   ]
   let entries = match parms {
-    Some(p) => entries + [(@pdf.n("/DecodeParms"), p)]
+    Some(p) => entries + [(@pdf.PdfName::of_bytes("/DecodeParms"), p)]
     None => entries
   }
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary(entries)
@@ -104,10 +104,10 @@ test "decode Flate stream with TIFF predictor" {
   let encoded = encode_predictor(2, 1, 8, 6, raw)
   let compressed = decode_ctx.encode_flate(encoded)
   let parms_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Predictor"), Integer(2)),
-    (@pdf.n("/Colors"), Integer(1)),
-    (@pdf.n("/BitsPerComponent"), Integer(8)),
-    (@pdf.n("/Columns"), Integer(6)),
+    (@pdf.PdfName::of_bytes("/Predictor"), Integer(2)),
+    (@pdf.PdfName::of_bytes("/Colors"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BitsPerComponent"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/Columns"), Integer(6)),
   ])
   let decoded = decode_stream(
     name_obj("/FlateDecode"),
@@ -130,7 +130,7 @@ test "decode_pdfstream_onestage rejects missing filter" {
   let pdf = @pdf.Pdf::empty()
   let data = @pdfio.bytes_of_string("4869>")
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(data))),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(data)))
   let stream_obj : @pdf.PdfObject = Stream(stream_ref)
@@ -145,8 +145,8 @@ test "decode_pdfstream_onestage rejects empty filter array" {
   let pdf = @pdf.Pdf::empty()
   let data = @pdfio.bytes_of_string("4869>")
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
-    (@pdf.n("/Filter"), Array([])),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(data))),
+    (@pdf.PdfName::of_bytes("/Filter"), Array([])),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(data)))
   let stream_obj : @pdf.PdfObject = Stream(stream_ref)
@@ -161,8 +161,8 @@ test "decode_pdfstream_onestage rejects invalid filter entry" {
   let pdf = @pdf.Pdf::empty()
   let data = @pdfio.bytes_of_string("4869>")
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
-    (@pdf.n("/Filter"), Array([Integer(1)])),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(data))),
+    (@pdf.PdfName::of_bytes("/Filter"), Array([Integer(1)])),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(data)))
   let stream_obj : @pdf.PdfObject = Stream(stream_ref)
@@ -177,8 +177,8 @@ test "decode_pdfstream_onestage rejects invalid filter type" {
   let pdf = @pdf.Pdf::empty()
   let data = @pdfio.bytes_of_string("4869>")
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
-    (@pdf.n("/Filter"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(data))),
+    (@pdf.PdfName::of_bytes("/Filter"), Integer(1)),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(data)))
   let stream_obj : @pdf.PdfObject = Stream(stream_ref)
@@ -193,9 +193,9 @@ test "decode_pdfstream_onestage handles /F and /DP keys" {
   let pdf = @pdf.Pdf::empty()
   let data = @pdfio.bytes_of_string("4869>")
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
-    (@pdf.n("/F"), name_obj("/ASCIIHexDecode")),
-    (@pdf.n("/DP"), Array([Null, Null])),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(data))),
+    (@pdf.PdfName::of_bytes("/F"), name_obj("/ASCIIHexDecode")),
+    (@pdf.PdfName::of_bytes("/DP"), Array([Null, Null])),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(data)))
   let stream_obj : @pdf.PdfObject = Stream(stream_ref)
@@ -213,12 +213,12 @@ test "decode_pdfstream_onestage trims filter and decode parms arrays" {
   let pdf = @pdf.Pdf::empty()
   let data = @pdfio.bytes_of_string("4869>")
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(data))),
     (
-      @pdf.n("/Filter"),
+      @pdf.PdfName::of_bytes("/Filter"),
       Array([name_obj("/ASCIIHexDecode"), name_obj("/ASCIIHexDecode")]),
     ),
-    (@pdf.n("/DecodeParms"), Array([Null, Null])),
+    (@pdf.PdfName::of_bytes("/DecodeParms"), Array([Null, Null])),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(data)))
   let stream_obj : @pdf.PdfObject = Stream(stream_ref)
@@ -239,8 +239,8 @@ test "decode_pdfstream_onestage handles Crypt filter" {
   let pdf = @pdf.Pdf::empty()
   let data = @pdfio.bytes_of_string("plain")
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
-    (@pdf.n("/Filter"), name_obj("/Crypt")),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(data))),
+    (@pdf.PdfName::of_bytes("/Filter"), name_obj("/Crypt")),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(data)))
   let stream_obj : @pdf.PdfObject = Stream(stream_ref)
@@ -258,8 +258,8 @@ test "decode_pdfstream_onestage rejects JBIG2 in sync path" {
   let pdf = @pdf.Pdf::empty()
   let data = @pdfio.bytes_of_string("data")
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
-    (@pdf.n("/Filter"), name_obj("/JBIG2Decode")),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(data))),
+    (@pdf.PdfName::of_bytes("/Filter"), name_obj("/JBIG2Decode")),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(data)))
   let stream_obj : @pdf.PdfObject = Stream(stream_ref)
@@ -274,8 +274,8 @@ test "decode_pdfstream_onestage reports CCITT errors" {
   let pdf = @pdf.Pdf::empty()
   let data = @pdfio.bytes_of_string("data")
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
-    (@pdf.n("/Filter"), name_obj("/CCITTFaxDecode")),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(data))),
+    (@pdf.PdfName::of_bytes("/Filter"), name_obj("/CCITTFaxDecode")),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(data)))
   let stream_obj : @pdf.PdfObject = Stream(stream_ref)
@@ -290,8 +290,8 @@ test "decode_pdfstream_onestage reports LZW errors" {
   let pdf = @pdf.Pdf::empty()
   let data = @pdfio.bytes_of_string("data")
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
-    (@pdf.n("/Filter"), name_obj("/LZWDecode")),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(data))),
+    (@pdf.PdfName::of_bytes("/Filter"), name_obj("/LZWDecode")),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(data)))
   let stream_obj : @pdf.PdfObject = Stream(stream_ref)
@@ -306,8 +306,8 @@ test "decode_pdfstream_until_unknown ignores unsupported filters" {
   let pdf = @pdf.Pdf::empty()
   let data = @pdfio.bytes_of_string("data")
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
-    (@pdf.n("/Filter"), name_obj("/JBIG2Decode")),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(data))),
+    (@pdf.PdfName::of_bytes("/Filter"), name_obj("/JBIG2Decode")),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(data)))
   let stream_obj : @pdf.PdfObject = Stream(stream_ref)

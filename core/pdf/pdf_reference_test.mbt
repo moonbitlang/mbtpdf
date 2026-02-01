@@ -2,8 +2,8 @@
 test "objects_referenced skips entries" {
   let pdf = Pdf::empty()
   let obj = PdfObject::Dictionary([
-    (n("/Skip"), Indirect(1)),
-    (n("/Keep"), Integer(2)),
+    (PdfName::of_bytes("/Skip"), Indirect(1)),
+    (PdfName::of_bytes("/Keep"), Integer(2)),
   ])
   let referenced = pdf.objects_referenced(["/Skip"], [], obj)
   assert_eq(referenced.length(), 0)
@@ -13,14 +13,14 @@ test "objects_referenced skips entries" {
 test "objects_referenced no_follow_contains non-name" {
   let pdf = Pdf::empty()
   let obj = PdfObject::Dictionary([
-    (n("/Other"), Integer(3)),
-    (n("/Kid"), Indirect(2)),
+    (PdfName::of_bytes("/Other"), Integer(3)),
+    (PdfName::of_bytes("/Kid"), Indirect(2)),
   ])
   pdf.addobj_given_num((1, obj))
   pdf.addobj_given_num((2, Integer(9)))
   let referenced = pdf.objects_referenced(
     [],
-    [(n("/Other"), Integer(3))],
+    [(PdfName::of_bytes("/Other"), Integer(3))],
     Indirect(1),
   )
   assert_true(referenced.contains(2))
@@ -30,15 +30,15 @@ test "objects_referenced no_follow_contains non-name" {
 test "objects_referenced no_follow_contains name match" {
   let pdf = Pdf::empty()
   let dict = PdfObject::Dictionary([
-    (n("/Other"), Name(PdfName("/Other"))),
-    (n("/Type"), Name(PdfName("/Page"))),
-    (n("/Kid"), Indirect(2)),
+    (PdfName::of_bytes("/Other"), Name(PdfName("/Other"))),
+    (PdfName::of_bytes("/Type"), Name(PdfName("/Page"))),
+    (PdfName::of_bytes("/Kid"), Indirect(2)),
   ])
   pdf.addobj_given_num((1, dict))
   pdf.addobj_given_num((2, Integer(9)))
   let referenced = pdf.objects_referenced(
     [],
-    [(n("/Type"), Name(PdfName("/Page")))],
+    [(PdfName::of_bytes("/Type"), Name(PdfName("/Page")))],
     Indirect(1),
   )
   assert_eq(referenced.length(), 0)
@@ -49,15 +49,15 @@ test "objects_referenced no_follow_contains scans non-name entries" {
   let pdf = Pdf::empty()
   let dict = PdfObject::Dictionary([
     // Duplicate key: first non-Name should be skipped by predicate.
-    (n("/Type"), Integer(1)),
-    (n("/Type"), Name(PdfName("/Page"))),
-    (n("/Kid"), Indirect(2)),
+    (PdfName::of_bytes("/Type"), Integer(1)),
+    (PdfName::of_bytes("/Type"), Name(PdfName("/Page"))),
+    (PdfName::of_bytes("/Kid"), Indirect(2)),
   ])
   pdf.addobj_given_num((1, dict))
   pdf.addobj_given_num((2, Integer(9)))
   let referenced = pdf.objects_referenced(
     [],
-    [(n("/Type"), Name(PdfName("/Page")))],
+    [(PdfName::of_bytes("/Type"), Name(PdfName("/Page")))],
     Indirect(1),
   )
   assert_eq(referenced.length(), 0)
@@ -68,7 +68,7 @@ test "objects_referenced indirect and stream targets" {
   let pdf = Pdf::empty()
   pdf.addobj_given_num((5, Integer(99)))
   let stream = make_stream(
-    PdfObject::Dictionary([(n("/Ref"), Indirect(5))]),
+    PdfObject::Dictionary([(PdfName::of_bytes("/Ref"), Indirect(5))]),
     @pdfio.bytes_of_string("x"),
   )
   pdf.addobj_given_num((6, stream))

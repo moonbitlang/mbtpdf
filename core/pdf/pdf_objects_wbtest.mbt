@@ -2,13 +2,15 @@
 fn make_basic_pdf() -> Pdf {
   let base = Pdf::empty()
   let pages = PdfObject::Dictionary([
-    (n("/Type"), Name(PdfName("/Pages"))),
-    (n("/Kids"), Array([Indirect(2)])),
+    (PdfName::of_bytes("/Type"), Name(PdfName("/Pages"))),
+    (PdfName::of_bytes("/Kids"), Array([Indirect(2)])),
   ])
-  let page = PdfObject::Dictionary([(n("/Type"), Name(PdfName("/Page")))])
+  let page = PdfObject::Dictionary([
+    (PdfName::of_bytes("/Type"), Name(PdfName("/Page"))),
+  ])
   let catalog = PdfObject::Dictionary([
-    (n("/Type"), Name(PdfName("/Catalog"))),
-    (n("/Pages"), Indirect(1)),
+    (PdfName::of_bytes("/Type"), Name(PdfName("/Catalog"))),
+    (PdfName::of_bytes("/Pages"), Indirect(1)),
   ])
   base.addobj_given_num((1, pages))
   base.addobj_given_num((2, page))
@@ -18,7 +20,9 @@ fn make_basic_pdf() -> Pdf {
     minor: base.minor,
     root: 3,
     objects: base.objects,
-    trailerdict: PdfObject::Dictionary([(n("/Root"), Indirect(3))]),
+    trailerdict: PdfObject::Dictionary([
+      (PdfName::of_bytes("/Root"), Indirect(3)),
+    ]),
     was_linearized: base.was_linearized,
     saved_encryption: base.saved_encryption,
   }
@@ -27,12 +31,16 @@ fn make_basic_pdf() -> Pdf {
 ///|
 test "lookup helpers and catalog" {
   let pdf = Pdf::empty()
-  let dict = PdfObject::Dictionary([(n("/A"), Integer(1))])
+  let dict = PdfObject::Dictionary([(PdfName::of_bytes("/A"), Integer(1))])
   assert_integer(pdf.lookup_fail("err", "/A", dict), 1)
   assert_is_err(try? pdf.lookup_fail("err", "/B", dict))
-  let dict_indirect = PdfObject::Dictionary([(n("/A"), Indirect(5))])
+  let dict_indirect = PdfObject::Dictionary([
+    (PdfName::of_bytes("/A"), Indirect(5)),
+  ])
   assert_eq(dict_indirect.find_indirect("/A"), Some(5))
-  let dict_non_indirect = PdfObject::Dictionary([(n("/A"), Integer(7))])
+  let dict_non_indirect = PdfObject::Dictionary([
+    (PdfName::of_bytes("/A"), Integer(7)),
+  ])
   assert_eq(dict_non_indirect.find_indirect("/A"), None)
   assert_is_err(try? PdfObject::Integer(1).find_indirect("/A"))
   let catalog_pdf = make_basic_pdf()

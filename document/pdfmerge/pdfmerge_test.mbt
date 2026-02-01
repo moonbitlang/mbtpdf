@@ -30,19 +30,19 @@ fn set_catalog_entry(
 ///|
 fn add_dest_name_tree(pdf : @pdf.Pdf, name : String) -> Unit raise {
   let child : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Names"), Array([String(name), Null])),
-    (@pdf.n("/Limits"), Array([String(name), String(name)])),
+    (@pdf.PdfName::of_bytes("/Names"), Array([String(name), Null])),
+    (@pdf.PdfName::of_bytes("/Limits"), Array([String(name), String(name)])),
   ])
   let child_num = pdf.addobj(child)
   let root_tree : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Names"), Array([String(name), Null])),
-    (@pdf.n("/Limits"), Array([String(name), String(name)])),
-    (@pdf.n("/Kids"), Array([Indirect(child_num)])),
+    (@pdf.PdfName::of_bytes("/Names"), Array([String(name), Null])),
+    (@pdf.PdfName::of_bytes("/Limits"), Array([String(name), String(name)])),
+    (@pdf.PdfName::of_bytes("/Kids"), Array([Indirect(child_num)])),
   ])
   set_catalog_entry(
     pdf,
     "/Names",
-    @pdf.PdfObject::Dictionary([(@pdf.n("/Dests"), root_tree)]),
+    @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/Dests"), root_tree)]),
   )
 }
 
@@ -52,27 +52,27 @@ fn add_dest_name_tree_with_non_indirect_kid(
   name : String,
 ) -> Unit raise {
   let root_tree : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Names"), Array([String(name), Null])),
-    (@pdf.n("/Limits"), Array([String(name), String(name)])),
+    (@pdf.PdfName::of_bytes("/Names"), Array([String(name), Null])),
+    (@pdf.PdfName::of_bytes("/Limits"), Array([String(name), String(name)])),
     // Malformed /Kids entries should be ignored.
-    (@pdf.n("/Kids"), Array([Integer(0)])),
+    (@pdf.PdfName::of_bytes("/Kids"), Array([Integer(0)])),
   ])
   set_catalog_entry(
     pdf,
     "/Names",
-    @pdf.PdfObject::Dictionary([(@pdf.n("/Dests"), root_tree)]),
+    @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/Dests"), root_tree)]),
   )
 }
 
 ///|
 fn add_dest_callsites(pdf : @pdf.Pdf, name : String) -> Unit {
   let dest_obj : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Dest"), String(name)),
+    (@pdf.PdfName::of_bytes("/Dest"), String(name)),
   ])
   ignore(pdf.addobj(dest_obj))
   let action_obj : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/S"), Name(PdfName("/GoTo"))),
-    (@pdf.n("/D"), String(name)),
+    (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/GoTo"))),
+    (@pdf.PdfName::of_bytes("/D"), String(name)),
   ])
   ignore(pdf.addobj(action_obj))
 }
@@ -173,7 +173,7 @@ test "merge_pdfs retain numbering toggles path" {
 test "remove_duplicate_fonts merges identical streams" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(2)),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(2)),
   ])
   let data1 : Array[Byte] = [0x01, 0x02]
   let data2 : Array[Byte] = [0x01, 0x02]
@@ -192,11 +192,11 @@ test "remove_duplicate_fonts merges identical streams" {
 test "remove_duplicate_fonts keeps distinct streams" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(1)),
   ])
   let dict_alt : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(1)),
-    (@pdf.n("/Subtype"), Name(PdfName("/XObject"))),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/XObject"))),
   ])
   let stream1 : @pdf.PdfObject = Stream(Ref::new((dict, Got([0x01]))))
   let stream2 : @pdf.PdfObject = Stream(Ref::new((dict, Got([0x01, 0x02]))))
@@ -293,23 +293,23 @@ test "merge_pdfs merges dests ocg and acroform" {
   set_catalog_entry(
     pdf1,
     "/Dests",
-    @pdf.PdfObject::Dictionary([(@pdf.n("/A"), Null)]),
+    @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/A"), Null)]),
   )
   set_catalog_entry(
     pdf2,
     "/Dests",
-    @pdf.PdfObject::Dictionary([(@pdf.n("/B"), Null)]),
+    @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/B"), Null)]),
   )
   set_catalog_entry(
     pdf1,
     "/OCProperties",
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/OCGs"), Array([Name(PdfName("/OCG1"))])),
+      (@pdf.PdfName::of_bytes("/OCGs"), Array([Name(PdfName("/OCG1"))])),
       (
-        @pdf.n("/D"),
+        @pdf.PdfName::of_bytes("/D"),
         @pdf.PdfObject::Dictionary([
-          (@pdf.n("/ON"), Array([Name(PdfName("/OCG1"))])),
-          (@pdf.n("/Name"), String("Layer1")),
+          (@pdf.PdfName::of_bytes("/ON"), Array([Name(PdfName("/OCG1"))])),
+          (@pdf.PdfName::of_bytes("/Name"), String("Layer1")),
         ]),
       ),
     ]),
@@ -318,17 +318,21 @@ test "merge_pdfs merges dests ocg and acroform" {
     pdf2,
     "/OCProperties",
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/OCGs"), Array([Name(PdfName("/OCG2"))])),
+      (@pdf.PdfName::of_bytes("/OCGs"), Array([Name(PdfName("/OCG2"))])),
       (
-        @pdf.n("/D"),
+        @pdf.PdfName::of_bytes("/D"),
         @pdf.PdfObject::Dictionary([
-          (@pdf.n("/OFF"), Array([Name(PdfName("/OCG2"))])),
-          (@pdf.n("/BaseState"), Name(PdfName("/OFF"))),
+          (@pdf.PdfName::of_bytes("/OFF"), Array([Name(PdfName("/OCG2"))])),
+          (@pdf.PdfName::of_bytes("/BaseState"), Name(PdfName("/OFF"))),
         ]),
       ),
       (
-        @pdf.n("/Configs"),
-        Array([@pdf.PdfObject::Dictionary([(@pdf.n("/Name"), String("Cfg"))])]),
+        @pdf.PdfName::of_bytes("/Configs"),
+        Array([
+          @pdf.PdfObject::Dictionary([
+            (@pdf.PdfName::of_bytes("/Name"), String("Cfg")),
+          ]),
+        ]),
       ),
     ]),
   )
@@ -336,16 +340,16 @@ test "merge_pdfs merges dests ocg and acroform" {
     pdf1,
     "/AcroForm",
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/Fields"), Array([Null])),
-      (@pdf.n("/NeedAppearances"), Boolean(true)),
+      (@pdf.PdfName::of_bytes("/Fields"), Array([Null])),
+      (@pdf.PdfName::of_bytes("/NeedAppearances"), Boolean(true)),
     ]),
   )
   set_catalog_entry(
     pdf2,
     "/AcroForm",
     @pdf.PdfObject::Dictionary([
-      (@pdf.n("/Fields"), Array([Null])),
-      (@pdf.n("/SigFlags"), Integer(1)),
+      (@pdf.PdfName::of_bytes("/Fields"), Array([Null])),
+      (@pdf.PdfName::of_bytes("/SigFlags"), Integer(1)),
     ]),
   )
   let merged = PdfMerger::new(["one", "two"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(

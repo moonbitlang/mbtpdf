@@ -1,18 +1,35 @@
 ///|
 fn renumber_resources() -> @pdf.PdfObject {
   @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Font"), @pdf.PdfObject::Dictionary([(@pdf.n("/F1"), Null)])),
-    (@pdf.n("/ExtGState"), @pdf.PdfObject::Dictionary([(@pdf.n("/GS1"), Null)])),
     (
-      @pdf.n("/ColorSpace"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/CS1"), Name(PdfName("/DeviceRGB")))]),
+      @pdf.PdfName::of_bytes("/Font"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/F1"), Null)]),
     ),
-    (@pdf.n("/Pattern"), @pdf.PdfObject::Dictionary([(@pdf.n("/P1"), Null)])),
-    (@pdf.n("/Shading"), @pdf.PdfObject::Dictionary([(@pdf.n("/Sh1"), Null)])),
-    (@pdf.n("/XObject"), @pdf.PdfObject::Dictionary([(@pdf.n("/X1"), Null)])),
     (
-      @pdf.n("/Properties"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/Prop1"), Null)]),
+      @pdf.PdfName::of_bytes("/ExtGState"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/GS1"), Null)]),
+    ),
+    (
+      @pdf.PdfName::of_bytes("/ColorSpace"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/CS1"), Name(PdfName("/DeviceRGB"))),
+      ]),
+    ),
+    (
+      @pdf.PdfName::of_bytes("/Pattern"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/P1"), Null)]),
+    ),
+    (
+      @pdf.PdfName::of_bytes("/Shading"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/Sh1"), Null)]),
+    ),
+    (
+      @pdf.PdfName::of_bytes("/XObject"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/X1"), Null)]),
+    ),
+    (
+      @pdf.PdfName::of_bytes("/Properties"),
+      @pdf.PdfObject::Dictionary([(@pdf.PdfName::of_bytes("/Prop1"), Null)]),
     ),
   ])
 }
@@ -130,22 +147,24 @@ test "renumber_pages rewrites inline image colorspace names" {
   ])
   let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/ColorSpace"),
-      @pdf.PdfObject::Dictionary([(@pdf.n("/CS1"), Name(PdfName("/DeviceRGB")))]),
+      @pdf.PdfName::of_bytes("/ColorSpace"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.PdfName::of_bytes("/CS1"), Name(PdfName("/DeviceRGB"))),
+      ]),
     ),
   ])
   let img1_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
-    (@pdf.n("/CS"), Name(PdfName("/CS1"))),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/CS1"))),
   ])
   let img2_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
     (
-      @pdf.n("/CS"),
+      @pdf.PdfName::of_bytes("/CS"),
       Array([
         Name(PdfName("/Indexed")),
         Name(PdfName("/DeviceRGB")),
@@ -155,10 +174,10 @@ test "renumber_pages rewrites inline image colorspace names" {
     ),
   ])
   let img3_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/W"), Integer(1)),
-    (@pdf.n("/H"), Integer(1)),
-    (@pdf.n("/BPC"), Integer(8)),
-    (@pdf.n("/CS"), Name(PdfName("/DeviceRGB"))),
+    (@pdf.PdfName::of_bytes("/W"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/H"), Integer(1)),
+    (@pdf.PdfName::of_bytes("/BPC"), Integer(8)),
+    (@pdf.PdfName::of_bytes("/CS"), Name(PdfName("/DeviceRGB"))),
   ])
   let ops : Array[@pdfops.Op] = [
     InlineImage((img1_dict, None, @pdfio.bytes_of_string("RGB"))),

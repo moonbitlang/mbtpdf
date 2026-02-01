@@ -75,14 +75,14 @@ fn mkpage(
     }
   }
   let entries : Array[(@pdf.PdfName, PdfObject)] = [
-    (@pdf.n("/Type"), Name(PdfName("/Page"))),
-    (@pdf.n("/Parent"), Indirect(parent)),
-    (@pdf.n("/Resources"), page.resources),
-    (@pdf.n("/MediaBox"), page.mediabox),
+    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Page"))),
+    (@pdf.PdfName::of_bytes("/Parent"), Indirect(parent)),
+    (@pdf.PdfName::of_bytes("/Resources"), page.resources),
+    (@pdf.PdfName::of_bytes("/MediaBox"), page.mediabox),
   ]
   let rotation = page.rotate.to_int()
   if rotation != 0 {
-    entries.push((@pdf.n("/Rotate"), Integer(rotation)))
+    entries.push((@pdf.PdfName::of_bytes("/Rotate"), Integer(rotation)))
   }
   let rest_entries = match page.rest {
     Dictionary(d) => d
@@ -90,7 +90,7 @@ fn mkpage(
   }
   entries.append(rest_entries[:])
   if indirects.length() > 0 {
-    entries.push((@pdf.n("/Contents"), Array(indirects)))
+    entries.push((@pdf.PdfName::of_bytes("/Contents"), Array(indirects)))
   }
   let page_obj = PdfObject::Dictionary(entries)
   let objnum = getobjnum()
@@ -130,13 +130,13 @@ fn objects_of_ptree(
       }
       let parent_entry : Array[(@pdf.PdfName, PdfObject)] = match parent {
         0 => []
-        _ => [(@pdf.n("/Parent"), PdfObject::Indirect(parent))]
+        _ => [(@pdf.PdfName::of_bytes("/Parent"), PdfObject::Indirect(parent))]
       }
       let kids = page_objects.map(pair => PdfObject::Indirect(pair.0))
       let node_entries : Array[(@pdf.PdfName, PdfObject)] = [
-        (@pdf.n("/Type"), Name(PdfName("/Pages"))),
-        (@pdf.n("/Kids"), Array(kids)),
-        (@pdf.n("/Count"), Integer(pages.length())),
+        (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Pages"))),
+        (@pdf.PdfName::of_bytes("/Kids"), Array(kids)),
+        (@pdf.PdfName::of_bytes("/Count"), Integer(pages.length())),
       ]
       node_entries.append(parent_entry[:])
       let node = @pdf.PdfObject::Dictionary(node_entries)
@@ -160,17 +160,17 @@ fn objects_of_ptree(
       }
       let parent_entry : Array[(@pdf.PdfName, PdfObject)] = match parent {
         0 => []
-        _ => [(@pdf.n("/Parent"), PdfObject::Indirect(parent))]
+        _ => [(@pdf.PdfName::of_bytes("/Parent"), PdfObject::Indirect(parent))]
       }
       let kids = Array::new()
       kids.push(PdfObject::Indirect(left_num))
       kids.append(page_objects.map(pair => PdfObject::Indirect(pair.0))[:])
       kids.push(Indirect(right_num))
       let node_entries : Array[(@pdf.PdfName, PdfObject)] = [
-        (@pdf.n("/Type"), Name(PdfName("/Pages"))),
-        (@pdf.n("/Kids"), Array(kids)),
+        (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Pages"))),
+        (@pdf.PdfName::of_bytes("/Kids"), Array(kids)),
         (
-          @pdf.n("/Count"),
+          @pdf.PdfName::of_bytes("/Count"),
           Integer(count_left + count_right + page_objects.length()),
         ),
       ]

@@ -44,9 +44,12 @@ fn hsv_to_rgb(h : Double, s : Double, v : Double) -> (Double, Double, Double) {
 ///|
 fn font_type1(base_font : String) -> @pdf.PdfObject {
   @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Type"), Name(PdfName("/Font"))),
-    (@pdf.n("/Subtype"), Name(PdfName("/Type1"))),
-    (@pdf.n("/BaseFont"), Name(@pdf.PdfName::of_string("/" + base_font))),
+    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/Font"))),
+    (@pdf.PdfName::of_bytes("/Subtype"), Name(PdfName("/Type1"))),
+    (
+      @pdf.PdfName::of_bytes("/BaseFont"),
+      Name(@pdf.PdfName::of_string("/" + base_font)),
+    ),
   ])
 }
 
@@ -54,11 +57,11 @@ fn font_type1(base_font : String) -> @pdf.PdfObject {
 fn default_resources() -> @pdf.PdfObject {
   @pdf.PdfObject::Dictionary([
     (
-      @pdf.n("/Font"),
+      @pdf.PdfName::of_bytes("/Font"),
       @pdf.PdfObject::Dictionary([
-        (@pdf.n("/F0"), font_type1("Helvetica-Bold")),
-        (@pdf.n("/F1"), font_type1("Helvetica")),
-        (@pdf.n("/F2"), font_type1("Courier")),
+        (@pdf.PdfName::of_bytes("/F0"), font_type1("Helvetica-Bold")),
+        (@pdf.PdfName::of_bytes("/F1"), font_type1("Helvetica")),
+        (@pdf.PdfName::of_bytes("/F2"), font_type1("Courier")),
       ]),
     ),
   ])
@@ -611,25 +614,28 @@ fn set_catalog_entry(
 ///|
 fn add_day_night_layers(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
   let ocg_day : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Type"), Name(PdfName("/OCG"))),
-    (@pdf.n("/Name"), String("DAY")),
+    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/OCG"))),
+    (@pdf.PdfName::of_bytes("/Name"), String("DAY")),
   ])
   let ocg_night : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Type"), Name(PdfName("/OCG"))),
-    (@pdf.n("/Name"), String("NIGHT")),
+    (@pdf.PdfName::of_bytes("/Type"), Name(PdfName("/OCG"))),
+    (@pdf.PdfName::of_bytes("/Name"), String("NIGHT")),
   ])
   let day_num = pdf.addobj(ocg_day)
   let night_num = pdf.addobj(ocg_night)
   let default_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/BaseState"), Name(PdfName("/ON"))),
-    (@pdf.n("/Intent"), Name(PdfName("/View"))),
-    (@pdf.n("/Name"), String("Default")),
-    (@pdf.n("/OFF"), Array([Indirect(night_num)])),
-    (@pdf.n("/ON"), Array([Indirect(day_num)])),
+    (@pdf.PdfName::of_bytes("/BaseState"), Name(PdfName("/ON"))),
+    (@pdf.PdfName::of_bytes("/Intent"), Name(PdfName("/View"))),
+    (@pdf.PdfName::of_bytes("/Name"), String("Default")),
+    (@pdf.PdfName::of_bytes("/OFF"), Array([Indirect(night_num)])),
+    (@pdf.PdfName::of_bytes("/ON"), Array([Indirect(day_num)])),
   ])
   let ocprops : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/OCGs"), Array([Indirect(day_num), Indirect(night_num)])),
-    (@pdf.n("/D"), default_dict),
+    (
+      @pdf.PdfName::of_bytes("/OCGs"),
+      Array([Indirect(day_num), Indirect(night_num)]),
+    ),
+    (@pdf.PdfName::of_bytes("/D"), default_dict),
   ])
   let ocprops_num = pdf.addobj(ocprops)
   set_catalog_entry(pdf, "/OCProperties", Indirect(ocprops_num))
@@ -639,8 +645,8 @@ fn add_day_night_layers(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
   }
   let layer_page = pages[2]
   let props : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/DAY"), Indirect(day_num)),
-    (@pdf.n("/NIGHT"), Indirect(night_num)),
+    (@pdf.PdfName::of_bytes("/DAY"), Indirect(day_num)),
+    (@pdf.PdfName::of_bytes("/NIGHT"), Indirect(night_num)),
   ])
   let resources = layer_page.resources.add_entry("/Properties", props)
   pages[2] = Page(
@@ -689,16 +695,16 @@ fn add_bookmarks(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
 fn goto_action(refnum : Int) -> @pdf.PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
   @pdf.PdfObject::Dictionary([
-    (@pdf.n("/S"), Name(PdfName("/GoTo"))),
-    (@pdf.n("/D"), dest),
+    (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/GoTo"))),
+    (@pdf.PdfName::of_bytes("/D"), dest),
   ])
 }
 
 ///|
 fn uri_action(uri : String) -> @pdf.PdfObject {
   @pdf.PdfObject::Dictionary([
-    (@pdf.n("/S"), Name(PdfName("/URI"))),
-    (@pdf.n("/URI"), String(uri)),
+    (@pdf.PdfName::of_bytes("/S"), Name(PdfName("/URI"))),
+    (@pdf.PdfName::of_bytes("/URI"), String(uri)),
   ])
 }
 
@@ -727,7 +733,7 @@ fn add_nav_links(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
         border: @pdfannot.Border::new(0.0),
         colour: None,
         annotrest: @pdf.PdfObject::Dictionary([
-          (@pdf.n("/A"), goto_action(prev_ref)),
+          (@pdf.PdfName::of_bytes("/A"), goto_action(prev_ref)),
         ]),
       }
       page = @pdfannot.PdfAnnot::new(pdf).add_annotation(page, annot)
@@ -750,7 +756,7 @@ fn add_nav_links(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
         border: @pdfannot.Border::new(0.0),
         colour: None,
         annotrest: @pdf.PdfObject::Dictionary([
-          (@pdf.n("/A"), goto_action(next_ref)),
+          (@pdf.PdfName::of_bytes("/A"), goto_action(next_ref)),
         ]),
       }
       page = @pdfannot.PdfAnnot::new(pdf).add_annotation(page, annot)
@@ -767,7 +773,10 @@ fn add_nav_links(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
         border: @pdfannot.Border::new(0.0),
         colour: None,
         annotrest: @pdf.PdfObject::Dictionary([
-          (@pdf.n("/A"), uri_action("https://docs.moonbitlang.com")),
+          (
+            @pdf.PdfName::of_bytes("/A"),
+            uri_action("https://docs.moonbitlang.com"),
+          ),
         ]),
       }
       page = @pdfannot.PdfAnnot::new(pdf).add_annotation(page, annot)
@@ -796,7 +805,7 @@ fn add_nav_links(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
         border: @pdfannot.Border::new(0.0),
         colour: None,
         annotrest: @pdf.PdfObject::Dictionary([
-          (@pdf.n("/A"), goto_action(refs[target])),
+          (@pdf.PdfName::of_bytes("/A"), goto_action(refs[target])),
         ]),
       }
       page = @pdfannot.PdfAnnot::new(pdf).add_annotation(page, annot)

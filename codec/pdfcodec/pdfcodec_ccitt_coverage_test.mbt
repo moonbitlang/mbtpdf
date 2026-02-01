@@ -35,13 +35,13 @@ fn ccitt_roundtrip(
 ) -> Unit raise {
   let pdf = @pdf.Pdf::empty()
   let decodeparms : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/K"), Integer(k)),
-    (@pdf.n("/Columns"), Integer(columns)),
-    (@pdf.n("/Rows"), Integer(rows)),
+    (@pdf.PdfName::of_bytes("/K"), Integer(k)),
+    (@pdf.PdfName::of_bytes("/Columns"), Integer(columns)),
+    (@pdf.PdfName::of_bytes("/Rows"), Integer(rows)),
   ])
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(raw))),
-    (@pdf.n("/DecodeParms"), decodeparms),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(@pdfio.bytes_size(raw))),
+    (@pdf.PdfName::of_bytes("/DecodeParms"), decodeparms),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(raw)))
   let stream_obj = @pdf.PdfObject::Stream(stream_ref)
@@ -153,7 +153,7 @@ test "encode_pdfstream CCITT errors on insufficient data" {
   let pdf = @pdf.Pdf::empty()
   let data = @pdfio.mkbytes(0)
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(0)),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(data)))
   let stream_obj : @pdf.PdfObject = Stream(stream_ref)
@@ -172,7 +172,7 @@ test "encode_pdfstream CCITTG4 errors on insufficient data" {
   let pdf = @pdf.Pdf::empty()
   let data = @pdfio.mkbytes(0)
   let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
-    (@pdf.n("/Length"), Integer(0)),
+    (@pdf.PdfName::of_bytes("/Length"), Integer(0)),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(data)))
   let stream_obj : @pdf.PdfObject = Stream(stream_ref)
