@@ -1,13 +1,13 @@
 ///|
 test "page_reference_numbers variants" {
   let base1 = Pdf::empty()
-  let pages_kid_non_indirect = d([
-    ("/Type", Name(PdfName("/Pages"))),
-    ("/Kids", Array([Integer(1)])),
+  let pages_kid_non_indirect = PdfObject::Dictionary([
+    (n("/Type"), Name(PdfName("/Pages"))),
+    (n("/Kids"), Array([Integer(1)])),
   ])
-  let catalog1 = d([
-    ("/Type", Name(PdfName("/Catalog"))),
-    ("/Pages", Indirect(1)),
+  let catalog1 = PdfObject::Dictionary([
+    (n("/Type"), Name(PdfName("/Catalog"))),
+    (n("/Pages"), Indirect(1)),
   ])
   base1.addobj_given_num((1, pages_kid_non_indirect))
   base1.addobj_given_num((2, catalog1))
@@ -16,19 +16,19 @@ test "page_reference_numbers variants" {
     minor: base1.minor,
     root: 2,
     objects: base1.objects,
-    trailerdict: d([("/Root", Indirect(2))]),
+    trailerdict: PdfObject::Dictionary([(n("/Root"), Indirect(2))]),
     was_linearized: base1.was_linearized,
     saved_encryption: base1.saved_encryption,
   }
   assert_eq(pdf1.page_reference_numbers().length(), 0)
   let base2 = Pdf::empty()
-  let pages_kid_not_array = d([
-    ("/Type", Name(PdfName("/Pages"))),
-    ("/Kids", Integer(9)),
+  let pages_kid_not_array = PdfObject::Dictionary([
+    (n("/Type"), Name(PdfName("/Pages"))),
+    (n("/Kids"), Integer(9)),
   ])
-  let catalog2 = d([
-    ("/Type", Name(PdfName("/Catalog"))),
-    ("/Pages", Indirect(1)),
+  let catalog2 = PdfObject::Dictionary([
+    (n("/Type"), Name(PdfName("/Catalog"))),
+    (n("/Pages"), Indirect(1)),
   ])
   base2.addobj_given_num((1, pages_kid_not_array))
   base2.addobj_given_num((2, catalog2))
@@ -37,20 +37,22 @@ test "page_reference_numbers variants" {
     minor: base2.minor,
     root: 2,
     objects: base2.objects,
-    trailerdict: d([("/Root", Indirect(2))]),
+    trailerdict: PdfObject::Dictionary([(n("/Root"), Indirect(2))]),
     was_linearized: base2.was_linearized,
     saved_encryption: base2.saved_encryption,
   }
   assert_eq(pdf2.page_reference_numbers(), [-1])
   let base3 = Pdf::empty()
-  let root_only = d([("/Type", Name(PdfName("/Catalog")))])
+  let root_only = PdfObject::Dictionary([
+    (n("/Type"), Name(PdfName("/Catalog"))),
+  ])
   base3.addobj_given_num((1, root_only))
   let pdf3 = Pdf::{
     major: base3.major,
     minor: base3.minor,
     root: 1,
     objects: base3.objects,
-    trailerdict: d([("/Root", Indirect(1))]),
+    trailerdict: PdfObject::Dictionary([(n("/Root"), Indirect(1))]),
     was_linearized: base3.was_linearized,
     saved_encryption: base3.saved_encryption,
   }
@@ -60,10 +62,10 @@ test "page_reference_numbers variants" {
 ///|
 test "remove_unreferenced nullifies page refs" {
   let pdf = make_basic_pdf()
-  let extra_page = d([("/Type", Name(PdfName("/Page")))])
+  let extra_page = PdfObject::Dictionary([(n("/Type"), Name(PdfName("/Page")))])
   pdf.addobj_given_num((4, extra_page))
   let stream = make_stream(
-    d([("/Ref", Indirect(4))]),
+    PdfObject::Dictionary([(n("/Ref"), Indirect(4))]),
     @pdfio.bytes_of_string("x"),
   )
   pdf.addobj_given_num((5, stream))

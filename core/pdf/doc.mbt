@@ -78,7 +78,7 @@ pub fn Pdf::empty() -> Pdf {
       objects: pdfobjmap_empty(),
       object_stream_ids: Map::new(),
     },
-    trailerdict: d([]),
+    trailerdict: PdfObject::Dictionary([]),
     was_linearized: false,
     saved_encryption: None,
   }

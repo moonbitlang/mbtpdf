@@ -37,7 +37,7 @@ pub struct PdfPageDoc {
 }
 pub fn PdfPageDoc::add_pagetree(Self, Array[Page]) -> (@pdf.Pdf, Int) raise
 pub fn PdfPageDoc::add_prefix(Self, String) -> Unit raise
-pub fn PdfPageDoc::add_root(Self, Int, Array[(String, @pdf.PdfObject)]) -> @pdf.Pdf raise
+pub fn PdfPageDoc::add_root(Self, Int, Array[(@pdf.PdfName, @pdf.PdfObject)]) -> @pdf.Pdf raise
 pub fn PdfPageDoc::change_pages(Self, Bool, Array[Page], matrices? : Array[(Int, @pdftransform.TransformMatrix)], changes? : Array[(Int, Int)]) -> @pdf.Pdf raise
 pub fn PdfPageDoc::combine_pdf_resources(Self, @pdf.PdfObject, @pdf.PdfObject) -> @pdf.PdfObject raise
 pub fn PdfPageDoc::endpage(Self) -> Int raise

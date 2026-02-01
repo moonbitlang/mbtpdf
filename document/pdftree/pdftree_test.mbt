@@ -95,9 +95,9 @@ test "build_name_tree uses integer limits for large number trees" {
 ///|
 test "read_name_tree skips malformed keys" {
   let pdf = @pdf.Pdf::empty()
-  let tree : @pdf.PdfObject = @pdf.d([
+  let tree : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      "/Names",
+      @pdf.n("/Names"),
       Array([
         Integer(1),
         Name(PdfName("/One")),
@@ -115,9 +115,9 @@ test "read_name_tree skips malformed keys" {
 ///|
 test "read_number_tree handles duplicate keys" {
   let pdf = @pdf.Pdf::empty()
-  let tree : @pdf.PdfObject = @pdf.d([
+  let tree : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      "/Nums",
+      @pdf.n("/Nums"),
       Array([
         Integer(1),
         Name(PdfName("/One")),
@@ -160,9 +160,9 @@ test "build_number_tree parses non-integer keys as 0" {
 ///|
 test "read_number_tree returns empty on non-integer keys" {
   let pdf = @pdf.Pdf::empty()
-  let tree : @pdf.PdfObject = @pdf.d([
+  let tree : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
     (
-      "/Nums",
+      @pdf.n("/Nums"),
       Array([
         String("x"),
         Name(PdfName("/X")),

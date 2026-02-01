@@ -2,16 +2,16 @@
 test "trim_structure_tree no-ops on empty pdf" {
   let pdf0 = @pdf.Pdf::empty()
   let pages_root_num = pdf0.addobj(
-    @pdf.d([
-      ("/Type", Name(PdfName("/Pages"))),
-      ("/Kids", Array([])),
-      ("/Count", Integer(0)),
+    @pdf.PdfObject::Dictionary([
+      (@pdf.n("/Type"), Name(PdfName("/Pages"))),
+      (@pdf.n("/Kids"), Array([])),
+      (@pdf.n("/Count"), Integer(0)),
     ]),
   )
   let catalog_num = pdf0.addobj(
-    @pdf.d([
-      ("/Type", Name(PdfName("/Catalog"))),
-      ("/Pages", Indirect(pages_root_num)),
+    @pdf.PdfObject::Dictionary([
+      (@pdf.n("/Type"), Name(PdfName("/Catalog"))),
+      (@pdf.n("/Pages"), Indirect(pages_root_num)),
     ]),
   )
   let trailerdict = pdf0.trailerdict.add_entry("/Root", Indirect(catalog_num))
@@ -30,15 +30,21 @@ test "trim_structure_tree no-ops on empty pdf" {
 ///|
 test "renumber_parent_trees updates direct StructTreeRoot and keeps unmapped StructParent" {
   let pdf1 = @pdf.Pdf::empty()
-  let tagged = pdf1.addobj(@pdf.d([("/StructParent", Integer(123))]))
+  let tagged = pdf1.addobj(
+    @pdf.PdfObject::Dictionary([(@pdf.n("/StructParent"), Integer(123))]),
+  )
   pdf1.trailerdict = pdf1.trailerdict.add_entry(
     "/Root",
-    @pdf.d([("/StructTreeRoot", @pdf.d([]))]),
+    @pdf.PdfObject::Dictionary([
+      (@pdf.n("/StructTreeRoot"), @pdf.PdfObject::Dictionary([])),
+    ]),
   )
   let pdf2 = @pdf.Pdf::empty()
   pdf2.trailerdict = pdf2.trailerdict.add_entry(
     "/Root",
-    @pdf.d([("/StructTreeRoot", @pdf.d([]))]),
+    @pdf.PdfObject::Dictionary([
+      (@pdf.n("/StructTreeRoot"), @pdf.PdfObject::Dictionary([])),
+    ]),
   )
   @pdfst.PdfStructTrees::new([pdf1, pdf2]).renumber_parent_trees()
   match pdf1.lookup_direct("/StructParent", pdf1.lookup_obj(tagged)) {

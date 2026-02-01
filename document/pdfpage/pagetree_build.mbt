@@ -74,15 +74,15 @@ fn mkpage(
       }
     }
   }
-  let entries : Array[(@pdf.PdfName, PdfObject)] = @pdf.dk([
-    ("/Type", Name(PdfName("/Page"))),
-    ("/Parent", Indirect(parent)),
-    ("/Resources", page.resources),
-    ("/MediaBox", page.mediabox),
-  ])
+  let entries : Array[(@pdf.PdfName, PdfObject)] = [
+    (@pdf.n("/Type"), Name(PdfName("/Page"))),
+    (@pdf.n("/Parent"), Indirect(parent)),
+    (@pdf.n("/Resources"), page.resources),
+    (@pdf.n("/MediaBox"), page.mediabox),
+  ]
   let rotation = page.rotate.to_int()
   if rotation != 0 {
-    entries.push((@pdf.PdfName::of_string("/Rotate"), Integer(rotation)))
+    entries.push((@pdf.n("/Rotate"), Integer(rotation)))
   }
   let rest_entries = match page.rest {
     Dictionary(d) => d
@@ -90,7 +90,7 @@ fn mkpage(
   }
   entries.append(rest_entries[:])
   if indirects.length() > 0 {
-    entries.push((@pdf.PdfName::of_string("/Contents"), Array(indirects)))
+    entries.push((@pdf.n("/Contents"), Array(indirects)))
   }
   let page_obj = PdfObject::Dictionary(entries)
   let objnum = getobjnum()
@@ -128,18 +128,18 @@ fn objects_of_ptree(
         extras.val.append(extra[:])
         page_objects.push((objnum, obj))
       }
-      let parent_entry = match parent {
+      let parent_entry : Array[(@pdf.PdfName, PdfObject)] = match parent {
         0 => []
-        _ => [("/Parent", PdfObject::Indirect(parent))]
+        _ => [(@pdf.n("/Parent"), PdfObject::Indirect(parent))]
       }
       let kids = page_objects.map(pair => PdfObject::Indirect(pair.0))
-      let node_entries : Array[(String, PdfObject)] = [
-        ("/Type", Name(PdfName("/Pages"))),
-        ("/Kids", Array(kids)),
-        ("/Count", Integer(pages.length())),
+      let node_entries : Array[(@pdf.PdfName, PdfObject)] = [
+        (@pdf.n("/Type"), Name(PdfName("/Pages"))),
+        (@pdf.n("/Kids"), Array(kids)),
+        (@pdf.n("/Count"), Integer(pages.length())),
       ]
       node_entries.append(parent_entry[:])
-      let node = @pdf.d(node_entries)
+      let node = @pdf.PdfObject::Dictionary(node_entries)
       let result = Array::new(capacity=1 + page_objects.length())
       result.push((this, node))
       result.append(page_objects[:])
@@ -158,21 +158,24 @@ fn objects_of_ptree(
         extras.val.append(extra[:])
         page_objects.push((objnum, obj))
       }
-      let parent_entry = match parent {
+      let parent_entry : Array[(@pdf.PdfName, PdfObject)] = match parent {
         0 => []
-        _ => [("/Parent", PdfObject::Indirect(parent))]
+        _ => [(@pdf.n("/Parent"), PdfObject::Indirect(parent))]
       }
       let kids = Array::new()
       kids.push(PdfObject::Indirect(left_num))
       kids.append(page_objects.map(pair => PdfObject::Indirect(pair.0))[:])
       kids.push(Indirect(right_num))
-      let node_entries : Array[(String, PdfObject)] = [
-        ("/Type", Name(PdfName("/Pages"))),
-        ("/Kids", Array(kids)),
-        ("/Count", Integer(count_left + count_right + page_objects.length())),
+      let node_entries : Array[(@pdf.PdfName, PdfObject)] = [
+        (@pdf.n("/Type"), Name(PdfName("/Pages"))),
+        (@pdf.n("/Kids"), Array(kids)),
+        (
+          @pdf.n("/Count"),
+          Integer(count_left + count_right + page_objects.length()),
+        ),
       ]
       node_entries.append(parent_entry[:])
-      let node = @pdf.d(node_entries)
+      let node = @pdf.PdfObject::Dictionary(node_entries)
       let result = Array::new()
       result.push((this, node))
       result.append(page_objects[:])
@@ -215,14 +218,14 @@ pub fn PdfPageDoc::add_pagetree(
 pub fn PdfPageDoc::add_root(
   self : PdfPageDoc,
   pageroot : Int,
-  extras : Array[(String, PdfObject)],
+  extras : Array[(@pdf.PdfName, PdfObject)],
 ) -> @pdf.Pdf raise {
   let pdf = self.pdf
   let existing_entries = match pdf.lookup_obj(pdf.root) {
     Dictionary(d) => d
     _ => []
   }
-  let mut root = @pdf.d(extras)
+  let mut root = @pdf.PdfObject::Dictionary(extras)
   for entry in existing_entries {
     root = root.add_entry(entry.0.to_string_bytes(), entry.1)
   }

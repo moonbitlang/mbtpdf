@@ -2,12 +2,20 @@
 test "deep_copy copies streams and object data" {
   let pdf = make_basic_pdf()
   let bytes = @pdfio.bytes_of_string("data")
-  let stream = make_stream(d([("/Ref", Indirect(2))]), bytes)
+  let stream = make_stream(
+    PdfObject::Dictionary([(n("/Ref"), Indirect(2))]),
+    bytes,
+  )
   pdf.addobj_given_num((4, stream))
   pdf.objects.object_stream_ids.set(4, 99)
   let input = @pdfio.Input::of_string("xyz", source="toget")
   let toget_stream = PdfObject::Stream(
-    Ref::new((d([("/Length", Integer(3))]), ToGet(ToGet::new(input, 0, 3)))),
+    Ref::new(
+      (
+        PdfObject::Dictionary([(n("/Length"), Integer(3))]),
+        ToGet(ToGet::new(input, 0, 3)),
+      ),
+    ),
   )
   pdf.addobj_given_num((7, toget_stream))
   pdf.objects.objects.set(5, ({ val: ParsedAlreadyDecrypted(String("x")) }, 0))

@@ -9,7 +9,7 @@ test "renumber_object_parsed handles indirect and stream" {
   let changes2 : Map[Int, Int] = Map::new()
   changes2.set(1, 10)
   let stream = make_stream(
-    d([("/Ref", Indirect(1))]),
+    PdfObject::Dictionary([(n("/Ref"), Indirect(1))]),
     @pdfio.bytes_of_string("x"),
   )
   match pdf.renumber_object_parsed(changes2, stream) {

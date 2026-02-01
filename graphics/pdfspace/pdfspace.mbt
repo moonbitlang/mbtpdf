@@ -282,7 +282,7 @@ pub fn ColourSpace::read(
       }
       let alt_space = ColourSpace::read(pdf, resources, alternate)
       let tint_transform = @pdffun.PdfFunction::parse(pdf, tint)
-      let empty_dict : PdfObject = @pdf.d([])
+      let empty_dict : PdfObject = @pdf.PdfObject::Dictionary([])
       DeviceN(out_names, alt_space, tint_transform, empty_dict)
     }
     Array(
@@ -489,21 +489,24 @@ pub fn ColourSpace::to_pdf_object(
     CalGray(white, black, gamma) =>
       Array([
         Name(PdfName("/CalGray")),
-        @pdf.d([
-          ("/WhitePoint", array_of_point(white)),
-          ("/BlackPoint", array_of_point(black)),
-          ("/Gamma", @pdf.ToPdfNumber::to_pdf_number(gamma)),
+        @pdf.PdfObject::Dictionary([
+          (@pdf.n("/WhitePoint"), array_of_point(white)),
+          (@pdf.n("/BlackPoint"), array_of_point(black)),
+          (@pdf.n("/Gamma"), @pdf.ToPdfNumber::to_pdf_number(gamma)),
         ]),
       ])
     CalRGB(white, black, gamma, matrix) =>
       Array([
         Name(PdfName("/CalRGB")),
-        @pdf.d([
-          ("/WhitePoint", array_of_point(white)),
-          ("/BlackPoint", array_of_point(black)),
-          ("/Gamma", Array(gamma.map(x => @pdf.ToPdfNumber::to_pdf_number(x)))),
+        @pdf.PdfObject::Dictionary([
+          (@pdf.n("/WhitePoint"), array_of_point(white)),
+          (@pdf.n("/BlackPoint"), array_of_point(black)),
           (
-            "/Matrix",
+            @pdf.n("/Gamma"),
+            Array(gamma.map(x => @pdf.ToPdfNumber::to_pdf_number(x))),
+          ),
+          (
+            @pdf.n("/Matrix"),
             Array(matrix.map(x => @pdf.ToPdfNumber::to_pdf_number(x))),
           ),
         ]),
@@ -511,10 +514,13 @@ pub fn ColourSpace::to_pdf_object(
     Lab(white, black, range) =>
       Array([
         Name(PdfName("/Lab")),
-        @pdf.d([
-          ("/WhitePoint", array_of_point(white)),
-          ("/BlackPoint", array_of_point(black)),
-          ("/Range", Array(range.map(x => @pdf.ToPdfNumber::to_pdf_number(x)))),
+        @pdf.PdfObject::Dictionary([
+          (@pdf.n("/WhitePoint"), array_of_point(white)),
+          (@pdf.n("/BlackPoint"), array_of_point(black)),
+          (
+            @pdf.n("/Range"),
+            Array(range.map(x => @pdf.ToPdfNumber::to_pdf_number(x))),
+          ),
         ]),
       ])
     ICCBased(icc) =>

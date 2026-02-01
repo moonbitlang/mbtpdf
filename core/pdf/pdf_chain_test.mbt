@@ -1,7 +1,9 @@
 ///|
 test "lookup_chain handles array keys" {
   let pdf = Pdf::empty()
-  pdf.trailerdict = d([("/A", Array([Integer(10), Integer(20)]))])
+  pdf.trailerdict = PdfObject::Dictionary([
+    (n("/A"), Array([Integer(10), Integer(20)])),
+  ])
   let keys = ["/A", "/[1]"]
   match pdf.lookup_chain(pdf.trailerdict, keys[:]) {
     Some(Integer(value)) => assert_eq(value, 20)
@@ -12,7 +14,9 @@ test "lookup_chain handles array keys" {
 ///|
 test "replace_chain updates array elements" {
   let pdf = Pdf::empty()
-  pdf.trailerdict = d([("/A", Array([Integer(1), Integer(2)]))])
+  pdf.trailerdict = PdfObject::Dictionary([
+    (n("/A"), Array([Integer(1), Integer(2)])),
+  ])
   let chain = ["/A", "/[0]"]
   pdf.replace_chain(chain, Integer(99))
   match pdf.lookup_chain(pdf.trailerdict, chain[:]) {

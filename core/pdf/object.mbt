@@ -3,7 +3,7 @@
 ///
 /// This is a low-level representation close to PDF syntax. In particular:
 /// - `PdfObject::String` is treated as a byte string by the parser/serializer.
-/// - `PdfObject::Dictionary` keys are also stored as "bytes-in-String" so we can
+/// - `PdfObject::Dictionary` keys are stored as `PdfName` (raw bytes) so we can
 ///   round-trip weird/malformed PDFs without losing information.
 pub(all) enum PdfObject {
   /// PDF `null`.
@@ -31,8 +31,6 @@ pub(all) enum PdfObject {
   /// - Allows representing malformed PDFs with duplicate keys.
   /// - Preserves "first match wins" semantics used by `lookup_*` (search_by).
   /// - Keeps insertion order stable for serialization.
-  /// - Key encoding: `String` is treated as a "bytes-in-String" byte string,
-  ///   matching the parser/serializer (each UTF-16 code unit stores one byte).
   Dictionary(Array[(PdfName, PdfObject)])
   /// PDF stream object.
   ///
@@ -42,25 +40,6 @@ pub(all) enum PdfObject {
   /// PDF indirect reference (`n 0 R`) to an object number.
   Indirect(Int)
 } derive(Debug)
-
-///|
-/// Convenience constructor for a PDF dictionary from "name keys" written as
-/// `String` (byte-string).
-///
-/// This maps each key to `PdfName::of_string` and returns `PdfObject::Dictionary`.
-///
-/// This is primarily for construction sites that want ergonomic literals like:
-/// `d([("/Type", Name(PdfName("/Page")))])`.
-pub fn d(entries : Array[(String, PdfObject)]) -> PdfObject {
-  Dictionary(dk(entries))
-}
-
-///|
-/// Convert dictionary entries keyed by `String` (byte-string) to entries keyed
-/// by `PdfName`.
-pub fn dk(entries : Array[(String, PdfObject)]) -> Array[(PdfName, PdfObject)] {
-  entries.map(pair => (PdfName::of_string(pair.0), pair.1))
-}
 
 ///|
 /// Convert primitive numeric types into PDF numeric objects.

@@ -110,7 +110,7 @@ pub fn PdfPageDoc::combine_pdf_resources(
     entry.0.to_string_bytes(),
   ))
   let combined_known = resource_keys.filter_map(combine_entries)
-  let mut out = @pdf.d([])
+  let mut out = @pdf.PdfObject::Dictionary([])
   for entry in unknown_keys_a {
     out = out.add_entry(entry.0.to_string_bytes(), entry.1)
   }

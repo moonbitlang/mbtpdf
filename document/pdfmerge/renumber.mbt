@@ -79,8 +79,10 @@ fn merge_namedicts(pdf : @pdf.Pdf, pdfs : Array[@pdf.Pdf]) -> Int raise {
   for pair in trees {
     let merged = tree_ctx.merge_name_trees_no_clash(pair.1)
     let num = pdf.addobj(merged)
-    new_entries.push((pair.0, PdfObject::Indirect(num)))
+    new_entries.push(
+      (@pdf.PdfName::of_string(pair.0), PdfObject::Indirect(num)),
+    )
   }
-  let newdict = @pdf.d(new_entries)
+  let newdict = @pdf.PdfObject::Dictionary(new_entries)
   pdf.addobj(newdict)
 }

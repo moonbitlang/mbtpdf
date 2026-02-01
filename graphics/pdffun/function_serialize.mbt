@@ -68,11 +68,13 @@ fn sampled_bytes(samples : Array[Int], bits : Int) -> Array[Byte] {
 }
 
 ///|
-fn entries_of_interpolation(i : Interpolation) -> Array[(String, PdfObject)] {
+fn entries_of_interpolation(
+  i : Interpolation,
+) -> Array[(@pdf.PdfName, PdfObject)] {
   [
-    ("/C0", Array(i.c0.map(x => @pdf.ToPdfNumber::to_pdf_number(x)))),
-    ("/C1", Array(i.c1.map(x => @pdf.ToPdfNumber::to_pdf_number(x)))),
-    ("/N", @pdf.ToPdfNumber::to_pdf_number(i.n)),
+    (@pdf.n("/C0"), Array(i.c0.map(x => @pdf.ToPdfNumber::to_pdf_number(x)))),
+    (@pdf.n("/C1"), Array(i.c1.map(x => @pdf.ToPdfNumber::to_pdf_number(x)))),
+    (@pdf.n("/N"), @pdf.ToPdfNumber::to_pdf_number(i.n)),
   ]
 }
 
@@ -80,15 +82,18 @@ fn entries_of_interpolation(i : Interpolation) -> Array[(String, PdfObject)] {
 fn entries_of_stitching(
   pdf : @pdf.Pdf,
   s : Stitching,
-) -> Array[(String, PdfObject)] {
+) -> Array[(@pdf.PdfName, PdfObject)] {
   let numbers = s.functions.map(fun => PdfObject::Indirect(
     pdf.addobj(fun.to_pdf_object(pdf)),
   ))
   [
-    ("/Functions", Array(numbers)),
-    ("/Bounds", Array(s.bounds.map(x => @pdf.ToPdfNumber::to_pdf_number(x)))),
+    (@pdf.n("/Functions"), Array(numbers)),
     (
-      "/Encode",
+      @pdf.n("/Bounds"),
+      Array(s.bounds.map(x => @pdf.ToPdfNumber::to_pdf_number(x))),
+    ),
+    (
+      @pdf.n("/Encode"),
       Array(s.stitch_encode.map(x => @pdf.ToPdfNumber::to_pdf_number(x))),
     ),
   ]
@@ -98,7 +103,7 @@ fn entries_of_stitching(
 fn extra_entries_of_function(
   pdf : @pdf.Pdf,
   fun : PdfFunction,
-) -> Array[(String, PdfObject)] {
+) -> Array[(@pdf.PdfName, PdfObject)] {
   match fun.func {
     Interpolation(i) => entries_of_interpolation(i)
     Stitching(s) => entries_of_stitching(pdf, s)

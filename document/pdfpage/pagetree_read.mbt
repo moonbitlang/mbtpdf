@@ -160,7 +160,7 @@ fn find_pages(
           }
           let resources = match resources {
             Some(r) => r
-            None => @pdf.d([])
+            None => @pdf.PdfObject::Dictionary([])
           }
           let rest = match pages {
             Dictionary(d) => PdfObject::Dictionary(remove_dict_entries(d))

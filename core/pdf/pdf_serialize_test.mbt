@@ -23,7 +23,10 @@ test "pdfobjmap_find fails on missing key" {
 
 ///|
 test "lookup_immediate_all works on stream dictionaries" {
-  let dict = d([("/A", Integer(1)), ("/A", Integer(2))])
+  let dict = PdfObject::Dictionary([
+    (n("/A"), Integer(1)),
+    (n("/A"), Integer(2)),
+  ])
   let stream_ref = Ref::new((dict, Stream::Got(@pdfio.bytes_of_string("x"))))
   let stream_obj = PdfObject::Stream(stream_ref)
   let values = stream_obj.lookup_immediate_all("/A")
@@ -41,9 +44,9 @@ test "lookup_immediate_all works on stream dictionaries" {
 test "PdfObject::to_string escapes strings and normalizes names" {
   let messages : Array[String] = []
   let rendered = @pdfe.with_logger(fn(msg) { messages.push(msg) }, fn() {
-    let obj = d([
+    let obj = PdfObject::Dictionary([
       ("Type", Name(PdfName::of_string("NoSlash"))),
-      ("/Needs Escape", String("a(b)\\c\n")),
+      (n("/Needs Escape"), String("a(b)\\c\n")),
     ])
     obj.to_string()
   })
@@ -71,7 +74,7 @@ test "to_string_including_data warns when stream cannot be got" {
   })
   let toget = ToGet::new(input, 0, 3, crypt~)
   let stream_ref = Ref::new(
-    (d([("/Length", Integer(3))]), Stream::ToGet(toget)),
+    (PdfObject::Dictionary([(n("/Length"), Integer(3))]), Stream::ToGet(toget)),
   )
   let stream_obj = PdfObject::Stream(stream_ref)
   let messages : Array[String] = []

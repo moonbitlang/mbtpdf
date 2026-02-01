@@ -2,33 +2,36 @@
 fn minimum_valid_pdf() -> @pdf.Pdf raise {
   let pdf = @pdf.Pdf::empty()
   let pages_root_num = pdf.addobj(
-    @pdf.d([
-      ("/Type", Name(PdfName("/Pages"))),
-      ("/Kids", Array([])),
-      ("/Count", Integer(1)),
+    @pdf.PdfObject::Dictionary([
+      (@pdf.n("/Type"), Name(PdfName("/Pages"))),
+      (@pdf.n("/Kids"), Array([])),
+      (@pdf.n("/Count"), Integer(1)),
     ]),
   )
   let page_num = pdf.addobj(
-    @pdf.d([
-      ("/Type", Name(PdfName("/Page"))),
-      ("/Parent", Indirect(pages_root_num)),
-      ("/MediaBox", Array([Integer(0), Integer(0), Integer(100), Integer(100)])),
+    @pdf.PdfObject::Dictionary([
+      (@pdf.n("/Type"), Name(PdfName("/Page"))),
+      (@pdf.n("/Parent"), Indirect(pages_root_num)),
+      (
+        @pdf.n("/MediaBox"),
+        Array([Integer(0), Integer(0), Integer(100), Integer(100)]),
+      ),
     ]),
   )
   pdf.addobj_given_num(
     (
       pages_root_num,
-      @pdf.d([
-        ("/Type", Name(PdfName("/Pages"))),
-        ("/Kids", Array([Indirect(page_num)])),
-        ("/Count", Integer(1)),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.n("/Type"), Name(PdfName("/Pages"))),
+        (@pdf.n("/Kids"), Array([Indirect(page_num)])),
+        (@pdf.n("/Count"), Integer(1)),
       ]),
     ),
   )
   let catalog_num = pdf.addobj(
-    @pdf.d([
-      ("/Type", Name(PdfName("/Catalog"))),
-      ("/Pages", Indirect(pages_root_num)),
+    @pdf.PdfObject::Dictionary([
+      (@pdf.n("/Type"), Name(PdfName("/Catalog"))),
+      (@pdf.n("/Pages"), Indirect(pages_root_num)),
     ]),
   )
   let trailerdict = pdf.trailerdict.add_entry("/Root", Indirect(catalog_num))
@@ -225,9 +228,9 @@ test "add_bookmarks links siblings and counts" {
 ///|
 test "read_bookmarks toggles action preservation" {
   let pdf = minimum_valid_pdf()
-  let action : @pdf.PdfObject = @pdf.d([
-    ("/S", Name(PdfName("/GoTo"))),
-    ("/D", String("dest")),
+  let action : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
+    (@pdf.n("/S"), Name(PdfName("/GoTo"))),
+    (@pdf.n("/D"), String("dest")),
   ])
   let marks : Array[@pdfmarks.Bookmark] = [
     {

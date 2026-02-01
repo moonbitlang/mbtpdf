@@ -7,13 +7,13 @@ fn encrypt_pdf_40bit_inner(
   id : String,
   pdf : @pdf.Pdf,
 ) -> @pdf.Pdf raise {
-  let crypt_dict = @pdf.d([
-    ("/Filter", Name(PdfName("/Standard"))),
-    ("/V", Integer(1)),
-    ("/R", Integer(2)),
-    ("/O", String(owner)),
-    ("/U", String(user)),
-    ("/P", Integer(p)),
+  let crypt_dict = @pdf.PdfObject::Dictionary([
+    (@pdf.n("/Filter"), Name(PdfName("/Standard"))),
+    (@pdf.n("/V"), Integer(1)),
+    (@pdf.n("/R"), Integer(2)),
+    (@pdf.n("/O"), String(owner)),
+    (@pdf.n("/U"), String(user)),
+    (@pdf.n("/P"), Integer(p)),
   ])
   match
     process_cryption(

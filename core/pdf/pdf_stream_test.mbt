@@ -4,7 +4,7 @@ test "streams and transforms" {
   pdf.addobj_given_num((1, Integer(7)))
   let input = @pdfio.Input::of_string("abcd", source="stream")
   let t = ToGet::new(input, 0, 4)
-  let dict = d([("/Length", Integer(0))])
+  let dict = PdfObject::Dictionary([(n("/Length"), Integer(0))])
   let stream_ref = Ref::new((dict, Stream::ToGet(t)))
   let stream_obj = PdfObject::Stream(stream_ref)
   stream_obj.getstream()
@@ -32,7 +32,7 @@ test "streams and transforms" {
   )
   assert_is_err(try? pdf.parse_rectangle(Array([Integer(1)])))
   assert_is_err(try? pdf.parse_rectangle(Integer(1)))
-  let dict_matrix = d([
+  let dict_matrix = PdfObject::Dictionary([
     (
       "/Matrix",
       Array([
@@ -54,9 +54,17 @@ test "streams and transforms" {
   assert_eq(identity.a, @pdftransform.TransformMatrix::identity().a)
   assert_eq(identity.d, @pdftransform.TransformMatrix::identity().d)
   assert_is_err(
-    try? pdf.parse_matrix("/Matrix", d([("/Matrix", Array([Integer(1)]))])),
+    try? pdf.parse_matrix(
+      "/Matrix",
+      PdfObject::Dictionary([(n("/Matrix"), Array([Integer(1)]))]),
+    ),
   )
-  assert_is_err(try? pdf.parse_matrix("/Matrix", d([("/Matrix", Integer(1))])))
+  assert_is_err(
+    try? pdf.parse_matrix(
+      "/Matrix",
+      PdfObject::Dictionary([(n("/Matrix"), Integer(1))]),
+    ),
+  )
   match make_matrix(@pdftransform.TransformMatrix::identity()) {
     Array(values) => assert_eq(values.length(), 6)
     _ => fail("expected matrix array")
@@ -158,7 +166,9 @@ test "getstream error cases" {
     r: 5,
   })
   let toget_crypt = ToGet::new(input, 0, 3, crypt~)
-  let crypt_ref = Ref::new((d([]), Stream::ToGet(toget_crypt)))
+  let crypt_ref = Ref::new(
+    (PdfObject::Dictionary([]), Stream::ToGet(toget_crypt)),
+  )
   let crypt_stream = PdfObject::Stream(crypt_ref)
   assert_is_err(try? crypt_stream.getstream())
   let plain = @pdfio.Input::of_string("abc", source="plain")
@@ -174,7 +184,11 @@ test "getstream error cases" {
 
 ///|
 test "lookup_immediate_all preserves duplicate dictionary keys" {
-  let dict = d([("/A", Integer(1)), ("/A", Integer(2)), ("/B", Integer(3))])
+  let dict = PdfObject::Dictionary([
+    (n("/A"), Integer(1)),
+    (n("/A"), Integer(2)),
+    (n("/B"), Integer(3)),
+  ])
   let values = dict.lookup_immediate_all("/A")
   assert_eq(values.length(), 2)
   match values[0] {

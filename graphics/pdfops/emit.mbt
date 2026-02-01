@@ -487,7 +487,12 @@ pub fn Op::stream_of_ops(ops : Array[Op]) -> @pdf.PdfObject raise {
   let data = stream_of_lexemes(lexemelists_of_ops(ops))
   Stream(
     Ref::new(
-      (@pdf.d([("/Length", Integer(@pdfio.bytes_size(data)))]), Got(data)),
+      (
+        @pdf.PdfObject::Dictionary([
+          (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
+        ]),
+        Got(data),
+      ),
     ),
   )
 }

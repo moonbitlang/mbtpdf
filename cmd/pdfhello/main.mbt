@@ -11,10 +11,10 @@ pub async fn run(
   try {
     // Define a Type1 font using the built-in Times-Italic PostScript font.
     // Type1 fonts are one of the 14 standard PDF fonts that don't require embedding.
-    let font = @pdf.d([
-      ("/Type", Name(PdfName("/Font"))),
-      ("/Subtype", Name(PdfName("/Type1"))),
-      ("/BaseFont", Name(PdfName("/Times-Italic"))),
+    let font = @pdf.PdfObject::Dictionary([
+      (@pdf.n("/Type"), Name(PdfName("/Font"))),
+      (@pdf.n("/Subtype"), Name(PdfName("/Type1"))),
+      (@pdf.n("/BaseFont"), Name(PdfName("/Times-Italic"))),
     ])
 
     // Build the page content as a sequence of PDF graphics operators:
@@ -38,9 +38,11 @@ pub async fn run(
     let page = @pdfpage.Page(
       content=[stream],
       mediabox=@pdfpage.Page::blank(@pdfpaper.a4).mediabox,
-      resources=@pdf.d([("/Font", @pdf.d([("/F0", font)]))]),
+      resources=@pdf.PdfObject::Dictionary([
+        (@pdf.n("/Font"), @pdf.PdfObject::Dictionary([(@pdf.n("/F0"), font)])),
+      ]),
       rotate=Rotate0,
-      rest=@pdf.d([]),
+      rest=@pdf.PdfObject::Dictionary([]),
     )
 
     // Build the PDF: create empty document, add page tree, then add document root

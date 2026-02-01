@@ -154,7 +154,7 @@ fn flatten_tree(
 ) -> (Array[(Int, PdfObject)], Int) raise {
   if tree.length() == 0 {
     let n = fresh(source, pdf)
-    return ([(n, @pdf.d([]))], n)
+    return ([(n, @pdf.PdfObject::Dictionary([]))], n)
   }
   let root_objnum = fresh(source, pdf)
   let tree = tree.map(node => add_root_parent(root_objnum, node))
@@ -170,14 +170,14 @@ fn flatten_tree(
 
   let all_but_top = flatten(tree.map(really_flatten))
   let (first_node, last_node) = extremes(tree)
-  let entries : Array[(String, PdfObject)] = [
-    ("/First", Indirect(ntree_objnum(first_node))),
-    ("/Last", Indirect(ntree_objnum(last_node))),
+  let entries : Array[(@pdf.PdfName, PdfObject)] = [
+    (@pdf.n("/First"), Indirect(ntree_objnum(first_node))),
+    (@pdf.n("/Last"), Indirect(ntree_objnum(last_node))),
   ]
   if any_open_nodes(tree) {
-    entries.push(("/Count", Integer(total_visible(tree))))
+    entries.push((@pdf.n("/Count"), Integer(total_visible(tree))))
   }
-  let top = (root_objnum, @pdf.d(entries))
+  let top = (root_objnum, @pdf.PdfObject::Dictionary(entries))
   ([top] + all_but_top, root_objnum)
 }
 
@@ -328,24 +328,26 @@ fn node_of_line(
   colour : (Double, Double, Double),
   flags : Int,
 ) -> PdfObject {
-  let entries : Array[(String, PdfObject)] = [("/Title", String(title))]
+  let entries : Array[(@pdf.PdfName, PdfObject)] = [
+    (@pdf.n("/Title"), String(title)),
+  ]
   let dest = target.to_pdf_object()
   match (dest : PdfObject) {
     Null => ()
     _ =>
       match (target : @pdfdest.Destination) {
-        Action(action) => entries.push(("/A", action))
-        _ => entries.push(("/Dest", dest))
+        Action(action) => entries.push((@pdf.n("/A"), action))
+        _ => entries.push((@pdf.n("/Dest"), dest))
       }
   }
   let (r, g, b) = colour
   if !(r == 0.0 && g == 0.0 && b == 0.0) {
-    entries.push(("/C", Array([Real(r), Real(g), Real(b)])))
+    entries.push((@pdf.n("/C"), Array([Real(r), Real(g), Real(b)])))
   }
   if flags != 0 {
-    entries.push(("/F", Integer(flags)))
+    entries.push((@pdf.n("/F"), Integer(flags)))
   }
-  @pdf.d(entries)
+  @pdf.PdfObject::Dictionary(entries)
 }
 
 ///|

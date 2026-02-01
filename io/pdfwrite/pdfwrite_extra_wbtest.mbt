@@ -77,11 +77,14 @@ test "string_of_pdf encodes greater-than in names" {
 
 ///|
 test "string_of_pdf encodes delimiter bytes in names" {
-  let cases = [("/[", "/#5B"), ("/]", "/#5D"), ("/{", "/#7B"), ("/}", "/#7D")]
+  let cases = [
+    (@pdf.n("/["), "/#5B"),
+    (@pdf.n("/]"), "/#5D"),
+    (@pdf.n("/{"), "/#7B"),
+    (@pdf.n("/}"), "/#7D"),
+  ]
   for pair in cases {
-    let rendered = write_ctx.string_of_pdf(
-      Name(@pdf.PdfName::of_string(pair.0)),
-    )
+    let rendered = write_ctx.string_of_pdf(Name(pair.0))
     assert_eq(rendered, pair.1)
   }
 }
@@ -108,7 +111,9 @@ test "pdf_to_output generates object streams with indirect lengths" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   let length_obj = pdf.addobj(Integer(3))
   let data = @pdfio.bytes_of_string("abc")
-  let dict : @pdf.PdfObject = @pdf.d([("/Length", Indirect(length_obj))])
+  let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
+    (@pdf.n("/Length"), Indirect(length_obj)),
+  ])
   let stream_num = pdf.addobj(Stream(Ref::new((dict, Got(data)))))
   let marked_obj = pdf.addobj(Integer(123))
   pdf.objects.object_stream_ids.set(marked_obj, stream_num)
@@ -176,7 +181,9 @@ test "pdf_to_output skips indirect length objects for objstm hints" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   let length_obj = pdf.addobj(Integer(4))
   let data = @pdfio.bytes_of_string("data")
-  let dict : @pdf.PdfObject = @pdf.d([("/Length", Indirect(length_obj))])
+  let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
+    (@pdf.n("/Length"), Indirect(length_obj)),
+  ])
   let stream_num = pdf.addobj(Stream(Ref::new((dict, Got(data)))))
   pdf.objects.object_stream_ids.set(stream_num, stream_num)
   pdf.objects.object_stream_ids.set(length_obj, stream_num)
@@ -212,7 +219,9 @@ test "pdf_to_output drops invalid object stream ids and writes toget" {
     r: 5,
   }
   let toget = @pdf.ToGet::new(input, 0, 4, crypt=ToDecrypt(deferred))
-  let dict : @pdf.PdfObject = @pdf.d([("/Length", Integer(4))])
+  let dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
+    (@pdf.n("/Length"), Integer(4)),
+  ])
   let stream : @pdf.PdfObject = Stream(Ref::new((dict, ToGet(toget))))
   let stream_num = pdf.addobj(stream)
   pdf.objects.object_stream_ids.set(9999, stream_num)

@@ -8,30 +8,30 @@ fn encrypt_pdf_AES_inner(
   encrypt_metadata : Bool,
   pdf : @pdf.Pdf,
 ) -> @pdf.Pdf raise {
-  let crypt_dict = @pdf.d([
-    ("/Filter", Name(PdfName("/Standard"))),
-    ("/V", Integer(4)),
+  let crypt_dict = @pdf.PdfObject::Dictionary([
+    (@pdf.n("/Filter"), Name(PdfName("/Standard"))),
+    (@pdf.n("/V"), Integer(4)),
     (
-      "/CF",
-      @pdf.d([
+      @pdf.n("/CF"),
+      @pdf.PdfObject::Dictionary([
         (
-          "/StdCF",
-          @pdf.d([
-            ("/Length", Integer(16)),
-            ("/AuthEvent", Name(PdfName("/DocOpen"))),
-            ("/CFM", Name(PdfName("/AESV2"))),
+          @pdf.n("/StdCF"),
+          @pdf.PdfObject::Dictionary([
+            (@pdf.n("/Length"), Integer(16)),
+            (@pdf.n("/AuthEvent"), Name(PdfName("/DocOpen"))),
+            (@pdf.n("/CFM"), Name(PdfName("/AESV2"))),
           ]),
         ),
       ]),
     ),
-    ("/EncryptMetadata", Boolean(encrypt_metadata)),
-    ("/Length", Integer(128)),
-    ("/R", Integer(4)),
-    ("/O", String(owner)),
-    ("/U", String(user)),
-    ("/P", Integer(p)),
-    ("/StrF", Name(PdfName("/StdCF"))),
-    ("/StmF", Name(PdfName("/StdCF"))),
+    (@pdf.n("/EncryptMetadata"), Boolean(encrypt_metadata)),
+    (@pdf.n("/Length"), Integer(128)),
+    (@pdf.n("/R"), Integer(4)),
+    (@pdf.n("/O"), String(owner)),
+    (@pdf.n("/U"), String(user)),
+    (@pdf.n("/P"), Integer(p)),
+    (@pdf.n("/StrF"), Name(PdfName("/StdCF"))),
+    (@pdf.n("/StmF"), Name(PdfName("/StdCF"))),
   ])
   match
     process_cryption(

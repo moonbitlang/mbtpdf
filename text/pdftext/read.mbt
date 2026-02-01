@@ -50,7 +50,7 @@ pub fn PdfText::read_type3_data(
       _ => raise @pdf.PdfError::Msg("Bad charprocs")
     },
     type3_resources: match self.pdf.lookup_direct("/Resources", font) {
-      None => @pdf.d([])
+      None => @pdf.PdfObject::Dictionary([])
       Some(d) => d
     },
   }

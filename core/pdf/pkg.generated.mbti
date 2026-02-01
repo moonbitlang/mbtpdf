@@ -9,15 +9,13 @@ import {
 }
 
 // Values
-pub fn d(Array[(String, PdfObject)]) -> PdfObject
-
-pub fn dk(Array[(String, PdfObject)]) -> Array[(PdfName, PdfObject)]
-
 pub fn input_pdferror(@pdfio.Input, String) -> String
 
 pub fn is_whitespace(Char) -> Bool
 
 pub fn make_matrix(@pdftransform.TransformMatrix) -> PdfObject
+
+pub fn n(Bytes) -> PdfName
 
 pub fn pdfobjmap_bindings(Map[Int, (Ref[ObjectData], Int)]) -> Array[(Int, (Ref[ObjectData], Int))]
 

@@ -172,7 +172,7 @@ pub fn PdfPageDoc::renumber_pages(
               pair.1,
             )),
           )
-        _ => @pdf.d([])
+        _ => @pdf.PdfObject::Dictionary([])
       }
     }
 

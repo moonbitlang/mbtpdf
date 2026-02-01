@@ -7,14 +7,14 @@ fn encrypt_pdf_128bit_inner(
   id : String,
   pdf : @pdf.Pdf,
 ) -> @pdf.Pdf raise {
-  let crypt_dict = @pdf.d([
-    ("/Filter", Name(PdfName("/Standard"))),
-    ("/V", Integer(2)),
-    ("/R", Integer(3)),
-    ("/O", String(owner)),
-    ("/U", String(user)),
-    ("/Length", Integer(128)),
-    ("/P", Integer(p)),
+  let crypt_dict = @pdf.PdfObject::Dictionary([
+    (@pdf.n("/Filter"), Name(PdfName("/Standard"))),
+    (@pdf.n("/V"), Integer(2)),
+    (@pdf.n("/R"), Integer(3)),
+    (@pdf.n("/O"), String(owner)),
+    (@pdf.n("/U"), String(user)),
+    (@pdf.n("/Length"), Integer(128)),
+    (@pdf.n("/P"), Integer(p)),
   ])
   match
     process_cryption(
@@ -53,30 +53,30 @@ fn encrypt_pdf_128bit_inner_r4(
   pdf : @pdf.Pdf,
   encrypt_metadata : Bool,
 ) -> @pdf.Pdf raise {
-  let crypt_dict = @pdf.d([
-    ("/Filter", Name(PdfName("/Standard"))),
-    ("/V", Integer(4)),
+  let crypt_dict = @pdf.PdfObject::Dictionary([
+    (@pdf.n("/Filter"), Name(PdfName("/Standard"))),
+    (@pdf.n("/V"), Integer(4)),
     (
-      "/CF",
-      @pdf.d([
+      @pdf.n("/CF"),
+      @pdf.PdfObject::Dictionary([
         (
-          "/StdCF",
-          @pdf.d([
-            ("/Length", Integer(16)),
-            ("/AuthEvent", Name(PdfName("/DocOpen"))),
-            ("/CFM", Name(PdfName("/V2"))),
+          @pdf.n("/StdCF"),
+          @pdf.PdfObject::Dictionary([
+            (@pdf.n("/Length"), Integer(16)),
+            (@pdf.n("/AuthEvent"), Name(PdfName("/DocOpen"))),
+            (@pdf.n("/CFM"), Name(PdfName("/V2"))),
           ]),
         ),
       ]),
     ),
-    ("/EncryptMetadata", Boolean(encrypt_metadata)),
-    ("/Length", Integer(128)),
-    ("/R", Integer(4)),
-    ("/O", String(owner)),
-    ("/U", String(user)),
-    ("/P", Integer(p)),
-    ("/StrF", Name(PdfName("/StdCF"))),
-    ("/StmF", Name(PdfName("/StdCF"))),
+    (@pdf.n("/EncryptMetadata"), Boolean(encrypt_metadata)),
+    (@pdf.n("/Length"), Integer(128)),
+    (@pdf.n("/R"), Integer(4)),
+    (@pdf.n("/O"), String(owner)),
+    (@pdf.n("/U"), String(user)),
+    (@pdf.n("/P"), Integer(p)),
+    (@pdf.n("/StrF"), Name(PdfName("/StdCF"))),
+    (@pdf.n("/StmF"), Name(PdfName("/StdCF"))),
   ])
   match
     process_cryption(

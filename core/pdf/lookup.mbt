@@ -194,8 +194,13 @@ pub fn Pdf::replace_chain(
       None =>
         match current {
           Null => {
-            let child = replace_in_obj(pdf, d([]), rest, obj)
-            d([(key, child)])
+            let child = replace_in_obj(
+              pdf,
+              PdfObject::Dictionary([]),
+              rest,
+              obj,
+            )
+            PdfObject::Dictionary([(PdfName::of_string(key), child)])
           }
           Dictionary(entries) => {
             let mut found = false
@@ -211,7 +216,12 @@ pub fn Pdf::replace_chain(
               }
             }
             if !found {
-              let child = replace_in_obj(pdf, d([]), rest, obj)
+              let child = replace_in_obj(
+                pdf,
+                PdfObject::Dictionary([]),
+                rest,
+                obj,
+              )
               out.push((PdfName::of_string(key), child))
             }
             Dictionary(out)

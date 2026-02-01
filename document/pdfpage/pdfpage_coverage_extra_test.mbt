@@ -43,24 +43,24 @@ test "pages_of_pagetree returns empty when /Pages resolves to Null" {
 test "pages_of_pagetree treats stream /Contents as singleton array" {
   let pdf0 = @pdf.Pdf::empty()
   let data = @pdfio.bytes_of_string("q Q")
-  let stream_dict : @pdf.PdfObject = @pdf.d([
-    ("/Length", Integer(@pdfio.bytes_size(data))),
+  let stream_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
+    (@pdf.n("/Length"), Integer(@pdfio.bytes_size(data))),
   ])
   let stream_num = pdf0.addobj(Stream(Ref::new((stream_dict, Got(data)))))
   let page_num = pdf0.addobj(
-    @pdf.d([
-      ("/Type", Name(PdfName("/Page"))),
-      ("/MediaBox", coverage_rect()),
-      ("/Rotate", Integer(180)),
-      ("/Contents", Indirect(stream_num)),
-      ("/Resources", @pdf.d([])),
+    @pdf.PdfObject::Dictionary([
+      (@pdf.n("/Type"), Name(PdfName("/Page"))),
+      (@pdf.n("/MediaBox"), coverage_rect()),
+      (@pdf.n("/Rotate"), Integer(180)),
+      (@pdf.n("/Contents"), Indirect(stream_num)),
+      (@pdf.n("/Resources"), @pdf.PdfObject::Dictionary([])),
     ]),
   )
   let pages_root_num = pdf0.addobj(
-    @pdf.d([
-      ("/Type", Name(PdfName("/Pages"))),
-      ("/Kids", Array([Indirect(page_num)])),
-      ("/Count", Integer(1)),
+    @pdf.PdfObject::Dictionary([
+      (@pdf.n("/Type"), Name(PdfName("/Pages"))),
+      (@pdf.n("/Kids"), Array([Indirect(page_num)])),
+      (@pdf.n("/Count"), Integer(1)),
     ]),
   )
   let pdf = @pdfpage.PdfPageDoc::new(pdf0).add_root(pages_root_num, [])

@@ -12,33 +12,33 @@ fn encrypt_pdf_AES256_inner(
   key : String,
   pdf : @pdf.Pdf,
 ) -> @pdf.Pdf raise {
-  let crypt_dict = @pdf.d([
-    ("/Filter", Name(PdfName("/Standard"))),
-    ("/V", Integer(5)),
+  let crypt_dict = @pdf.PdfObject::Dictionary([
+    (@pdf.n("/Filter"), Name(PdfName("/Standard"))),
+    (@pdf.n("/V"), Integer(5)),
     (
-      "/CF",
-      @pdf.d([
+      @pdf.n("/CF"),
+      @pdf.PdfObject::Dictionary([
         (
-          "/StdCF",
-          @pdf.d([
-            ("/Length", Integer(32)),
-            ("/AuthEvent", Name(PdfName("/DocOpen"))),
-            ("/CFM", Name(PdfName("/AESV3"))),
+          @pdf.n("/StdCF"),
+          @pdf.PdfObject::Dictionary([
+            (@pdf.n("/Length"), Integer(32)),
+            (@pdf.n("/AuthEvent"), Name(PdfName("/DocOpen"))),
+            (@pdf.n("/CFM"), Name(PdfName("/AESV3"))),
           ]),
         ),
       ]),
     ),
-    ("/EncryptMetadata", Boolean(encrypt_metadata)),
-    ("/Length", Integer(256)),
-    ("/R", Integer(if iso { 6 } else { 5 })),
-    ("/O", String(owner)),
-    ("/U", String(user)),
-    ("/P", Integer(p)),
-    ("/StrF", Name(PdfName("/StdCF"))),
-    ("/StmF", Name(PdfName("/StdCF"))),
-    ("/Perms", String(perms)),
-    ("/OE", String(oe)),
-    ("/UE", String(ue)),
+    (@pdf.n("/EncryptMetadata"), Boolean(encrypt_metadata)),
+    (@pdf.n("/Length"), Integer(256)),
+    (@pdf.n("/R"), Integer(if iso { 6 } else { 5 })),
+    (@pdf.n("/O"), String(owner)),
+    (@pdf.n("/U"), String(user)),
+    (@pdf.n("/P"), Integer(p)),
+    (@pdf.n("/StrF"), Name(PdfName("/StdCF"))),
+    (@pdf.n("/StmF"), Name(PdfName("/StdCF"))),
+    (@pdf.n("/Perms"), String(perms)),
+    (@pdf.n("/OE"), String(oe)),
+    (@pdf.n("/UE"), String(ue)),
   ])
   match
     process_cryption(

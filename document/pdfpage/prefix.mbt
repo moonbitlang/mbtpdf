@@ -161,7 +161,7 @@ fn change_resources(
             pair.1,
           )),
         )
-      _ => @pdf.d([])
+      _ => @pdf.PdfObject::Dictionary([])
     }
   }
 
@@ -220,7 +220,7 @@ fn add_prefix_impl(pdf : @pdf.Pdf, prefix : String) -> Unit raise {
             }
             let resources_obj = match resources {
               Some(res) => res
-              None => @pdf.d([])
+              None => @pdf.PdfObject::Dictionary([])
             }
             match dict.search_by(pair => pair.0 == "/Contents") {
               Some(index) =>
@@ -330,8 +330,11 @@ fn merge_content_streams(pdf : @pdf.Pdf) -> Unit raise {
                       let stream = @pdf.PdfObject::Stream(
                         Ref::new(
                           (
-                            @pdf.d([
-                              ("/Length", Integer(@pdfio.bytes_size(merged))),
+                            @pdf.PdfObject::Dictionary([
+                              (
+                                @pdf.n("/Length"),
+                                Integer(@pdfio.bytes_size(merged)),
+                              ),
                             ]),
                             Got(merged),
                           ),

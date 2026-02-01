@@ -40,19 +40,19 @@ fn make_pdf_with_pages(count : Int) -> @pdf.Pdf raise {
   ])
   let pdf = @pdf.Pdf::empty()
   let pages_root_num = pdf.addobj(
-    @pdf.d([
-      ("/Type", Name(PdfName("/Pages"))),
-      ("/Kids", Array([])),
-      ("/Count", Integer(count)),
+    @pdf.PdfObject::Dictionary([
+      (@pdf.n("/Type"), Name(PdfName("/Pages"))),
+      (@pdf.n("/Kids"), Array([])),
+      (@pdf.n("/Count"), Integer(count)),
     ]),
   )
   let kids : Array[@pdf.PdfObject] = []
   for _ in 0..<count {
     let page_num = pdf.addobj(
-      @pdf.d([
-        ("/Type", Name(PdfName("/Page"))),
-        ("/Parent", Indirect(pages_root_num)),
-        ("/MediaBox", rect),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.n("/Type"), Name(PdfName("/Page"))),
+        (@pdf.n("/Parent"), Indirect(pages_root_num)),
+        (@pdf.n("/MediaBox"), rect),
       ]),
     )
     kids.push(Indirect(page_num))
@@ -60,17 +60,17 @@ fn make_pdf_with_pages(count : Int) -> @pdf.Pdf raise {
   pdf.addobj_given_num(
     (
       pages_root_num,
-      @pdf.d([
-        ("/Type", Name(PdfName("/Pages"))),
-        ("/Kids", Array(kids)),
-        ("/Count", Integer(count)),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.n("/Type"), Name(PdfName("/Pages"))),
+        (@pdf.n("/Kids"), Array(kids)),
+        (@pdf.n("/Count"), Integer(count)),
       ]),
     ),
   )
   let catalog_num = pdf.addobj(
-    @pdf.d([
-      ("/Type", Name(PdfName("/Catalog"))),
-      ("/Pages", Indirect(pages_root_num)),
+    @pdf.PdfObject::Dictionary([
+      (@pdf.n("/Type"), Name(PdfName("/Catalog"))),
+      (@pdf.n("/Pages"), Indirect(pages_root_num)),
     ]),
   )
   let trailerdict = pdf.trailerdict.add_entry("/Root", Indirect(catalog_num))
@@ -265,7 +265,9 @@ test "string_of_labelstyle covers all styles" {
 fn set_page_labels(pdf : @pdf.Pdf, nums : Array[@pdf.PdfObject]) -> Unit raise {
   let rootnum = pdf.root
   let root = pdf.lookup_obj(rootnum)
-  let labels : @pdf.PdfObject = @pdf.d([("/Nums", Array(nums))])
+  let labels : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
+    (@pdf.n("/Nums"), Array(nums)),
+  ])
   let updated = root.add_entry("/PageLabels", labels)
   pdf.addobj_given_num((rootnum, updated))
   pdf.trailerdict = pdf.trailerdict.add_entry("/Root", Indirect(rootnum))
@@ -276,17 +278,17 @@ test "read handles label styles and bad startpage" {
   let pdf = make_pdf_with_pages(1)
   let nums : Array[@pdf.PdfObject] = [
     Name(PdfName("/Bad")),
-    @pdf.d([("/S", Name(PdfName("/R")))]),
+    @pdf.PdfObject::Dictionary([(@pdf.n("/S"), Name(PdfName("/R")))]),
     Integer(0),
-    @pdf.d([("/S", Name(PdfName("/r")))]),
+    @pdf.PdfObject::Dictionary([(@pdf.n("/S"), Name(PdfName("/r")))]),
     Integer(1),
-    @pdf.d([("/S", Name(PdfName("/A")))]),
+    @pdf.PdfObject::Dictionary([(@pdf.n("/S"), Name(PdfName("/A")))]),
     Integer(2),
-    @pdf.d([("/S", Name(PdfName("/a")))]),
+    @pdf.PdfObject::Dictionary([(@pdf.n("/S"), Name(PdfName("/a")))]),
     Integer(3),
-    @pdf.d([("/S", Name(PdfName("/D")))]),
+    @pdf.PdfObject::Dictionary([(@pdf.n("/S"), Name(PdfName("/D")))]),
     Integer(4),
-    @pdf.d([("/P", String("P"))]),
+    @pdf.PdfObject::Dictionary([(@pdf.n("/P"), String("P"))]),
   ]
   set_page_labels(pdf, nums)
   let labels = @pdfe.with_logger(_ => (), fn() {

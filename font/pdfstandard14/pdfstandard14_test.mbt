@@ -76,8 +76,8 @@ test "textwidth handles missing widths and kerning" {
   assert_true(kerns.get((999, 998)) is None)
   let pdf = @pdf.Pdf::empty()
   let ctx = @pdftext.PdfText::new(pdf)
-  let implicit_font : @pdf.PdfObject = @pdf.d([
-    ("/Subtype", Name(PdfName("/Type1"))),
+  let implicit_font : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
+    (@pdf.n("/Subtype"), Name(PdfName("/Type1"))),
   ])
   let implicit_encoding = ctx.read_encoding(implicit_font)
   let implicit_width = @pdfstandard14.PdfStandard14::new().textwidth(
@@ -88,13 +88,13 @@ test "textwidth handles missing widths and kerning" {
   let no_slash = @pdfe.with_silenced_logs(fn() {
     @pdf.PdfName::of_string("NoSlash")
   })
-  let custom_font : @pdf.PdfObject = @pdf.d([
-    ("/Subtype", Name(PdfName("/Type1"))),
+  let custom_font : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
+    (@pdf.n("/Subtype"), Name(PdfName("/Type1"))),
     (
-      "/Encoding",
-      @pdf.d([
-        ("/BaseEncoding", Name(PdfName("/WinAnsiEncoding"))),
-        ("/Differences", Array([Integer(65), Name(no_slash)])),
+      @pdf.n("/Encoding"),
+      @pdf.PdfObject::Dictionary([
+        (@pdf.n("/BaseEncoding"), Name(PdfName("/WinAnsiEncoding"))),
+        (@pdf.n("/Differences"), Array([Integer(65), Name(no_slash)])),
       ]),
     ),
   ])
@@ -110,9 +110,9 @@ test "textwidth handles empty string and unicode fallback" {
   let font = @pdffont.StandardFont::Helvetica
   let pdf = @pdf.Pdf::empty()
   let ctx = @pdftext.PdfText::new(pdf)
-  let winansi_font : @pdf.PdfObject = @pdf.d([
-    ("/Subtype", Name(PdfName("/Type1"))),
-    ("/Encoding", Name(PdfName("/WinAnsiEncoding"))),
+  let winansi_font : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
+    (@pdf.n("/Subtype"), Name(PdfName("/Type1"))),
+    (@pdf.n("/Encoding"), Name(PdfName("/WinAnsiEncoding"))),
   ])
   let encoding = ctx.read_encoding(winansi_font)
   let width_empty = @pdfstandard14.PdfStandard14::new().textwidth(
@@ -131,8 +131,8 @@ test "textwidth applies kerning for standard fonts" {
   let font = @pdffont.StandardFont::TimesRoman
   let pdf = @pdf.Pdf::empty()
   let ctx = @pdftext.PdfText::new(pdf)
-  let implicit_font : @pdf.PdfObject = @pdf.d([
-    ("/Subtype", Name(PdfName("/Type1"))),
+  let implicit_font : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
+    (@pdf.n("/Subtype"), Name(PdfName("/Type1"))),
   ])
   let encoding = ctx.read_encoding(implicit_font)
   let kerned = @pdfstandard14.PdfStandard14::new().textwidth(

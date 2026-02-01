@@ -18,20 +18,26 @@ async test "run removes image xobjects and writes output" {
       let out_file = "cmd_pdfdraft_out.pdf"
       cleanup(in_file)
       cleanup(out_file)
-      let img_xobj : @pdf.PdfObject = @pdf.d([
-        ("/Subtype", Name(PdfName("/Image"))),
+      let img_xobj : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
+        (@pdf.n("/Subtype"), Name(PdfName("/Image"))),
       ])
-      let form_xobj : @pdf.PdfObject = @pdf.d([
-        ("/Subtype", Name(PdfName("/Form"))),
+      let form_xobj : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
+        (@pdf.n("/Subtype"), Name(PdfName("/Form"))),
       ])
-      let resources : @pdf.PdfObject = @pdf.d([
-        ("/XObject", @pdf.d([("/Im0", img_xobj), ("/Form0", form_xobj)])),
+      let resources : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
+        (
+          @pdf.n("/XObject"),
+          @pdf.PdfObject::Dictionary([
+            (@pdf.n("/Im0"), img_xobj),
+            (@pdf.n("/Form0"), form_xobj),
+          ]),
+        ),
       ])
-      let inline_dict : @pdf.PdfObject = @pdf.d([
-        ("/W", Integer(1)),
-        ("/H", Integer(1)),
-        ("/BPC", Integer(8)),
-        ("/CS", Name(PdfName("/DeviceGray"))),
+      let inline_dict : @pdf.PdfObject = @pdf.PdfObject::Dictionary([
+        (@pdf.n("/W"), Integer(1)),
+        (@pdf.n("/H"), Integer(1)),
+        (@pdf.n("/BPC"), Integer(8)),
+        (@pdf.n("/CS"), Name(PdfName("/DeviceGray"))),
       ])
       let inline_data = @pdfops.Op::InlineImage(
         (inline_dict, None, [(0).to_byte()]),
@@ -49,7 +55,7 @@ async test "run removes image xobjects and writes output" {
         mediabox=sample_rect(),
         resources~,
         rotate=Rotate0,
-        rest=@pdf.d([]),
+        rest=@pdf.PdfObject::Dictionary([]),
       )
       let (pdf1, pageroot) = @pdfpage.PdfPageDoc::new(@pdf.Pdf::empty()).add_pagetree([
           page,
