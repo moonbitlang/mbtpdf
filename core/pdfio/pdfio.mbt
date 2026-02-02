@@ -64,7 +64,9 @@ pub fn bset_unsafe(bytes : Array[Byte], index : Int, value : Int) -> Unit {
 
 ///|
 /// Make bytes from a string by taking the low 8 bits of each character.
-pub fn bytes_of_string(s : String) -> Array[Byte] {
+/// TODO: deprecate the alias
+#alias(bytes_of_string)
+pub fn ascii_encode(s : String) -> Array[Byte] {
   let out = Array::new(capacity=s.length())
   for ch in s {
     out.push(ch.to_int().to_byte())
@@ -146,7 +148,9 @@ pub fn string_of_int_array(values : Array[Int]) -> String {
 
 ///|
 /// Make a string by mapping each byte to a single character.
-pub fn string_of_bytes(bytes : Array[Byte]) -> String {
+/// TODO: deprecate
+#alias(string_of_bytes)
+pub fn ascii_decode(bytes : ArrayView[Byte]) -> String {
   let chars = Array::new(capacity=bytes.length())
   for b in bytes {
     chars.push(b.to_char())

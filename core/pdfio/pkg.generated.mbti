@@ -6,6 +6,12 @@ import {
 }
 
 // Values
+#alias(string_of_bytes)
+pub fn ascii_decode(ArrayView[Byte]) -> String
+
+#alias(bytes_of_string)
+pub fn ascii_encode(String) -> Array[Byte]
+
 pub fn bget(Array[Byte], Int) -> Int
 
 pub fn bget_unsafe(Array[Byte], Int) -> Int
@@ -23,8 +29,6 @@ pub fn bytes_of_charlist(Array[Char]) -> Array[Byte]
 pub fn bytes_of_int_array(Array[Int]) -> Array[Byte]
 
 pub fn bytes_of_list(Array[Int]) -> Array[Byte]
-
-pub fn bytes_of_string(String) -> Array[Byte]
 
 pub fn bytes_size(Array[Byte]) -> Int
 
@@ -49,8 +53,6 @@ pub fn is_whitespace_or_delimiter(Char) -> Bool
 pub fn mkbytes(Int) -> Array[Byte]
 
 pub let no_more : Int
-
-pub fn string_of_bytes(Array[Byte]) -> String
 
 pub fn string_of_int_array(Array[Int]) -> String
 
