@@ -439,7 +439,7 @@ test "get_image_24bpp reads image mask when BitsPerComponent missing" {
 test "get_image_24bpp ignores decode for indexed colourspace" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = Dictionary([])
-  let table = @pdfio.string_of_bytes(@pdfio.bytes_of_list([255, 0, 0]))
+  let table = Bytes::from_array(@pdfio.bytes_of_list([255, 0, 0])[:])
   let colorspace : @pdf.PdfObject = PdfArray([
     Name(PdfName("/Indexed")),
     Name(PdfName("/DeviceRGB")),
@@ -847,7 +847,7 @@ test "get_image_24bpp default decode for DeviceN" {
 test "get_image_24bpp decode ignored for indexed DCT" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = Dictionary([])
-  let table = @pdfio.string_of_bytes(@pdfio.bytes_of_list([0, 0, 0]))
+  let table = Bytes::from_array(@pdfio.bytes_of_list([0, 0, 0])[:])
   let colorspace : @pdf.PdfObject = PdfArray([
     Name(PdfName("/Indexed")),
     Name(PdfName("/DeviceRGB")),
@@ -943,7 +943,7 @@ test "get_image_24bpp converts cmyk to rgb" {
 test "get_image_24bpp handles indexed RGB" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = Dictionary([])
-  let table = @pdfio.string_of_bytes(@pdfio.bytes_of_list([0, 0, 0, 255, 0, 0]))
+  let table = Bytes::from_array(@pdfio.bytes_of_list([0, 0, 0, 255, 0, 0])[:])
   let dict : @pdf.PdfObject = Dictionary([
     ("/Width", Integer(1)),
     ("/Height", Integer(1)),
@@ -976,8 +976,8 @@ test "get_image_24bpp handles indexed RGB" {
 test "get_image_24bpp handles indexed CMYK" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = Dictionary([])
-  let table = @pdfio.string_of_bytes(
-    @pdfio.bytes_of_list([0, 0, 0, 255, 0, 0, 0, 0]),
+  let table = Bytes::from_array(
+    @pdfio.bytes_of_list([0, 0, 0, 255, 0, 0, 0, 0])[:],
   )
   let dict : @pdf.PdfObject = Dictionary([
     ("/Width", Integer(1)),
@@ -1018,7 +1018,7 @@ test "get_image_24bpp handles indexed Lab" {
       ("/BlackPoint", PdfArray([0.0, 0.0, 0.0].map(fn(v) { Real(v) }))),
     ]),
   ])
-  let table = @pdfio.string_of_bytes(@pdfio.bytes_of_list([127, 127, 127]))
+  let table = Bytes::from_array(@pdfio.bytes_of_list([127, 127, 127])[:])
   let dict : @pdf.PdfObject = Dictionary([
     ("/Width", Integer(1)),
     ("/Height", Integer(1)),
@@ -1049,7 +1049,7 @@ test "get_image_24bpp clamps indexed Lab conversions" {
       ("/BlackPoint", PdfArray([Real(0.0), Real(0.0), Real(0.0)])),
     ]),
   ])
-  let table = @pdfio.string_of_bytes(@pdfio.bytes_of_list([0, 0, 0]))
+  let table = Bytes::from_array(@pdfio.bytes_of_list([0, 0, 0])[:])
   let dict : @pdf.PdfObject = Dictionary([
     ("/Width", Integer(1)),
     ("/Height", Integer(1)),
@@ -1172,7 +1172,7 @@ test "get_image_24bpp errors when Decode present but BitsPerComponent missing fo
 test "get_image_24bpp indexed rgb missing table entry" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = Dictionary([])
-  let table = @pdfio.string_of_bytes(@pdfio.bytes_of_list([0, 0, 0]))
+  let table = Bytes::from_array(@pdfio.bytes_of_list([0, 0, 0])[:])
   let dict : @pdf.PdfObject = Dictionary([
     ("/Width", Integer(1)),
     ("/Height", Integer(1)),
@@ -1393,7 +1393,7 @@ fn make_indexed_colorspace(
   hival : Int,
   table_bytes : Array[Int],
 ) -> @pdf.PdfObject {
-  let table = @pdfio.string_of_bytes(@pdfio.bytes_of_list(table_bytes))
+  let table = Bytes::from_array(@pdfio.bytes_of_list(table_bytes)[:])
   PdfArray([Name(PdfName("/Indexed")), base, Integer(hival), PdfString(table)])
 }
 

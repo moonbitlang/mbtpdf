@@ -82,10 +82,10 @@ fn PdfText::append_text_from_streams(
       PdfArray(values) =>
         for value in values {
           if value is PdfString(text) {
-            append_text_value(text)
+            append_text_value(@pdf.string_bytes_of_bytes(text))
           }
         }
-      PdfString(text) => append_text_value(text)
+      PdfString(text) => append_text_value(@pdf.string_bytes_of_bytes(text))
       _ => ()
     }
   }

@@ -163,8 +163,8 @@ fn add_embedded_file(
   let stream_num = pdf.addobj(stream_obj)
   let filespec : @pdf.PdfObject = Dictionary([
     ("/Type", Name(PdfName("/Filespec"))),
-    ("/F", PdfString(filename)),
-    ("/UF", PdfString(filename)),
+    ("/F", PdfString(@pdf.bytes_of_string_bytes(filename))),
+    ("/UF", PdfString(@pdf.bytes_of_string_bytes(filename))),
     ("/EF", Dictionary([("/F", Indirect(stream_num))])),
   ])
   add_names_tree(pdf, "/EmbeddedFiles", [(entry_name, filespec)])
@@ -198,8 +198,8 @@ fn make_ap_entry(
 fn make_rendition_dict(name : String, tag : String) -> @pdf.PdfObject {
   Dictionary([
     ("/S", Name(PdfName("/MR"))),
-    ("/N", PdfString(name)),
-    ("/T", PdfString(tag)),
+    ("/N", PdfString(@pdf.bytes_of_string_bytes(name))),
+    ("/T", PdfString(@pdf.bytes_of_string_bytes(tag))),
   ])
 }
 
@@ -207,8 +207,8 @@ fn make_rendition_dict(name : String, tag : String) -> @pdf.PdfObject {
 fn make_alt_presentation_dict(name : String, tag : String) -> @pdf.PdfObject {
   Dictionary([
     ("/Type", Name(PdfName("/AlternatePresentations"))),
-    ("/Title", PdfString(name)),
-    ("/T", PdfString(tag)),
+    ("/Title", PdfString(@pdf.bytes_of_string_bytes(name))),
+    ("/T", PdfString(@pdf.bytes_of_string_bytes(tag))),
   ])
 }
 
@@ -247,14 +247,17 @@ fn make_bulk_url_entries(
 
 ///|
 fn make_url_action(uri : String) -> @pdf.PdfObject {
-  Dictionary([("/S", Name(PdfName("/URI"))), ("/URI", PdfString(uri))])
+  Dictionary([
+    ("/S", Name(PdfName("/URI"))),
+    ("/URI", PdfString(@pdf.bytes_of_string_bytes(uri))),
+  ])
 }
 
 ///|
 fn add_ocg_properties(pdf : @pdf.Pdf, ocg_name : String) -> Unit raise {
   let ocg : @pdf.PdfObject = Dictionary([
     ("/Type", Name(PdfName("/OCG"))),
-    ("/Name", PdfString(ocg_name)),
+    ("/Name", PdfString(@pdf.bytes_of_string_bytes(ocg_name))),
   ])
   let ocg_num = pdf.addobj(ocg)
   let default_dict : @pdf.PdfObject = Dictionary([
@@ -279,7 +282,7 @@ fn add_ocg_properties_with_config(
 ) -> Unit raise {
   let ocg : @pdf.PdfObject = Dictionary([
     ("/Type", Name(PdfName("/OCG"))),
-    ("/Name", PdfString(ocg_name)),
+    ("/Name", PdfString(@pdf.bytes_of_string_bytes(ocg_name))),
   ])
   let ocg_num = pdf.addobj(ocg)
   let default_dict : @pdf.PdfObject = Dictionary([
@@ -289,7 +292,7 @@ fn add_ocg_properties_with_config(
     ("/ON", PdfArray([Indirect(ocg_num)])),
   ])
   let config_dict : @pdf.PdfObject = Dictionary([
-    ("/Name", PdfString(config_name)),
+    ("/Name", PdfString(@pdf.bytes_of_string_bytes(config_name))),
     ("/BaseState", Name(PdfName("/OFF"))),
     ("/Intent", Name(PdfName("/View"))),
     ("/ON", PdfArray([Indirect(ocg_num)])),
@@ -320,7 +323,7 @@ fn read_ocg_names(pdf : @pdf.Pdf) -> Array[String] raise {
       Dictionary(entries) => {
         let dict : @pdf.PdfObject = Dictionary(entries)
         match (pdf.lookup_direct("/Name", dict) : @pdf.PdfObject?) {
-          Some(PdfString(name)) => names.push(name)
+          Some(PdfString(name)) => names.push(@pdf.string_bytes_of_bytes(name))
           _ => ()
         }
       }
@@ -346,7 +349,7 @@ fn read_ocg_config_names(pdf : @pdf.Pdf) -> Array[String] raise {
   for config in configs {
     let config = pdf.direct(config)
     match (pdf.lookup_direct("/Name", config) : @pdf.PdfObject?) {
-      Some(PdfString(name)) => names.push(name)
+      Some(PdfString(name)) => names.push(@pdf.string_bytes_of_bytes(name))
       _ => fail("missing /Name in /Configs")
     }
   }
@@ -423,7 +426,8 @@ fn assert_url_action(
     _ => fail("expected /S /URI")
   }
   match (pdf.lookup_direct("/URI", action) : @pdf.PdfObject?) {
-    Some(PdfString(uri)) => assert_eq(uri, expected_uri)
+    Some(PdfString(uri)) =>
+      assert_eq(@pdf.string_bytes_of_bytes(uri), expected_uri)
     _ => fail("expected /URI string")
   }
 }
@@ -523,7 +527,8 @@ fn assert_embedded_file_spec(
     _ => fail("expected /Type /Filespec")
   }
   match (pdf.lookup_direct("/F", spec) : @pdf.PdfObject?) {
-    Some(PdfString(name)) => assert_eq(name, expected_filename)
+    Some(PdfString(name)) =>
+      assert_eq(@pdf.string_bytes_of_bytes(name), expected_filename)
     _ => fail("expected /F filename")
   }
   let ef = match pdf.lookup_direct("/EF", spec) {
@@ -595,11 +600,11 @@ fn assert_rendition_entry(
     _ => fail("expected /S /MR")
   }
   match (pdf.lookup_direct("/N", dict) : @pdf.PdfObject?) {
-    Some(PdfString(value)) => assert_eq(value, name)
+    Some(PdfString(value)) => assert_eq(@pdf.string_bytes_of_bytes(value), name)
     _ => fail("expected /N string")
   }
   match (pdf.lookup_direct("/T", dict) : @pdf.PdfObject?) {
-    Some(PdfString(value)) => assert_eq(value, tag)
+    Some(PdfString(value)) => assert_eq(@pdf.string_bytes_of_bytes(value), tag)
     _ => fail("expected /T string")
   }
 }
@@ -621,11 +626,11 @@ fn assert_alt_presentation_entry(
     _ => fail("expected /Type /AlternatePresentations")
   }
   match (pdf.lookup_direct("/Title", dict) : @pdf.PdfObject?) {
-    Some(PdfString(value)) => assert_eq(value, name)
+    Some(PdfString(value)) => assert_eq(@pdf.string_bytes_of_bytes(value), name)
     _ => fail("expected /Title string")
   }
   match (pdf.lookup_direct("/T", dict) : @pdf.PdfObject?) {
-    Some(PdfString(value)) => assert_eq(value, tag)
+    Some(PdfString(value)) => assert_eq(@pdf.string_bytes_of_bytes(value), tag)
     _ => fail("expected /T string")
   }
 }

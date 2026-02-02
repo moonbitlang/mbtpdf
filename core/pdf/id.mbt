@@ -8,7 +8,8 @@ pub fn Pdf::generate_id(
   let _ = self
   let stamp = gettime().to_string()
   let id = path + stamp
-  PdfArray([PdfString(id), PdfString(id)])
+  let bytes = bytes_of_string_bytes(id)
+  PdfArray([PdfString(bytes), PdfString(bytes)])
 }
 
 ///|

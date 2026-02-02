@@ -94,12 +94,12 @@ test "string_of_pdf handles short names" {
 
 ///|
 test "make_hex_pdf_string encodes bytes" {
-  assert_eq(make_hex_pdf_string("Hi"), "<4869>")
+  assert_eq(make_hex_pdf_string(@pdf.bytes_of_string_bytes("Hi")), "<4869>")
 }
 
 ///|
 test "make_hex_pdf_string covers hex digits" {
-  let raw = @pdfio.string_of_int_array([0x7B, 0xBD, 0xD0])
+  let raw = Bytes::from_array(@pdfio.bytes_of_list([0x7B, 0xBD, 0xD0])[:])
   assert_eq(make_hex_pdf_string(raw), "<7bbdd0>")
 }
 
@@ -116,7 +116,7 @@ test "pdf_to_output generates object streams with indirect lengths" {
   let payload = "A".repeat(1000)
   let payload_ids = Array::new()
   for _ in 0..<=30 {
-    let objnum = pdf.addobj(PdfString(payload))
+    let objnum = pdf.addobj(PdfString(@pdf.bytes_of_string_bytes(payload)))
     payload_ids.push(objnum)
   }
   for objnum in payload_ids {

@@ -43,8 +43,14 @@ fn apply_namechanges_to_destination_nametree(
         match pairs_of_array(values) {
           Some(pairs) => {
             let updated_pairs = pairs.map(pair => match pair {
-              (PdfString(s), obj) =>
-                (PdfObject::PdfString(rewrite_string(s)), obj)
+              (PdfString(s), obj) => {
+                let key = @pdf.string_bytes_of_bytes(s)
+                let rewritten = rewrite_string(key)
+                (
+                  PdfObject::PdfString(@pdf.bytes_of_string_bytes(rewritten)),
+                  obj,
+                )
+              }
               _ => pair
             })
             let rebuilt = Array::new(capacity=values.length())
@@ -59,12 +65,18 @@ fn apply_namechanges_to_destination_nametree(
       _ => ()
     }
     match lookup("/Limits", updated) {
-      Some(PdfArray([PdfString(a), PdfString(b)])) =>
+      Some(PdfArray([PdfString(a), PdfString(b)])) => {
+        let ra = rewrite_string(@pdf.string_bytes_of_bytes(a))
+        let rb = rewrite_string(@pdf.string_bytes_of_bytes(b))
         updated = add_entry(
           updated,
           "/Limits",
-          PdfArray([PdfString(rewrite_string(a)), PdfString(rewrite_string(b))]),
+          PdfArray([
+            PdfString(@pdf.bytes_of_string_bytes(ra)),
+            PdfString(@pdf.bytes_of_string_bytes(rb)),
+          ]),
         )
+      }
       _ => ()
     }
     match lookup("/Kids", updated) {
@@ -137,7 +149,15 @@ fn apply_namechanges_at_destination_callsites(
           Some(Name(PdfName("/GoTo"))) =>
             match lookup("/D", updated) {
               Some(PdfString(s)) =>
-                add_entry(updated, "/D", PdfString(rewrite_string(s)))
+                add_entry(
+                  updated,
+                  "/D",
+                  PdfString(
+                    @pdf.bytes_of_string_bytes(
+                      rewrite_string(@pdf.string_bytes_of_bytes(s)),
+                    ),
+                  ),
+                )
               _ => updated
             }
           _ => updated
@@ -145,7 +165,15 @@ fn apply_namechanges_at_destination_callsites(
         match lookup("/Dest", updated) {
           Some(PdfString(s)) =>
             Dictionary(
-              add_entry(updated, "/Dest", PdfString(rewrite_string(s))),
+              add_entry(
+                updated,
+                "/Dest",
+                PdfString(
+                  @pdf.bytes_of_string_bytes(
+                    rewrite_string(@pdf.string_bytes_of_bytes(s)),
+                  ),
+                ),
+              ),
             )
           _ => Dictionary(updated)
         }

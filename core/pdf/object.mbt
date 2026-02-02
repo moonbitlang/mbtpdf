@@ -16,9 +16,11 @@ pub(all) enum PdfObject {
   Real(Double)
   /// PDF string object (either literal `(...)` or hexadecimal `<...>`).
   ///
-  /// Note: this is stored in a MoonBit `String` but treated as raw bytes by the
-  /// parser/serializer (each UTF-16 code unit stores one byte).
-  PdfString(String)
+  /// Note: this is stored as raw bytes (not Unicode text).
+  ///
+  /// When you need the historical "bytes-in-String" representation (each byte
+  /// mapped to one UTF-16 code unit 0..255), use `@pdf.string_bytes_of_bytes`.
+  PdfString(Bytes)
   /// PDF name object (written like `/Type`).
   ///
   /// Names are byte sequences, not Unicode text; see `PdfName`.

@@ -9,6 +9,8 @@ import {
 }
 
 // Values
+pub fn bytes_of_string_bytes(String) -> Bytes
+
 pub fn input_pdferror(@pdfio.Input, String) -> String
 
 pub fn is_whitespace(Char) -> Bool
@@ -24,6 +26,8 @@ pub fn pdfobjmap_find(Int, Map[Int, (Ref[ObjectData], Int)]) -> (Ref[ObjectData]
 pub fn recurse_array((PdfObject) -> PdfObject, Array[PdfObject]) -> PdfObject
 
 pub fn renumber_pdfs(Array[Pdf]) -> Array[Pdf]
+
+pub fn string_bytes_of_bytes(Bytes) -> String
 
 // Errors
 pub(all) suberror PdfError {
@@ -115,7 +119,7 @@ pub(all) enum PdfObject {
   Boolean(Bool)
   Integer(Int)
   Real(Double)
-  PdfString(String)
+  PdfString(Bytes)
   Name(PdfName)
   PdfArray(Array[PdfObject])
   Dictionary(Array[(String, PdfObject)])

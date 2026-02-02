@@ -120,7 +120,7 @@ test "read_colourspace Indexed parses lookup stream" {
 test "read_colourspace Indexed handles DeviceN base" {
   let pdf = @pdf.Pdf::empty()
   let tint = sample_tint_function().to_pdf_object(pdf)
-  let table = @pdfio.string_of_int_array([0, 0, 0])
+  let table = Bytes::from_array(@pdfio.bytes_of_list([0, 0, 0])[:])
   let indexed_arr : Array[@pdf.PdfObject] = [
     Name(PdfName("/Indexed")),
     PdfArray([
@@ -175,7 +175,7 @@ test "read_colourspace Indexed errors on invalid inputs" {
     Name(PdfName("/Indexed")),
     Name(PdfName("/DeviceRGB")),
     Name(PdfName("/Bad")),
-    PdfString(@pdfio.string_of_int_array([0, 0, 0])),
+    PdfString(Bytes::from_array(@pdfio.bytes_of_list([0, 0, 0])[:])),
   ]
   let bad_hival : Result[ColourSpace, Error] = try? ColourSpace::read(
     pdf,
@@ -199,7 +199,7 @@ test "read_colourspace Indexed errors on invalid inputs" {
     Name(PdfName("/Indexed")),
     Name(PdfName("/DeviceGray")),
     Integer(0),
-    PdfString(@pdfio.string_of_int_array([0])),
+    PdfString(Bytes::from_array(@pdfio.bytes_of_list([0])[:])),
   ]
   let bad_base_string : Result[ColourSpace, Error] = try? ColourSpace::read(
     pdf,
@@ -751,7 +751,7 @@ test "read_colourspace indexed handles ICCBased base" {
   )
   let base : @pdf.PdfObject = PdfArray([Name(PdfName("/ICCBased")), icc_stream])
   let lookup : @pdf.PdfObject = PdfString(
-    @pdfio.string_of_bytes(@pdfio.bytes_of_list([1, 2, 3])),
+    Bytes::from_array(@pdfio.bytes_of_list([1, 2, 3])[:]),
   )
   let space_arr : Array[@pdf.PdfObject] = [
     Name(PdfName("/Indexed")),
@@ -774,7 +774,7 @@ test "read_colourspace indexed handles ICCBased base" {
 test "read_colourspace indexed rejects short table" {
   let pdf = @pdf.Pdf::empty()
   let lookup : @pdf.PdfObject = PdfString(
-    @pdfio.string_of_bytes(@pdfio.bytes_of_list([1, 2, 3])),
+    Bytes::from_array(@pdfio.bytes_of_list([1, 2, 3])[:]),
   )
   let arr : Array[@pdf.PdfObject] = [
     Name(PdfName("/Indexed")),

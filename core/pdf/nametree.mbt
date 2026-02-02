@@ -1,15 +1,15 @@
 ///|
 /// Name tree helpers.
-fn compare_string(a : String, b : String) -> Int {
+fn compare_bytes(a : Bytes, b : Bytes) -> Int {
   // IMPORTANT:
-  // - `StringView::compare` uses *shortlex* order (length-first), which is not a
-  //   traditional lexicographical string ordering.
+  // - `Bytes::compare` uses *shortlex* order (length-first), which is not a
+  //   traditional lexicographical byte ordering.
   // - Name trees assume their keys are sorted by a lexicographical order (PDF
-  //   keys are compared byte-wise; in this library we use UTF-16 code units).
+  //   keys are compared byte-wise).
   //
   // Use `lexical_compare` to match the previous "scan until first difference,
   // then compare lengths" semantics.
-  a[:].lexical_compare(b[:])
+  a.lexical_compare(b)
 }
 
 ///|
@@ -28,7 +28,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
 ///|
 fn key_compare(a : PdfObject, b : PdfObject) -> Int? {
   match (a, b) {
-    (PdfString(sa), PdfString(sb)) => Some(compare_string(sa, sb))
+    (PdfString(sa), PdfString(sb)) => Some(compare_bytes(sa, sb))
     (Integer(ia), Integer(ib)) => Some(ia - ib)
     _ => None
   }

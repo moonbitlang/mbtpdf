@@ -14,7 +14,7 @@ pub(all) enum Destination {
   Action(PdfObject)
   NullDestination
   NamedDestination(@pdf.PdfName)
-  StringDestination(String)
+  StringDestination(Bytes)
   XYZ(TargetPage, Double?, Double?, Double?)
   Fit(TargetPage)
   FitH(TargetPage, Double?)

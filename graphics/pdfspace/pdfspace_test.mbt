@@ -20,7 +20,7 @@ test "read_colourspace indexed" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = Dictionary([])
   let lookup_bytes = @pdfio.bytes_of_list([1, 2, 3])
-  let lookup : @pdf.PdfObject = PdfString(@pdfio.string_of_bytes(lookup_bytes))
+  let lookup : @pdf.PdfObject = PdfString(Bytes::from_array(lookup_bytes[:]))
   let space = ColourSpace::read(
     pdf,
     resources,

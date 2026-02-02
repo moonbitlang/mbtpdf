@@ -84,11 +84,11 @@ fn read_ocgappdict(pdf : @pdf.Pdf, appdict : @pdf.PdfObject) -> OcgAppDict {
 ///|
 fn read_config(pdf : @pdf.Pdf, config : @pdf.PdfObject) -> OcgConfig {
   let ocgconfig_name = match pdf.lookup_direct("/Name", config) {
-    Some(PdfString(s)) => Some(s)
+    Some(PdfString(s)) => Some(@pdf.string_bytes_of_bytes(s))
     _ => None
   }
   let ocgconfig_creator = match pdf.lookup_direct("/Creator", config) {
-    Some(PdfString(s)) => Some(s)
+    Some(PdfString(s)) => Some(@pdf.string_bytes_of_bytes(s))
     _ => None
   }
   let ocgconfig_basestate = match pdf.lookup_direct("/BaseState", config) {
@@ -171,7 +171,7 @@ fn read_ocg_usage(pdf : @pdf.Pdf, usage : @pdf.PdfObject) -> OcgUsage? {
 ///|
 fn read_individual_ocg(pdf : @pdf.Pdf, ocg : @pdf.PdfObject) -> Ocg raise {
   let ocg_name = match pdf.lookup_direct("/Name", ocg) {
-    Some(PdfString(s)) => s
+    Some(PdfString(s)) => @pdf.string_bytes_of_bytes(s)
     _ => raise @pdf.PdfError::Msg("No /Name in optional content group")
   }
   let ocg_intent = match pdf.lookup_direct("/Intent", ocg) {

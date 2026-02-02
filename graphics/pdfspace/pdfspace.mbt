@@ -246,7 +246,7 @@ pub fn ColourSpace::read(
           }
         }
         PdfString(s) => {
-          let data = @pdfio.bytes_of_string(s)
+          let data = s.to_array()
           match get_basic_table_colourspace(base_space) {
             DeviceRGB | CalRGB(_, _, _, _) | Lab(_, _, _) =>
               build_table(data, hival, 3)
@@ -538,7 +538,7 @@ pub fn ColourSpace::to_pdf_object(
           hival = 0
         }
         let data = table_bytes(table, hival, components)
-        let lookup = @pdfio.string_of_bytes(data)
+        let lookup = Bytes::from_array(data[:])
         PdfArray([
           Name(PdfName("/Indexed")),
           base.to_pdf_object(pdf),

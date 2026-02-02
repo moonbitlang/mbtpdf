@@ -141,7 +141,7 @@ test "renumber_pages rewrites inline image colorspace names" {
         Name(PdfName("/Indexed")),
         Name(PdfName("/DeviceRGB")),
         Integer(0),
-        PdfString(@pdfio.string_of_bytes(@pdfio.bytes_of_list([255, 0, 0]))),
+        PdfString(Bytes::from_array(@pdfio.bytes_of_list([255, 0, 0])[:])),
       ]),
     ),
   ])

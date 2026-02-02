@@ -76,7 +76,7 @@ fn merge_bookmarks(
           }
           StringDestination(s) =>
             // String destinations resolve via the name tree at `/Names` `/Dests`.
-            match lookup(s, dest_nametree) {
+            match lookup(@pdf.string_bytes_of_bytes(s), dest_nametree) {
               Some(dest) =>
                 match pdf.lookup_direct("/D", dest) {
                   Some(dest_obj) => {
@@ -97,7 +97,7 @@ fn merge_bookmarks(
               Some(Name(PdfName("/GoTo"))) =>
                 match pdf.lookup_direct("/D", a) {
                   Some(PdfString(s)) =>
-                    match lookup(s, dest_nametree) {
+                    match lookup(@pdf.string_bytes_of_bytes(s), dest_nametree) {
                       Some(dest) =>
                         match pdf.lookup_direct("/D", dest) {
                           Some(dest_obj) => {

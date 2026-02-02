@@ -195,7 +195,10 @@ fn goto_action(refnum : Int) -> PdfObject {
 
 ///|
 fn uri_action(uri : String) -> PdfObject {
-  Dictionary([("/S", Name(PdfName("/URI"))), ("/URI", PdfString(uri))])
+  Dictionary([
+    ("/S", Name(PdfName("/URI"))),
+    ("/URI", PdfString(@pdf.bytes_of_string_bytes(uri))),
+  ])
 }
 
 ///|

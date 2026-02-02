@@ -1,6 +1,6 @@
 ///|
-fn bytes_string(len : Int, value : Int) -> String {
-  @pdfio.string_of_int_array(Array::make(len, value))
+fn bytes_string(len : Int, value : Int) -> Bytes {
+  Bytes::from_array(@pdfio.bytes_of_list(Array::make(len, value))[:])
 }
 
 ///|

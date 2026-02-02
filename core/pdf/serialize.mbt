@@ -229,10 +229,11 @@ fn make_pdf_name(name : String) -> String {
 }
 
 ///|
-fn make_pdf_string(value : String) -> String {
+fn make_pdf_string(value : Bytes) -> String {
   let sb = StringBuilder::new()
   sb.write_char('(')
-  for ch in value {
+  for b in value {
+    let ch = b.to_char()
     match ch {
       '(' | ')' | '\\' => {
         sb.write_char('\\')

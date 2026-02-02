@@ -29,14 +29,15 @@ fn set_catalog_entry(
 
 ///|
 fn add_dest_name_tree(pdf : @pdf.Pdf, name : String) -> Unit raise {
+  let name_bytes = @pdf.bytes_of_string_bytes(name)
   let child : @pdf.PdfObject = Dictionary([
-    ("/Names", PdfArray([PdfString(name), Null])),
-    ("/Limits", PdfArray([PdfString(name), PdfString(name)])),
+    ("/Names", PdfArray([PdfString(name_bytes), Null])),
+    ("/Limits", PdfArray([PdfString(name_bytes), PdfString(name_bytes)])),
   ])
   let child_num = pdf.addobj(child)
   let root_tree : @pdf.PdfObject = Dictionary([
-    ("/Names", PdfArray([PdfString(name), Null])),
-    ("/Limits", PdfArray([PdfString(name), PdfString(name)])),
+    ("/Names", PdfArray([PdfString(name_bytes), Null])),
+    ("/Limits", PdfArray([PdfString(name_bytes), PdfString(name_bytes)])),
     ("/Kids", PdfArray([Indirect(child_num)])),
   ])
   set_catalog_entry(pdf, "/Names", Dictionary([("/Dests", root_tree)]))
@@ -47,9 +48,10 @@ fn add_dest_name_tree_with_non_indirect_kid(
   pdf : @pdf.Pdf,
   name : String,
 ) -> Unit raise {
+  let name_bytes = @pdf.bytes_of_string_bytes(name)
   let root_tree : @pdf.PdfObject = Dictionary([
-    ("/Names", PdfArray([PdfString(name), Null])),
-    ("/Limits", PdfArray([PdfString(name), PdfString(name)])),
+    ("/Names", PdfArray([PdfString(name_bytes), Null])),
+    ("/Limits", PdfArray([PdfString(name_bytes), PdfString(name_bytes)])),
     // Malformed /Kids entries should be ignored.
     ("/Kids", PdfArray([Integer(0)])),
   ])
@@ -58,11 +60,12 @@ fn add_dest_name_tree_with_non_indirect_kid(
 
 ///|
 fn add_dest_callsites(pdf : @pdf.Pdf, name : String) -> Unit {
-  let dest_obj : @pdf.PdfObject = Dictionary([("/Dest", PdfString(name))])
+  let name_bytes = @pdf.bytes_of_string_bytes(name)
+  let dest_obj : @pdf.PdfObject = Dictionary([("/Dest", PdfString(name_bytes))])
   ignore(pdf.addobj(dest_obj))
   let action_obj : @pdf.PdfObject = Dictionary([
     ("/S", Name(PdfName("/GoTo"))),
-    ("/D", PdfString(name)),
+    ("/D", PdfString(name_bytes)),
   ])
   ignore(pdf.addobj(action_obj))
 }
@@ -86,13 +89,13 @@ fn collect_dest_strings(pdf : @pdf.Pdf) -> Array[String] {
   pdf.objiter((_, obj) => match (obj : @pdf.PdfObject) {
     Dictionary(entries) => {
       match lookup_entry(entries, "/Dest") {
-        Some(PdfString(s)) => out.push(s)
+        Some(PdfString(s)) => out.push(@pdf.string_bytes_of_bytes(s))
         _ => ()
       }
       match lookup_entry(entries, "/S") {
         Some(Name(PdfName("/GoTo"))) =>
           match lookup_entry(entries, "/D") {
-            Some(PdfString(s)) => out.push(s)
+            Some(PdfString(s)) => out.push(@pdf.string_bytes_of_bytes(s))
             _ => ()
           }
         _ => ()

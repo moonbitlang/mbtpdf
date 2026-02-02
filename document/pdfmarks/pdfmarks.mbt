@@ -328,7 +328,9 @@ fn node_of_line(
   colour : (Double, Double, Double),
   flags : Int,
 ) -> PdfObject {
-  let entries : Array[(String, PdfObject)] = [("/Title", PdfString(title))]
+  let entries : Array[(String, PdfObject)] = [
+    ("/Title", PdfString(@pdf.bytes_of_string_bytes(title))),
+  ]
   let dest = target.to_pdf_object()
   match (dest : PdfObject) {
     Null => ()
@@ -451,7 +453,7 @@ fn do_until_no_next_lb(
   out : Ref[Array[Bookmark]],
 ) -> Unit raise {
   let title = match pdf.lookup_direct("/Title", outline) {
-    Some(PdfString(s)) => s
+    Some(PdfString(s)) => @pdf.string_bytes_of_bytes(s)
     _ => {
       @pdfe.log(
         "/Title not a string or not present in document outline entry. Using the empty string.\n",

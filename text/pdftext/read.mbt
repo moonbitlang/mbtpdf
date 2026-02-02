@@ -136,7 +136,8 @@ pub fn PdfText::read_fontdescriptor(
       let maxwidth = num_or_zero("/MaxWidth")
       let fontfile = find_fontfile()
       let charset = match self.pdf.lookup_direct("/CharSet", fontdescriptor) {
-        Some(PdfString(s)) => Some(PdfTextUtil::new().parse_charset(s))
+        Some(PdfString(s)) =>
+          Some(PdfTextUtil::new().parse_charset(@pdf.string_bytes_of_bytes(s)))
         _ => None
       }
       Some({
@@ -480,11 +481,11 @@ pub fn PdfText::read_cid_system_info(
   dict : @pdf.PdfObject,
 ) -> @pdffont.CIDSystemInfo raise {
   let registry = match self.pdf.lookup_direct("/Registry", dict) {
-    Some(PdfString(s)) => s
+    Some(PdfString(s)) => @pdf.string_bytes_of_bytes(s)
     _ => raise @pdf.PdfError::Msg("No /Registry")
   }
   let ordering = match self.pdf.lookup_direct("/Ordering", dict) {
-    Some(PdfString(s)) => s
+    Some(PdfString(s)) => @pdf.string_bytes_of_bytes(s)
     _ => raise @pdf.PdfError::Msg("No /Ordering")
   }
   let supplement = match self.pdf.lookup_direct("/Supplement", dict) {
