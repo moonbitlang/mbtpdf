@@ -238,7 +238,7 @@ pub fn Output::of_write_at(
     let out = mkbytes(pos)
     buffer.val[:pos].blit_to(out)
     let bytes = Bytes::from_array(out)
-    write_at(bytes[:], 0)
+    write_at(bytes, 0)
   }
 
   {
