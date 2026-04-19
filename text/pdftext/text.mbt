@@ -38,7 +38,7 @@ fn flatten_int_arrays(arrays : Array[Array[Int]]) -> Array[Int] {
   }
   let out = Array::new(capacity=total)
   for arr in arrays {
-    out.append(arr[:])
+    out.append(arr)
   }
   out
 }
@@ -485,7 +485,7 @@ pub fn PdfTextUtil::utf8_of_codepoints(
   let bytes = @pdfio.bytes_of_int_array(
     flatten_int_arrays(codepoints.map(cp => self.get_utf8_chars(cp))),
   )
-  @utf8.decode(Bytes::from_array(bytes[:])[:], ignore_bom=true)
+  @utf8.decode(Bytes::from_array(bytes), ignore_bom=true)
 }
 
 ///|

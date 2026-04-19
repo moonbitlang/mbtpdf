@@ -190,7 +190,7 @@ pub fn PdfText::read_metrics(
   }
 
   let fontdescriptor = match self.pdf.lookup_direct("/Subtype", font) {
-    Some(Name(PdfName("/Type3"))) => Some(font)
+    Some(Name(PdfName(b"/Type3"))) => Some(font)
     _ => self.pdf.lookup_direct("/FontDescriptor", font)
   }
   match fontdescriptor {
@@ -299,7 +299,7 @@ pub fn PdfText::is_standard14font(
   font : @pdf.PdfObject,
 ) -> Bool {
   match self.pdf.lookup_direct("/Subtype", font) {
-    Some(Name(PdfName("/Type1"))) =>
+    Some(Name(PdfName(b"/Type1"))) =>
       match self.pdf.lookup_direct("/BaseFont", font) {
         Some(Name(name)) => {
           let basefont = name.to_string_bytes()
@@ -352,9 +352,9 @@ pub fn PdfText::read_encoding(
   font : @pdf.PdfObject,
 ) -> @pdffont.Encoding raise {
   match self.pdf.lookup_direct("/Encoding", font) {
-    Some(Name(PdfName("/MacRomanEncoding"))) => MacRomanEncoding
-    Some(Name(PdfName("/MacExpertEncoding"))) => MacExpertEncoding
-    Some(Name(PdfName("/WinAnsiEncoding"))) => WinAnsiEncoding
+    Some(Name(PdfName(b"/MacRomanEncoding"))) => MacRomanEncoding
+    Some(Name(PdfName(b"/MacExpertEncoding"))) => MacExpertEncoding
+    Some(Name(PdfName(b"/WinAnsiEncoding"))) => WinAnsiEncoding
     Some(encdict) =>
       match encdict {
         Dictionary(_) =>
@@ -367,10 +367,11 @@ pub fn PdfText::read_encoding(
                 fonttype == "/TrueType" {
                 let base_encoding = match
                   self.pdf.lookup_direct("/BaseEncoding", encdict) {
-                  Some(Name(PdfName("/MacRomanEncoding"))) =>
+                  Some(Name(PdfName(b"/MacRomanEncoding"))) =>
                     Encoding::MacRomanEncoding
-                  Some(Name(PdfName("/MacExpertEncoding"))) => MacExpertEncoding
-                  Some(Name(PdfName("/WinAnsiEncoding"))) => WinAnsiEncoding
+                  Some(Name(PdfName(b"/MacExpertEncoding"))) =>
+                    MacExpertEncoding
+                  Some(Name(PdfName(b"/WinAnsiEncoding"))) => WinAnsiEncoding
                   None =>
                     if self.is_embedded(font) {
                       ImplicitInFontFile
@@ -471,7 +472,7 @@ pub fn PdfText::is_simple_font(self : PdfText, font : @pdf.PdfObject) -> Bool {
 ///|
 pub fn PdfText::is_cidkeyed_font(self : PdfText, font : @pdf.PdfObject) -> Bool {
   match self.pdf.lookup_direct("/Subtype", font) {
-    Some(Name(PdfName("/Type0"))) => true
+    Some(Name(PdfName(b"/Type0"))) => true
     _ => false
   }
 }

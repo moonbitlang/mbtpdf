@@ -178,7 +178,7 @@ fn decode_defaults(
 ///|
 fn decode_to_image(pdf : @pdf.Pdf, stream : @pdf.PdfObject) -> Unit raise {
   fn is_direct_image_filter(name : @pdf.PdfName) -> Bool {
-    name is PdfName("/DCTDecode" | "/DCT" | "/JBIG2Decode" | "/JPXDecode")
+    name is PdfName(b"/DCTDecode" | b"/DCT" | b"/JBIG2Decode" | b"/JPXDecode")
   }
 
   match (stream : @pdf.PdfObject) {
@@ -822,15 +822,15 @@ pub fn Image::get_image_24bpp(
     }
   }
   fn is_dct_filter(name : @pdf.PdfName) -> Bool {
-    name is PdfName("/DCTDecode" | "/DCT")
+    name is PdfName(b"/DCTDecode" | b"/DCT")
   }
 
   fn is_jbig2_filter(name : @pdf.PdfName) -> Bool {
-    name is PdfName("/JBIG2Decode")
+    name is PdfName(b"/JBIG2Decode")
   }
 
   fn is_jpx_filter(name : @pdf.PdfName) -> Bool {
-    name is PdfName("/JPXDecode")
+    name is PdfName(b"/JPXDecode")
   }
 
   match pdf.lookup_direct_orelse("/Filter", "/F", streamdict) {
