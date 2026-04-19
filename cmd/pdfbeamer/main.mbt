@@ -47,8 +47,8 @@ fn theme_accent2() -> (Double, Double, Double) {
 ///|
 fn font_type1(base_font : String) -> PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
   ])
 }
@@ -140,12 +140,12 @@ fn ops_code_block(
   let w = SLIDE_W - 2.0 * MARGIN_X
   let h = line_h * lines.length().to_double() + 26.0
   let y = y_top - h
-  ops.append(ops_fill_rect(MARGIN_X, y, w, h, (0.965, 0.97, 0.98))[:])
-  ops.append(ops_stroke_rect(MARGIN_X, y, w, h, (0.78, 0.8, 0.84), 1.0)[:])
+  ops.append(ops_fill_rect(MARGIN_X, y, w, h, (0.965, 0.97, 0.98)))
+  ops.append(ops_stroke_rect(MARGIN_X, y, w, h, (0.78, 0.8, 0.84), 1.0))
   let mut i = 0
   for line in lines {
     let yy = y_top - 18.0 - i.to_double() * line_h
-    ops.append(ops_text(x, yy, "/F2", 11.0, line, (0.12, 0.14, 0.18))[:])
+    ops.append(ops_text(x, yy, "/F2", 11.0, line, (0.12, 0.14, 0.18)))
     i = i + 1
   }
   ops
@@ -155,14 +155,12 @@ fn ops_code_block(
 fn header_ops(section : String, title : String) -> Array[Op] {
   let ops : Array[Op] = Array::new()
   let accent = theme_accent()
+  ops.append(ops_fill_rect(0.0, SLIDE_H - HEADER_H, SLIDE_W, HEADER_H, accent))
   ops.append(
-    ops_fill_rect(0.0, SLIDE_H - HEADER_H, SLIDE_W, HEADER_H, accent)[:],
+    ops_text(MARGIN_X, SLIDE_H - 28.0, "/F1", 13.0, section, (1.0, 1.0, 1.0)),
   )
   ops.append(
-    ops_text(MARGIN_X, SLIDE_H - 28.0, "/F1", 13.0, section, (1.0, 1.0, 1.0))[:],
-  )
-  ops.append(
-    ops_text(MARGIN_X, SLIDE_H - 18.0, "/F0", 18.0, title, (1.0, 1.0, 1.0))[:],
+    ops_text(MARGIN_X, SLIDE_H - 18.0, "/F0", 18.0, title, (1.0, 1.0, 1.0)),
   )
   ops
 }
@@ -175,7 +173,7 @@ fn footer_ops(
 ) -> Array[Op] {
   let ops : Array[Op] = Array::new()
   let bar = (0.12, 0.14, 0.18)
-  ops.append(ops_fill_rect(0.0, 0.0, SLIDE_W, FOOTER_H, bar)[:])
+  ops.append(ops_fill_rect(0.0, 0.0, SLIDE_W, FOOTER_H, bar))
   ops.append(
     ops_fill_rect(
       0.0,
@@ -183,7 +181,7 @@ fn footer_ops(
       SLIDE_W * progress0_1,
       3.0,
       theme_accent2(),
-    )[:],
+    ),
   )
   let label = page_index_1.to_string() + " / " + total_pages.to_string()
   ops.append(
@@ -194,11 +192,9 @@ fn footer_ops(
       10.0,
       label,
       (0.85, 0.88, 0.92),
-    )[:],
+    ),
   )
-  ops.append(
-    ops_text(MARGIN_X, 12.0, "/F2", 10.0, "Prev", (0.85, 0.88, 0.92))[:],
-  )
+  ops.append(ops_text(MARGIN_X, 12.0, "/F2", 10.0, "Prev", (0.85, 0.88, 0.92)))
   ops.append(
     ops_text(
       SLIDE_W - MARGIN_X - 28.0,
@@ -207,7 +203,7 @@ fn footer_ops(
       10.0,
       "Next",
       (0.85, 0.88, 0.92),
-    )[:],
+    ),
   )
   ops
 }
@@ -219,9 +215,9 @@ fn notes_ops(note : String) -> Array[Op] {
   let w = SLIDE_W - 2.0 * MARGIN_X
   let y = FOOTER_H + 10.0
   let h = 54.0
-  ops.push(OpBDC("/OC", Name(PdfName("/NOTES"))))
-  ops.append(ops_fill_rect(x, y, w, h, (1.0, 1.0, 0.9))[:])
-  ops.append(ops_stroke_rect(x, y, w, h, (0.88, 0.84, 0.4), 1.0)[:])
+  ops.push(OpBDC("/OC", Name(PdfName(b"/NOTES"))))
+  ops.append(ops_fill_rect(x, y, w, h, (1.0, 1.0, 0.9)))
+  ops.append(ops_stroke_rect(x, y, w, h, (0.88, 0.84, 0.4), 1.0))
   ops.append(
     ops_text(
       x + 10.0,
@@ -230,7 +226,7 @@ fn notes_ops(note : String) -> Array[Op] {
       11.0,
       "NOTES (layer): " + note,
       (0.2, 0.18, 0.05),
-    )[:],
+    ),
   )
   ops.push(OpEMC)
   ops
@@ -246,16 +242,16 @@ fn slide_ops(
   total_pages : Int,
 ) -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, SLIDE_W, SLIDE_H, theme_bg())[:])
-  ops.append(header_ops(section, title)[:])
+  ops.append(ops_fill_rect(0.0, 0.0, SLIDE_W, SLIDE_H, theme_bg()))
+  ops.append(header_ops(section, title))
   let progress = page_index_1.to_double() / total_pages.to_double()
-  ops.append(footer_ops(page_index_1, total_pages, progress)[:])
+  ops.append(footer_ops(page_index_1, total_pages, progress))
   for op in body {
     ops.push(op)
   }
   match note {
     None => ()
-    Some(n) => ops.append(notes_ops(n)[:])
+    Some(n) => ops.append(notes_ops(n))
   }
   ops
 }
@@ -277,7 +273,7 @@ fn bullet_slide_body(
     }
     let y = y_top - (i - 1).to_double() * line_h
     let color = if i == shown { theme_accent2() } else { theme_ink() }
-    ops.append(ops_text(x, y, "/F1", 18.0, "- " + b, color)[:])
+    ops.append(ops_text(x, y, "/F1", 18.0, "- " + b, color))
   }
   ops
 }
@@ -285,8 +281,8 @@ fn bullet_slide_body(
 ///|
 fn title_slide_body(title : String, subtitle : String) -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_text(MARGIN_X, 340.0, "/F0", 46.0, title, theme_ink())[:])
-  ops.append(ops_text(MARGIN_X, 300.0, "/F1", 20.0, subtitle, theme_muted())[:])
+  ops.append(ops_text(MARGIN_X, 340.0, "/F0", 46.0, title, theme_ink()))
+  ops.append(ops_text(MARGIN_X, 300.0, "/F1", 20.0, subtitle, theme_muted()))
   ops.append(
     ops_text(
       MARGIN_X,
@@ -295,7 +291,7 @@ fn title_slide_body(title : String, subtitle : String) -> Array[Op] {
       12.0,
       "Generated by mbtpdf using PDF content-stream operators.",
       theme_muted(),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -305,18 +301,18 @@ fn title_slide_body(title : String, subtitle : String) -> Array[Op] {
       12.0,
       "Tip: open your viewer's Layers panel and enable NOTES.",
       theme_muted(),
-    )[:],
+    ),
   )
   // Decorative diagonal
-  ops.append(ops_line(0.0, 140.0, SLIDE_W, 500.0, theme_accent(), 6.0)[:])
-  ops.append(ops_line(0.0, 120.0, SLIDE_W, 480.0, theme_accent2(), 3.0)[:])
+  ops.append(ops_line(0.0, 140.0, SLIDE_W, 500.0, theme_accent(), 6.0))
+  ops.append(ops_line(0.0, 120.0, SLIDE_W, 480.0, theme_accent2(), 3.0))
   ops
 }
 
 ///|
 fn section_slide_body(section : String) -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_text(MARGIN_X, 320.0, "/F0", 40.0, section, theme_ink())[:])
+  ops.append(ops_text(MARGIN_X, 320.0, "/F0", 40.0, section, theme_ink()))
   ops.append(
     ops_text(
       MARGIN_X,
@@ -325,7 +321,7 @@ fn section_slide_body(section : String) -> Array[Op] {
       18.0,
       "Beamer-style layout: header, footer, progress bar, navigation.",
       theme_muted(),
-    )[:],
+    ),
   )
   ops
 }
@@ -335,7 +331,7 @@ fn toc_slide_body(
   entries : Array[(String, Int)],
 ) -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_text(MARGIN_X, 420.0, "/F0", 30.0, "Outline", theme_ink())[:])
+  ops.append(ops_text(MARGIN_X, 420.0, "/F0", 30.0, "Outline", theme_ink()))
   ops.append(
     ops_text(
       MARGIN_X,
@@ -344,13 +340,13 @@ fn toc_slide_body(
       12.0,
       "Click a section title to jump.",
       theme_muted(),
-    )[:],
+    ),
   )
   let mut y = 340.0
   let rects : Array[(Int, (Double, Double, Double, Double))] = Array::new()
   for entry in entries {
     let (name, page_i) = entry
-    ops.append(ops_text(MARGIN_X, y, "/F1", 22.0, name, theme_accent())[:])
+    ops.append(ops_text(MARGIN_X, y, "/F1", 22.0, name, theme_accent()))
     rects.push((page_i, (MARGIN_X, y - 6.0, MARGIN_X + 420.0, y + 22.0)))
     y = y - 40.0
   }
@@ -385,13 +381,13 @@ fn set_catalog_entry(
 ///|
 fn add_notes_layer(pdf : @pdf.Pdf) -> Int raise {
   let ocg_notes : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("NOTES")),
   ])
   let notes_num = pdf.addobj(ocg_notes)
   let default_dict : PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/OFF"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/OFF"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
   ])
   let ocprops : PdfObject = Dictionary([
@@ -427,7 +423,7 @@ fn add_notes_properties_to_pages(
 ///|
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
 
 ///|
@@ -702,7 +698,7 @@ fn build_deck() -> (
             18.0,
             "A tiny pipeline diagram:",
             theme_muted(),
-          )[:],
+          ),
         )
         let y = 290.0
         let box_w = 180.0
@@ -715,12 +711,10 @@ fn build_deck() -> (
           y : Double,
           label : String,
         ) -> Unit {
-          ops.append(ops_fill_rect(x, y, 180.0, 74.0, (1.0, 1.0, 1.0))[:])
+          ops.append(ops_fill_rect(x, y, 180.0, 74.0, (1.0, 1.0, 1.0)))
+          ops.append(ops_stroke_rect(x, y, 180.0, 74.0, (0.2, 0.22, 0.26), 1.5))
           ops.append(
-            ops_stroke_rect(x, y, 180.0, 74.0, (0.2, 0.22, 0.26), 1.5)[:],
-          )
-          ops.append(
-            ops_text(x + 16.0, y + 44.0, "/F0", 16.0, label, theme_ink())[:],
+            ops_text(x + 16.0, y + 44.0, "/F0", 16.0, label, theme_ink()),
           )
         }
 
@@ -732,7 +726,7 @@ fn build_deck() -> (
         for k in 0..<3 {
           let xa = x0 + (box_w + gap) * (k + 1).to_double() - gap
           let x1 = xa + gap
-          ops.append(ops_line(xa, ay, x1, ay, theme_accent2(), 3.0)[:])
+          ops.append(ops_line(xa, ay, x1, ay, theme_accent2(), 3.0))
         }
         ops
       }
@@ -746,7 +740,7 @@ fn build_deck() -> (
             18.0,
             "This is the rough shape of the API:",
             theme_muted(),
-          )[:],
+          ),
         )
         ops.append(
           ops_code_block(MARGIN_X + 14.0, 360.0, [
@@ -754,7 +748,7 @@ fn build_deck() -> (
             "let page = @pdfpage.Page(", "  content=[stream],", "  mediabox=slide_mediabox(),",
             "  resources=slide_resources(),", "  rotate=Rotate0,", "  rest=Dictionary([]),",
             ")",
-          ])[:],
+          ]),
         )
         ops
       }
@@ -763,7 +757,7 @@ fn build_deck() -> (
       Thanks => {
         let ops : Array[Op] = Array::new()
         ops.append(
-          ops_text(MARGIN_X, 340.0, "/F0", 44.0, "Thanks!", theme_ink())[:],
+          ops_text(MARGIN_X, 340.0, "/F0", 44.0, "Thanks!", theme_ink()),
         )
         ops.append(
           ops_text(
@@ -773,7 +767,7 @@ fn build_deck() -> (
             18.0,
             "mbtpdf can generate presentations.",
             theme_muted(),
-          )[:],
+          ),
         )
         ops.append(
           ops_text(
@@ -783,7 +777,7 @@ fn build_deck() -> (
             12.0,
             "Run: moon run cmd/pdfbeamer -- tmp/deck.pdf",
             theme_muted(),
-          )[:],
+          ),
         )
         ops
       }

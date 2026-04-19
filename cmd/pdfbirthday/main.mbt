@@ -7,8 +7,8 @@ type Op = @pdfops.Op
 ///|
 fn font_type1(base_font : String) -> PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
   ])
 }
@@ -153,20 +153,20 @@ fn ops_balloon(
   rgb : (Double, Double, Double),
 ) -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_polygon(circle_points(cx, cy, r, 40), rgb)[:])
+  ops.append(ops_fill_polygon(circle_points(cx, cy, r, 40), rgb))
   ops.append(
     ops_stroke_polyline(
       circle_points(cx, cy, r, 40) + [circle_points(cx, cy, r, 40)[0]],
       (0.2, 0.2, 0.2),
       1.2,
-    )[:],
+    ),
   )
   // Knot
   ops.append(
     ops_fill_polygon(
       [(cx - 6.0, cy - r + 2.0), (cx + 6.0, cy - r + 2.0), (cx, cy - r - 10.0)],
       rgb,
-    )[:],
+    ),
   )
   // String
   ops.append(
@@ -178,7 +178,7 @@ fn ops_balloon(
       ],
       (0.2, 0.2, 0.2),
       1.0,
-    )[:],
+    ),
   )
   ops
 }
@@ -193,11 +193,11 @@ fn ops_button(
   accent : (Double, Double, Double),
 ) -> (Array[Op], (Double, Double, Double, Double)) {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0))[:])
-  ops.append(ops_stroke_rect(x, y, ww, hh, accent, 2.0)[:])
-  ops.append(ops_fill_rect(x, y + hh - 6.0, ww, 6.0, accent)[:])
+  ops.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0)))
+  ops.append(ops_stroke_rect(x, y, ww, hh, accent, 2.0))
+  ops.append(ops_fill_rect(x, y + hh - 6.0, ww, 6.0, accent))
   ops.append(
-    ops_text(x + 14.0, y + 16.0, "/F0", 16.0, label, (0.12, 0.14, 0.18))[:],
+    ops_text(x + 14.0, y + 16.0, "/F0", 16.0, label, (0.12, 0.14, 0.18)),
   )
   (ops, (x, y, x + ww, y + hh))
 }
@@ -230,18 +230,18 @@ fn set_catalog_entry(
 ///|
 fn add_layers(pdf : @pdf.Pdf) -> (Int, Int) raise {
   let secret : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("SECRET")),
   ])
   let party : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("PARTY MODE")),
   ])
   let secret_num = pdf.addobj(secret)
   let party_num = pdf.addobj(party)
   let default_dict : PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/ON"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/ON"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
     ("/OFF", PdfArray([Indirect(secret_num)])),
     ("/ON", PdfArray([Indirect(party_num)])),
@@ -283,7 +283,7 @@ fn add_layer_properties_to_pages(
 ///|
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
 
 ///|
@@ -332,20 +332,20 @@ fn add_bookmarks(pdf : @pdf.Pdf, refs : Array[Int]) -> @pdf.Pdf raise {
 fn cover_ops(name : String) -> (Array[Op], (Double, Double, Double, Double)) {
   let ops : Array[Op] = Array::new()
   let accent = (0.92, 0.33, 0.36)
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.98, 0.98, 0.99))[:])
-  ops.append(ops_fill_rect(0.0, h() - 110.0, w(), 110.0, (0.18, 0.48, 0.86))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.98, 0.98, 0.99)))
+  ops.append(ops_fill_rect(0.0, h() - 110.0, w(), 110.0, (0.18, 0.48, 0.86)))
   ops.append(
-    ops_text(72.0, h() - 70.0, "/F0", 52.0, "Happy Birthday!", (1.0, 1.0, 1.0))[:],
+    ops_text(72.0, h() - 70.0, "/F0", 52.0, "Happy Birthday!", (1.0, 1.0, 1.0)),
   )
   ops.append(
-    ops_text(74.0, h() - 100.0, "/F1", 18.0, "For " + name, (0.92, 0.94, 0.98))[:],
+    ops_text(74.0, h() - 100.0, "/F1", 18.0, "For " + name, (0.92, 0.94, 0.98)),
   )
 
   // Balloons
-  ops.append(ops_balloon(w() - 170.0, 340.0, 58.0, (0.92, 0.33, 0.36))[:])
-  ops.append(ops_balloon(w() - 280.0, 360.0, 50.0, (0.18, 0.48, 0.86))[:])
-  ops.append(ops_balloon(w() - 230.0, 280.0, 44.0, (0.22, 0.7, 0.5))[:])
-  ops.append(ops_balloon(w() - 350.0, 300.0, 40.0, (0.92, 0.75, 0.2))[:])
+  ops.append(ops_balloon(w() - 170.0, 340.0, 58.0, (0.92, 0.33, 0.36)))
+  ops.append(ops_balloon(w() - 280.0, 360.0, 50.0, (0.18, 0.48, 0.86)))
+  ops.append(ops_balloon(w() - 230.0, 280.0, 44.0, (0.22, 0.7, 0.5)))
+  ops.append(ops_balloon(w() - 350.0, 300.0, 40.0, (0.92, 0.75, 0.2)))
   ops.append(
     ops_text(
       72.0,
@@ -354,18 +354,18 @@ fn cover_ops(name : String) -> (Array[Op], (Double, Double, Double, Double)) {
       18.0,
       "This card has a secret. (Open Layers → toggle SECRET.)",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   let (btn, rect) = ops_button(72.0, 70.0, 300.0, 62.0, "Open the card", accent)
-  ops.append(btn[:])
+  ops.append(btn)
   (ops, rect)
 }
 
 ///|
 fn inside_ops(name : String) -> (Array[Op], (Double, Double, Double, Double)) {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
-  ops.append(ops_fill_rect(0.0, 0.0, w(), 64.0, (0.12, 0.14, 0.18))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0)))
+  ops.append(ops_fill_rect(0.0, 0.0, w(), 64.0, (0.12, 0.14, 0.18)))
   ops.append(
     ops_text(
       72.0,
@@ -374,13 +374,13 @@ fn inside_ops(name : String) -> (Array[Op], (Double, Double, Double, Double)) {
       12.0,
       "Tip: toggle PARTY MODE / SECRET in the Layers panel.",
       (0.85, 0.88, 0.92),
-    )[:],
+    ),
   )
   ops.append(
-    ops_text(72.0, h() - 110.0, "/F0", 44.0, "Make a wish,", (0.12, 0.14, 0.18))[:],
+    ops_text(72.0, h() - 110.0, "/F0", 44.0, "Make a wish,", (0.12, 0.14, 0.18)),
   )
   ops.append(
-    ops_text(72.0, h() - 150.0, "/F0", 44.0, name + "!", (0.18, 0.48, 0.86))[:],
+    ops_text(72.0, h() - 150.0, "/F0", 44.0, name + "!", (0.18, 0.48, 0.86)),
   )
   ops.append(
     ops_text(
@@ -390,7 +390,7 @@ fn inside_ops(name : String) -> (Array[Op], (Double, Double, Double, Double)) {
       18.0,
       "May your day be full of small surprises and big laughs.",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -400,11 +400,11 @@ fn inside_ops(name : String) -> (Array[Op], (Double, Double, Double, Double)) {
       18.0,
       "— from your friendly PDF robot",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
 
   // Party mode: confetti overlay
-  ops.push(OpBDC("/OC", Name(PdfName("/PARTY"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/PARTY"))))
   let colors : Array[(Double, Double, Double)] = [
     (0.92, 0.33, 0.36),
     (0.18, 0.48, 0.86),
@@ -416,19 +416,17 @@ fn inside_ops(name : String) -> (Array[Op], (Double, Double, Double, Double)) {
     let x = 40.0 + i.to_double() * 37.0 % (w() - 80.0)
     let y = 90.0 + i.to_double() * 71.0 % (h() - 180.0)
     let c = colors[i % colors.length()]
-    ops.append(ops_fill_rect(x, y, 10.0, 4.0, c)[:])
+    ops.append(ops_fill_rect(x, y, 10.0, 4.0, c))
   }
   ops.push(OpEMC)
 
   // Secret message layer
-  ops.push(OpBDC("/OC", Name(PdfName("/SECRET"))))
-  ops.append(ops_fill_rect(72.0, 90.0, w() - 144.0, 90.0, (1.0, 1.0, 0.9))[:])
+  ops.push(OpBDC("/OC", Name(PdfName(b"/SECRET"))))
+  ops.append(ops_fill_rect(72.0, 90.0, w() - 144.0, 90.0, (1.0, 1.0, 0.9)))
   ops.append(
-    ops_stroke_rect(72.0, 90.0, w() - 144.0, 90.0, (0.88, 0.84, 0.4), 2.0)[:],
+    ops_stroke_rect(72.0, 90.0, w() - 144.0, 90.0, (0.88, 0.84, 0.4), 2.0),
   )
-  ops.append(
-    ops_text(92.0, 145.0, "/F0", 22.0, "SECRET:", (0.2, 0.18, 0.05))[:],
-  )
+  ops.append(ops_text(92.0, 145.0, "/F0", 22.0, "SECRET:", (0.2, 0.18, 0.05)))
   ops.append(
     ops_text(
       92.0,
@@ -437,7 +435,7 @@ fn inside_ops(name : String) -> (Array[Op], (Double, Double, Double, Double)) {
       18.0,
       "You are officially awesome. Keep being you.",
       (0.2, 0.18, 0.05),
-    )[:],
+    ),
   )
   ops.push(OpEMC)
   let (btn, rect) = ops_button(
@@ -448,7 +446,7 @@ fn inside_ops(name : String) -> (Array[Op], (Double, Double, Double, Double)) {
     "Back",
     (0.12, 0.14, 0.18),
   )
-  ops.append(btn[:])
+  ops.append(btn)
   (ops, rect)
 }
 

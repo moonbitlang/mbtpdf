@@ -12,9 +12,9 @@ pub async fn run(
     // Define a Type1 font using the built-in Times-Italic PostScript font.
     // Type1 fonts are one of the 14 standard PDF fonts that don't require embedding.
     let font = @pdf.PdfObject::Dictionary([
-      ("/Type", Name(PdfName("/Font"))),
-      ("/Subtype", Name(PdfName("/Type1"))),
-      ("/BaseFont", Name(PdfName("/Times-Italic"))),
+      ("/Type", Name(PdfName(b"/Font"))),
+      ("/Subtype", Name(PdfName(b"/Type1"))),
+      ("/BaseFont", Name(PdfName(b"/Times-Italic"))),
     ])
 
     // Build the page content as a sequence of PDF graphics operators:

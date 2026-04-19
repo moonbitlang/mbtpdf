@@ -13,8 +13,8 @@ const CARD_H : Double = 560.0
 ///|
 fn font_type1(base_font : String) -> PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
   ])
 }
@@ -147,13 +147,13 @@ fn set_catalog_entry(
 ///|
 fn add_swaps_layer(pdf : @pdf.Pdf) -> Int raise {
   let swaps : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("SWAPS")),
   ])
   let swaps_num = pdf.addobj(swaps)
   let default_dict : PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/ON"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/ON"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
     ("/OFF", PdfArray([Indirect(swaps_num)])),
   ])
@@ -190,12 +190,12 @@ fn add_layer_properties_to_pages(
 ///|
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
 
 ///|
 fn uri_action(uri : String) -> PdfObject {
-  Dictionary([("/S", Name(PdfName("/URI"))), ("/URI", PdfString(uri))])
+  Dictionary([("/S", Name(PdfName(b"/URI"))), ("/URI", PdfString(uri))])
 }
 
 ///|
@@ -268,11 +268,11 @@ fn ops_badge(
   let ww = x1 - x0
   let hh = y1 - y0
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(x0, y0, ww, hh, (1.0, 1.0, 1.0))[:])
-  ops.append(ops_stroke_rect(x0, y0, ww, hh, accent, 2.0)[:])
-  ops.append(ops_fill_rect(x0, y0 + hh - 5.0, ww, 5.0, accent)[:])
+  ops.append(ops_fill_rect(x0, y0, ww, hh, (1.0, 1.0, 1.0)))
+  ops.append(ops_stroke_rect(x0, y0, ww, hh, accent, 2.0))
+  ops.append(ops_fill_rect(x0, y0 + hh - 5.0, ww, 5.0, accent))
   ops.append(
-    ops_text(x0 + 10.0, y0 + 11.0, "/F0", 12.0, label, (0.12, 0.14, 0.18))[:],
+    ops_text(x0 + 10.0, y0 + 11.0, "/F0", 12.0, label, (0.12, 0.14, 0.18)),
   )
   ops
 }
@@ -286,14 +286,12 @@ fn card_frame_ops(
   let cx = card_x()
   let cy = card_y()
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.98, 0.98, 0.99))[:])
-  ops.append(ops_fill_rect(cx, cy, CARD_W, CARD_H, (1.0, 1.0, 1.0))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.98, 0.98, 0.99)))
+  ops.append(ops_fill_rect(cx, cy, CARD_W, CARD_H, (1.0, 1.0, 1.0)))
+  ops.append(ops_stroke_rect(cx, cy, CARD_W, CARD_H, (0.12, 0.14, 0.18), 3.0))
+  ops.append(ops_fill_rect(cx, cy + CARD_H - 76.0, CARD_W, 76.0, accent))
   ops.append(
-    ops_stroke_rect(cx, cy, CARD_W, CARD_H, (0.12, 0.14, 0.18), 3.0)[:],
-  )
-  ops.append(ops_fill_rect(cx, cy + CARD_H - 76.0, CARD_W, 76.0, accent)[:])
-  ops.append(
-    ops_text(cx + 24.0, cy + CARD_H - 40.0, "/F0", 28.0, title, (1.0, 1.0, 1.0))[:],
+    ops_text(cx + 24.0, cy + CARD_H - 40.0, "/F0", 28.0, title, (1.0, 1.0, 1.0)),
   )
   ops.append(
     ops_text(
@@ -303,11 +301,11 @@ fn card_frame_ops(
       12.0,
       subtitle,
       (0.92, 0.94, 0.98),
-    )[:],
+    ),
   )
-  ops.append(ops_badge(home_rect(), "HOME", accent)[:])
-  ops.append(ops_badge(video_rect(), "OPEN VIDEO", (0.92, 0.33, 0.36))[:])
-  ops.append(ops_badge(flip_rect(), "FLIP", (0.18, 0.48, 0.86))[:])
+  ops.append(ops_badge(home_rect(), "HOME", accent))
+  ops.append(ops_badge(video_rect(), "OPEN VIDEO", (0.92, 0.33, 0.36)))
+  ops.append(ops_badge(flip_rect(), "FLIP", (0.18, 0.48, 0.86)))
   ops
 }
 
@@ -317,12 +315,10 @@ fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
   let cy = card_y()
   let accent = (0.18, 0.48, 0.86)
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.06, 0.07, 0.1))[:])
-  ops.append(ops_fill_rect(cx, cy, CARD_W, CARD_H, (1.0, 1.0, 1.0))[:])
-  ops.append(
-    ops_stroke_rect(cx, cy, CARD_W, CARD_H, (0.12, 0.14, 0.18), 3.0)[:],
-  )
-  ops.append(ops_fill_rect(cx, cy + CARD_H - 96.0, CARD_W, 96.0, accent)[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.06, 0.07, 0.1)))
+  ops.append(ops_fill_rect(cx, cy, CARD_W, CARD_H, (1.0, 1.0, 1.0)))
+  ops.append(ops_stroke_rect(cx, cy, CARD_W, CARD_H, (0.12, 0.14, 0.18), 3.0))
+  ops.append(ops_fill_rect(cx, cy + CARD_H - 96.0, CARD_W, 96.0, accent))
   ops.append(
     ops_text(
       cx + 24.0,
@@ -331,7 +327,7 @@ fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
       34.0,
       "Recipe Cards",
       (1.0, 1.0, 1.0),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -341,7 +337,7 @@ fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
       14.0,
       "Tap a card to open. Print & share.",
       (0.92, 0.94, 0.98),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -351,7 +347,7 @@ fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
       12.0,
       "Tip: toggle SWAPS in Layers for substitutions.",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
   fn big_btn(
     y : Double,
@@ -363,13 +359,13 @@ fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
     let x = cx + 24.0
     let (r, g, b) = accent2
     let o : Array[Op] = Array::new()
-    o.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0))[:])
-    o.append(ops_stroke_rect(x, y, ww, hh, accent2, 2.5)[:])
-    o.append(ops_fill_rect(x, y + hh - 8.0, ww, 8.0, accent2)[:])
+    o.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0)))
+    o.append(ops_stroke_rect(x, y, ww, hh, accent2, 2.5))
+    o.append(ops_fill_rect(x, y + hh - 8.0, ww, 8.0, accent2))
     o.append(
-      ops_text(x + 18.0, y + 20.0, "/F0", 18.0, label, (0.12, 0.14, 0.18))[:],
+      ops_text(x + 18.0, y + 20.0, "/F0", 18.0, label, (0.12, 0.14, 0.18)),
     )
-    o.append(ops_text(x + 18.0, y + 8.0, "/F2", 10.0, "CLICK", (r, g, b))[:])
+    o.append(ops_text(x + 18.0, y + 8.0, "/F2", 10.0, "CLICK", (r, g, b)))
     (o, (x, y, x + ww, y + hh))
   }
 
@@ -389,9 +385,9 @@ fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
     "3) No-Bake Energy Bites",
     (0.52, 0.4, 0.86),
   )
-  ops.append(b1[:])
-  ops.append(b2[:])
-  ops.append(b3[:])
+  ops.append(b1)
+  ops.append(b2)
+  ops.append(b3)
   rects.push(r1)
   rects.push(r2)
   rects.push(r3)
@@ -413,7 +409,7 @@ fn mugcake_front_ops() -> Array[Op] {
       12.0,
       "Ingredients (check as you go):",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   let items : Array[String] = [
     "4 tbsp flour", "2 tbsp sugar", "2 tbsp cocoa", "1/4 tsp baking powder", "5 tbsp milk",
@@ -421,9 +417,9 @@ fn mugcake_front_ops() -> Array[Op] {
   ]
   let mut y = cy + CARD_H - 140.0
   for it in items {
-    out.append(ops_checkbox(cx + 26.0, y)[:])
+    out.append(ops_checkbox(cx + 26.0, y))
     out.append(
-      ops_text(cx + 42.0, y + 1.0, "/F1", 12.0, it, (0.12, 0.14, 0.18))[:],
+      ops_text(cx + 42.0, y + 1.0, "/F1", 12.0, it, (0.12, 0.14, 0.18)),
     )
     y = y - 20.0
   }
@@ -437,7 +433,7 @@ fn mugcake_front_ops() -> Array[Op] {
       90.0,
       (0.12, 0.14, 0.18),
       3.0,
-    )[:],
+    ),
   )
   out.append(
     ops_stroke_rect(
@@ -447,7 +443,7 @@ fn mugcake_front_ops() -> Array[Op] {
       50.0,
       (0.12, 0.14, 0.18),
       3.0,
-    )[:],
+    ),
   )
   out.append(
     ops_rule(
@@ -456,10 +452,10 @@ fn mugcake_front_ops() -> Array[Op] {
       cx + 358.0,
       (0.12, 0.14, 0.18),
       2.0,
-    )[:],
+    ),
   )
   out.append(
-    ops_text(cx + 268.0, cy + CARD_H - 176.0, "/F2", 10.0, "MUG", accent)[:],
+    ops_text(cx + 268.0, cy + CARD_H - 176.0, "/F2", 10.0, "MUG", accent),
   )
   out.append(
     ops_text(
@@ -469,19 +465,19 @@ fn mugcake_front_ops() -> Array[Op] {
       12.0,
       "Flip for steps. Tap OPEN VIDEO for a quick demo.",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
 
   // SWAPS layer
-  out.push(OpBDC("/OC", Name(PdfName("/SWAPS"))))
+  out.push(OpBDC("/OC", Name(PdfName(b"/SWAPS"))))
   out.append(
-    ops_fill_rect(cx + 24.0, cy + 124.0, CARD_W - 48.0, 68.0, (1.0, 0.97, 0.9))[:],
+    ops_fill_rect(cx + 24.0, cy + 124.0, CARD_W - 48.0, 68.0, (1.0, 0.97, 0.9)),
   )
   out.append(
-    ops_stroke_rect(cx + 24.0, cy + 124.0, CARD_W - 48.0, 68.0, accent, 1.5)[:],
+    ops_stroke_rect(cx + 24.0, cy + 124.0, CARD_W - 48.0, 68.0, accent, 1.5),
   )
   out.append(
-    ops_text(cx + 34.0, cy + 170.0, "/F0", 12.0, "SWAPS", (0.12, 0.14, 0.18))[:],
+    ops_text(cx + 34.0, cy + 170.0, "/F0", 12.0, "SWAPS", (0.12, 0.14, 0.18)),
   )
   out.append(
     ops_text(
@@ -491,7 +487,7 @@ fn mugcake_front_ops() -> Array[Op] {
       11.0,
       "- Dairy-free: use oat milk",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   out.append(
     ops_text(
@@ -501,7 +497,7 @@ fn mugcake_front_ops() -> Array[Op] {
       11.0,
       "- No egg needed (it's a mug cake!)",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   out.push(OpEMC)
   out
@@ -521,7 +517,7 @@ fn mugcake_back_ops() -> Array[Op] {
       16.0,
       "Steps",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   let steps : Array[String] = [
     "1) Mix dry ingredients in the mug.", "2) Add milk + oil; stir smooth.", "3) Microwave 60-90s (watch it rise!).",
@@ -529,19 +525,19 @@ fn mugcake_back_ops() -> Array[Op] {
   ]
   let mut y = cy + CARD_H - 150.0
   for s in steps {
-    out.append(ops_text(cx + 24.0, y, "/F1", 12.0, s, (0.12, 0.14, 0.18))[:])
+    out.append(ops_text(cx + 24.0, y, "/F1", 12.0, s, (0.12, 0.14, 0.18)))
     y = y - 20.0
   }
   out.append(
-    ops_text(cx + 24.0, cy + 260.0, "/F0", 14.0, "Notes", (0.12, 0.14, 0.18))[:],
+    ops_text(cx + 24.0, cy + 260.0, "/F0", 14.0, "Notes", (0.12, 0.14, 0.18)),
   )
   for i in 0..<7 {
     let yy = cy + 240.0 - i.to_double() * 18.0
     out.append(
-      ops_rule(cx + 24.0, yy, cx + CARD_W - 24.0, (0.78, 0.8, 0.84), 1.0)[:],
+      ops_rule(cx + 24.0, yy, cx + CARD_W - 24.0, (0.78, 0.8, 0.84), 1.0),
     )
   }
-  out.push(OpBDC("/OC", Name(PdfName("/SWAPS"))))
+  out.push(OpBDC("/OC", Name(PdfName(b"/SWAPS"))))
   out.append(
     ops_text(
       cx + 24.0,
@@ -550,7 +546,7 @@ fn mugcake_back_ops() -> Array[Op] {
       10.0,
       "SWAPS ON: try cinnamon, peanut butter, or espresso powder.",
       accent,
-    )[:],
+    ),
   )
   out.push(OpEMC)
   out
@@ -572,16 +568,16 @@ fn parfait_front_ops() -> Array[Op] {
       12.0,
       "Ingredients:",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   let items : Array[String] = [
     "yogurt", "berries", "banana", "granola", "honey (optional)",
   ]
   let mut y = cy + CARD_H - 140.0
   for it in items {
-    out.append(ops_checkbox(cx + 26.0, y)[:])
+    out.append(ops_checkbox(cx + 26.0, y))
     out.append(
-      ops_text(cx + 42.0, y + 1.0, "/F1", 12.0, it, (0.12, 0.14, 0.18))[:],
+      ops_text(cx + 42.0, y + 1.0, "/F1", 12.0, it, (0.12, 0.14, 0.18)),
     )
     y = y - 20.0
   }
@@ -595,11 +591,9 @@ fn parfait_front_ops() -> Array[Op] {
       130.0,
       (0.12, 0.14, 0.18),
       3.0,
-    )[:],
+    ),
   )
-  out.append(
-    ops_rule(cx + 260.0, cy + CARD_H - 236.0, cx + 370.0, accent, 5.0)[:],
-  )
+  out.append(ops_rule(cx + 260.0, cy + CARD_H - 236.0, cx + 370.0, accent, 5.0))
   out.append(
     ops_rule(
       cx + 260.0,
@@ -607,11 +601,9 @@ fn parfait_front_ops() -> Array[Op] {
       cx + 370.0,
       (0.95, 0.75, 0.2),
       5.0,
-    )[:],
+    ),
   )
-  out.append(
-    ops_rule(cx + 260.0, cy + CARD_H - 176.0, cx + 370.0, accent, 5.0)[:],
-  )
+  out.append(ops_rule(cx + 260.0, cy + CARD_H - 176.0, cx + 370.0, accent, 5.0))
   out.append(
     ops_text(
       cx + 276.0,
@@ -620,17 +612,17 @@ fn parfait_front_ops() -> Array[Op] {
       10.0,
       "LAYER",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
-  out.push(OpBDC("/OC", Name(PdfName("/SWAPS"))))
+  out.push(OpBDC("/OC", Name(PdfName(b"/SWAPS"))))
   out.append(
-    ops_fill_rect(cx + 24.0, cy + 124.0, CARD_W - 48.0, 68.0, (0.92, 1.0, 0.95))[:],
-  )
-  out.append(
-    ops_stroke_rect(cx + 24.0, cy + 124.0, CARD_W - 48.0, 68.0, accent, 1.5)[:],
+    ops_fill_rect(cx + 24.0, cy + 124.0, CARD_W - 48.0, 68.0, (0.92, 1.0, 0.95)),
   )
   out.append(
-    ops_text(cx + 34.0, cy + 170.0, "/F0", 12.0, "SWAPS", (0.12, 0.14, 0.18))[:],
+    ops_stroke_rect(cx + 24.0, cy + 124.0, CARD_W - 48.0, 68.0, accent, 1.5),
+  )
+  out.append(
+    ops_text(cx + 34.0, cy + 170.0, "/F0", 12.0, "SWAPS", (0.12, 0.14, 0.18)),
   )
   out.append(
     ops_text(
@@ -640,7 +632,7 @@ fn parfait_front_ops() -> Array[Op] {
       11.0,
       "- Dairy-free: coconut yogurt",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   out.append(
     ops_text(
@@ -650,7 +642,7 @@ fn parfait_front_ops() -> Array[Op] {
       11.0,
       "- Crunch: toasted nuts instead of granola",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   out.push(OpEMC)
   out
@@ -676,23 +668,23 @@ fn parfait_back_ops() -> Array[Op] {
       16.0,
       "Steps",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   let mut y = cy + CARD_H - 150.0
   for s in steps {
-    out.append(ops_text(cx + 24.0, y, "/F1", 12.0, s, (0.12, 0.14, 0.18))[:])
+    out.append(ops_text(cx + 24.0, y, "/F1", 12.0, s, (0.12, 0.14, 0.18)))
     y = y - 20.0
   }
   out.append(
-    ops_text(cx + 24.0, cy + 260.0, "/F0", 14.0, "Notes", (0.12, 0.14, 0.18))[:],
+    ops_text(cx + 24.0, cy + 260.0, "/F0", 14.0, "Notes", (0.12, 0.14, 0.18)),
   )
   for i in 0..<7 {
     let yy = cy + 240.0 - i.to_double() * 18.0
     out.append(
-      ops_rule(cx + 24.0, yy, cx + CARD_W - 24.0, (0.78, 0.8, 0.84), 1.0)[:],
+      ops_rule(cx + 24.0, yy, cx + CARD_W - 24.0, (0.78, 0.8, 0.84), 1.0),
     )
   }
-  out.push(OpBDC("/OC", Name(PdfName("/SWAPS"))))
+  out.push(OpBDC("/OC", Name(PdfName(b"/SWAPS"))))
   out.append(
     ops_text(
       cx + 24.0,
@@ -701,7 +693,7 @@ fn parfait_back_ops() -> Array[Op] {
       10.0,
       "SWAPS ON: frozen fruit works great; thaw a little first.",
       accent,
-    )[:],
+    ),
   )
   out.push(OpEMC)
   out
@@ -723,7 +715,7 @@ fn bites_front_ops() -> Array[Op] {
       12.0,
       "Ingredients:",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   let items : Array[String] = [
     "1 cup oats", "1/2 cup peanut butter", "1/3 cup honey", "2 tbsp cocoa (optional)",
@@ -731,9 +723,9 @@ fn bites_front_ops() -> Array[Op] {
   ]
   let mut y = cy + CARD_H - 140.0
   for it in items {
-    out.append(ops_checkbox(cx + 26.0, y)[:])
+    out.append(ops_checkbox(cx + 26.0, y))
     out.append(
-      ops_text(cx + 42.0, y + 1.0, "/F1", 12.0, it, (0.12, 0.14, 0.18))[:],
+      ops_text(cx + 42.0, y + 1.0, "/F1", 12.0, it, (0.12, 0.14, 0.18)),
     )
     y = y - 20.0
   }
@@ -747,11 +739,9 @@ fn bites_front_ops() -> Array[Op] {
       92.0,
       (0.12, 0.14, 0.18),
       3.0,
-    )[:],
+    ),
   )
-  out.append(
-    ops_fill_rect(cx + 292.0, cy + CARD_H - 232.0, 12.0, 12.0, accent)[:],
-  )
+  out.append(ops_fill_rect(cx + 292.0, cy + CARD_H - 232.0, 12.0, 12.0, accent))
   out.append(
     ops_fill_rect(
       cx + 324.0,
@@ -759,7 +749,7 @@ fn bites_front_ops() -> Array[Op] {
       12.0,
       12.0,
       (0.95, 0.75, 0.2),
-    )[:],
+    ),
   )
   out.append(
     ops_fill_rect(
@@ -768,7 +758,7 @@ fn bites_front_ops() -> Array[Op] {
       12.0,
       12.0,
       (0.18, 0.66, 0.52),
-    )[:],
+    ),
   )
   out.append(
     ops_text(
@@ -778,17 +768,17 @@ fn bites_front_ops() -> Array[Op] {
       10.0,
       "BITE",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
-  out.push(OpBDC("/OC", Name(PdfName("/SWAPS"))))
+  out.push(OpBDC("/OC", Name(PdfName(b"/SWAPS"))))
   out.append(
-    ops_fill_rect(cx + 24.0, cy + 124.0, CARD_W - 48.0, 68.0, (0.96, 0.93, 1.0))[:],
-  )
-  out.append(
-    ops_stroke_rect(cx + 24.0, cy + 124.0, CARD_W - 48.0, 68.0, accent, 1.5)[:],
+    ops_fill_rect(cx + 24.0, cy + 124.0, CARD_W - 48.0, 68.0, (0.96, 0.93, 1.0)),
   )
   out.append(
-    ops_text(cx + 34.0, cy + 170.0, "/F0", 12.0, "SWAPS", (0.12, 0.14, 0.18))[:],
+    ops_stroke_rect(cx + 24.0, cy + 124.0, CARD_W - 48.0, 68.0, accent, 1.5),
+  )
+  out.append(
+    ops_text(cx + 34.0, cy + 170.0, "/F0", 12.0, "SWAPS", (0.12, 0.14, 0.18)),
   )
   out.append(
     ops_text(
@@ -798,7 +788,7 @@ fn bites_front_ops() -> Array[Op] {
       11.0,
       "- Nut-free: sunflower seed butter",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   out.append(
     ops_text(
@@ -808,7 +798,7 @@ fn bites_front_ops() -> Array[Op] {
       11.0,
       "- Less sweet: halve honey; add a splash of milk",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   out.push(OpEMC)
   out
@@ -832,23 +822,23 @@ fn bites_back_ops() -> Array[Op] {
       16.0,
       "Steps",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   let mut y = cy + CARD_H - 150.0
   for s in steps {
-    out.append(ops_text(cx + 24.0, y, "/F1", 12.0, s, (0.12, 0.14, 0.18))[:])
+    out.append(ops_text(cx + 24.0, y, "/F1", 12.0, s, (0.12, 0.14, 0.18)))
     y = y - 20.0
   }
   out.append(
-    ops_text(cx + 24.0, cy + 260.0, "/F0", 14.0, "Notes", (0.12, 0.14, 0.18))[:],
+    ops_text(cx + 24.0, cy + 260.0, "/F0", 14.0, "Notes", (0.12, 0.14, 0.18)),
   )
   for i in 0..<7 {
     let yy = cy + 240.0 - i.to_double() * 18.0
     out.append(
-      ops_rule(cx + 24.0, yy, cx + CARD_W - 24.0, (0.78, 0.8, 0.84), 1.0)[:],
+      ops_rule(cx + 24.0, yy, cx + CARD_W - 24.0, (0.78, 0.8, 0.84), 1.0),
     )
   }
-  out.push(OpBDC("/OC", Name(PdfName("/SWAPS"))))
+  out.push(OpBDC("/OC", Name(PdfName(b"/SWAPS"))))
   out.append(
     ops_text(
       cx + 24.0,
@@ -857,7 +847,7 @@ fn bites_back_ops() -> Array[Op] {
       10.0,
       "SWAPS ON: add chia seeds or mini chocolate chips.",
       accent,
-    )[:],
+    ),
   )
   out.push(OpEMC)
   out
@@ -869,12 +859,10 @@ fn end_ops() -> Array[Op] {
   let cy = card_y()
   let accent = (0.18, 0.48, 0.86)
   let out : Array[Op] = Array::new()
-  out.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.06, 0.07, 0.1))[:])
-  out.append(ops_fill_rect(cx, cy, CARD_W, CARD_H, (1.0, 1.0, 1.0))[:])
-  out.append(
-    ops_stroke_rect(cx, cy, CARD_W, CARD_H, (0.12, 0.14, 0.18), 3.0)[:],
-  )
-  out.append(ops_fill_rect(cx, cy + CARD_H - 96.0, CARD_W, 96.0, accent)[:])
+  out.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.06, 0.07, 0.1)))
+  out.append(ops_fill_rect(cx, cy, CARD_W, CARD_H, (1.0, 1.0, 1.0)))
+  out.append(ops_stroke_rect(cx, cy, CARD_W, CARD_H, (0.12, 0.14, 0.18), 3.0))
+  out.append(ops_fill_rect(cx, cy + CARD_H - 96.0, CARD_W, 96.0, accent))
   out.append(
     ops_text(
       cx + 24.0,
@@ -883,7 +871,7 @@ fn end_ops() -> Array[Op] {
       34.0,
       "Bon appetit!",
       (1.0, 1.0, 1.0),
-    )[:],
+    ),
   )
   out.append(
     ops_text(
@@ -893,7 +881,7 @@ fn end_ops() -> Array[Op] {
       14.0,
       "Print, share, remix, and make your own cards.",
       (0.92, 0.94, 0.98),
-    )[:],
+    ),
   )
   out.append(
     ops_text(
@@ -903,7 +891,7 @@ fn end_ops() -> Array[Op] {
       12.0,
       "Each button is a PDF link annotation (GoTo/URI).",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   out.append(
     ops_text(
@@ -913,14 +901,14 @@ fn end_ops() -> Array[Op] {
       12.0,
       "SWAPS is an optional layer (off by default).",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   out.append(
     ops_badge(
       (cx + 24.0, cy + 120.0, cx + 220.0, cy + 152.0),
       "BACK TO COVER",
       accent,
-    )[:],
+    ),
   )
   out
 }
