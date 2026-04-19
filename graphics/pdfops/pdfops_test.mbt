@@ -34,18 +34,18 @@ test "stream_of_ops builds a stream" {
 test "components resolves color spaces" {
   let pdf = @pdf.Pdf::empty()
   let resources : @pdf.PdfObject = Dictionary([
-    ("/ColorSpace", Dictionary([("/MyCS", Name(PdfName("/DeviceGray")))])),
+    ("/ColorSpace", Dictionary([("/MyCS", Name(PdfName(b"/DeviceGray")))])),
   ])
   assert_eq(
-    @pdfops.Op::components(pdf, resources, Name(PdfName("/DeviceRGB"))),
+    @pdfops.Op::components(pdf, resources, Name(PdfName(b"/DeviceRGB"))),
     3,
   )
-  assert_eq(@pdfops.Op::components(pdf, resources, Name(PdfName("/MyCS"))), 1)
+  assert_eq(@pdfops.Op::components(pdf, resources, Name(PdfName(b"/MyCS"))), 1)
   assert_eq(
     @pdfops.Op::components(
       pdf,
       resources,
-      PdfArray([Name(PdfName("/Pattern")), Name(PdfName("/DeviceRGB"))]),
+      PdfArray([Name(PdfName(b"/Pattern")), Name(PdfName(b"/DeviceRGB"))]),
     ),
     3,
   )
@@ -53,7 +53,7 @@ test "components resolves color spaces" {
     @pdfops.Op::components(
       pdf,
       resources,
-      PdfArray([Name(PdfName("/ICCBased")), Dictionary([("/N", Integer(4))])]),
+      PdfArray([Name(PdfName(b"/ICCBased")), Dictionary([("/N", Integer(4))])]),
     ),
     4,
   )
@@ -62,8 +62,8 @@ test "components resolves color spaces" {
       pdf,
       resources,
       PdfArray([
-        Name(PdfName("/DeviceN")),
-        PdfArray([Name(PdfName("/A")), Name(PdfName("/B"))]),
+        Name(PdfName(b"/DeviceN")),
+        PdfArray([Name(PdfName(b"/A")), Name(PdfName(b"/B"))]),
       ]),
     ),
     2,
@@ -73,9 +73,9 @@ test "components resolves color spaces" {
       pdf,
       resources,
       PdfArray([
-        Name(PdfName("/Separation")),
-        Name(PdfName("/Spot")),
-        Name(PdfName("/DeviceRGB")),
+        Name(PdfName(b"/Separation")),
+        Name(PdfName(b"/Spot")),
+        Name(PdfName(b"/DeviceRGB")),
         Dictionary([]),
       ]),
     ),
@@ -84,7 +84,7 @@ test "components resolves color spaces" {
   let pattern_err : Result[Int, Error] = try? @pdfops.Op::components(
     pdf,
     resources,
-    Name(PdfName("/Pattern")),
+    Name(PdfName(b"/Pattern")),
   )
   assert_true(pattern_err is Err(_))
 }
@@ -241,7 +241,7 @@ test "string_of_ops renders inline image" {
     ("/W", Integer(1)),
     ("/H", Integer(1)),
     ("/BPC", Integer(8)),
-    ("/CS", Name(PdfName("/DeviceGray"))),
+    ("/CS", Name(PdfName(b"/DeviceGray"))),
   ])
   let inline_data = @pdfio.bytes_of_list([128])
   let rendered = @pdfops.Op::string_of_ops([
