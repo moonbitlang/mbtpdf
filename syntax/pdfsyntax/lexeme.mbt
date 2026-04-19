@@ -82,12 +82,10 @@ fn trim_trailing_zeros(value : String) -> String {
       }
       if end < 0 {
         "0"
+      } else if end + 1 > value.length() {
+        ""
       } else {
-        try value[:end + 1] catch {
-          _ => ""
-        } noraise {
-          view => view.to_string()
-        }
+        value[:end + 1].to_string()
       }
     }
   }
