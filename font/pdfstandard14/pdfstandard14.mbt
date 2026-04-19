@@ -173,7 +173,7 @@ fn find_width(
   encoding : @pdffont.Encoding,
   encoding_table : Map[Int, String],
   code : Int,
-) -> Int raise {
+) -> Int {
   match encoding {
     ImplicitInFontFile =>
       match widths.get(code) {
@@ -206,7 +206,7 @@ fn width(
   encoding_table : Map[Int, String],
   kerns : Map[(Int, Int), Int],
   codes : Array[Int],
-) -> Int raise {
+) -> Int {
   if codes.length() == 0 {
     return 0
   }
