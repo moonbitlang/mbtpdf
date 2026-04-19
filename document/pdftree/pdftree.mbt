@@ -154,10 +154,8 @@ fn key_string(obj : @pdf.PdfObject) -> String {
 
 ///|
 fn parse_int(value : String) -> Int {
-  try @strconv.parse_int(value) catch {
+  @string.parse_int(value) catch {
     _ => 0
-  } noraise {
-    v => v
   }
 }
 
@@ -166,7 +164,7 @@ fn compare_string(a : String, b : String) -> Int {
   // IMPORTANT: `StringView::compare` uses *shortlex* order (length-first).
   // For name-tree keys we want traditional lexicographical comparison by UTF-16
   // code units (scan until the first difference, then compare lengths).
-  a[:].lexical_compare(b[:])
+  a[:].lexical_compare(b)
 }
 
 ///|
@@ -217,7 +215,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
   }
   let out = Array::new(capacity=total)
   for list in lists {
-    out.append(list[:])
+    out.append(list)
   }
   out
 }
@@ -225,8 +223,8 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
 ///|
 fn[T] concat_arrays(a : Array[T], b : Array[T]) -> Array[T] {
   let out = Array::new(capacity=a.length() + b.length())
-  out.append(a[:])
-  out.append(b[:])
+  out.append(a)
+  out.append(b)
   out
 }
 

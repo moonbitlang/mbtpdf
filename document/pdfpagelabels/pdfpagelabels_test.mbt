@@ -41,7 +41,7 @@ fn make_pdf_with_pages(count : Int) -> @pdf.Pdf raise {
   let pdf = @pdf.Pdf::empty()
   let pages_root_num = pdf.addobj(
     Dictionary([
-      ("/Type", Name(PdfName("/Pages"))),
+      ("/Type", Name(PdfName(b"/Pages"))),
       ("/Kids", PdfArray([])),
       ("/Count", Integer(count)),
     ]),
@@ -50,7 +50,7 @@ fn make_pdf_with_pages(count : Int) -> @pdf.Pdf raise {
   for _ in 0..<count {
     let page_num = pdf.addobj(
       Dictionary([
-        ("/Type", Name(PdfName("/Page"))),
+        ("/Type", Name(PdfName(b"/Page"))),
         ("/Parent", Indirect(pages_root_num)),
         ("/MediaBox", rect),
       ]),
@@ -61,7 +61,7 @@ fn make_pdf_with_pages(count : Int) -> @pdf.Pdf raise {
     (
       pages_root_num,
       Dictionary([
-        ("/Type", Name(PdfName("/Pages"))),
+        ("/Type", Name(PdfName(b"/Pages"))),
         ("/Kids", PdfArray(kids)),
         ("/Count", Integer(count)),
       ]),
@@ -69,7 +69,7 @@ fn make_pdf_with_pages(count : Int) -> @pdf.Pdf raise {
   )
   let catalog_num = pdf.addobj(
     Dictionary([
-      ("/Type", Name(PdfName("/Catalog"))),
+      ("/Type", Name(PdfName(b"/Catalog"))),
       ("/Pages", Indirect(pages_root_num)),
     ]),
   )
@@ -275,16 +275,16 @@ fn set_page_labels(pdf : @pdf.Pdf, nums : Array[@pdf.PdfObject]) -> Unit raise {
 test "read handles label styles and bad startpage" {
   let pdf = make_pdf_with_pages(1)
   let nums : Array[@pdf.PdfObject] = [
-    Name(PdfName("/Bad")),
-    Dictionary([("/S", Name(PdfName("/R")))]),
+    Name(PdfName(b"/Bad")),
+    Dictionary([("/S", Name(PdfName(b"/R")))]),
     Integer(0),
-    Dictionary([("/S", Name(PdfName("/r")))]),
+    Dictionary([("/S", Name(PdfName(b"/r")))]),
     Integer(1),
-    Dictionary([("/S", Name(PdfName("/A")))]),
+    Dictionary([("/S", Name(PdfName(b"/A")))]),
     Integer(2),
-    Dictionary([("/S", Name(PdfName("/a")))]),
+    Dictionary([("/S", Name(PdfName(b"/a")))]),
     Integer(3),
-    Dictionary([("/S", Name(PdfName("/D")))]),
+    Dictionary([("/S", Name(PdfName(b"/D")))]),
     Integer(4),
     Dictionary([("/P", PdfString("P"))]),
   ]
