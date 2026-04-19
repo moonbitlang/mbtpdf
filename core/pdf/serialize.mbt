@@ -25,21 +25,27 @@ fn trim_trailing_zeros(value : String) -> String {
 }
 
 ///|
+/// Slice a string from `start` to its end. Returns "" if `start` is
+/// out of bounds. This used to wrap the slice in `try … catch`, but
+/// MoonBit's native backend aborts instead of raising on
+/// out-of-bounds indices, so the catch was dead code.
 fn slice_from(value : String, start : Int) -> String {
-  try value[start:] catch {
-    _ => ""
-  } noraise {
-    view => view.to_string()
+  if start < 0 || start > value.length() {
+    return ""
   }
+  value[start:].to_string()
 }
 
 ///|
+/// Slice `value[start:end]` with an explicit bounds check. Returns ""
+/// if either end of the range is out of bounds. See `slice_from` for
+/// why we guard explicitly rather than relying on `try … catch`.
 fn slice_range(value : String, start : Int, end : Int) -> String {
-  try value[start:end] catch {
-    _ => ""
-  } noraise {
-    view => view.to_string()
+  let len = value.length()
+  if start < 0 || start > len || end < start || end > len {
+    return ""
   }
+  value[start:end].to_string()
 }
 
 ///|
