@@ -3,10 +3,10 @@ test "string_of_ops handles comments and inline filters" {
   let old = write_comments.val
   write_comments.val = true
   let dict_filter_array : @pdf.PdfObject = Dictionary([
-    ("/Filter", PdfArray([Name(PdfName("/ASCII85Decode"))])),
+    ("/Filter", PdfArray([Name(PdfName(b"/ASCII85Decode"))])),
   ])
   let dict_filter_name : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/FlateDecode"))),
+    ("/Filter", Name(PdfName(b"/FlateDecode"))),
   ])
   let bytes = @pdfio.bytes_of_list([0x61, 0x62])
   let rendered = Op::string_of_ops([
@@ -45,12 +45,12 @@ test "components handles extra branches and errors" {
   @pdfe.with_logger(_ => (), fn() {
     let pdf = @pdf.Pdf::empty()
     let resources : @pdf.PdfObject = Dictionary([])
-    assert_eq(Op::components(pdf, resources, Name(PdfName("/CalCMYK"))), 4)
+    assert_eq(Op::components(pdf, resources, Name(PdfName(b"/CalCMYK"))), 4)
     assert_eq(
       Op::components(
         pdf,
         resources,
-        PdfArray([Name(PdfName("/Lab")), Dictionary([])]),
+        PdfArray([Name(PdfName(b"/Lab")), Dictionary([])]),
       ),
       3,
     )
@@ -59,8 +59,8 @@ test "components handles extra branches and errors" {
         pdf,
         resources,
         PdfArray([
-          Name(PdfName("/Indexed")),
-          Name(PdfName("/DeviceRGB")),
+          Name(PdfName(b"/Indexed")),
+          Name(PdfName(b"/DeviceRGB")),
           Integer(0),
           PdfString(""),
         ]),
@@ -70,7 +70,7 @@ test "components handles extra branches and errors" {
     let missing_dict : Result[Int, Error] = try? Op::components(
       pdf,
       resources,
-      Name(PdfName("/MyCS")),
+      Name(PdfName(b"/MyCS")),
     )
     assert_true(missing_dict is Err(_))
     let resources_empty : @pdf.PdfObject = Dictionary([
@@ -79,19 +79,19 @@ test "components handles extra branches and errors" {
     let missing_entry : Result[Int, Error] = try? Op::components(
       pdf,
       resources_empty,
-      Name(PdfName("/MyCS")),
+      Name(PdfName(b"/MyCS")),
     )
     assert_true(missing_entry is Err(_))
     let bad_icc : Result[Int, Error] = try? Op::components(
       pdf,
       resources,
-      PdfArray([Name(PdfName("/ICCBased")), Dictionary([])]),
+      PdfArray([Name(PdfName(b"/ICCBased")), Dictionary([])]),
     )
     assert_true(bad_icc is Err(_))
     let bad_device_n : Result[Int, Error] = try? Op::components(
       pdf,
       resources,
-      PdfArray([Name(PdfName("/DeviceN")), Name(PdfName("/DeviceRGB"))]),
+      PdfArray([Name(PdfName(b"/DeviceN")), Name(PdfName(b"/DeviceRGB"))]),
     )
     assert_true(bad_device_n is Err(_))
     let bad_other : Result[Int, Error] = try? Op::components(
@@ -112,7 +112,7 @@ test "components handles /I alias" {
     Op::components(
       pdf,
       resources,
-      PdfArray([Name(PdfName("/I")), Name(PdfName("/DeviceRGB"))]),
+      PdfArray([Name(PdfName(b"/I")), Name(PdfName(b"/DeviceRGB"))]),
     ),
     1,
   )
@@ -126,7 +126,7 @@ test "components errors on array without name leader" {
     let res : Result[Int, Error] = try? Op::components(
       pdf,
       resources,
-      PdfArray([Integer(1), Name(PdfName("/DeviceRGB"))]),
+      PdfArray([Integer(1), Name(PdfName(b"/DeviceRGB"))]),
     )
     assert_true(res is Err(_))
     ()
