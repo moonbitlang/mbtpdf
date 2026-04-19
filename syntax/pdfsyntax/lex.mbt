@@ -83,14 +83,11 @@ pub fn lex_number(input : @pdfio.Input) -> Token raise {
     number.contains("e") ||
     number.contains("E")
   if !has_decimal {
-    try LexInt(@string.parse_int(number)) catch {
-      _ =>
-        try LexReal(@string.parse_double(number)) catch {
-          _ => LexNone
-        }
+    LexInt(@string.parse_int(number)) catch {
+      _ => LexReal(@string.parse_double(number)) catch { _ => LexNone }
     }
   } else {
-    try LexReal(@string.parse_double(number)) catch {
+    LexReal(@string.parse_double(number)) catch {
       _ => LexNone
     }
   }
