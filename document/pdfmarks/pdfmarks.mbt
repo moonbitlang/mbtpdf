@@ -98,7 +98,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
   }
   let out = Array::new(capacity=total)
   for list in lists {
-    out.append(list[:])
+    out.append(list)
   }
   out
 }
@@ -163,7 +163,7 @@ fn flatten_tree(
     out.push((ntree_objnum(node), ntree_obj(node)))
     let children = ntree_children(node)
     if children.length() > 0 {
-      out.append(flatten(children.map(really_flatten))[:])
+      out.append(flatten(children.map(really_flatten)))
     }
     out
   }
@@ -373,7 +373,7 @@ fn make_outline_ntree(
       let current = Br(fresh(source, pdf), node, tree, head.isopen)
       let out = Array::new(capacity=1 + remaining.length())
       out.push(current)
-      out.append(make_outline_ntree(source, pdf, remaining)[:])
+      out.append(make_outline_ntree(source, pdf, remaining))
       out
     }
   }
@@ -390,7 +390,7 @@ pub fn PdfMarks::add_bookmarks(
     self.remove_bookmarks()
   } else {
     let source = Ref::new(0)
-    let tree = make_outline_ntree(source, pdf, parsed[:])
+    let tree = make_outline_ntree(source, pdf, parsed)
     let tree = tree.map(add_firstlast)
     let tree = match add_next(add_prev(Br(0, Null, tree, false))) {
       Br(_, _, children, _) => children

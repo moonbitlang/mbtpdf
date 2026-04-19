@@ -76,11 +76,11 @@ fn label_of_range(pdf : @pdf.Pdf, range : (PdfObject, PdfObject)) -> PageLabel {
     }
   }
   let labelstyle = match pdf.lookup_direct("/S", thing) {
-    Some(Name(PdfName("/D"))) => DecimalArabic
-    Some(Name(PdfName("/R"))) => UppercaseRoman
-    Some(Name(PdfName("/r"))) => LowercaseRoman
-    Some(Name(PdfName("/A"))) => UppercaseLetters
-    Some(Name(PdfName("/a"))) => LowercaseLetters
+    Some(Name(PdfName(b"/D"))) => DecimalArabic
+    Some(Name(PdfName(b"/R"))) => UppercaseRoman
+    Some(Name(PdfName(b"/r"))) => LowercaseRoman
+    Some(Name(PdfName(b"/A"))) => UppercaseLetters
+    Some(Name(PdfName(b"/a"))) => LowercaseLetters
     _ => NoLabelPrefixOnly
   }
   let labelprefix = match pdf.lookup_direct("/P", thing) {
@@ -380,11 +380,11 @@ pub fn PageLabel::write_all(
       let entries = Array::new()
       match label.labelstyle {
         NoLabelPrefixOnly => ()
-        DecimalArabic => entries.push(("/S", PdfObject::Name(PdfName("/D"))))
-        UppercaseRoman => entries.push(("/S", Name(PdfName("/R"))))
-        LowercaseRoman => entries.push(("/S", Name(PdfName("/r"))))
-        UppercaseLetters => entries.push(("/S", Name(PdfName("/A"))))
-        LowercaseLetters => entries.push(("/S", Name(PdfName("/a"))))
+        DecimalArabic => entries.push(("/S", PdfObject::Name(PdfName(b"/D"))))
+        UppercaseRoman => entries.push(("/S", Name(PdfName(b"/R"))))
+        LowercaseRoman => entries.push(("/S", Name(PdfName(b"/r"))))
+        UppercaseLetters => entries.push(("/S", Name(PdfName(b"/A"))))
+        LowercaseLetters => entries.push(("/S", Name(PdfName(b"/a"))))
       }
       match label.labelprefix {
         Some(p) => entries.push(("/P", PdfString(p)))
@@ -420,8 +420,8 @@ pub fn PageLabel::remove_all(pdf : @pdf.Pdf) -> Unit raise {
 ///|
 fn[T] concat_arrays(a : Array[T], b : Array[T]) -> Array[T] {
   let out = Array::new(capacity=a.length() + b.length())
-  out.append(a[:])
-  out.append(b[:])
+  out.append(a)
+  out.append(b)
   out
 }
 
@@ -455,7 +455,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
   }
   let out = Array::new(capacity=total)
   for list in lists {
-    out.append(list[:])
+    out.append(list)
   }
   out
 }
