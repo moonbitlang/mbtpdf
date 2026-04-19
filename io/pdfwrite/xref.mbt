@@ -94,7 +94,7 @@ fn build_xref_stream(
   let data = output.extract_bytes(buffer)
   let dict_with_type = pdf.trailerdict.add_entry(
     "/Type",
-    Name(PdfName("/XRef")),
+    Name(PdfName(b"/XRef")),
   )
   let dict_with_size = dict_with_type.add_entry("/Size", Integer(size))
   let dict_with_root = dict_with_size.add_entry("/Root", Indirect(pdf.root))

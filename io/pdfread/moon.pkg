@@ -5,9 +5,15 @@ import {
   "bobzhang/mbtpdf/core/pdfe",
   "bobzhang/mbtpdf/core/pdfio",
   "bobzhang/mbtpdf/crypto/pdfcrypt",
-  "bobzhang/mbtpdf/document/pdfpage",
-  "bobzhang/mbtpdf/io/pdfiofs",
   "bobzhang/mbtpdf/syntax/pdftoken",
   "bobzhang/mbtpdf/syntax/pdfsyntax",
-  "moonbitlang/async",
 }
+
+import {
+  "bobzhang/mbtpdf/document/pdfpage",
+} for "test"
+
+import {
+  "bobzhang/mbtpdf/io/pdfiofs",
+  "moonbitlang/async",
+} for "wbtest"

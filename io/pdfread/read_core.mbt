@@ -79,16 +79,10 @@ fn version_from_catalog(ctx : PdfRead, pdf : @pdf.Pdf) -> (Int, Int)? {
         return None
       }
       // `/Version` is a name like `/1.7` (byte-string). Slice off the `/`.
-      let version = try s[1:] catch {
-        _ => return None
-      } noraise {
-        view => view.to_string()
-      }
+      let version = s[1:].to_string()
       let header = "%PDF-\{version}"
-      try read_header(ctx, @pdfio.Input::of_string(header)) catch {
+      Some(read_header(ctx, @pdfio.Input::of_string(header))) catch {
         _ => None
-      } noraise {
-        pair => Some(pair)
       }
     }
     _ => None
@@ -264,8 +258,8 @@ fn read_pdf_internal(
         Stream(r) => {
           let (dict, _) = r.val
           match pdf.lookup_direct("/Type", dict) {
-            Some(Name(PdfName("/XRef"))) => pdf.removeobj(objnum)
-            Some(Name(PdfName("/ObjStm"))) => pdf.removeobj(objnum)
+            Some(Name(PdfName(b"/XRef"))) => pdf.removeobj(objnum)
+            Some(Name(PdfName(b"/ObjStm"))) => pdf.removeobj(objnum)
             _ => ()
           }
         }

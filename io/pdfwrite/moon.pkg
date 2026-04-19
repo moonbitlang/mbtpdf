@@ -3,11 +3,16 @@ import {
   "bobzhang/mbtpdf/core/pdf",
   "bobzhang/mbtpdf/core/pdfe",
   "bobzhang/mbtpdf/core/pdfio",
-  "bobzhang/mbtpdf/core/pdfcryptprimitives",
   "bobzhang/mbtpdf/crypto/pdfcrypt",
+}
+
+import {
   "bobzhang/mbtpdf/io/pdfread",
+} for "test"
+
+import {
   "bobzhang/mbtpdf/document/pdfpage",
   "bobzhang/mbtpdf/io/pdfiofs",
   "moonbitlang/async",
   "moonbitlang/async/fs",
-}
+} for "wbtest"

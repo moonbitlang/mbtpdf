@@ -71,7 +71,7 @@ test "string_of_pdf encodes control and delimiter bytes" {
 
 ///|
 test "string_of_pdf encodes greater-than in names" {
-  let rendered = write_ctx.string_of_pdf(Name(PdfName("/A>")))
+  let rendered = write_ctx.string_of_pdf(Name(PdfName(b"/A>")))
   assert_true(rendered.contains("#3E"))
 }
 
@@ -88,7 +88,7 @@ test "string_of_pdf encodes delimiter bytes in names" {
 
 ///|
 test "string_of_pdf handles short names" {
-  let rendered = write_ctx.string_of_pdf(Name(PdfName("/")))
+  let rendered = write_ctx.string_of_pdf(Name(PdfName(b"/")))
   assert_eq(rendered, "/")
 }
 

@@ -170,7 +170,7 @@ fn find_catalog_object(objects : @pdf.PdfObjMap) -> Int? {
     match obj_ref.val {
       Parsed(obj) | ParsedAlreadyDecrypted(obj) =>
         match obj.lookup_immediate("/Type") {
-          Some(Name(PdfName("/Catalog"))) => return Some(objnum)
+          Some(Name(PdfName(b"/Catalog"))) => return Some(objnum)
           _ => ()
         }
       _ => ()
