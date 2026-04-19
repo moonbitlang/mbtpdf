@@ -1,8 +1,8 @@
 ///|
 fn type3_font_dict() -> @pdf.PdfObject {
   Dictionary([
-    ("/Subtype", Name(PdfName("/Type3"))),
-    ("/BaseFont", Name(PdfName("/TestFont"))),
+    ("/Subtype", Name(PdfName(b"/Type3"))),
+    ("/BaseFont", Name(PdfName(b"/TestFont"))),
     ("/FontBBox", PdfArray([Real(0.0), Real(0.0), Real(1.0), Real(1.0)])),
     (
       "/FontMatrix",
@@ -30,7 +30,7 @@ test "write_encoding handles builtins and custom diffs" {
   let standard_encoding = ctx.read_encoding(standard_font_dict())
   let standard = ctx.write_encoding(standard_encoding)
   match (pdf.lookup_obj(standard) : @pdf.PdfObject) {
-    Name(PdfName("/StandardEncoding")) => ()
+    Name(PdfName(b"/StandardEncoding")) => ()
     _ => fail("expected StandardEncoding name")
   }
   let custom_encoding = ctx.read_encoding(custom_encoding_font_dict())
@@ -44,7 +44,7 @@ test "write_encoding handles builtins and custom diffs" {
     _ => fail("expected encoding dictionary")
   }
   let implicit_dict : @pdf.PdfObject = Dictionary([
-    ("/Subtype", Name(PdfName("/Type0"))),
+    ("/Subtype", Name(PdfName(b"/Type0"))),
   ])
   let implicit = ctx.read_encoding(implicit_dict)
   let implicit_result : Result[Int, Error] = try? ctx.write_encoding(implicit)
@@ -70,7 +70,7 @@ test "write_font handles standard and type3 fonts" {
   match (pdf.lookup_obj(standard) : @pdf.PdfObject) {
     Dictionary(_) as dict =>
       match (pdf.lookup_direct("/BaseFont", dict) : @pdf.PdfObject?) {
-        Some(Name(PdfName("/Helvetica"))) => ()
+        Some(Name(PdfName(b"/Helvetica"))) => ()
         _ => fail("expected /BaseFont /Helvetica")
       }
     _ => fail("expected font dictionary")
@@ -80,7 +80,7 @@ test "write_font handles standard and type3 fonts" {
   match (pdf.lookup_obj(type3_num) : @pdf.PdfObject) {
     Dictionary(_) as dict =>
       match (pdf.lookup_direct("/Subtype", dict) : @pdf.PdfObject?) {
-        Some(Name(PdfName("/Type3"))) => ()
+        Some(Name(PdfName(b"/Type3"))) => ()
         _ => fail("expected /Subtype /Type3")
       }
     _ => fail("expected Type3 font dictionary")

@@ -17,10 +17,10 @@ test "colspace and bpc handle image masks" {
 test "get_image_24bpp decodes raw rgb image" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = Dictionary([
-    ("/Subtype", Name(PdfName("/Image"))),
+    ("/Subtype", Name(PdfName(b"/Image"))),
     ("/Width", Integer(1)),
     ("/Height", Integer(1)),
-    ("/ColorSpace", Name(PdfName("/DeviceRGB"))),
+    ("/ColorSpace", Name(PdfName(b"/DeviceRGB"))),
     ("/BitsPerComponent", Integer(8)),
     ("/Length", Integer(3)),
   ])
@@ -41,10 +41,10 @@ test "get_image_24bpp decodes raw rgb image" {
 test "get_image_24bpp applies decode for 1bpp" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = Dictionary([
-    ("/Subtype", Name(PdfName("/Image"))),
+    ("/Subtype", Name(PdfName(b"/Image"))),
     ("/Width", Integer(1)),
     ("/Height", Integer(1)),
-    ("/ColorSpace", Name(PdfName("/DeviceGray"))),
+    ("/ColorSpace", Name(PdfName(b"/DeviceGray"))),
     ("/BitsPerComponent", Integer(1)),
     ("/Decode", PdfArray([Real(1.0), Real(0.0)])),
     ("/Length", Integer(1)),
