@@ -20,7 +20,7 @@ fn ensure_leading_slash(bytes : Bytes) -> Bytes {
     let out = Array::new(capacity=bytes.length() + 1)
     out.push('/'.to_int().to_byte())
     out.append(bytes.to_array())
-    Bytes::from_array(out[:])
+    Bytes::from_array(out)
   } else {
     bytes
   }
@@ -40,7 +40,7 @@ pub fn PdfName::of_bytes(bytes : Bytes) -> PdfName {
 /// This is mainly for internal construction sites and tests. Each UTF-16 code
 /// unit is truncated to its low 8 bits (i.e. treated as a byte).
 pub fn PdfName::of_string(value : String) -> PdfName {
-  let bytes = Bytes::from_array(@pdfio.bytes_of_string(value)[:])
+  let bytes = Bytes::from_array(@pdfio.bytes_of_string(value))
   PdfName::of_bytes(bytes)
 }
 

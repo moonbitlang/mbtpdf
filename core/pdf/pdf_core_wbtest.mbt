@@ -159,30 +159,30 @@ test "lookup and chains" {
   let arr_dict = PdfObject::Dictionary([
     ("/Arr", PdfArray([Integer(1), Integer(2)])),
   ])
-  assert_some_integer(pdf.lookup_chain(arr_dict, ["/Arr", "/[1]"][:]), 2)
-  match pdf.lookup_chain(arr_dict, ["/[x]"][:]) {
+  assert_some_integer(pdf.lookup_chain(arr_dict, ["/Arr", "/[1]"]), 2)
+  match pdf.lookup_chain(arr_dict, ["/[x]"]) {
     None => ()
     _ => fail("expected none")
   }
-  match pdf.lookup_chain(Integer(1), ["/[0]"][:]) {
+  match pdf.lookup_chain(Integer(1), ["/[0]"]) {
     None => ()
     _ => fail("expected none")
   }
   let pdf2 = Pdf::empty()
   pdf2.trailerdict = Dictionary([("/A", PdfArray([Integer(1), Integer(2)]))])
-  pdf2.replace_chain(["/A", "/[1]"][:], Integer(9))
-  assert_some_integer(pdf2.lookup_chain(pdf2.trailerdict, ["/A", "/[1]"][:]), 9)
-  assert_is_err(try? pdf2.replace_chain(["/A", "/[5]"][:], Integer(3)))
-  assert_is_err(try? pdf2.replace_chain(["/A", "/[0]", "/B"][:], Integer(3)))
-  assert_is_err(try? pdf2.replace_chain(["/[0]"][:], Integer(1)))
+  pdf2.replace_chain(["/A", "/[1]"], Integer(9))
+  assert_some_integer(pdf2.lookup_chain(pdf2.trailerdict, ["/A", "/[1]"]), 9)
+  assert_is_err(try? pdf2.replace_chain(["/A", "/[5]"], Integer(3)))
+  assert_is_err(try? pdf2.replace_chain(["/A", "/[0]", "/B"], Integer(3)))
+  assert_is_err(try? pdf2.replace_chain(["/[0]"], Integer(1)))
   let dict_chain = ["/X", "/Y"]
-  pdf2.replace_chain(dict_chain[:], Integer(7))
-  assert_some_integer(pdf2.lookup_chain(pdf2.trailerdict, dict_chain[:]), 7)
+  pdf2.replace_chain(dict_chain, Integer(7))
+  assert_some_integer(pdf2.lookup_chain(pdf2.trailerdict, dict_chain), 7)
   let pdf_null = Pdf::empty()
   pdf_null.trailerdict = Null
-  pdf_null.replace_chain(["/A", "/B"][:], Integer(1))
+  pdf_null.replace_chain(["/A", "/B"], Integer(1))
   assert_some_integer(
-    pdf_null.lookup_chain(pdf_null.trailerdict, ["/A", "/B"][:]),
+    pdf_null.lookup_chain(pdf_null.trailerdict, ["/A", "/B"]),
     1,
   )
   let pdf_stream_replace = Pdf::empty()
@@ -190,7 +190,7 @@ test "lookup and chains" {
     Dictionary([("/A", Integer(1))]),
     data,
   )
-  pdf_stream_replace.replace_chain(["/A"][:], Integer(2))
+  pdf_stream_replace.replace_chain(["/A"], Integer(2))
   match pdf_stream_replace.trailerdict {
     Stream(r) =>
       match r.val {

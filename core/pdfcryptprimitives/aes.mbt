@@ -499,7 +499,7 @@ pub fn PdfCryptPrimitives::aes_encrypt_data(
   }
   let all = Array::new()
   all.push(iv)
-  all.append(outblocks[:])
+  all.append(outblocks)
   bytes_of_blocks(all)
 }
 

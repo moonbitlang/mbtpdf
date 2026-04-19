@@ -2,12 +2,12 @@
 fn make_basic_pdf() -> Pdf {
   let base = Pdf::empty()
   let pages = PdfObject::Dictionary([
-    ("/Type", Name(PdfName("/Pages"))),
+    ("/Type", Name(PdfName(b"/Pages"))),
     ("/Kids", PdfArray([Indirect(2)])),
   ])
-  let page = PdfObject::Dictionary([("/Type", Name(PdfName("/Page")))])
+  let page = PdfObject::Dictionary([("/Type", Name(PdfName(b"/Page")))])
   let catalog = PdfObject::Dictionary([
-    ("/Type", Name(PdfName("/Catalog"))),
+    ("/Type", Name(PdfName(b"/Catalog"))),
     ("/Pages", Indirect(1)),
   ])
   base.addobj_given_num((1, pages))
