@@ -13,8 +13,8 @@ const TAB_H : Double = 30.0
 ///|
 fn font_type1(base_font : String) -> PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
   ])
 }
@@ -180,18 +180,18 @@ fn set_catalog_entry(
 ///|
 fn add_layers(pdf : @pdf.Pdf) -> (Int, Int) raise {
   let night : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("NIGHT MODE")),
   ])
   let surprise : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("SURPRISE")),
   ])
   let night_num = pdf.addobj(night)
   let surprise_num = pdf.addobj(surprise)
   let default_dict : PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/ON"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/ON"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
     ("/OFF", PdfArray([Indirect(night_num), Indirect(surprise_num)])),
   ])
@@ -232,12 +232,12 @@ fn add_layer_properties_to_pages(
 ///|
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
 
 ///|
 fn uri_action(uri : String) -> PdfObject {
-  Dictionary([("/S", Name(PdfName("/URI"))), ("/URI", PdfString(uri))])
+  Dictionary([("/S", Name(PdfName(b"/URI"))), ("/URI", PdfString(uri))])
 }
 
 ///|
@@ -319,11 +319,9 @@ fn ops_tabs(active? : Int = -1) -> Array[Op] {
     } else {
       (0.12, 0.14, 0.18)
     }
-    ops.append(ops_fill_rect(x0, y0, ww, hh, fill)[:])
-    ops.append(ops_stroke_rect(x0, y0, ww, hh, accent, 2.0)[:])
-    ops.append(
-      ops_text(x0 + 12.0, y0 + 10.0, "/F0", 11.0, titles[i], text_rgb)[:],
-    )
+    ops.append(ops_fill_rect(x0, y0, ww, hh, fill))
+    ops.append(ops_stroke_rect(x0, y0, ww, hh, accent, 2.0))
+    ops.append(ops_text(x0 + 12.0, y0 + 10.0, "/F0", 11.0, titles[i], text_rgb))
   }
   ops
 }
@@ -340,10 +338,10 @@ fn ops_home_badge() -> Array[Op] {
   let hh = y1 - y0
   let accent = (0.12, 0.14, 0.18)
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(x0, y0, ww, hh, (1.0, 1.0, 1.0))[:])
-  ops.append(ops_stroke_rect(x0, y0, ww, hh, accent, 2.0)[:])
+  ops.append(ops_fill_rect(x0, y0, ww, hh, (1.0, 1.0, 1.0)))
+  ops.append(ops_stroke_rect(x0, y0, ww, hh, accent, 2.0))
   ops.append(
-    ops_text(x0 + 20.0, y0 + 10.0, "/F0", 12.0, "HOME", (0.12, 0.14, 0.18))[:],
+    ops_text(x0 + 20.0, y0 + 10.0, "/F0", 12.0, "HOME", (0.12, 0.14, 0.18)),
   )
   ops
 }
@@ -356,7 +354,7 @@ fn ops_night_sky(
   y1 : Double,
 ) -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.push(OpBDC("/OC", Name(PdfName("/NIGHT"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/NIGHT"))))
   let ww = x1 - x0
   let hh = y1 - y0
   let stars : Array[(Double, Double)] = [
@@ -371,13 +369,13 @@ fn ops_night_sky(
   for s in stars {
     let (sx, sy) = s
     let p = circle_points(sx, sy, 2.2, 10)
-    ops.append(ops_fill_polygon(p, (0.95, 0.96, 0.98))[:])
+    ops.append(ops_fill_polygon(p, (0.95, 0.96, 0.98)))
   }
   ops.append(
-    ops_fill_rect(x0 + 12.0, y1 - 34.0, 196.0, 22.0, (0.06, 0.07, 0.1))[:],
+    ops_fill_rect(x0 + 12.0, y1 - 34.0, 196.0, 22.0, (0.06, 0.07, 0.1)),
   )
   ops.append(
-    ops_stroke_rect(x0 + 12.0, y1 - 34.0, 196.0, 22.0, (0.95, 0.96, 0.98), 1.2)[:],
+    ops_stroke_rect(x0 + 12.0, y1 - 34.0, 196.0, 22.0, (0.95, 0.96, 0.98), 1.2),
   )
   ops.append(
     ops_text(
@@ -387,7 +385,7 @@ fn ops_night_sky(
       10.0,
       "NIGHT MODE (Layers)",
       (0.95, 0.96, 0.98),
-    )[:],
+    ),
   )
   ops.push(OpEMC)
   ops
@@ -403,11 +401,11 @@ fn ops_button(
   accent : (Double, Double, Double),
 ) -> (Array[Op], (Double, Double, Double, Double)) {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0))[:])
-  ops.append(ops_stroke_rect(x, y, ww, hh, accent, 2.0)[:])
-  ops.append(ops_fill_rect(x, y + hh - 7.0, ww, 7.0, accent)[:])
+  ops.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0)))
+  ops.append(ops_stroke_rect(x, y, ww, hh, accent, 2.0))
+  ops.append(ops_fill_rect(x, y + hh - 7.0, ww, 7.0, accent))
   ops.append(
-    ops_text(x + 14.0, y + 16.0, "/F0", 14.0, label, (0.12, 0.14, 0.18))[:],
+    ops_text(x + 14.0, y + 16.0, "/F0", 14.0, label, (0.12, 0.14, 0.18)),
   )
   (ops, (x, y, x + ww, y + hh))
 }
@@ -415,10 +413,10 @@ fn ops_button(
 ///|
 fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.98, 0.98, 0.99))[:])
-  ops.append(ops_fill_rect(0.0, h() - 130.0, w(), 130.0, (0.18, 0.48, 0.86))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.98, 0.98, 0.99)))
+  ops.append(ops_fill_rect(0.0, h() - 130.0, w(), 130.0, (0.18, 0.48, 0.86)))
   ops.append(
-    ops_text(54.0, h() - 78.0, "/F0", 46.0, "Weekend Getaway", (1.0, 1.0, 1.0))[:],
+    ops_text(54.0, h() - 78.0, "/F0", 46.0, "Weekend Getaway", (1.0, 1.0, 1.0)),
   )
   ops.append(
     ops_text(
@@ -428,7 +426,7 @@ fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
       16.0,
       "An interactive mini travel brochure",
       (0.92, 0.94, 0.98),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -438,12 +436,12 @@ fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
       14.0,
       "Tip: toggle NIGHT MODE + SURPRISE in Layers.",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
-  ops.append(ops_tabs()[:])
-  ops.append(ops_night_sky(0.0, h() - 130.0, w(), h())[:])
-  ops.push(OpBDC("/OC", Name(PdfName("/NIGHT"))))
-  ops.append(ops_fill_rect(0.0, h() - 130.0, w(), 130.0, (0.06, 0.07, 0.1))[:])
+  ops.append(ops_tabs())
+  ops.append(ops_night_sky(0.0, h() - 130.0, w(), h()))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/NIGHT"))))
+  ops.append(ops_fill_rect(0.0, h() - 130.0, w(), 130.0, (0.06, 0.07, 0.1)))
   ops.append(
     ops_text(
       54.0,
@@ -452,7 +450,7 @@ fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
       46.0,
       "Weekend Getaway",
       (0.95, 0.96, 0.98),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -462,7 +460,7 @@ fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
       16.0,
       "An interactive mini travel brochure",
       (0.8, 0.84, 0.9),
-    )[:],
+    ),
   )
   ops.push(OpEMC)
   let x = 54.0
@@ -474,11 +472,11 @@ fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
   let (b3, r3) = ops_button(x, 304.0, ww, hh, "Coupons", (0.95, 0.75, 0.2))
   let (b4, r4) = ops_button(x, 236.0, ww, hh, "Postcard", (0.92, 0.33, 0.36))
   let (b5, r5) = ops_button(x, 168.0, ww, hh, "Packing List", (0.52, 0.4, 0.86))
-  ops.append(b1[:])
-  ops.append(b2[:])
-  ops.append(b3[:])
-  ops.append(b4[:])
-  ops.append(b5[:])
+  ops.append(b1)
+  ops.append(b2)
+  ops.append(b3)
+  ops.append(b4)
+  ops.append(b5)
   rects.push(r1)
   rects.push(r2)
   rects.push(r3)
@@ -490,12 +488,10 @@ fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
 ///|
 fn map_ops() -> (Array[Op], (Double, Double, Double, Double)) {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
-  ops.append(ops_tabs(active=0)[:])
-  ops.append(ops_home_badge()[:])
-  ops.append(
-    ops_text(54.0, h() - 78.0, "/F0", 40.0, "Map", (0.12, 0.14, 0.18))[:],
-  )
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0)))
+  ops.append(ops_tabs(active=0))
+  ops.append(ops_home_badge())
+  ops.append(ops_text(54.0, h() - 78.0, "/F0", 40.0, "Map", (0.12, 0.14, 0.18)))
   ops.append(
     ops_text(
       54.0,
@@ -504,14 +500,14 @@ fn map_ops() -> (Array[Op], (Double, Double, Double, Double)) {
       14.0,
       "Tap markers. Or tap OPEN MAP for online view.",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
   let frame_x = 54.0
   let frame_y = 120.0
   let frame_w = w() - 140.0
   let frame_h = h() - 280.0
   ops.append(
-    ops_stroke_rect(frame_x, frame_y, frame_w, frame_h, (0.12, 0.14, 0.18), 3.0)[:],
+    ops_stroke_rect(frame_x, frame_y, frame_w, frame_h, (0.12, 0.14, 0.18), 3.0),
   )
 
   // River
@@ -523,7 +519,7 @@ fn map_ops() -> (Array[Op], (Double, Double, Double, Double)) {
     (frame_x + 420.0, frame_y + 300.0),
     (frame_x + 520.0, frame_y + 260.0),
   ]
-  ops.append(ops_polyline(river, (0.18, 0.48, 0.86), 10.0)[:])
+  ops.append(ops_polyline(river, (0.18, 0.48, 0.86), 10.0))
 
   // Landmarks
   fn marker(
@@ -533,9 +529,9 @@ fn map_ops() -> (Array[Op], (Double, Double, Double, Double)) {
     color : (Double, Double, Double),
   ) -> Unit {
     let p = circle_points(cx, cy, 16.0, 40)
-    ops.append(ops_fill_polygon(p, color)[:])
+    ops.append(ops_fill_polygon(p, color))
     ops.append(
-      ops_text(cx - 5.0, cy - 5.0, "/F0", 14.0, label, (1.0, 1.0, 1.0))[:],
+      ops_text(cx - 5.0, cy - 5.0, "/F0", 14.0, label, (1.0, 1.0, 1.0)),
     )
   }
 
@@ -550,12 +546,12 @@ fn map_ops() -> (Array[Op], (Double, Double, Double, Double)) {
       12.0,
       "A = Scenic lookout   B = Snack stop   C = Sunset pier",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
 
   // Night overlay just on the frame area
   ops.append(
-    ops_night_sky(frame_x, frame_y, frame_x + frame_w, frame_y + frame_h)[:],
+    ops_night_sky(frame_x, frame_y, frame_x + frame_w, frame_y + frame_h),
   )
   let (btn, rect) = ops_button(
     54.0,
@@ -565,18 +561,18 @@ fn map_ops() -> (Array[Op], (Double, Double, Double, Double)) {
     "OPEN MAP",
     (0.18, 0.48, 0.86),
   )
-  ops.append(btn[:])
+  ops.append(btn)
   (ops, rect)
 }
 
 ///|
 fn itinerary_ops() -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
-  ops.append(ops_tabs(active=1)[:])
-  ops.append(ops_home_badge()[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0)))
+  ops.append(ops_tabs(active=1))
+  ops.append(ops_home_badge())
   ops.append(
-    ops_text(54.0, h() - 78.0, "/F0", 40.0, "Itinerary", (0.12, 0.14, 0.18))[:],
+    ops_text(54.0, h() - 78.0, "/F0", 40.0, "Itinerary", (0.12, 0.14, 0.18)),
   )
   ops.append(
     ops_text(
@@ -586,42 +582,34 @@ fn itinerary_ops() -> Array[Op] {
       14.0,
       "A weekend plan you can actually follow.",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
   fn checkbox(x : Double, y : Double) -> Unit {
-    ops.append(ops_stroke_rect(x, y, 12.0, 12.0, (0.12, 0.14, 0.18), 1.6)[:])
+    ops.append(ops_stroke_rect(x, y, 12.0, 12.0, (0.12, 0.14, 0.18), 1.6))
   }
 
   fn item(y : Double, time : String, label : String) -> Unit {
     checkbox(56.0, y + 2.0)
-    ops.append(
-      ops_text(76.0, y + 2.0, "/F2", 11.0, time, (0.18, 0.48, 0.86))[:],
-    )
-    ops.append(
-      ops_text(132.0, y + 2.0, "/F1", 12.0, label, (0.12, 0.14, 0.18))[:],
-    )
+    ops.append(ops_text(76.0, y + 2.0, "/F2", 11.0, time, (0.18, 0.48, 0.86)))
+    ops.append(ops_text(132.0, y + 2.0, "/F1", 12.0, label, (0.12, 0.14, 0.18)))
   }
 
-  ops.append(
-    ops_fill_rect(54.0, 520.0, w() - 160.0, 30.0, (0.95, 0.96, 0.98))[:],
-  )
-  ops.append(ops_text(62.0, 530.0, "/F0", 14.0, "DAY 1", (0.12, 0.14, 0.18))[:])
+  ops.append(ops_fill_rect(54.0, 520.0, w() - 160.0, 30.0, (0.95, 0.96, 0.98)))
+  ops.append(ops_text(62.0, 530.0, "/F0", 14.0, "DAY 1", (0.12, 0.14, 0.18)))
   item(486.0, "09:30", "Coffee + a walk by the river")
   item(462.0, "11:00", "Lookout A (photos!)")
   item(438.0, "13:00", "Snack stop B")
   item(414.0, "16:30", "Sunset at pier C")
   item(390.0, "19:00", "Dinner + dessert")
-  ops.append(
-    ops_fill_rect(54.0, 334.0, w() - 160.0, 30.0, (0.95, 0.96, 0.98))[:],
-  )
-  ops.append(ops_text(62.0, 344.0, "/F0", 14.0, "DAY 2", (0.12, 0.14, 0.18))[:])
+  ops.append(ops_fill_rect(54.0, 334.0, w() - 160.0, 30.0, (0.95, 0.96, 0.98)))
+  ops.append(ops_text(62.0, 344.0, "/F0", 14.0, "DAY 2", (0.12, 0.14, 0.18)))
   item(300.0, "09:00", "Lazy breakfast")
   item(276.0, "10:30", "Pick a souvenir")
   item(252.0, "12:00", "One last photo at A")
   item(228.0, "13:30", "Head home")
 
   // Night sticker
-  ops.push(OpBDC("/OC", Name(PdfName("/NIGHT"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/NIGHT"))))
   ops.append(
     ops_text(
       54.0,
@@ -630,7 +618,7 @@ fn itinerary_ops() -> Array[Op] {
       11.0,
       "NIGHT MODE: add stars + mood (Layers)",
       (0.95, 0.96, 0.98),
-    )[:],
+    ),
   )
   ops.push(OpEMC)
   ops
@@ -639,11 +627,11 @@ fn itinerary_ops() -> Array[Op] {
 ///|
 fn coupons_ops() -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
-  ops.append(ops_tabs(active=2)[:])
-  ops.append(ops_home_badge()[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0)))
+  ops.append(ops_tabs(active=2))
+  ops.append(ops_home_badge())
   ops.append(
-    ops_text(54.0, h() - 78.0, "/F0", 40.0, "Coupons", (0.12, 0.14, 0.18))[:],
+    ops_text(54.0, h() - 78.0, "/F0", 40.0, "Coupons", (0.12, 0.14, 0.18)),
   )
   ops.append(
     ops_text(
@@ -653,7 +641,7 @@ fn coupons_ops() -> Array[Op] {
       14.0,
       "Print these and cut along the dashed lines.",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -663,7 +651,7 @@ fn coupons_ops() -> Array[Op] {
       14.0,
       "Toggle SURPRISE layer to reveal codes.",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
   fn dashed_box(
     x : Double,
@@ -709,13 +697,13 @@ fn coupons_ops() -> Array[Op] {
     let x = 54.0
     let ww = w() - 170.0
     let hh = 120.0
-    ops.append(ops_fill_rect(x, y, ww, hh, (0.98, 0.98, 0.99))[:])
+    ops.append(ops_fill_rect(x, y, ww, hh, (0.98, 0.98, 0.99)))
     dashed_box(x, y, ww, hh, accent)
     ops.append(
-      ops_text(x + 16.0, y + hh - 34.0, "/F0", 20.0, title, (0.12, 0.14, 0.18))[:],
+      ops_text(x + 16.0, y + hh - 34.0, "/F0", 20.0, title, (0.12, 0.14, 0.18)),
     )
     ops.append(
-      ops_text(x + 16.0, y + hh - 62.0, "/F1", 13.0, perk, (0.45, 0.48, 0.52))[:],
+      ops_text(x + 16.0, y + hh - 62.0, "/F1", 13.0, perk, (0.45, 0.48, 0.52)),
     )
     ops.append(
       ops_text(
@@ -725,14 +713,14 @@ fn coupons_ops() -> Array[Op] {
         10.0,
         "Show at checkout. One per person.",
         (0.45, 0.48, 0.52),
-      )[:],
+      ),
     )
-    ops.push(OpBDC("/OC", Name(PdfName("/SURPRISE"))))
+    ops.push(OpBDC("/OC", Name(PdfName(b"/SURPRISE"))))
     ops.append(
-      ops_fill_rect(x + ww - 170.0, y + 18.0, 150.0, 34.0, (1.0, 1.0, 1.0))[:],
+      ops_fill_rect(x + ww - 170.0, y + 18.0, 150.0, 34.0, (1.0, 1.0, 1.0)),
     )
     ops.append(
-      ops_stroke_rect(x + ww - 170.0, y + 18.0, 150.0, 34.0, accent, 2.0)[:],
+      ops_stroke_rect(x + ww - 170.0, y + 18.0, 150.0, 34.0, accent, 2.0),
     )
     ops.append(
       ops_text(
@@ -742,7 +730,7 @@ fn coupons_ops() -> Array[Op] {
         12.0,
         "CODE: " + code,
         (0.12, 0.14, 0.18),
-      )[:],
+      ),
     )
     ops.push(OpEMC)
   }
@@ -774,11 +762,11 @@ fn coupons_ops() -> Array[Op] {
 ///|
 fn postcard_ops() -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.98, 0.98, 0.99))[:])
-  ops.append(ops_tabs(active=3)[:])
-  ops.append(ops_home_badge()[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.98, 0.98, 0.99)))
+  ops.append(ops_tabs(active=3))
+  ops.append(ops_home_badge())
   ops.append(
-    ops_text(54.0, h() - 78.0, "/F0", 40.0, "Postcard", (0.12, 0.14, 0.18))[:],
+    ops_text(54.0, h() - 78.0, "/F0", 40.0, "Postcard", (0.12, 0.14, 0.18)),
   )
   ops.append(
     ops_text(
@@ -788,17 +776,17 @@ fn postcard_ops() -> Array[Op] {
       14.0,
       "Print this page. Cut on the border. Write on the back.",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
   let x = 54.0
   let y = 140.0
   let ww = w() - 170.0
   let hh = h() - 300.0
-  ops.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0))[:])
-  ops.append(ops_stroke_rect(x, y, ww, hh, (0.12, 0.14, 0.18), 3.0)[:])
+  ops.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0)))
+  ops.append(ops_stroke_rect(x, y, ww, hh, (0.12, 0.14, 0.18), 3.0))
 
   // Simple "photo" (vector landscape)
-  ops.append(ops_fill_rect(x, y + hh - 220.0, ww, 220.0, (0.18, 0.48, 0.86))[:])
+  ops.append(ops_fill_rect(x, y + hh - 220.0, ww, 220.0, (0.18, 0.48, 0.86)))
   let hills : Array[(Double, Double)] = [
     (x, y + hh - 140.0),
     (x + 120.0, y + hh - 170.0),
@@ -808,8 +796,8 @@ fn postcard_ops() -> Array[Op] {
     (x + ww, y + hh - 220.0),
     (x, y + hh - 220.0),
   ]
-  ops.append(ops_fill_polygon(hills, (0.18, 0.66, 0.52))[:])
-  ops.append(ops_fill_rect(x, y + hh - 64.0, ww, 64.0, (0.95, 0.75, 0.2))[:])
+  ops.append(ops_fill_polygon(hills, (0.18, 0.66, 0.52)))
+  ops.append(ops_fill_rect(x, y + hh - 64.0, ww, 64.0, (0.95, 0.75, 0.2)))
   ops.append(
     ops_text(
       x + 18.0,
@@ -818,7 +806,7 @@ fn postcard_ops() -> Array[Op] {
       22.0,
       "Wish you were here!",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
 
   // Back layout lines
@@ -827,7 +815,7 @@ fn postcard_ops() -> Array[Op] {
       [(x + ww / 2.0, y + 18.0), (x + ww / 2.0, y + hh - 236.0)],
       (0.78, 0.8, 0.84),
       1.5,
-    )[:],
+    ),
   )
   for i in 0..<6 {
     let yy = y + 32.0 + i.to_double() * 26.0
@@ -836,7 +824,7 @@ fn postcard_ops() -> Array[Op] {
         [(x + ww / 2.0 + 16.0, yy), (x + ww - 16.0, yy)],
         (0.78, 0.8, 0.84),
         1.0,
-      )[:],
+      ),
     )
   }
   ops.append(
@@ -847,20 +835,20 @@ fn postcard_ops() -> Array[Op] {
       10.0,
       "ADDRESS",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
-  ops.append(ops_night_sky(x, y + hh - 220.0, x + ww, y + hh)[:])
+  ops.append(ops_night_sky(x, y + hh - 220.0, x + ww, y + hh))
   ops
 }
 
 ///|
 fn packing_ops() -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
-  ops.append(ops_tabs(active=4)[:])
-  ops.append(ops_home_badge()[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0)))
+  ops.append(ops_tabs(active=4))
+  ops.append(ops_home_badge())
   ops.append(
-    ops_text(54.0, h() - 78.0, "/F0", 40.0, "Packing List", (0.12, 0.14, 0.18))[:],
+    ops_text(54.0, h() - 78.0, "/F0", 40.0, "Packing List", (0.12, 0.14, 0.18)),
   )
   ops.append(
     ops_text(
@@ -870,17 +858,15 @@ fn packing_ops() -> Array[Op] {
       14.0,
       "Print and check things off.",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
   fn checkbox(x : Double, y : Double) -> Unit {
-    ops.append(ops_stroke_rect(x, y, 12.0, 12.0, (0.12, 0.14, 0.18), 1.6)[:])
+    ops.append(ops_stroke_rect(x, y, 12.0, 12.0, (0.12, 0.14, 0.18), 1.6))
   }
 
   fn line(y : Double, item : String) -> Unit {
     checkbox(56.0, y)
-    ops.append(
-      ops_text(76.0, y + 2.0, "/F1", 12.0, item, (0.12, 0.14, 0.18))[:],
-    )
+    ops.append(ops_text(76.0, y + 2.0, "/F1", 12.0, item, (0.12, 0.14, 0.18)))
   }
 
   let items : Array[String] = [
@@ -892,15 +878,13 @@ fn packing_ops() -> Array[Op] {
     line(y, it)
     y = y - 26.0
   }
-  ops.push(OpBDC("/OC", Name(PdfName("/SURPRISE"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/SURPRISE"))))
+  ops.append(ops_fill_rect(54.0, 120.0, w() - 170.0, 62.0, (0.95, 0.96, 0.98)))
   ops.append(
-    ops_fill_rect(54.0, 120.0, w() - 170.0, 62.0, (0.95, 0.96, 0.98))[:],
+    ops_stroke_rect(54.0, 120.0, w() - 170.0, 62.0, (0.52, 0.4, 0.86), 2.0),
   )
   ops.append(
-    ops_stroke_rect(54.0, 120.0, w() - 170.0, 62.0, (0.52, 0.4, 0.86), 2.0)[:],
-  )
-  ops.append(
-    ops_text(66.0, 158.0, "/F0", 16.0, "SURPRISE NOTE", (0.12, 0.14, 0.18))[:],
+    ops_text(66.0, 158.0, "/F0", 16.0, "SURPRISE NOTE", (0.12, 0.14, 0.18)),
   )
   ops.append(
     ops_text(
@@ -910,7 +894,7 @@ fn packing_ops() -> Array[Op] {
       12.0,
       "Send this PDF to someone and invite them.",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   ops.push(OpEMC)
   ops

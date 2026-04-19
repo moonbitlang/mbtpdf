@@ -44,8 +44,8 @@ fn hsv_to_rgb(h : Double, s : Double, v : Double) -> (Double, Double, Double) {
 ///|
 fn font_type1(base_font : String) -> @pdf.PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
   ])
 }
@@ -186,11 +186,11 @@ fn cover_ops() -> Array[@pdfops.Op] {
     let rgb = hsv_to_rgb(210.0 - 120.0 * t, 0.75, 0.95)
     let y = h * (i.to_double() / stripes.to_double())
     let sh = h / stripes.to_double() + 0.5
-    ops.append(ops_fill_rect(0.0, y, w, sh, rgb)[:])
+    ops.append(ops_fill_rect(0.0, y, w, sh, rgb))
   }
-  ops.append(ops_fill_rect(0.0, 0.0, w, 180.0, (0.05, 0.07, 0.1))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w, 180.0, (0.05, 0.07, 0.1)))
   ops.append(
-    ops_text(54.0, 720.0, "/F0", 44.0, "mbtpdf Showcase", (1.0, 1.0, 1.0))[:],
+    ops_text(54.0, 720.0, "/F0", 44.0, "mbtpdf Showcase", (1.0, 1.0, 1.0)),
   )
   ops.append(
     ops_text(
@@ -200,7 +200,7 @@ fn cover_ops() -> Array[@pdfops.Op] {
       16.0,
       "Generative art • Layers • Clickable navigation",
       (1.0, 1.0, 1.0),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -210,7 +210,7 @@ fn cover_ops() -> Array[@pdfops.Op] {
       12.0,
       "Tip: open your PDF viewer's bookmarks / layers panel.",
       (0.85, 0.9, 0.95),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -220,7 +220,7 @@ fn cover_ops() -> Array[@pdfops.Op] {
       12.0,
       "This PDF contains internal links; click the page footer buttons.",
       (0.85, 0.9, 0.95),
-    )[:],
+    ),
   )
   ops
 }
@@ -240,7 +240,7 @@ fn spiro_point(t : Double) -> (Double, Double) {
 ///|
 fn spiro_ops() -> Array[@pdfops.Op] {
   let ops : Array[@pdfops.Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.98, 0.98, 0.985))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.98, 0.98, 0.985)))
   ops.append(
     ops_text(
       54.0,
@@ -249,7 +249,7 @@ fn spiro_ops() -> Array[@pdfops.Op] {
       24.0,
       "Procedural Spirograph",
       (0.1, 0.12, 0.16),
-    )[:],
+    ),
   )
   let cx = 297.5
   let cy = 420.0
@@ -264,7 +264,7 @@ fn spiro_ops() -> Array[@pdfops.Op] {
     let hue = 360.0 * (i.to_double() / steps.to_double())
     let rgb = hsv_to_rgb(hue, 0.85, 0.9)
     ops.append(
-      ops_stroke_polyline([(cx + x0, cy + y0), (cx + x1, cy + y1)], rgb, 1.2)[:],
+      ops_stroke_polyline([(cx + x0, cy + y0), (cx + x1, cy + y1)], rgb, 1.2),
     )
   }
   ops.append(
@@ -275,7 +275,7 @@ fn spiro_ops() -> Array[@pdfops.Op] {
       11.0,
       "Drawn with plain PDF operators (m/l/S) + a tiny HSV palette.",
       (0.25, 0.28, 0.32),
-    )[:],
+    ),
   )
   ops
 }
@@ -285,16 +285,16 @@ fn layers_ops() -> Array[@pdfops.Op] {
   let ops : Array[@pdfops.Op] = Array::new()
 
   // "Day" layer
-  ops.push(OpBDC("/OC", Name(PdfName("/DAY"))))
-  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.75, 0.9, 1.0))[:])
-  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 160.0, (0.9, 0.95, 0.98))[:])
+  ops.push(OpBDC("/OC", Name(PdfName(b"/DAY"))))
+  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.75, 0.9, 1.0)))
+  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 160.0, (0.9, 0.95, 0.98)))
   ops.append(
-    ops_fill_polygon(circle_points(470.0, 700.0, 46.0, 40), (1.0, 0.86, 0.1))[:],
+    ops_fill_polygon(circle_points(470.0, 700.0, 46.0, 40), (1.0, 0.86, 0.1)),
   )
   ops.append(
-    ops_stroke_rect(70.0, 320.0, 455.0, 240.0, (0.15, 0.25, 0.35), 2.0)[:],
+    ops_stroke_rect(70.0, 320.0, 455.0, 240.0, (0.15, 0.25, 0.35), 2.0),
   )
-  ops.append(ops_text(90.0, 520.0, "/F0", 28.0, "DAY", (0.12, 0.18, 0.22))[:])
+  ops.append(ops_text(90.0, 520.0, "/F0", 28.0, "DAY", (0.12, 0.18, 0.22)))
   ops.append(
     ops_text(
       90.0,
@@ -303,34 +303,30 @@ fn layers_ops() -> Array[@pdfops.Op] {
       14.0,
       "A light theme layer.",
       (0.12, 0.18, 0.22),
-    )[:],
+    ),
   )
   ops.push(OpEMC)
 
   // "Night" layer
-  ops.push(OpBDC("/OC", Name(PdfName("/NIGHT"))))
-  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.05, 0.06, 0.1))[:])
-  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 160.0, (0.09, 0.1, 0.16))[:])
+  ops.push(OpBDC("/OC", Name(PdfName(b"/NIGHT"))))
+  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.05, 0.06, 0.1)))
+  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 160.0, (0.09, 0.1, 0.16)))
   for i in 0..<120 {
     let x = 30.0 + i.to_double() * 43.0 % 540.0
     let y = 200.0 + i.to_double() * 97.0 % 610.0
     let r = 0.8 + (i % 7).to_double() * 0.3
-    ops.append(
-      ops_fill_polygon(circle_points(x, y, r, 10), (0.95, 0.98, 1.0))[:],
-    )
+    ops.append(ops_fill_polygon(circle_points(x, y, r, 10), (0.95, 0.98, 1.0)))
   }
   ops.append(
-    ops_fill_polygon(circle_points(470.0, 700.0, 40.0, 40), (0.9, 0.92, 0.95))[:],
+    ops_fill_polygon(circle_points(470.0, 700.0, 40.0, 40), (0.9, 0.92, 0.95)),
   )
   ops.append(
-    ops_fill_polygon(circle_points(485.0, 710.0, 40.0, 40), (0.05, 0.06, 0.1))[:],
+    ops_fill_polygon(circle_points(485.0, 710.0, 40.0, 40), (0.05, 0.06, 0.1)),
   )
+  ops.append(ops_stroke_rect(70.0, 320.0, 455.0, 240.0, (0.8, 0.86, 0.95), 2.0))
+  ops.append(ops_text(90.0, 520.0, "/F0", 28.0, "NIGHT", (0.9, 0.92, 0.95)))
   ops.append(
-    ops_stroke_rect(70.0, 320.0, 455.0, 240.0, (0.8, 0.86, 0.95), 2.0)[:],
-  )
-  ops.append(ops_text(90.0, 520.0, "/F0", 28.0, "NIGHT", (0.9, 0.92, 0.95))[:])
-  ops.append(
-    ops_text(90.0, 480.0, "/F1", 14.0, "A dark theme layer.", (0.9, 0.92, 0.95))[:],
+    ops_text(90.0, 480.0, "/F1", 14.0, "A dark theme layer.", (0.9, 0.92, 0.95)),
   )
   ops.push(OpEMC)
 
@@ -343,7 +339,7 @@ fn layers_ops() -> Array[@pdfops.Op] {
       24.0,
       "Optional Content Groups (Layers)",
       (0.98, 0.98, 0.985),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -353,7 +349,7 @@ fn layers_ops() -> Array[@pdfops.Op] {
       11.0,
       "Toggle DAY/NIGHT in the viewer's layers panel.",
       (0.9, 0.92, 0.95),
-    )[:],
+    ),
   )
   ops
 }
@@ -361,9 +357,9 @@ fn layers_ops() -> Array[@pdfops.Op] {
 ///|
 fn map_ops() -> Array[@pdfops.Op] {
   let ops : Array[@pdfops.Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.99, 0.985, 0.97))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.99, 0.985, 0.97)))
   ops.append(
-    ops_text(54.0, 800.0, "/F0", 26.0, "Clickable Map", (0.12, 0.14, 0.18))[:],
+    ops_text(54.0, 800.0, "/F0", 26.0, "Clickable Map", (0.12, 0.14, 0.18)),
   )
   ops.append(
     ops_text(
@@ -373,7 +369,7 @@ fn map_ops() -> Array[@pdfops.Op] {
       13.0,
       "These cards are backed by PDF link annotations (GoTo/URI).",
       (0.25, 0.28, 0.32),
-    )[:],
+    ),
   )
   let cards : Array[(Double, Double, String, String, (Double, Double, Double))] = [
     (54.0, 620.0, "Go: Spirograph", "Page 2", (0.9, 0.3, 0.35)),
@@ -384,16 +380,16 @@ fn map_ops() -> Array[@pdfops.Op] {
   ]
   for card in cards {
     let (x, y, title, subtitle, accent) = card
-    ops.append(ops_fill_rect(x, y, 231.0, 140.0, (1.0, 1.0, 1.0))[:])
-    ops.append(ops_stroke_rect(x, y, 231.0, 140.0, (0.2, 0.22, 0.26), 1.2)[:])
-    ops.append(ops_fill_rect(x, y + 134.0, 231.0, 6.0, accent)[:])
+    ops.append(ops_fill_rect(x, y, 231.0, 140.0, (1.0, 1.0, 1.0)))
+    ops.append(ops_stroke_rect(x, y, 231.0, 140.0, (0.2, 0.22, 0.26), 1.2))
+    ops.append(ops_fill_rect(x, y + 134.0, 231.0, 6.0, accent))
     ops.append(
-      ops_text(x + 16.0, y + 92.0, "/F0", 16.0, title, (0.15, 0.17, 0.2))[:],
+      ops_text(x + 16.0, y + 92.0, "/F0", 16.0, title, (0.15, 0.17, 0.2)),
     )
     ops.append(
-      ops_text(x + 16.0, y + 66.0, "/F2", 12.0, subtitle, (0.35, 0.38, 0.42))[:],
+      ops_text(x + 16.0, y + 66.0, "/F2", 12.0, subtitle, (0.35, 0.38, 0.42)),
     )
-    ops.append(ops_text(x + 16.0, y + 24.0, "/F2", 10.0, "Click me", accent)[:])
+    ops.append(ops_text(x + 16.0, y + 24.0, "/F2", 10.0, "Click me", accent))
   }
   ops
 }
@@ -401,9 +397,9 @@ fn map_ops() -> Array[@pdfops.Op] {
 ///|
 fn comic_ops() -> Array[@pdfops.Op] {
   let ops : Array[@pdfops.Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (1.0, 1.0, 1.0))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (1.0, 1.0, 1.0)))
   ops.append(
-    ops_text(54.0, 800.0, "/F0", 24.0, "Tiny PDF Comic", (0.12, 0.14, 0.18))[:],
+    ops_text(54.0, 800.0, "/F0", 24.0, "Tiny PDF Comic", (0.12, 0.14, 0.18)),
   )
   let panels : Array[(Double, Double, Double, Double)] = [
     (54.0, 520.0, 487.0, 220.0),
@@ -412,38 +408,38 @@ fn comic_ops() -> Array[@pdfops.Op] {
   ]
   for panel in panels {
     let (x, y, w, h) = panel
-    ops.append(ops_stroke_rect(x, y, w, h, (0.1, 0.1, 0.1), 2.0)[:])
+    ops.append(ops_stroke_rect(x, y, w, h, (0.1, 0.1, 0.1), 2.0))
   }
 
   // Speech bubble (panel 1)
   ops.append(
-    ops_fill_polygon(circle_points(180.0, 680.0, 56.0, 40), (1.0, 1.0, 1.0))[:],
+    ops_fill_polygon(circle_points(180.0, 680.0, 56.0, 40), (1.0, 1.0, 1.0)),
   )
   ops.append(
     ops_stroke_polyline(
       circle_points(180.0, 680.0, 56.0, 40),
       (0.1, 0.1, 0.1),
       1.5,
-    )[:],
+    ),
   )
   ops.append(
     ops_fill_polygon(
       [(210.0, 642.0), (240.0, 612.0), (204.0, 624.0)],
       (1.0, 1.0, 1.0),
-    )[:],
+    ),
   )
   ops.append(
     ops_stroke_polyline(
       [(210.0, 642.0), (240.0, 612.0), (204.0, 624.0), (210.0, 642.0)],
       (0.1, 0.1, 0.1),
       1.5,
-    )[:],
+    ),
   )
   ops.append(
-    ops_text(140.0, 688.0, "/F1", 12.0, "This is just ops.", (0.12, 0.14, 0.18))[:],
+    ops_text(140.0, 688.0, "/F1", 12.0, "This is just ops.", (0.12, 0.14, 0.18)),
   )
   ops.append(
-    ops_text(144.0, 668.0, "/F1", 12.0, "No raster images.", (0.12, 0.14, 0.18))[:],
+    ops_text(144.0, 668.0, "/F1", 12.0, "No raster images.", (0.12, 0.14, 0.18)),
   )
 
   // Panel 2: a simple "burst"
@@ -453,9 +449,9 @@ fn comic_ops() -> Array[@pdfops.Op] {
     let r = if i % 2 == 0 { 70.0 } else { 35.0 }
     burst.push((300.0 + r * @math.cos(t), 380.0 + r * @math.sin(t)))
   }
-  ops.append(ops_fill_polygon(burst, (1.0, 0.92, 0.2))[:])
-  ops.append(ops_stroke_polyline(burst + [burst[0]], (0.2, 0.18, 0.05), 2.0)[:])
-  ops.append(ops_text(250.0, 374.0, "/F0", 18.0, "BANG!", (0.2, 0.18, 0.05))[:])
+  ops.append(ops_fill_polygon(burst, (1.0, 0.92, 0.2)))
+  ops.append(ops_stroke_polyline(burst + [burst[0]], (0.2, 0.18, 0.05), 2.0))
+  ops.append(ops_text(250.0, 374.0, "/F0", 18.0, "BANG!", (0.2, 0.18, 0.05)))
 
   // Panel 3: diagonal caption
   ops.append(
@@ -467,7 +463,7 @@ fn comic_ops() -> Array[@pdfops.Op] {
       "Rotate text with OpTm",
       (0.15, 0.17, 0.2),
       rotate_rad=0.35,
-    )[:],
+    ),
   )
   ops
 }
@@ -475,9 +471,9 @@ fn comic_ops() -> Array[@pdfops.Op] {
 ///|
 fn stickers_ops() -> Array[@pdfops.Op] {
   let ops : Array[@pdfops.Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.97, 0.98, 0.99))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.97, 0.98, 0.99)))
   ops.append(
-    ops_text(54.0, 800.0, "/F0", 24.0, "Vector Stickers", (0.12, 0.14, 0.18))[:],
+    ops_text(54.0, 800.0, "/F0", 24.0, "Vector Stickers", (0.12, 0.14, 0.18)),
   )
   ops.append(
     ops_text(
@@ -487,7 +483,7 @@ fn stickers_ops() -> Array[@pdfops.Op] {
       13.0,
       "Everything here is rectangles, polylines, and polygons.",
       (0.25, 0.28, 0.32),
-    )[:],
+    ),
   )
   let centers : Array[(Double, Double, (Double, Double, Double))] = [
     (150.0, 600.0, (0.95, 0.3, 0.35)),
@@ -500,11 +496,11 @@ fn stickers_ops() -> Array[@pdfops.Op] {
   for c in centers {
     let (cx, cy, accent) = c
     let outline = circle_points(cx, cy, 78.0, 50)
-    ops.append(ops_fill_polygon(outline, (1.0, 1.0, 1.0))[:])
+    ops.append(ops_fill_polygon(outline, (1.0, 1.0, 1.0)))
     ops.append(
-      ops_stroke_polyline(outline + [outline[0]], (0.2, 0.22, 0.26), 1.5)[:],
+      ops_stroke_polyline(outline + [outline[0]], (0.2, 0.22, 0.26), 1.5),
     )
-    ops.append(ops_fill_rect(cx - 78.0, cy + 70.0, 156.0, 8.0, accent)[:])
+    ops.append(ops_fill_rect(cx - 78.0, cy + 70.0, 156.0, 8.0, accent))
   }
 
   // Star sticker
@@ -514,20 +510,20 @@ fn stickers_ops() -> Array[@pdfops.Op] {
     let r = if i % 2 == 0 { 46.0 } else { 20.0 }
     star.push((150.0 + r * @math.cos(t), 600.0 + r * @math.sin(t)))
   }
-  ops.append(ops_fill_polygon(star, (0.95, 0.75, 0.2))[:])
+  ops.append(ops_fill_polygon(star, (0.95, 0.75, 0.2)))
 
   // Heart sticker (two circles + triangle-ish)
   ops.append(
-    ops_fill_polygon(circle_points(282.0, 615.0, 22.0, 30), (0.95, 0.3, 0.35))[:],
+    ops_fill_polygon(circle_points(282.0, 615.0, 22.0, 30), (0.95, 0.3, 0.35)),
   )
   ops.append(
-    ops_fill_polygon(circle_points(314.0, 615.0, 22.0, 30), (0.95, 0.3, 0.35))[:],
+    ops_fill_polygon(circle_points(314.0, 615.0, 22.0, 30), (0.95, 0.3, 0.35)),
   )
   ops.append(
     ops_fill_polygon(
       [(264.0, 612.0), (332.0, 612.0), (298.0, 564.0)],
       (0.95, 0.3, 0.35),
-    )[:],
+    ),
   )
 
   // Lightning bolt sticker
@@ -539,16 +535,16 @@ fn stickers_ops() -> Array[@pdfops.Op] {
     (468.0, 604.0),
     (444.0, 604.0),
   ]
-  ops.append(ops_fill_polygon(bolt, (0.25, 0.55, 0.9))[:])
+  ops.append(ops_fill_polygon(bolt, (0.25, 0.55, 0.9)))
   ops
 }
 
 ///|
 fn credits_ops() -> Array[@pdfops.Op] {
   let ops : Array[@pdfops.Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.06, 0.07, 0.1))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.06, 0.07, 0.1)))
   ops.append(
-    ops_text(54.0, 790.0, "/F0", 26.0, "Credits / Links", (0.95, 0.96, 0.98))[:],
+    ops_text(54.0, 790.0, "/F0", 26.0, "Credits / Links", (0.95, 0.96, 0.98)),
   )
   ops.append(
     ops_text(
@@ -558,7 +554,7 @@ fn credits_ops() -> Array[@pdfops.Op] {
       14.0,
       "Generated entirely with mbtpdf + PDF content stream operators.",
       (0.8, 0.84, 0.9),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -568,7 +564,7 @@ fn credits_ops() -> Array[@pdfops.Op] {
       12.0,
       "Click: https://docs.moonbitlang.com",
       (0.8, 0.84, 0.9),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -578,7 +574,7 @@ fn credits_ops() -> Array[@pdfops.Op] {
       11.0,
       "Tip: if you modify this demo, run: moon info && moon fmt && moon test",
       (0.6, 0.64, 0.7),
-    )[:],
+    ),
   )
   ops
 }
@@ -611,18 +607,18 @@ fn set_catalog_entry(
 ///|
 fn add_day_night_layers(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
   let ocg_day : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("DAY")),
   ])
   let ocg_night : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("NIGHT")),
   ])
   let day_num = pdf.addobj(ocg_day)
   let night_num = pdf.addobj(ocg_night)
   let default_dict : @pdf.PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/ON"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/ON"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
     ("/OFF", PdfArray([Indirect(night_num)])),
     ("/ON", PdfArray([Indirect(day_num)])),
@@ -688,12 +684,12 @@ fn add_bookmarks(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
 ///|
 fn goto_action(refnum : Int) -> @pdf.PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
 
 ///|
 fn uri_action(uri : String) -> @pdf.PdfObject {
-  Dictionary([("/S", Name(PdfName("/URI"))), ("/URI", PdfString(uri))])
+  Dictionary([("/S", Name(PdfName(b"/URI"))), ("/URI", PdfString(uri))])
 }
 
 ///|

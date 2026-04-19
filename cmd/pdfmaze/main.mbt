@@ -45,8 +45,8 @@ fn hsv_to_rgb(h : Double, s : Double, v : Double) -> (Double, Double, Double) {
 ///|
 fn font_type1(base_font : String) -> PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
   ])
 }
@@ -146,7 +146,7 @@ fn ops_crosshatch(
     } else {
       (x0, y0, x + (i - h), y + h)
     }
-    ops.append(ops_stroke_line(sx0, sy0, sx1, sy1, rgb, width)[:])
+    ops.append(ops_stroke_line(sx0, sy0, sx1, sy1, rgb, width))
     i = i + step
   }
   let mut j = 0.0
@@ -162,7 +162,7 @@ fn ops_crosshatch(
     } else {
       (x0, y0, x + (j - h), y)
     }
-    ops.append(ops_stroke_line(sx0, sy0, sx1, sy1, rgb, width)[:])
+    ops.append(ops_stroke_line(sx0, sy0, sx1, sy1, rgb, width))
     j = j + step
   }
   ops
@@ -455,18 +455,18 @@ fn set_catalog_entry(
 ///|
 fn add_layers(pdf : @pdf.Pdf) -> (Int, Int) raise {
   let fog : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("FOG")),
   ])
   let solution : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("SOLUTION")),
   ])
   let fog_num = pdf.addobj(fog)
   let sol_num = pdf.addobj(solution)
   let default_dict : PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/ON"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/ON"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
     ("/ON", PdfArray([Indirect(fog_num)])),
     ("/OFF", PdfArray([Indirect(sol_num)])),
@@ -508,7 +508,7 @@ fn add_layer_properties_to_pages(
 ///|
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
 
 ///|
@@ -545,16 +545,16 @@ fn page_of_ops(ops : Array[Op]) -> @pdfpage.Page raise {
 ///|
 fn cover_ops(seed : UInt) -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.06, 0.07, 0.1))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.06, 0.07, 0.1)))
   for i in 0..<20 {
     let t = i.to_double() / 19.0
     let rgb = hsv_to_rgb(210.0 - 140.0 * t, 0.75, 0.95)
     ops.append(
-      ops_fill_rect(0.0, 720.0 - 12.0 * i.to_double(), 595.0, 10.0, rgb)[:],
+      ops_fill_rect(0.0, 720.0 - 12.0 * i.to_double(), 595.0, 10.0, rgb),
     )
   }
   ops.append(
-    ops_text(54.0, 760.0, "/F0", 36.0, "PDF Escape Maze", (0.95, 0.96, 0.98))[:],
+    ops_text(54.0, 760.0, "/F0", 36.0, "PDF Escape Maze", (0.95, 0.96, 0.98)),
   )
   ops.append(
     ops_text(
@@ -564,7 +564,7 @@ fn cover_ops(seed : UInt) -> Array[Op] {
       14.0,
       "A clickable maze: each door is a link to another room.",
       (0.8, 0.84, 0.9),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -574,7 +574,7 @@ fn cover_ops(seed : UInt) -> Array[Op] {
       14.0,
       "Open the Bookmarks panel for quick jumps.",
       (0.8, 0.84, 0.9),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -584,7 +584,7 @@ fn cover_ops(seed : UInt) -> Array[Op] {
       14.0,
       "Open the Layers panel to toggle FOG and SOLUTION.",
       (0.8, 0.84, 0.9),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -594,7 +594,7 @@ fn cover_ops(seed : UInt) -> Array[Op] {
       12.0,
       "Seed: " + seed.to_string(),
       (0.6, 0.64, 0.7),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -604,7 +604,7 @@ fn cover_ops(seed : UInt) -> Array[Op] {
       12.0,
       "Start in Room 1. Find the Exit.",
       (0.6, 0.64, 0.7),
-    )[:],
+    ),
   )
   ops
 }
@@ -622,7 +622,7 @@ fn room_ops(
   next_hint? : Dir? = None,
 ) -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.985, 0.985, 0.99))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.985, 0.985, 0.99)))
   let title = if is_exit {
     "Room " + room_idx_1.to_string() + " • EXIT"
   } else if is_start {
@@ -630,7 +630,7 @@ fn room_ops(
   } else {
     "Room " + room_idx_1.to_string()
   }
-  ops.append(ops_text(54.0, 800.0, "/F0", 24.0, title, (0.12, 0.14, 0.18))[:])
+  ops.append(ops_text(54.0, 800.0, "/F0", 24.0, title, (0.12, 0.14, 0.18)))
   ops.append(
     ops_text(
       54.0,
@@ -647,7 +647,7 @@ fn room_ops(
       y.to_string() +
       ")",
       (0.35, 0.38, 0.42),
-    )[:],
+    ),
   )
 
   // Room frame
@@ -655,8 +655,8 @@ fn room_ops(
   let ry = 280.0
   let rw = 355.0
   let rh = 410.0
-  ops.append(ops_fill_rect(rx, ry, rw, rh, (1.0, 1.0, 1.0))[:])
-  ops.append(ops_stroke_rect(rx, ry, rw, rh, (0.15, 0.17, 0.2), 2.0)[:])
+  ops.append(ops_fill_rect(rx, ry, rw, rh, (1.0, 1.0, 1.0)))
+  ops.append(ops_stroke_rect(rx, ry, rw, rh, (0.15, 0.17, 0.2), 2.0))
 
   // Door gaps
   let door_w = 86.0
@@ -666,31 +666,29 @@ fn room_ops(
   let hole = (0.985, 0.985, 0.99)
   if cell.open_n {
     ops.append(
-      ops_fill_rect(cx - door_w / 2.0, ry + rh - 2.0, door_w, door_h, hole)[:],
+      ops_fill_rect(cx - door_w / 2.0, ry + rh - 2.0, door_w, door_h, hole),
     )
   }
   if cell.open_s {
     ops.append(
-      ops_fill_rect(cx - door_w / 2.0, ry - door_h + 2.0, door_w, door_h, hole)[:],
+      ops_fill_rect(cx - door_w / 2.0, ry - door_h + 2.0, door_w, door_h, hole),
     )
   }
   if cell.open_e {
     ops.append(
-      ops_fill_rect(rx + rw - 2.0, cy - door_w / 2.0, door_h, door_w, hole)[:],
+      ops_fill_rect(rx + rw - 2.0, cy - door_w / 2.0, door_h, door_w, hole),
     )
   }
   if cell.open_w {
     ops.append(
-      ops_fill_rect(rx - door_h + 2.0, cy - door_w / 2.0, door_h, door_w, hole)[:],
+      ops_fill_rect(rx - door_h + 2.0, cy - door_w / 2.0, door_h, door_w, hole),
     )
   }
 
   // Icons indicating available doors
   let accent_on = (0.25, 0.55, 0.9)
   let accent_off = (0.78, 0.8, 0.84)
-  ops.append(
-    ops_text(56.0, 720.0, "/F2", 11.0, "Doors:", (0.35, 0.38, 0.42))[:],
-  )
+  ops.append(ops_text(56.0, 720.0, "/F2", 11.0, "Doors:", (0.35, 0.38, 0.42)))
   ops.append(
     ops_text(
       120.0,
@@ -703,7 +701,7 @@ fn room_ops(
       } else {
         accent_off
       },
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -717,7 +715,7 @@ fn room_ops(
       } else {
         accent_off
       },
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -731,7 +729,7 @@ fn room_ops(
       } else {
         accent_off
       },
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -745,19 +743,19 @@ fn room_ops(
       } else {
         accent_off
       },
-    )[:],
+    ),
   )
 
   // Fog layer: soft crosshatch overlay
-  ops.push(OpBDC("/OC", Name(PdfName("/FOG"))))
-  ops.append(ops_crosshatch(rx, ry, rw, rh, 18.0, (0.92, 0.93, 0.95), 0.5)[:])
+  ops.push(OpBDC("/OC", Name(PdfName(b"/FOG"))))
+  ops.append(ops_crosshatch(rx, ry, rw, rh, 18.0, (0.92, 0.93, 0.95), 0.5))
   ops.push(OpEMC)
 
   // Solution layer: hint arrow
   match next_hint {
     None => ()
     Some(d) => {
-      ops.push(OpBDC("/OC", Name(PdfName("/SOLUTION"))))
+      ops.push(OpBDC("/OC", Name(PdfName(b"/SOLUTION"))))
       let arrow_color = (0.95, 0.3, 0.35)
       let ax0 = cx
       let ay0 = cy
@@ -767,7 +765,7 @@ fn room_ops(
         E => (rx + rw - 40.0, cy)
         W => (rx + 40.0, cy)
       }
-      ops.append(ops_stroke_line(ax0, ay0, ax1, ay1, arrow_color, 4.0)[:])
+      ops.append(ops_stroke_line(ax0, ay0, ax1, ay1, arrow_color, 4.0))
       ops.append(
         ops_text(
           54.0,
@@ -776,7 +774,7 @@ fn room_ops(
           11.0,
           "SOLUTION hint: follow the red arrow.",
           (0.55, 0.58, 0.62),
-        )[:],
+        ),
       )
       ops.push(OpEMC)
     }
@@ -791,7 +789,7 @@ fn room_ops(
       10.0,
       "Tip: click doors; use Back in your viewer too.",
       (0.55, 0.58, 0.62),
-    )[:],
+    ),
   )
   ops
 }
@@ -804,7 +802,7 @@ fn draw_map_ops(
   path : Array[Int],
 ) -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.99, 0.985, 0.97))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.99, 0.985, 0.97)))
   ops.append(
     ops_text(
       54.0,
@@ -813,7 +811,7 @@ fn draw_map_ops(
       26.0,
       "Maze Map (Clickable)",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -823,24 +821,24 @@ fn draw_map_ops(
       13.0,
       "Click a tile to jump to that room.",
       (0.25, 0.28, 0.32),
-    )[:],
+    ),
   )
   let gx = 54.0
   let gy = 160.0
   let gw = 487.0
   let gh = 560.0
-  ops.append(ops_stroke_rect(gx, gy, gw, gh, (0.2, 0.22, 0.26), 1.5)[:])
+  ops.append(ops_stroke_rect(gx, gy, gw, gh, (0.2, 0.22, 0.26), 1.5))
   let cell_w = gw / maze.w.to_double()
   let cell_h = gh / maze.h.to_double()
 
   // Grid lines
   for i in 1..<maze.w {
     let x = gx + cell_w * i.to_double()
-    ops.append(ops_stroke_line(x, gy, x, gy + gh, (0.85, 0.86, 0.88), 1.0)[:])
+    ops.append(ops_stroke_line(x, gy, x, gy + gh, (0.85, 0.86, 0.88), 1.0))
   }
   for j in 1..<maze.h {
     let y = gy + cell_h * j.to_double()
-    ops.append(ops_stroke_line(gx, y, gx + gw, y, (0.85, 0.86, 0.88), 1.0)[:])
+    ops.append(ops_stroke_line(gx, y, gx + gw, y, (0.85, 0.86, 0.88), 1.0))
   }
 
   // Carved corridors
@@ -853,12 +851,12 @@ fn draw_map_ops(
       let my = cy + cell_h / 2.0
       if cell.open_n {
         ops.append(
-          ops_stroke_line(mx, my, mx, cy + cell_h, (0.2, 0.22, 0.26), 2.0)[:],
+          ops_stroke_line(mx, my, mx, cy + cell_h, (0.2, 0.22, 0.26), 2.0),
         )
       }
       if cell.open_e {
         ops.append(
-          ops_stroke_line(mx, my, cx + cell_w, my, (0.2, 0.22, 0.26), 2.0)[:],
+          ops_stroke_line(mx, my, cx + cell_w, my, (0.2, 0.22, 0.26), 2.0),
         )
       }
     }
@@ -876,7 +874,7 @@ fn draw_map_ops(
       cell_w,
       cell_h,
       (0.85, 0.95, 0.9),
-    )[:],
+    ),
   )
   ops.append(
     ops_fill_rect(
@@ -885,7 +883,7 @@ fn draw_map_ops(
       cell_w,
       cell_h,
       (0.98, 0.88, 0.88),
-    )[:],
+    ),
   )
 
   // Labels (after fills)
@@ -897,7 +895,7 @@ fn draw_map_ops(
       10.0,
       "START",
       (0.1, 0.12, 0.14),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -907,11 +905,11 @@ fn draw_map_ops(
       10.0,
       "EXIT",
       (0.1, 0.12, 0.14),
-    )[:],
+    ),
   )
 
   // Solution path (layer)
-  ops.push(OpBDC("/OC", Name(PdfName("/SOLUTION"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/SOLUTION"))))
   for i in 0..<(path.length() - 1) {
     let a = path[i]
     let b = path[i + 1]
@@ -923,7 +921,7 @@ fn draw_map_ops(
     let y0 = gy + (ay.to_double() + 0.5) * cell_h
     let x1 = gx + (bx.to_double() + 0.5) * cell_w
     let y1 = gy + (by.to_double() + 0.5) * cell_h
-    ops.append(ops_stroke_line(x0, y0, x1, y1, (0.95, 0.3, 0.35), 4.0)[:])
+    ops.append(ops_stroke_line(x0, y0, x1, y1, (0.95, 0.3, 0.35), 4.0))
   }
   ops.push(OpEMC)
   ops.append(
@@ -934,7 +932,7 @@ fn draw_map_ops(
       11.0,
       "Layer tips: turn off FOG for clarity; turn on SOLUTION for the red route.",
       (0.25, 0.28, 0.32),
-    )[:],
+    ),
   )
   ops
 }

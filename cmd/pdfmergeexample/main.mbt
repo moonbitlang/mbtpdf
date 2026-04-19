@@ -10,7 +10,7 @@ fn merge_pdfs(pdfs : Array[@pdf.Pdf]) -> @pdf.Pdf raise {
   let pages = Array::new()
   for pdf in renumbered {
     let pagelist = @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree()
-    pages.append(pagelist[:])
+    pages.append(pagelist)
   }
   let pdf = @pdf.Pdf::empty()
   for src in renumbered {

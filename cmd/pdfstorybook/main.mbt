@@ -7,8 +7,8 @@ type Op = @pdfops.Op
 ///|
 fn font_type1(base_font : String) -> PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
   ])
 }
@@ -109,11 +109,11 @@ fn ops_button(
   accent : (Double, Double, Double),
 ) -> (Array[Op], (Double, Double, Double, Double)) {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0))[:])
-  ops.append(ops_stroke_rect(x, y, ww, hh, accent, 2.0)[:])
-  ops.append(ops_fill_rect(x, y + hh - 6.0, ww, 6.0, accent)[:])
+  ops.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0)))
+  ops.append(ops_stroke_rect(x, y, ww, hh, accent, 2.0))
+  ops.append(ops_fill_rect(x, y + hh - 6.0, ww, 6.0, accent))
   ops.append(
-    ops_text(x + 14.0, y + 16.0, "/F0", 16.0, label, (0.12, 0.14, 0.18))[:],
+    ops_text(x + 14.0, y + 16.0, "/F0", 16.0, label, (0.12, 0.14, 0.18)),
   )
   (ops, (x, y, x + ww, y + hh))
 }
@@ -134,12 +134,12 @@ fn ops_robot(cx : Double, cy : Double, s : Double) -> Array[Op] {
       body_w,
       10.0 * s,
       (0.88, 0.9, 0.92),
-    )[:],
+    ),
   )
 
   // Body
   ops.append(
-    ops_fill_rect(cx - body_w / 2.0, cy, body_w, body_h, (0.92, 0.95, 0.98))[:],
+    ops_fill_rect(cx - body_w / 2.0, cy, body_w, body_h, (0.92, 0.95, 0.98)),
   )
   ops.append(
     ops_stroke_rect(
@@ -149,7 +149,7 @@ fn ops_robot(cx : Double, cy : Double, s : Double) -> Array[Op] {
       body_h,
       (0.2, 0.22, 0.26),
       2.0,
-    )[:],
+    ),
   )
 
   // Head
@@ -160,7 +160,7 @@ fn ops_robot(cx : Double, cy : Double, s : Double) -> Array[Op] {
       head_w,
       head_h,
       (1.0, 1.0, 1.0),
-    )[:],
+    ),
   )
   ops.append(
     ops_stroke_rect(
@@ -170,7 +170,7 @@ fn ops_robot(cx : Double, cy : Double, s : Double) -> Array[Op] {
       head_h,
       (0.2, 0.22, 0.26),
       2.0,
-    )[:],
+    ),
   )
 
   // Antenna
@@ -182,7 +182,7 @@ fn ops_robot(cx : Double, cy : Double, s : Double) -> Array[Op] {
       cy + body_h + 16.0 * s + head_h + 30.0 * s,
       (0.2, 0.22, 0.26),
       2.0,
-    )[:],
+    ),
   )
   ops.append(
     ops_fill_rect(
@@ -191,7 +191,7 @@ fn ops_robot(cx : Double, cy : Double, s : Double) -> Array[Op] {
       10.0 * s,
       10.0 * s,
       (0.92, 0.33, 0.36),
-    )[:],
+    ),
   )
 
   // Eyes
@@ -202,7 +202,7 @@ fn ops_robot(cx : Double, cy : Double, s : Double) -> Array[Op] {
       34.0 * s,
       14.0 * s,
       (0.18, 0.48, 0.86),
-    )[:],
+    ),
   )
   ops.append(
     ops_fill_rect(
@@ -211,7 +211,7 @@ fn ops_robot(cx : Double, cy : Double, s : Double) -> Array[Op] {
       34.0 * s,
       14.0 * s,
       (0.18, 0.48, 0.86),
-    )[:],
+    ),
   )
 
   // Chest panel
@@ -222,7 +222,7 @@ fn ops_robot(cx : Double, cy : Double, s : Double) -> Array[Op] {
       92.0 * s,
       44.0 * s,
       (1.0, 1.0, 1.0),
-    )[:],
+    ),
   )
   ops.append(
     ops_stroke_rect(
@@ -232,7 +232,7 @@ fn ops_robot(cx : Double, cy : Double, s : Double) -> Array[Op] {
       44.0 * s,
       (0.78, 0.8, 0.84),
       1.0,
-    )[:],
+    ),
   )
   ops.append(
     ops_fill_rect(
@@ -241,7 +241,7 @@ fn ops_robot(cx : Double, cy : Double, s : Double) -> Array[Op] {
       20.0 * s,
       12.0 * s,
       (0.92, 0.33, 0.36),
-    )[:],
+    ),
   )
   ops.append(
     ops_fill_rect(
@@ -250,7 +250,7 @@ fn ops_robot(cx : Double, cy : Double, s : Double) -> Array[Op] {
       20.0 * s,
       12.0 * s,
       (0.18, 0.48, 0.86),
-    )[:],
+    ),
   )
   ops.append(
     ops_fill_rect(
@@ -259,7 +259,7 @@ fn ops_robot(cx : Double, cy : Double, s : Double) -> Array[Op] {
       20.0 * s,
       12.0 * s,
       (0.22, 0.7, 0.5),
-    )[:],
+    ),
   )
   ops
 }
@@ -292,13 +292,13 @@ fn set_catalog_entry(
 ///|
 fn add_spoilers_layer(pdf : @pdf.Pdf) -> Int raise {
   let ocg : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("SPOILERS")),
   ])
   let ocg_num = pdf.addobj(ocg)
   let default_dict : PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/OFF"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/OFF"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
   ])
   let ocprops : PdfObject = Dictionary([
@@ -334,7 +334,7 @@ fn add_spoilers_properties_to_pages(
 ///|
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
 
 ///|
@@ -388,8 +388,8 @@ fn add_bookmarks(pdf : @pdf.Pdf, refs : Array[Int]) -> @pdf.Pdf raise {
 ///|
 fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.97, 0.98, 0.99))[:])
-  ops.append(ops_fill_rect(0.0, h() - 120.0, w(), 120.0, (0.18, 0.48, 0.86))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.97, 0.98, 0.99)))
+  ops.append(ops_fill_rect(0.0, h() - 120.0, w(), 120.0, (0.18, 0.48, 0.86)))
   ops.append(
     ops_text(
       72.0,
@@ -398,7 +398,7 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
       44.0,
       "The Button Kingdom",
       (1.0, 1.0, 1.0),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -408,9 +408,9 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
       16.0,
       "A tiny choose-your-own-adventure PDF",
       (0.92, 0.94, 0.98),
-    )[:],
+    ),
   )
-  ops.append(ops_robot(w() - 220.0, 140.0, 1.0)[:])
+  ops.append(ops_robot(w() - 220.0, 140.0, 1.0))
   ops.append(
     ops_text(
       72.0,
@@ -419,7 +419,7 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
       18.0,
       "Click to start. No spoilers... unless you enable the SPOILERS layer.",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   let (btn_ops, rect) = ops_button(
     72.0,
@@ -429,17 +429,15 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
     "Start the story",
     (0.92, 0.33, 0.36),
   )
-  ops.append(btn_ops[:])
+  ops.append(btn_ops)
   (ops, rect)
 }
 
 ///|
 fn map_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.99, 0.985, 0.97))[:])
-  ops.append(
-    ops_text(72.0, h() - 70.0, "/F0", 36.0, "Map", (0.12, 0.14, 0.18))[:],
-  )
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.99, 0.985, 0.97)))
+  ops.append(ops_text(72.0, h() - 70.0, "/F0", 36.0, "Map", (0.12, 0.14, 0.18)))
   ops.append(
     ops_text(
       72.0,
@@ -448,7 +446,7 @@ fn map_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
       16.0,
       "Pick a scene (they’re clickable).",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
   let cards : Array[(String, Int, Double, Double, (Double, Double, Double))] = [
     ("Crossroads", 2, 72.0, 310.0, (0.18, 0.48, 0.86)),
@@ -462,10 +460,10 @@ fn map_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
   for c in cards {
     let (title, page_i, x, y, accent) = c
     let (btn_ops, rect) = ops_button(x, y, 260.0, 88.0, title, accent)
-    ops.append(btn_ops[:])
+    ops.append(btn_ops)
     links.push((page_i, rect))
   }
-  ops.push(OpBDC("/OC", Name(PdfName("/SPOILERS"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/SPOILERS"))))
   ops.append(
     ops_text(
       72.0,
@@ -474,7 +472,7 @@ fn map_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
       11.0,
       "SPOILERS: Best path is Crossroads → Forest → Cave → The End.",
       (0.2, 0.18, 0.05),
-    )[:],
+    ),
   )
   ops.push(OpEMC)
   (ops, links)
@@ -489,16 +487,16 @@ fn scene_ops(
   choices : Array[(String, Int)],
 ) -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.985, 0.985, 0.99))[:])
-  ops.append(ops_fill_rect(0.0, h() - 84.0, w(), 84.0, accent)[:])
-  ops.append(ops_text(72.0, h() - 52.0, "/F0", 30.0, title, (1.0, 1.0, 1.0))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.985, 0.985, 0.99)))
+  ops.append(ops_fill_rect(0.0, h() - 84.0, w(), 84.0, accent))
+  ops.append(ops_text(72.0, h() - 52.0, "/F0", 30.0, title, (1.0, 1.0, 1.0)))
   ops.append(
-    ops_text(72.0, h() - 74.0, "/F1", 14.0, subtitle, (0.92, 0.94, 0.98))[:],
+    ops_text(72.0, h() - 74.0, "/F1", 14.0, subtitle, (0.92, 0.94, 0.98)),
   )
-  ops.append(ops_robot(w() - 240.0, 110.0, 0.9)[:])
+  ops.append(ops_robot(w() - 240.0, 110.0, 0.9))
   let mut y = h() - 140.0
   for line in body {
-    ops.append(ops_text(72.0, y, "/F1", 18.0, line, (0.12, 0.14, 0.18))[:])
+    ops.append(ops_text(72.0, y, "/F1", 18.0, line, (0.12, 0.14, 0.18)))
     y = y - 28.0
   }
   let links : Array[(Int, (Double, Double, Double, Double))] = Array::new()
@@ -513,7 +511,7 @@ fn scene_ops(
       label,
       (0.92, 0.33, 0.36),
     )
-    ops.append(btn_ops[:])
+    ops.append(btn_ops)
     links.push((target, rect))
     by = by + 70.0
   }
@@ -527,7 +525,7 @@ fn scene_ops(
     "Map",
     (1.0, 1.0, 1.0),
   )
-  ops.append(map_ops[:])
+  ops.append(map_ops)
   links.push((1, map_rect))
   (ops, links)
 }

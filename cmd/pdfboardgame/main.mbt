@@ -13,8 +13,8 @@ const ROWS : Int = 3
 ///|
 fn font_type1(base_font : String) -> PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
   ])
 }
@@ -162,11 +162,11 @@ fn ops_button(
   accent : (Double, Double, Double),
 ) -> (Array[Op], (Double, Double, Double, Double)) {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(x, y, w, h, (1.0, 1.0, 1.0))[:])
-  ops.append(ops_stroke_rect(x, y, w, h, accent, 2.0)[:])
-  ops.append(ops_fill_rect(x, y + h - 6.0, w, 6.0, accent)[:])
+  ops.append(ops_fill_rect(x, y, w, h, (1.0, 1.0, 1.0)))
+  ops.append(ops_stroke_rect(x, y, w, h, accent, 2.0))
+  ops.append(ops_fill_rect(x, y + h - 6.0, w, 6.0, accent))
   ops.append(
-    ops_text(x + 12.0, y + 14.0, "/F0", 14.0, label, (0.12, 0.14, 0.18))[:],
+    ops_text(x + 12.0, y + 14.0, "/F0", 14.0, label, (0.12, 0.14, 0.18)),
   )
   (ops, (x, y, x + w, y + h))
 }
@@ -199,18 +199,18 @@ fn set_catalog_entry(
 ///|
 fn add_layers(pdf : @pdf.Pdf) -> (Int, Int) raise {
   let hints : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("HINTS")),
   ])
   let solution : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("SOLUTION")),
   ])
   let hints_num = pdf.addobj(hints)
   let solution_num = pdf.addobj(solution)
   let default_dict : PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/ON"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/ON"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
     ("/OFF", PdfArray([Indirect(hints_num), Indirect(solution_num)])),
   ])
@@ -251,7 +251,7 @@ fn add_layer_properties_to_pages(
 ///|
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
 
 ///|
@@ -350,8 +350,8 @@ fn add_bookmarks(
 fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
   let ops : Array[Op] = Array::new()
   let accent = (0.18, 0.48, 0.86)
-  ops.append(ops_fill_rect(0.0, 0.0, page_w(), page_h(), (0.98, 0.98, 0.99))[:])
-  ops.append(ops_fill_rect(0.0, page_h() - 120.0, page_w(), 120.0, accent)[:])
+  ops.append(ops_fill_rect(0.0, 0.0, page_w(), page_h(), (0.98, 0.98, 0.99)))
+  ops.append(ops_fill_rect(0.0, page_h() - 120.0, page_w(), 120.0, accent))
   ops.append(
     ops_text(
       72.0,
@@ -360,7 +360,7 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
       54.0,
       "Mystery Mansion",
       (1.0, 1.0, 1.0),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -370,7 +370,7 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
       18.0,
       "A printable mini escape-room board game",
       (0.92, 0.94, 0.98),
-    )[:],
+    ),
   )
 
   // Big token icon
@@ -378,16 +378,16 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
     ops_fill_polygon(
       circle_points(page_w() - 240.0, 250.0, 110.0, 60),
       (0.92, 0.33, 0.36),
-    )[:],
+    ),
   )
   ops.append(
     ops_fill_polygon(
       circle_points(page_w() - 240.0, 250.0, 82.0, 60),
       (1.0, 1.0, 1.0),
-    )[:],
+    ),
   )
   ops.append(
-    ops_text(page_w() - 286.0, 238.0, "/F0", 28.0, "GO", (0.12, 0.14, 0.18))[:],
+    ops_text(page_w() - 286.0, 238.0, "/F0", 28.0, "GO", (0.12, 0.14, 0.18)),
   )
   ops.append(
     ops_text(
@@ -397,7 +397,7 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
       18.0,
       "Print the Board + Cards, then play with friends.",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -407,7 +407,7 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
       18.0,
       "Or just click around and explore the rooms.",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -417,7 +417,7 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
       12.0,
       "Tip: Layers panel has HINTS and SOLUTION.",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
   let (btn, rect) = ops_button(
     72.0,
@@ -427,14 +427,14 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
     "Start: open the board",
     (0.92, 0.33, 0.36),
   )
-  ops.append(btn[:])
+  ops.append(btn)
   (ops, rect)
 }
 
 ///|
 fn rules_ops() -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, page_w(), page_h(), (1.0, 1.0, 1.0))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, page_w(), page_h(), (1.0, 1.0, 1.0)))
   ops.append(
     ops_text(
       72.0,
@@ -443,7 +443,7 @@ fn rules_ops() -> Array[Op] {
       38.0,
       "How To Play (2–4 players)",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   let lines : Array[String] = [
     "Goal: find the hidden key, unlock the Vault, and escape.", "Setup: print the Board + Clue Cards page. Cut the cards.",
@@ -453,11 +453,11 @@ fn rules_ops() -> Array[Op] {
   let mut y = page_h() - 140.0
   for line in lines {
     ops.append(
-      ops_text(72.0, y, "/F1", 18.0, "• " + line, (0.12, 0.14, 0.18))[:],
+      ops_text(72.0, y, "/F1", 18.0, "• " + line, (0.12, 0.14, 0.18)),
     )
     y = y - 28.0
   }
-  ops.push(OpBDC("/OC", Name(PdfName("/HINTS"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/HINTS"))))
   ops.append(
     ops_text(
       72.0,
@@ -466,7 +466,7 @@ fn rules_ops() -> Array[Op] {
       12.0,
       "HINT: The key is in a room with a round symbol.",
       (0.2, 0.18, 0.05),
-    )[:],
+    ),
   )
   ops.push(OpEMC)
   ops
@@ -475,9 +475,7 @@ fn rules_ops() -> Array[Op] {
 ///|
 fn clue_cards_ops() -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.append(
-    ops_fill_rect(0.0, 0.0, page_w(), page_h(), (0.99, 0.985, 0.97))[:],
-  )
+  ops.append(ops_fill_rect(0.0, 0.0, page_w(), page_h(), (0.99, 0.985, 0.97)))
   ops.append(
     ops_text(
       72.0,
@@ -486,7 +484,7 @@ fn clue_cards_ops() -> Array[Op] {
       38.0,
       "Clue Cards (Print + Cut)",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -496,7 +494,7 @@ fn clue_cards_ops() -> Array[Op] {
       14.0,
       "Shuffle these. Draw one each turn.",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
   let card_w = 250.0
   let card_h = 120.0
@@ -513,10 +511,8 @@ fn clue_cards_ops() -> Array[Op] {
     for c in 0..<3 {
       let x = start_x + c.to_double() * (card_w + gap_x)
       let y = start_y - r.to_double() * (card_h + gap_y) - card_h
-      ops.append(ops_fill_rect(x, y, card_w, card_h, (1.0, 1.0, 1.0))[:])
-      ops.append(
-        ops_stroke_rect(x, y, card_w, card_h, (0.2, 0.22, 0.26), 1.5)[:],
-      )
+      ops.append(ops_fill_rect(x, y, card_w, card_h, (1.0, 1.0, 1.0)))
+      ops.append(ops_stroke_rect(x, y, card_w, card_h, (0.2, 0.22, 0.26), 1.5))
       ops.append(
         ops_text(
           x + 14.0,
@@ -525,15 +521,15 @@ fn clue_cards_ops() -> Array[Op] {
           16.0,
           "CLUE",
           (0.18, 0.48, 0.86),
-        )[:],
+        ),
       )
       ops.append(
-        ops_text(x + 14.0, y + 52.0, "/F1", 16.0, texts[i], (0.12, 0.14, 0.18))[:],
+        ops_text(x + 14.0, y + 52.0, "/F1", 16.0, texts[i], (0.12, 0.14, 0.18)),
       )
       i = i + 1
     }
   }
-  ops.push(OpBDC("/OC", Name(PdfName("/SOLUTION"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/SOLUTION"))))
   ops.append(
     ops_text(
       72.0,
@@ -542,7 +538,7 @@ fn clue_cards_ops() -> Array[Op] {
       12.0,
       "SOLUTION: Use the Board's red path. Then go to the Vault.",
       (0.2, 0.18, 0.05),
-    )[:],
+    ),
   )
   ops.push(OpEMC)
   ops
@@ -551,7 +547,7 @@ fn clue_cards_ops() -> Array[Op] {
 ///|
 fn board_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, page_w(), page_h(), (1.0, 1.0, 1.0))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, page_w(), page_h(), (1.0, 1.0, 1.0)))
   ops.append(
     ops_text(
       72.0,
@@ -560,7 +556,7 @@ fn board_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
       38.0,
       "The Board (Clickable)",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -570,14 +566,14 @@ fn board_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
       14.0,
       "Click a room to open its card.",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
   let grid_x = 72.0
   let grid_y = 90.0
   let grid_w = page_w() - 144.0
   let grid_h = page_h() - 230.0
   ops.append(
-    ops_stroke_rect(grid_x, grid_y, grid_w, grid_h, (0.2, 0.22, 0.26), 2.0)[:],
+    ops_stroke_rect(grid_x, grid_y, grid_w, grid_h, (0.2, 0.22, 0.26), 2.0),
   )
   let cell_w = grid_w / COLS.to_double()
   let cell_h = grid_h / ROWS.to_double()
@@ -585,15 +581,11 @@ fn board_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
   // Grid lines
   for c in 1..<COLS {
     let x = grid_x + c.to_double() * cell_w
-    ops.append(
-      ops_line(x, grid_y, x, grid_y + grid_h, (0.85, 0.86, 0.88), 1.0)[:],
-    )
+    ops.append(ops_line(x, grid_y, x, grid_y + grid_h, (0.85, 0.86, 0.88), 1.0))
   }
   for r in 1..<ROWS {
     let y = grid_y + r.to_double() * cell_h
-    ops.append(
-      ops_line(grid_x, y, grid_x + grid_w, y, (0.85, 0.86, 0.88), 1.0)[:],
-    )
+    ops.append(ops_line(grid_x, y, grid_x + grid_w, y, (0.85, 0.86, 0.88), 1.0))
   }
   let links : Array[(Int, (Double, Double, Double, Double))] = Array::new()
   let mut room = 1
@@ -612,7 +604,7 @@ fn board_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
           12.0,
           label,
           (0.45, 0.48, 0.52),
-        )[:],
+        ),
       )
 
       // Simple symbol per room
@@ -626,22 +618,22 @@ fn board_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
         (0.22, 0.7, 0.5)
       }
       if room % 4 == 0 {
-        ops.append(ops_fill_polygon(circle_points(cx, cy, 18.0, 24), accent)[:])
+        ops.append(ops_fill_polygon(circle_points(cx, cy, 18.0, 24), accent))
       } else if room % 4 == 1 {
-        ops.append(ops_fill_rect(cx - 16.0, cy - 16.0, 32.0, 32.0, accent)[:])
+        ops.append(ops_fill_rect(cx - 16.0, cy - 16.0, 32.0, 32.0, accent))
       } else if room % 4 == 2 {
         ops.append(
           ops_fill_polygon(
             [(cx, cy + 20.0), (cx - 20.0, cy - 18.0), (cx + 20.0, cy - 18.0)],
             accent,
-          )[:],
+          ),
         )
       } else {
         ops.append(
           ops_fill_polygon(
             [(cx - 20.0, cy), (cx, cy + 20.0), (cx + 20.0, cy), (cx, cy - 20.0)],
             accent,
-          )[:],
+          ),
         )
       }
       room = room + 1
@@ -649,7 +641,7 @@ fn board_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
   }
 
   // Solution overlay: a red path
-  ops.push(OpBDC("/OC", Name(PdfName("/SOLUTION"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/SOLUTION"))))
   let path_rooms : Array[Int] = [1, 2, 6, 10, 11, 12]
   for i in 0..<(path_rooms.length() - 1) {
     let a = path_rooms[i] - 1
@@ -662,10 +654,10 @@ fn board_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
     let y0 = grid_y + (ROWS - 1 - ay).to_double() * cell_h + cell_h / 2.0
     let x1 = grid_x + (bx.to_double() + 0.5) * cell_w
     let y1 = grid_y + (ROWS - 1 - by).to_double() * cell_h + cell_h / 2.0
-    ops.append(ops_line(x0, y0, x1, y1, (0.92, 0.33, 0.36), 6.0)[:])
+    ops.append(ops_line(x0, y0, x1, y1, (0.92, 0.33, 0.36), 6.0))
   }
   ops.push(OpEMC)
-  ops.push(OpBDC("/OC", Name(PdfName("/HINTS"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/HINTS"))))
   ops.append(
     ops_text(
       72.0,
@@ -674,7 +666,7 @@ fn board_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
       12.0,
       "HINT: The Vault is in Room 12.",
       (0.2, 0.18, 0.05),
-    )[:],
+    ),
   )
   ops.push(OpEMC)
   (ops, links)
@@ -692,10 +684,8 @@ fn room_ops(
   } else {
     (0.22, 0.7, 0.5)
   }
-  ops.append(
-    ops_fill_rect(0.0, 0.0, page_w(), page_h(), (0.985, 0.985, 0.99))[:],
-  )
-  ops.append(ops_fill_rect(0.0, page_h() - 86.0, page_w(), 86.0, accent)[:])
+  ops.append(ops_fill_rect(0.0, 0.0, page_w(), page_h(), (0.985, 0.985, 0.99)))
+  ops.append(ops_fill_rect(0.0, page_h() - 86.0, page_w(), 86.0, accent))
   ops.append(
     ops_text(
       72.0,
@@ -704,7 +694,7 @@ fn room_ops(
       34.0,
       "Room " + room_1.to_string(),
       (1.0, 1.0, 1.0),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -714,18 +704,16 @@ fn room_ops(
       14.0,
       "Read it aloud. Keep it secret from the group.",
       (0.92, 0.94, 0.98),
-    )[:],
+    ),
   )
   let cx = page_w() - 220.0
   let cy = 250.0
+  ops.append(ops_fill_polygon(circle_points(cx, cy, 92.0, 50), (1.0, 1.0, 1.0)))
   ops.append(
-    ops_fill_polygon(circle_points(cx, cy, 92.0, 50), (1.0, 1.0, 1.0))[:],
+    ops_stroke_rect(cx - 92.0, cy - 92.0, 184.0, 184.0, (0.2, 0.22, 0.26), 2.0),
   )
   ops.append(
-    ops_stroke_rect(cx - 92.0, cy - 92.0, 184.0, 184.0, (0.2, 0.22, 0.26), 2.0)[:],
-  )
-  ops.append(
-    ops_text(cx - 36.0, cy - 10.0, "/F0", 24.0, "?", (0.12, 0.14, 0.18))[:],
+    ops_text(cx - 36.0, cy - 10.0, "/F0", 24.0, "?", (0.12, 0.14, 0.18)),
   )
   let flavor : Array[String] = if room_1 == 12 {
     [
@@ -750,10 +738,10 @@ fn room_ops(
   }
   let mut y = page_h() - 160.0
   for line in flavor {
-    ops.append(ops_text(72.0, y, "/F1", 20.0, line, (0.12, 0.14, 0.18))[:])
+    ops.append(ops_text(72.0, y, "/F1", 20.0, line, (0.12, 0.14, 0.18)))
     y = y - 30.0
   }
-  ops.push(OpBDC("/OC", Name(PdfName("/HINTS"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/HINTS"))))
   ops.append(
     ops_text(
       72.0,
@@ -762,10 +750,10 @@ fn room_ops(
       12.0,
       "HINT: This room's symbol matters (shape/color).",
       (0.2, 0.18, 0.05),
-    )[:],
+    ),
   )
   ops.push(OpEMC)
-  ops.push(OpBDC("/OC", Name(PdfName("/SOLUTION"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/SOLUTION"))))
   ops.append(
     ops_text(
       72.0,
@@ -774,7 +762,7 @@ fn room_ops(
       12.0,
       "SOLUTION: Follow the red path on the Board to reach Room 12.",
       (0.2, 0.18, 0.05),
-    )[:],
+    ),
   )
   ops.push(OpEMC)
   let (btn, rect) = ops_button(
@@ -785,7 +773,7 @@ fn room_ops(
     "Back to Board",
     (0.12, 0.14, 0.18),
   )
-  ops.append(btn[:])
+  ops.append(btn)
   let links : Array[(Int, (Double, Double, Double, Double))] = [(0, rect)]
   (ops, links)
 }
@@ -793,9 +781,9 @@ fn room_ops(
 ///|
 fn solution_ops() -> (Array[Op], (Double, Double, Double, Double)) {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, page_w(), page_h(), (0.06, 0.07, 0.1))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, page_w(), page_h(), (0.06, 0.07, 0.1)))
   ops.append(
-    ops_text(72.0, page_h() - 90.0, "/F0", 44.0, "Solution", (0.95, 0.96, 0.98))[:],
+    ops_text(72.0, page_h() - 90.0, "/F0", 44.0, "Solution", (0.95, 0.96, 0.98)),
   )
   ops.append(
     ops_text(
@@ -805,7 +793,7 @@ fn solution_ops() -> (Array[Op], (Double, Double, Double, Double)) {
       16.0,
       "Toggle SOLUTION layer on other pages for help.",
       (0.8, 0.84, 0.9),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -815,7 +803,7 @@ fn solution_ops() -> (Array[Op], (Double, Double, Double, Double)) {
       18.0,
       "Best path: 1 → 2 → 6 → 10 → 11 → 12 (Vault).",
       (0.8, 0.84, 0.9),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -825,7 +813,7 @@ fn solution_ops() -> (Array[Op], (Double, Double, Double, Double)) {
       18.0,
       "Final guess: the key is in a room with the round symbol.",
       (0.8, 0.84, 0.9),
-    )[:],
+    ),
   )
   let (btn, rect) = ops_button(
     72.0,
@@ -835,7 +823,7 @@ fn solution_ops() -> (Array[Op], (Double, Double, Double, Double)) {
     "Back to Board",
     (0.92, 0.33, 0.36),
   )
-  ops.append(btn[:])
+  ops.append(btn)
   (ops, rect)
 }
 

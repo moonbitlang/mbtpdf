@@ -7,8 +7,8 @@ type Op = @pdfops.Op
 ///|
 fn font_type1(base_font : String) -> PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
   ])
 }
@@ -173,23 +173,23 @@ fn set_catalog_entry(
 ///|
 fn add_layers(pdf : @pdf.Pdf) -> (Int, Int, Int, Int, Int) raise {
   let dress : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("DRESS")),
   ])
   let space : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("SPACE SUIT")),
   ])
   let hero : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("HERO CAPE")),
   ])
   let hat : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("HAT")),
   ])
   let sparkles : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("SPARKLES")),
   ])
   let dress_num = pdf.addobj(dress)
@@ -198,8 +198,8 @@ fn add_layers(pdf : @pdf.Pdf) -> (Int, Int, Int, Int, Int) raise {
   let hat_num = pdf.addobj(hat)
   let sparkles_num = pdf.addobj(sparkles)
   let default_dict : PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/ON"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/ON"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
     (
       "/OFF",
@@ -264,7 +264,7 @@ fn add_layer_properties_to_pages(
 ///|
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
 
 ///|
@@ -315,11 +315,11 @@ fn ops_button(
   accent : (Double, Double, Double),
 ) -> (Array[Op], (Double, Double, Double, Double)) {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0))[:])
-  ops.append(ops_stroke_rect(x, y, ww, hh, accent, 2.0)[:])
-  ops.append(ops_fill_rect(x, y + hh - 7.0, ww, 7.0, accent)[:])
+  ops.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0)))
+  ops.append(ops_stroke_rect(x, y, ww, hh, accent, 2.0))
+  ops.append(ops_fill_rect(x, y + hh - 7.0, ww, 7.0, accent))
   ops.append(
-    ops_text(x + 14.0, y + 16.0, "/F0", 14.0, label, (0.12, 0.14, 0.18))[:],
+    ops_text(x + 14.0, y + 16.0, "/F0", 14.0, label, (0.12, 0.14, 0.18)),
   )
   (ops, (x, y, x + ww, y + hh))
 }
@@ -336,11 +336,11 @@ fn ops_home_badge() -> Array[Op] {
   let hh = y1 - y0
   let accent = (0.18, 0.48, 0.86)
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(x0, y0, ww, hh, (1.0, 1.0, 1.0))[:])
-  ops.append(ops_stroke_rect(x0, y0, ww, hh, accent, 2.0)[:])
-  ops.append(ops_fill_rect(x0, y0 + hh - 6.0, ww, 6.0, accent)[:])
+  ops.append(ops_fill_rect(x0, y0, ww, hh, (1.0, 1.0, 1.0)))
+  ops.append(ops_stroke_rect(x0, y0, ww, hh, accent, 2.0))
+  ops.append(ops_fill_rect(x0, y0 + hh - 6.0, ww, 6.0, accent))
   ops.append(
-    ops_text(x0 + 24.0, y0 + 14.0, "/F0", 14.0, "HOME", (0.12, 0.14, 0.18))[:],
+    ops_text(x0 + 24.0, y0 + 14.0, "/F0", 14.0, "HOME", (0.12, 0.14, 0.18)),
   )
   ops
 }
@@ -357,7 +357,7 @@ fn ops_doll_outline() -> Array[Op] {
 
   // Head
   let head = circle_points(cx, base_y + 500.0, 46.0, 70)
-  ops.append(ops_stroke_polyline(head + [head[0]], (0.1, 0.1, 0.1), 4.5)[:])
+  ops.append(ops_stroke_polyline(head + [head[0]], (0.1, 0.1, 0.1), 4.5))
 
   // Torso (rounded-ish polygon)
   let torso : Array[(Double, Double)] = [
@@ -368,7 +368,7 @@ fn ops_doll_outline() -> Array[Op] {
     (cx - 46.0, base_y + 250.0),
     (cx - 70.0, base_y + 340.0),
   ]
-  ops.append(ops_stroke_polyline(torso + [torso[0]], (0.1, 0.1, 0.1), 4.5)[:])
+  ops.append(ops_stroke_polyline(torso + [torso[0]], (0.1, 0.1, 0.1), 4.5))
 
   // Arms
   let arm_l : Array[(Double, Double)] = [
@@ -385,8 +385,8 @@ fn ops_doll_outline() -> Array[Op] {
     (cx + 132.0, base_y + 282.0),
     (cx + 70.0, base_y + 320.0),
   ]
-  ops.append(ops_stroke_polyline(arm_l + [arm_l[0]], (0.1, 0.1, 0.1), 4.5)[:])
-  ops.append(ops_stroke_polyline(arm_r + [arm_r[0]], (0.1, 0.1, 0.1), 4.5)[:])
+  ops.append(ops_stroke_polyline(arm_l + [arm_l[0]], (0.1, 0.1, 0.1), 4.5))
+  ops.append(ops_stroke_polyline(arm_r + [arm_r[0]], (0.1, 0.1, 0.1), 4.5))
 
   // Legs
   let leg_l : Array[(Double, Double)] = [
@@ -405,8 +405,8 @@ fn ops_doll_outline() -> Array[Op] {
     (cx + 6.0, base_y + 130.0),
     (cx + 10.0, base_y + 250.0),
   ]
-  ops.append(ops_stroke_polyline(leg_l + [leg_l[0]], (0.1, 0.1, 0.1), 4.5)[:])
-  ops.append(ops_stroke_polyline(leg_r + [leg_r[0]], (0.1, 0.1, 0.1), 4.5)[:])
+  ops.append(ops_stroke_polyline(leg_l + [leg_l[0]], (0.1, 0.1, 0.1), 4.5))
+  ops.append(ops_stroke_polyline(leg_r + [leg_r[0]], (0.1, 0.1, 0.1), 4.5))
   ops
 }
 
@@ -414,7 +414,7 @@ fn ops_doll_outline() -> Array[Op] {
 fn ops_cut_border() -> Array[Op] {
   let ops : Array[Op] = Array::new()
   ops.append(
-    ops_stroke_rect(44.0, 44.0, w() - 88.0, h() - 88.0, (0.78, 0.8, 0.84), 2.0)[:],
+    ops_stroke_rect(44.0, 44.0, w() - 88.0, h() - 88.0, (0.78, 0.8, 0.84), 2.0),
   )
   ops.append(
     ops_text(
@@ -424,7 +424,7 @@ fn ops_cut_border() -> Array[Op] {
       10.0,
       "Cut on the border. Toggle Layers for outfits.",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
   ops
 }
@@ -435,18 +435,18 @@ fn ops_outfits_layers() -> Array[Op] {
   let (cx, base_y) = doll_origin()
 
   // Dress layer
-  ops.push(OpBDC("/OC", Name(PdfName("/DRESS"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/DRESS"))))
   let skirt : Array[(Double, Double)] = [
     (cx - 94.0, base_y + 250.0),
     (cx + 94.0, base_y + 250.0),
     (cx + 120.0, base_y + 120.0),
     (cx - 120.0, base_y + 120.0),
   ]
-  ops.append(ops_fill_polygon(skirt, (0.95, 0.75, 0.9))[:])
+  ops.append(ops_fill_polygon(skirt, (0.95, 0.75, 0.9)))
   ops.append(
-    ops_fill_rect(cx - 62.0, base_y + 330.0, 124.0, 120.0, (0.95, 0.75, 0.9))[:],
+    ops_fill_rect(cx - 62.0, base_y + 330.0, 124.0, 120.0, (0.95, 0.75, 0.9)),
   )
-  ops.append(ops_stroke_polyline(skirt + [skirt[0]], (0.1, 0.1, 0.1), 3.0)[:])
+  ops.append(ops_stroke_polyline(skirt + [skirt[0]], (0.1, 0.1, 0.1), 3.0))
   ops.append(
     ops_stroke_rect(
       cx - 62.0,
@@ -455,7 +455,7 @@ fn ops_outfits_layers() -> Array[Op] {
       120.0,
       (0.1, 0.1, 0.1),
       3.0,
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -465,14 +465,14 @@ fn ops_outfits_layers() -> Array[Op] {
       11.0,
       "DRESS",
       (0.92, 0.33, 0.36),
-    )[:],
+    ),
   )
   ops.push(OpEMC)
 
   // Space suit layer
-  ops.push(OpBDC("/OC", Name(PdfName("/SPACE"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/SPACE"))))
   ops.append(
-    ops_fill_rect(cx - 78.0, base_y + 250.0, 156.0, 230.0, (0.92, 0.95, 0.98))[:],
+    ops_fill_rect(cx - 78.0, base_y + 250.0, 156.0, 230.0, (0.92, 0.95, 0.98)),
   )
   ops.append(
     ops_stroke_rect(
@@ -482,13 +482,13 @@ fn ops_outfits_layers() -> Array[Op] {
       230.0,
       (0.1, 0.1, 0.1),
       3.0,
-    )[:],
+    ),
   )
   let visor = circle_points(cx, base_y + 500.0, 34.0, 50)
-  ops.append(ops_fill_polygon(visor, (0.7, 0.9, 1.0))[:])
-  ops.append(ops_stroke_polyline(visor + [visor[0]], (0.1, 0.1, 0.1), 3.0)[:])
+  ops.append(ops_fill_polygon(visor, (0.7, 0.9, 1.0)))
+  ops.append(ops_stroke_polyline(visor + [visor[0]], (0.1, 0.1, 0.1), 3.0))
   ops.append(
-    ops_fill_rect(cx - 62.0, base_y + 364.0, 124.0, 18.0, (0.18, 0.48, 0.86))[:],
+    ops_fill_rect(cx - 62.0, base_y + 364.0, 124.0, 18.0, (0.18, 0.48, 0.86)),
   )
   ops.append(
     ops_text(
@@ -498,12 +498,12 @@ fn ops_outfits_layers() -> Array[Op] {
       11.0,
       "SPACE SUIT",
       (0.18, 0.48, 0.86),
-    )[:],
+    ),
   )
   ops.push(OpEMC)
 
   // Hero layer
-  ops.push(OpBDC("/OC", Name(PdfName("/HERO"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/HERO"))))
   let cape : Array[(Double, Double)] = [
     (cx - 70.0, base_y + 420.0),
     (cx + 70.0, base_y + 420.0),
@@ -512,10 +512,10 @@ fn ops_outfits_layers() -> Array[Op] {
     (cx - 110.0, base_y + 70.0),
     (cx - 160.0, base_y + 250.0),
   ]
-  ops.append(ops_fill_polygon(cape, (0.92, 0.33, 0.36))[:])
-  ops.append(ops_stroke_polyline(cape + [cape[0]], (0.1, 0.1, 0.1), 3.0)[:])
+  ops.append(ops_fill_polygon(cape, (0.92, 0.33, 0.36)))
+  ops.append(ops_stroke_polyline(cape + [cape[0]], (0.1, 0.1, 0.1), 3.0))
   ops.append(
-    ops_fill_rect(cx - 64.0, base_y + 330.0, 128.0, 120.0, (0.95, 0.75, 0.2))[:],
+    ops_fill_rect(cx - 64.0, base_y + 330.0, 128.0, 120.0, (0.95, 0.75, 0.2)),
   )
   ops.append(
     ops_stroke_rect(
@@ -525,32 +525,32 @@ fn ops_outfits_layers() -> Array[Op] {
       120.0,
       (0.1, 0.1, 0.1),
       3.0,
-    )[:],
+    ),
   )
   ops.append(
-    ops_text(cx - 48.0, base_y + 462.0, "/F2", 11.0, "HERO", (0.52, 0.4, 0.86))[:],
+    ops_text(cx - 48.0, base_y + 462.0, "/F2", 11.0, "HERO", (0.52, 0.4, 0.86)),
   )
   ops.push(OpEMC)
 
   // Hat layer
-  ops.push(OpBDC("/OC", Name(PdfName("/HAT"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/HAT"))))
   let hat : Array[(Double, Double)] = [
     (cx - 82.0, base_y + 550.0),
     (cx + 82.0, base_y + 550.0),
     (cx + 70.0, base_y + 590.0),
     (cx - 70.0, base_y + 590.0),
   ]
-  ops.append(ops_fill_polygon(hat, (0.12, 0.14, 0.18))[:])
+  ops.append(ops_fill_polygon(hat, (0.12, 0.14, 0.18)))
   ops.append(
-    ops_fill_rect(cx - 54.0, base_y + 590.0, 108.0, 36.0, (0.12, 0.14, 0.18))[:],
+    ops_fill_rect(cx - 54.0, base_y + 590.0, 108.0, 36.0, (0.12, 0.14, 0.18)),
   )
   ops.append(
-    ops_text(cx - 26.0, base_y + 560.0, "/F2", 10.0, "HAT", (0.95, 0.96, 0.98))[:],
+    ops_text(cx - 26.0, base_y + 560.0, "/F2", 10.0, "HAT", (0.95, 0.96, 0.98)),
   )
   ops.push(OpEMC)
 
   // Sparkles layer (tiny stars)
-  ops.push(OpBDC("/OC", Name(PdfName("/SPARKLES"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/SPARKLES"))))
   let spark : Array[(Double, Double)] = [
     (cx - 120.0, base_y + 520.0),
     (cx - 150.0, base_y + 470.0),
@@ -565,12 +565,12 @@ fn ops_outfits_layers() -> Array[Op] {
     (cx - 82.0, base_y + 440.0),
     (cx - 42.0, base_y + 470.0),
   ]
-  ops.append(ops_fill_polygon(spark, (0.95, 0.75, 0.2))[:])
+  ops.append(ops_fill_polygon(spark, (0.95, 0.75, 0.2)))
   ops.append(
     ops_fill_polygon(
       circle_points(cx + 150.0, base_y + 470.0, 9.0, 18),
       (0.18, 0.66, 0.52),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -580,7 +580,7 @@ fn ops_outfits_layers() -> Array[Op] {
       10.0,
       "SPARKLES",
       (0.95, 0.75, 0.2),
-    )[:],
+    ),
   )
   ops.push(OpEMC)
   ops
@@ -589,10 +589,10 @@ fn ops_outfits_layers() -> Array[Op] {
 ///|
 fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.98, 0.98, 0.99))[:])
-  ops.append(ops_fill_rect(0.0, h() - 130.0, w(), 130.0, (0.52, 0.4, 0.86))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.98, 0.98, 0.99)))
+  ops.append(ops_fill_rect(0.0, h() - 130.0, w(), 130.0, (0.52, 0.4, 0.86)))
   ops.append(
-    ops_text(54.0, h() - 78.0, "/F0", 46.0, "Paper Doll", (1.0, 1.0, 1.0))[:],
+    ops_text(54.0, h() - 78.0, "/F0", 46.0, "Paper Doll", (1.0, 1.0, 1.0)),
   )
   ops.append(
     ops_text(
@@ -602,7 +602,7 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
       16.0,
       "A tiny dress-up PDF (layers + links)",
       (0.92, 0.94, 0.98),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -612,7 +612,7 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
       14.0,
       "Open Layers and toggle outfits: DRESS / SPACE / HERO / HAT / SPARKLES",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
   let (btn, rect) = ops_button(
     54.0,
@@ -622,16 +622,16 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
     "Dress Up!",
     (0.92, 0.33, 0.36),
   )
-  ops.append(btn[:])
+  ops.append(btn)
   (ops, rect)
 }
 
 ///|
 fn mixmatch_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0)))
   ops.append(
-    ops_text(54.0, h() - 78.0, "/F0", 40.0, "Mix & Match", (0.12, 0.14, 0.18))[:],
+    ops_text(54.0, h() - 78.0, "/F0", 40.0, "Mix & Match", (0.12, 0.14, 0.18)),
   )
   ops.append(
     ops_text(
@@ -641,12 +641,12 @@ fn mixmatch_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
       14.0,
       "Toggle layers to swap outfits like a game.",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
-  ops.append(ops_home_badge()[:])
-  ops.append(ops_cut_border()[:])
-  ops.append(ops_doll_outline()[:])
-  ops.append(ops_outfits_layers()[:])
+  ops.append(ops_home_badge())
+  ops.append(ops_cut_border())
+  ops.append(ops_doll_outline())
+  ops.append(ops_outfits_layers())
 
   // Poster links
   let rects : Array[(Double, Double, Double, Double)] = Array::new()
@@ -674,9 +674,9 @@ fn mixmatch_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
     "HERO poster",
     (0.92, 0.33, 0.36),
   )
-  ops.append(b1[:])
-  ops.append(b2[:])
-  ops.append(b3[:])
+  ops.append(b1)
+  ops.append(b2)
+  ops.append(b3)
   rects.push(r1)
   rects.push(r2)
   rects.push(r3)
@@ -693,11 +693,11 @@ fn ops_dress_plain() -> Array[Op] {
     (cx + 120.0, base_y + 120.0),
     (cx - 120.0, base_y + 120.0),
   ]
-  ops.append(ops_fill_polygon(skirt, (0.95, 0.75, 0.9))[:])
+  ops.append(ops_fill_polygon(skirt, (0.95, 0.75, 0.9)))
   ops.append(
-    ops_fill_rect(cx - 62.0, base_y + 330.0, 124.0, 120.0, (0.95, 0.75, 0.9))[:],
+    ops_fill_rect(cx - 62.0, base_y + 330.0, 124.0, 120.0, (0.95, 0.75, 0.9)),
   )
-  ops.append(ops_stroke_polyline(skirt + [skirt[0]], (0.1, 0.1, 0.1), 3.0)[:])
+  ops.append(ops_stroke_polyline(skirt + [skirt[0]], (0.1, 0.1, 0.1), 3.0))
   ops.append(
     ops_stroke_rect(
       cx - 62.0,
@@ -706,7 +706,7 @@ fn ops_dress_plain() -> Array[Op] {
       120.0,
       (0.1, 0.1, 0.1),
       3.0,
-    )[:],
+    ),
   )
   ops
 }
@@ -716,7 +716,7 @@ fn ops_space_plain() -> Array[Op] {
   let ops : Array[Op] = Array::new()
   let (cx, base_y) = doll_origin()
   ops.append(
-    ops_fill_rect(cx - 78.0, base_y + 250.0, 156.0, 230.0, (0.92, 0.95, 0.98))[:],
+    ops_fill_rect(cx - 78.0, base_y + 250.0, 156.0, 230.0, (0.92, 0.95, 0.98)),
   )
   ops.append(
     ops_stroke_rect(
@@ -726,13 +726,13 @@ fn ops_space_plain() -> Array[Op] {
       230.0,
       (0.1, 0.1, 0.1),
       3.0,
-    )[:],
+    ),
   )
   let visor = circle_points(cx, base_y + 500.0, 34.0, 50)
-  ops.append(ops_fill_polygon(visor, (0.7, 0.9, 1.0))[:])
-  ops.append(ops_stroke_polyline(visor + [visor[0]], (0.1, 0.1, 0.1), 3.0)[:])
+  ops.append(ops_fill_polygon(visor, (0.7, 0.9, 1.0)))
+  ops.append(ops_stroke_polyline(visor + [visor[0]], (0.1, 0.1, 0.1), 3.0))
   ops.append(
-    ops_fill_rect(cx - 62.0, base_y + 364.0, 124.0, 18.0, (0.18, 0.48, 0.86))[:],
+    ops_fill_rect(cx - 62.0, base_y + 364.0, 124.0, 18.0, (0.18, 0.48, 0.86)),
   )
   ops
 }
@@ -749,10 +749,10 @@ fn ops_hero_plain() -> Array[Op] {
     (cx - 110.0, base_y + 70.0),
     (cx - 160.0, base_y + 250.0),
   ]
-  ops.append(ops_fill_polygon(cape, (0.92, 0.33, 0.36))[:])
-  ops.append(ops_stroke_polyline(cape + [cape[0]], (0.1, 0.1, 0.1), 3.0)[:])
+  ops.append(ops_fill_polygon(cape, (0.92, 0.33, 0.36)))
+  ops.append(ops_stroke_polyline(cape + [cape[0]], (0.1, 0.1, 0.1), 3.0))
   ops.append(
-    ops_fill_rect(cx - 64.0, base_y + 330.0, 128.0, 120.0, (0.95, 0.75, 0.2))[:],
+    ops_fill_rect(cx - 64.0, base_y + 330.0, 128.0, 120.0, (0.95, 0.75, 0.2)),
   )
   ops.append(
     ops_stroke_rect(
@@ -762,7 +762,7 @@ fn ops_hero_plain() -> Array[Op] {
       120.0,
       (0.1, 0.1, 0.1),
       3.0,
-    )[:],
+    ),
   )
   ops
 }
@@ -777,9 +777,9 @@ fn ops_hat_plain() -> Array[Op] {
     (cx + 70.0, base_y + 590.0),
     (cx - 70.0, base_y + 590.0),
   ]
-  ops.append(ops_fill_polygon(hat, (0.12, 0.14, 0.18))[:])
+  ops.append(ops_fill_polygon(hat, (0.12, 0.14, 0.18)))
   ops.append(
-    ops_fill_rect(cx - 54.0, base_y + 590.0, 108.0, 36.0, (0.12, 0.14, 0.18))[:],
+    ops_fill_rect(cx - 54.0, base_y + 590.0, 108.0, 36.0, (0.12, 0.14, 0.18)),
   )
   ops
 }
@@ -802,12 +802,12 @@ fn ops_sparkles_plain() -> Array[Op] {
     (cx - 82.0, base_y + 440.0),
     (cx - 42.0, base_y + 470.0),
   ]
-  ops.append(ops_fill_polygon(spark, (0.95, 0.75, 0.2))[:])
+  ops.append(ops_fill_polygon(spark, (0.95, 0.75, 0.2)))
   ops.append(
     ops_fill_polygon(
       circle_points(cx + 150.0, base_y + 470.0, 9.0, 18),
       (0.18, 0.66, 0.52),
-    )[:],
+    ),
   )
   ops
 }
@@ -819,9 +819,9 @@ fn poster_ops(
   bg : (Double, Double, Double),
 ) -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
-  ops.append(ops_fill_rect(0.0, h() - 130.0, w(), 130.0, bg)[:])
-  ops.append(ops_text(54.0, h() - 78.0, "/F0", 44.0, title, (1.0, 1.0, 1.0))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0)))
+  ops.append(ops_fill_rect(0.0, h() - 130.0, w(), 130.0, bg))
+  ops.append(ops_text(54.0, h() - 78.0, "/F0", 44.0, title, (1.0, 1.0, 1.0)))
   ops.append(
     ops_text(
       54.0,
@@ -830,19 +830,19 @@ fn poster_ops(
       16.0,
       "Print or screenshot. Or use Mix & Match.",
       (0.92, 0.94, 0.98),
-    )[:],
+    ),
   )
-  ops.append(ops_home_badge()[:])
-  ops.append(ops_cut_border()[:])
-  ops.append(ops_doll_outline()[:])
+  ops.append(ops_home_badge())
+  ops.append(ops_cut_border())
+  ops.append(ops_doll_outline())
   match kind {
-    0 => ops.append(ops_dress_plain()[:])
-    1 => ops.append(ops_space_plain()[:])
-    2 => ops.append(ops_hero_plain()[:])
+    0 => ops.append(ops_dress_plain())
+    1 => ops.append(ops_space_plain())
+    2 => ops.append(ops_hero_plain())
     _ => ()
   }
-  ops.append(ops_hat_plain()[:])
-  ops.append(ops_sparkles_plain()[:])
+  ops.append(ops_hat_plain())
+  ops.append(ops_sparkles_plain())
   ops
 }
 

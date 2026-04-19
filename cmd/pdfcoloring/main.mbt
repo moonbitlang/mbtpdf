@@ -7,8 +7,8 @@ type Op = @pdfops.Op
 ///|
 fn font_type1(base_font : String) -> PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
   ])
 }
@@ -173,18 +173,18 @@ fn set_catalog_entry(
 ///|
 fn add_layers(pdf : @pdf.Pdf) -> (Int, Int) raise {
   let color : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("COLOR")),
   ])
   let answers : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("ANSWERS")),
   ])
   let color_num = pdf.addobj(color)
   let answers_num = pdf.addobj(answers)
   let default_dict : PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/ON"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/ON"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
     ("/OFF", PdfArray([Indirect(color_num), Indirect(answers_num)])),
   ])
@@ -225,7 +225,7 @@ fn add_layer_properties_to_pages(
 ///|
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
 
 ///|
@@ -276,11 +276,11 @@ fn ops_button(
   accent : (Double, Double, Double),
 ) -> (Array[Op], (Double, Double, Double, Double)) {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0))[:])
-  ops.append(ops_stroke_rect(x, y, ww, hh, accent, 2.0)[:])
-  ops.append(ops_fill_rect(x, y + hh - 6.0, ww, 6.0, accent)[:])
+  ops.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0)))
+  ops.append(ops_stroke_rect(x, y, ww, hh, accent, 2.0))
+  ops.append(ops_fill_rect(x, y + hh - 6.0, ww, 6.0, accent))
   ops.append(
-    ops_text(x + 12.0, y + 14.0, "/F0", 14.0, label, (0.12, 0.14, 0.18))[:],
+    ops_text(x + 12.0, y + 14.0, "/F0", 14.0, label, (0.12, 0.14, 0.18)),
   )
   (ops, (x, y, x + ww, y + hh))
 }
@@ -297,11 +297,11 @@ fn ops_home_badge() -> Array[Op] {
   let hh = y1 - y0
   let accent = (0.18, 0.48, 0.86)
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(x0, y0, ww, hh, (1.0, 1.0, 1.0))[:])
-  ops.append(ops_stroke_rect(x0, y0, ww, hh, accent, 2.0)[:])
-  ops.append(ops_fill_rect(x0, y0 + hh - 6.0, ww, 6.0, accent)[:])
+  ops.append(ops_fill_rect(x0, y0, ww, hh, (1.0, 1.0, 1.0)))
+  ops.append(ops_stroke_rect(x0, y0, ww, hh, accent, 2.0))
+  ops.append(ops_fill_rect(x0, y0 + hh - 6.0, ww, 6.0, accent))
   ops.append(
-    ops_text(x0 + 24.0, y0 + 14.0, "/F0", 14.0, "HOME", (0.12, 0.14, 0.18))[:],
+    ops_text(x0 + 24.0, y0 + 14.0, "/F0", 14.0, "HOME", (0.12, 0.14, 0.18)),
   )
   ops
 }
@@ -309,10 +309,10 @@ fn ops_home_badge() -> Array[Op] {
 ///|
 fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.98, 0.98, 0.99))[:])
-  ops.append(ops_fill_rect(0.0, h() - 120.0, w(), 120.0, (0.18, 0.48, 0.86))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.98, 0.98, 0.99)))
+  ops.append(ops_fill_rect(0.0, h() - 120.0, w(), 120.0, (0.18, 0.48, 0.86)))
   ops.append(
-    ops_text(72.0, h() - 76.0, "/F0", 52.0, "Color & Find!", (1.0, 1.0, 1.0))[:],
+    ops_text(72.0, h() - 76.0, "/F0", 52.0, "Color & Find!", (1.0, 1.0, 1.0)),
   )
   ops.append(
     ops_text(
@@ -322,7 +322,7 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
       18.0,
       "A tiny printable coloring book",
       (0.92, 0.94, 0.98),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -332,7 +332,7 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
       18.0,
       "Print pages 2–4. Or toggle COLOR/ANSWERS in Layers.",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   let (btn, rect) = ops_button(
     72.0,
@@ -342,16 +342,16 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
     "Start",
     (0.92, 0.33, 0.36),
   )
-  ops.append(btn[:])
+  ops.append(btn)
   (ops, rect)
 }
 
 ///|
 fn cupcake_ops() -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0)))
   ops.append(
-    ops_text(72.0, h() - 80.0, "/F0", 40.0, "Cupcake", (0.12, 0.14, 0.18))[:],
+    ops_text(72.0, h() - 80.0, "/F0", 40.0, "Cupcake", (0.12, 0.14, 0.18)),
   )
   ops.append(
     ops_text(
@@ -361,9 +361,9 @@ fn cupcake_ops() -> Array[Op] {
       14.0,
       "Color it! (Toggle COLOR layer to peek.)",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
-  ops.append(ops_home_badge()[:])
+  ops.append(ops_home_badge())
   let cx = w() / 2.0
   let base_y = 190.0
 
@@ -374,9 +374,7 @@ fn cupcake_ops() -> Array[Op] {
     (cx + 140.0, base_y),
     (cx + 180.0, base_y + 210.0),
   ]
-  ops.append(
-    ops_stroke_polyline(wrapper + [wrapper[0]], (0.1, 0.1, 0.1), 5.0)[:],
-  )
+  ops.append(ops_stroke_polyline(wrapper + [wrapper[0]], (0.1, 0.1, 0.1), 5.0))
 
   // Wrapper stripes
   for i in 0..<10 {
@@ -387,32 +385,32 @@ fn cupcake_ops() -> Array[Op] {
         [(x, base_y + 20.0), (x, base_y + 186.0)],
         (0.2, 0.2, 0.2),
         2.0,
-      )[:],
+      ),
     )
   }
 
   // Frosting outline (big fluffy circle-ish)
   let frosting = circle_points(cx, base_y + 310.0, 150.0, 80)
   ops.append(
-    ops_stroke_polyline(frosting + [frosting[0]], (0.1, 0.1, 0.1), 6.0)[:],
+    ops_stroke_polyline(frosting + [frosting[0]], (0.1, 0.1, 0.1), 6.0),
   )
 
   // Cherry outline
   let cherry = circle_points(cx + 80.0, base_y + 430.0, 28.0, 30)
-  ops.append(ops_stroke_polyline(cherry + [cherry[0]], (0.1, 0.1, 0.1), 5.0)[:])
+  ops.append(ops_stroke_polyline(cherry + [cherry[0]], (0.1, 0.1, 0.1), 5.0))
   ops.append(
     ops_stroke_polyline(
       [(cx + 80.0, base_y + 458.0), (cx + 60.0, base_y + 498.0)],
       (0.1, 0.1, 0.1),
       3.0,
-    )[:],
+    ),
   )
 
   // COLOR layer fills
-  ops.push(OpBDC("/OC", Name(PdfName("/COLOR"))))
-  ops.append(ops_fill_polygon(wrapper, (0.97, 0.9, 0.65))[:])
-  ops.append(ops_fill_polygon(frosting, (0.95, 0.75, 0.9))[:])
-  ops.append(ops_fill_polygon(cherry, (0.92, 0.33, 0.36))[:])
+  ops.push(OpBDC("/OC", Name(PdfName(b"/COLOR"))))
+  ops.append(ops_fill_polygon(wrapper, (0.97, 0.9, 0.65)))
+  ops.append(ops_fill_polygon(frosting, (0.95, 0.75, 0.9)))
+  ops.append(ops_fill_polygon(cherry, (0.92, 0.33, 0.36)))
   ops.push(OpEMC)
   ops
 }
@@ -420,9 +418,9 @@ fn cupcake_ops() -> Array[Op] {
 ///|
 fn rocket_ops() -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0)))
   ops.append(
-    ops_text(72.0, h() - 80.0, "/F0", 40.0, "Rocket", (0.12, 0.14, 0.18))[:],
+    ops_text(72.0, h() - 80.0, "/F0", 40.0, "Rocket", (0.12, 0.14, 0.18)),
   )
   ops.append(
     ops_text(
@@ -432,9 +430,9 @@ fn rocket_ops() -> Array[Op] {
       14.0,
       "Color it! (Toggle COLOR layer to peek.)",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
-  ops.append(ops_home_badge()[:])
+  ops.append(ops_home_badge())
   let cx = w() / 2.0
   let cy = 360.0
   let body_w = 160.0
@@ -449,7 +447,7 @@ fn rocket_ops() -> Array[Op] {
       body_h,
       (0.1, 0.1, 0.1),
       6.0,
-    )[:],
+    ),
   )
 
   // Nose cone outline
@@ -458,11 +456,11 @@ fn rocket_ops() -> Array[Op] {
     (cx, cy + body_h / 2.0 + 90.0),
     (cx + body_w / 2.0, cy + body_h / 2.0),
   ]
-  ops.append(ops_stroke_polyline(nose + [nose[0]], (0.1, 0.1, 0.1), 6.0)[:])
+  ops.append(ops_stroke_polyline(nose + [nose[0]], (0.1, 0.1, 0.1), 6.0))
 
   // Window outline
   let window = circle_points(cx, cy + 40.0, 36.0, 40)
-  ops.append(ops_stroke_polyline(window + [window[0]], (0.1, 0.1, 0.1), 5.0)[:])
+  ops.append(ops_stroke_polyline(window + [window[0]], (0.1, 0.1, 0.1), 5.0))
 
   // Fins outline
   let fin_l : Array[(Double, Double)] = [
@@ -475,8 +473,8 @@ fn rocket_ops() -> Array[Op] {
     (cx + body_w / 2.0 + 60.0, cy - 150.0),
     (cx + body_w / 2.0, cy - 190.0),
   ]
-  ops.append(ops_stroke_polyline(fin_l + [fin_l[0]], (0.1, 0.1, 0.1), 6.0)[:])
-  ops.append(ops_stroke_polyline(fin_r + [fin_r[0]], (0.1, 0.1, 0.1), 6.0)[:])
+  ops.append(ops_stroke_polyline(fin_l + [fin_l[0]], (0.1, 0.1, 0.1), 6.0))
+  ops.append(ops_stroke_polyline(fin_r + [fin_r[0]], (0.1, 0.1, 0.1), 6.0))
 
   // Flame outline
   let flame : Array[(Double, Double)] = [
@@ -485,7 +483,7 @@ fn rocket_ops() -> Array[Op] {
     (cx + 30.0, cy - body_h / 2.0),
     (cx, cy - body_h / 2.0 - 40.0),
   ]
-  ops.append(ops_stroke_polyline(flame + [flame[0]], (0.1, 0.1, 0.1), 5.0)[:])
+  ops.append(ops_stroke_polyline(flame + [flame[0]], (0.1, 0.1, 0.1), 5.0))
 
   // Stars (outline)
   let stars : Array[(Double, Double)] = [
@@ -499,11 +497,11 @@ fn rocket_ops() -> Array[Op] {
   for s in stars {
     let (sx, sy) = s
     let p = circle_points(sx, sy, 10.0, 12)
-    ops.append(ops_stroke_polyline(p + [p[0]], (0.1, 0.1, 0.1), 3.0)[:])
+    ops.append(ops_stroke_polyline(p + [p[0]], (0.1, 0.1, 0.1), 3.0))
   }
 
   // COLOR layer
-  ops.push(OpBDC("/OC", Name(PdfName("/COLOR"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/COLOR"))))
   ops.append(
     ops_fill_rect(
       cx - body_w / 2.0,
@@ -511,17 +509,17 @@ fn rocket_ops() -> Array[Op] {
       body_w,
       body_h,
       (0.92, 0.95, 0.98),
-    )[:],
+    ),
   )
-  ops.append(ops_fill_polygon(nose, (0.18, 0.48, 0.86))[:])
-  ops.append(ops_fill_polygon(window, (0.7, 0.9, 1.0))[:])
-  ops.append(ops_fill_polygon(fin_l, (0.92, 0.33, 0.36))[:])
-  ops.append(ops_fill_polygon(fin_r, (0.92, 0.33, 0.36))[:])
-  ops.append(ops_fill_polygon(flame, (0.95, 0.75, 0.2))[:])
+  ops.append(ops_fill_polygon(nose, (0.18, 0.48, 0.86)))
+  ops.append(ops_fill_polygon(window, (0.7, 0.9, 1.0)))
+  ops.append(ops_fill_polygon(fin_l, (0.92, 0.33, 0.36)))
+  ops.append(ops_fill_polygon(fin_r, (0.92, 0.33, 0.36)))
+  ops.append(ops_fill_polygon(flame, (0.95, 0.75, 0.2)))
   for s in stars {
     let (sx, sy) = s
     ops.append(
-      ops_fill_polygon(circle_points(sx, sy, 10.0, 12), (0.95, 0.75, 0.2))[:],
+      ops_fill_polygon(circle_points(sx, sy, 10.0, 12), (0.95, 0.75, 0.2)),
     )
   }
   ops.push(OpEMC)
@@ -531,7 +529,7 @@ fn rocket_ops() -> Array[Op] {
 ///|
 fn hidden_objects_ops() -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0)))
   ops.append(
     ops_text(
       72.0,
@@ -540,7 +538,7 @@ fn hidden_objects_ops() -> Array[Op] {
       40.0,
       "Hidden Objects",
       (0.12, 0.14, 0.18),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -550,7 +548,7 @@ fn hidden_objects_ops() -> Array[Op] {
       14.0,
       "Find: star, heart, fish, key, lightning.",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -560,9 +558,9 @@ fn hidden_objects_ops() -> Array[Op] {
       14.0,
       "Toggle ANSWERS layer to reveal.",
       (0.45, 0.48, 0.52),
-    )[:],
+    ),
   )
-  ops.append(ops_home_badge()[:])
+  ops.append(ops_home_badge())
 
   // Scene frame
   let frame_x = 72.0
@@ -570,7 +568,7 @@ fn hidden_objects_ops() -> Array[Op] {
   let frame_w = w() - 144.0
   let frame_h = h() - 280.0
   ops.append(
-    ops_stroke_rect(frame_x, frame_y, frame_w, frame_h, (0.1, 0.1, 0.1), 4.0)[:],
+    ops_stroke_rect(frame_x, frame_y, frame_w, frame_h, (0.1, 0.1, 0.1), 4.0),
   )
 
   // Shelf
@@ -582,7 +580,7 @@ fn hidden_objects_ops() -> Array[Op] {
       24.0,
       (0.1, 0.1, 0.1),
       4.0,
-    )[:],
+    ),
   )
   ops.append(
     ops_stroke_rect(
@@ -592,7 +590,7 @@ fn hidden_objects_ops() -> Array[Op] {
       18.0,
       (0.1, 0.1, 0.1),
       4.0,
-    )[:],
+    ),
   )
 
   // Objects (outlines only)
@@ -609,7 +607,7 @@ fn hidden_objects_ops() -> Array[Op] {
     (132.0, 512.0),
     (158.0, 516.0),
   ]
-  ops.append(ops_stroke_polyline(star + [star[0]], (0.1, 0.1, 0.1), 3.5)[:])
+  ops.append(ops_stroke_polyline(star + [star[0]], (0.1, 0.1, 0.1), 3.5))
 
   // Heart (two circles + triangle-ish)
   let heart_l = circle_points(300.0, 520.0, 18.0, 24)
@@ -619,14 +617,10 @@ fn hidden_objects_ops() -> Array[Op] {
     (348.0, 518.0),
     (315.0, 480.0),
   ]
+  ops.append(ops_stroke_polyline(heart_l + [heart_l[0]], (0.1, 0.1, 0.1), 3.0))
+  ops.append(ops_stroke_polyline(heart_r + [heart_r[0]], (0.1, 0.1, 0.1), 3.0))
   ops.append(
-    ops_stroke_polyline(heart_l + [heart_l[0]], (0.1, 0.1, 0.1), 3.0)[:],
-  )
-  ops.append(
-    ops_stroke_polyline(heart_r + [heart_r[0]], (0.1, 0.1, 0.1), 3.0)[:],
-  )
-  ops.append(
-    ops_stroke_polyline(heart_tip + [heart_tip[0]], (0.1, 0.1, 0.1), 3.0)[:],
+    ops_stroke_polyline(heart_tip + [heart_tip[0]], (0.1, 0.1, 0.1), 3.0),
   )
 
   // Fish (oval + tail)
@@ -636,17 +630,17 @@ fn hidden_objects_ops() -> Array[Op] {
     (514.0, 458.0),
     (514.0, 422.0),
   ]
-  ops.append(ops_stroke_polyline(fish + [fish[0]], (0.1, 0.1, 0.1), 3.0)[:])
-  ops.append(ops_stroke_polyline(tail + [tail[0]], (0.1, 0.1, 0.1), 3.0)[:])
+  ops.append(ops_stroke_polyline(fish + [fish[0]], (0.1, 0.1, 0.1), 3.0))
+  ops.append(ops_stroke_polyline(tail + [tail[0]], (0.1, 0.1, 0.1), 3.0))
 
   // Key (circle + shaft)
   let key_ring = circle_points(220.0, 260.0, 18.0, 28)
   ops.append(
-    ops_stroke_polyline(key_ring + [key_ring[0]], (0.1, 0.1, 0.1), 3.0)[:],
+    ops_stroke_polyline(key_ring + [key_ring[0]], (0.1, 0.1, 0.1), 3.0),
   )
-  ops.append(ops_stroke_rect(236.0, 252.0, 90.0, 16.0, (0.1, 0.1, 0.1), 3.0)[:])
-  ops.append(ops_stroke_rect(312.0, 252.0, 14.0, 26.0, (0.1, 0.1, 0.1), 3.0)[:])
-  ops.append(ops_stroke_rect(296.0, 252.0, 14.0, 20.0, (0.1, 0.1, 0.1), 3.0)[:])
+  ops.append(ops_stroke_rect(236.0, 252.0, 90.0, 16.0, (0.1, 0.1, 0.1), 3.0))
+  ops.append(ops_stroke_rect(312.0, 252.0, 14.0, 26.0, (0.1, 0.1, 0.1), 3.0))
+  ops.append(ops_stroke_rect(296.0, 252.0, 14.0, 20.0, (0.1, 0.1, 0.1), 3.0))
 
   // Lightning bolt
   let bolt : Array[(Double, Double)] = [
@@ -657,15 +651,15 @@ fn hidden_objects_ops() -> Array[Op] {
     (544.0, 270.0),
     (516.0, 270.0),
   ]
-  ops.append(ops_stroke_polyline(bolt + [bolt[0]], (0.1, 0.1, 0.1), 3.5)[:])
+  ops.append(ops_stroke_polyline(bolt + [bolt[0]], (0.1, 0.1, 0.1), 3.5))
 
   // ANSWERS layer: circles + labels
-  ops.push(OpBDC("/OC", Name(PdfName("/ANSWERS"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/ANSWERS"))))
   fn circle_mark(cx : Double, cy : Double, r : Double, label : String) -> Unit {
     let c = circle_points(cx, cy, r, 40)
-    ops.append(ops_stroke_polyline(c + [c[0]], (0.92, 0.33, 0.36), 3.0)[:])
+    ops.append(ops_stroke_polyline(c + [c[0]], (0.92, 0.33, 0.36), 3.0))
     ops.append(
-      ops_text(cx + r + 8.0, cy - 4.0, "/F2", 12.0, label, (0.92, 0.33, 0.36))[:],
+      ops_text(cx + r + 8.0, cy - 4.0, "/F2", 12.0, label, (0.92, 0.33, 0.36)),
     )
   }
 
@@ -681,9 +675,9 @@ fn hidden_objects_ops() -> Array[Op] {
 ///|
 fn end_ops() -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.06, 0.07, 0.1))[:])
+  ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.06, 0.07, 0.1)))
   ops.append(
-    ops_text(72.0, h() - 110.0, "/F0", 54.0, "Nice work!", (0.95, 0.96, 0.98))[:],
+    ops_text(72.0, h() - 110.0, "/F0", 54.0, "Nice work!", (0.95, 0.96, 0.98)),
   )
   ops.append(
     ops_text(
@@ -693,7 +687,7 @@ fn end_ops() -> Array[Op] {
       18.0,
       "Print, color, and share. Or generate your own pages.",
       (0.8, 0.84, 0.9),
-    )[:],
+    ),
   )
   ops.append(
     ops_text(
@@ -703,9 +697,9 @@ fn end_ops() -> Array[Op] {
       12.0,
       "Tip: duplicate a page and draw your own outline with pdfops.",
       (0.6, 0.64, 0.7),
-    )[:],
+    ),
   )
-  ops.append(ops_home_badge()[:])
+  ops.append(ops_home_badge())
   ops
 }
 
