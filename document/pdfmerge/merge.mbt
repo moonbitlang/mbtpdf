@@ -48,7 +48,7 @@ pub fn PdfMerger::merge_pdfs(
   let pages = Array::new()
   for pair in combine(ranges, pagelists) {
     let selected = select_pages(pair.0, pair.1)
-    pages.append(selected[:])
+    pages.append(selected)
   }
   for src in pdfs {
     src.objiter((k, v) => pdf.addobj_given_num((k, v)))

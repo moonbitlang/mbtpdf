@@ -68,14 +68,14 @@ test "merge_pdfs keeps named and action bookmarks while dropping out of range" {
   ]
   add_names_dests(pdf, entries)
   let action : @pdf.PdfObject = Dictionary([
-    ("/S", Name(PdfName("/GoTo"))),
+    ("/S", Name(PdfName(b"/GoTo"))),
     ("/D", PdfString("DestB")),
   ])
   let bookmarks : Array[@pdfmarks.Bookmark] = [
     {
       level: 0,
       text: "Named",
-      target: NamedDestination(PdfName("/DestA")),
+      target: NamedDestination(PdfName(b"/DestA")),
       isopen: false,
       colour: (0.0, 0.0, 0.0),
       flags: 0,
@@ -122,7 +122,7 @@ test "merge_pdfs handles malformed names and optional catalog entries" {
   set_catalog_entry(
     pdf1,
     "/OCProperties",
-    Dictionary([("/OCGs", PdfArray([Name(PdfName("/OCG1"))]))]),
+    Dictionary([("/OCGs", PdfArray([Name(PdfName(b"/OCG1"))]))]),
   )
   set_catalog_entry(pdf1, "/AcroForm", Null)
   set_catalog_entry(
@@ -197,7 +197,7 @@ test "merge_pdfs rewrites string and legacy named bookmarks" {
     {
       level: 0,
       text: "Named",
-      target: NamedDestination(PdfName("/DestA")),
+      target: NamedDestination(PdfName(b"/DestA")),
       isopen: false,
       colour: (0.0, 0.0, 0.0),
       flags: 0,
@@ -357,8 +357,8 @@ test "merge_pdfs rewrites and preserves diverse destination bookmark targets" {
     Dictionary([("/LegacyFit", legacy_fit), ("/LegacyOther", legacy_other)]),
   )
   let bookmarks : Array[@pdfmarks.Bookmark] = [
-    mk_mark("LegacyFit", NamedDestination(PdfName("/LegacyFit"))),
-    mk_mark("LegacyOther", NamedDestination(PdfName("/LegacyOther"))),
+    mk_mark("LegacyFit", NamedDestination(PdfName(b"/LegacyFit"))),
+    mk_mark("LegacyOther", NamedDestination(PdfName(b"/LegacyOther"))),
     mk_mark("DirectFitH", FitH(tp1, Some(0.0))),
     mk_mark("DirectFitV", FitV(tp1, Some(0.0))),
     mk_mark("DirectFitR", FitR(tp1, 0.0, 0.0, 1.0, 1.0)),
@@ -401,30 +401,30 @@ test "merge_pdfs resolves NamedDestination via name tree when /Dests missing" {
     ("NoDStr", Dictionary([])),
   ])
   let action_goto : @pdf.PdfObject = Dictionary([
-    ("/S", Name(PdfName("/GoTo"))),
+    ("/S", Name(PdfName(b"/GoTo"))),
     ("/D", PdfString("TreeStr")),
   ])
   let action_bad_d : @pdf.PdfObject = Dictionary([
-    ("/S", Name(PdfName("/GoTo"))),
+    ("/S", Name(PdfName(b"/GoTo"))),
     ("/D", Integer(0)),
   ])
   let action_bad_s : @pdf.PdfObject = Dictionary([
-    ("/S", Name(PdfName("/NotGoTo"))),
+    ("/S", Name(PdfName(b"/NotGoTo"))),
     ("/D", PdfString("TreeStr")),
   ])
   let action_missing_dest : @pdf.PdfObject = Dictionary([
-    ("/S", Name(PdfName("/GoTo"))),
+    ("/S", Name(PdfName(b"/GoTo"))),
     ("/D", PdfString("MissingStr")),
   ])
   let action_no_d : @pdf.PdfObject = Dictionary([
-    ("/S", Name(PdfName("/GoTo"))),
+    ("/S", Name(PdfName(b"/GoTo"))),
     ("/D", PdfString("NoDStr")),
   ])
   let bookmarks : Array[@pdfmarks.Bookmark] = [
     {
       level: 0,
       text: "TreeOnly",
-      target: NamedDestination(PdfName("/OnlyInTree")),
+      target: NamedDestination(PdfName(b"/OnlyInTree")),
       isopen: false,
       colour: (0.0, 0.0, 0.0),
       flags: 0,
@@ -448,7 +448,7 @@ test "merge_pdfs resolves NamedDestination via name tree when /Dests missing" {
     {
       level: 0,
       text: "OtherDocNamed",
-      target: NamedDestination(PdfName("/OtherDocNamed")),
+      target: NamedDestination(PdfName(b"/OtherDocNamed")),
       isopen: false,
       colour: (0.0, 0.0, 0.0),
       flags: 0,
@@ -456,7 +456,7 @@ test "merge_pdfs resolves NamedDestination via name tree when /Dests missing" {
     {
       level: 0,
       text: "NoDNamed",
-      target: NamedDestination(PdfName("/NoDNamed")),
+      target: NamedDestination(PdfName(b"/NoDNamed")),
       isopen: false,
       colour: (0.0, 0.0, 0.0),
       flags: 0,
@@ -550,7 +550,7 @@ test "merge_pdfs drops NamedDestination when no destination trees exist" {
     {
       level: 0,
       text: "MissingDest",
-      target: NamedDestination(PdfName("/MissingDest")),
+      target: NamedDestination(PdfName(b"/MissingDest")),
       isopen: false,
       colour: (0.0, 0.0, 0.0),
       flags: 0,

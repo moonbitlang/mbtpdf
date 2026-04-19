@@ -27,7 +27,7 @@ fn merge_entries(
   let out = Array::new()
   for dict in dicts {
     match pdf.lookup_direct(name, dict) {
-      Some(PdfArray(arr)) => out.append(arr[:])
+      Some(PdfArray(arr)) => out.append(arr)
       _ => ()
     }
   }
@@ -79,11 +79,11 @@ fn merge_default_dictionaries(
     }
   }
   let out = Array::new()
-  out.append(merged_on[:])
-  out.append(merged_off[:])
-  out.append(merged_order[:])
-  out.append(merged_rbgroups[:])
-  out.append(simple_copies[:])
+  out.append(merged_on)
+  out.append(merged_off)
+  out.append(merged_order)
+  out.append(merged_rbgroups)
+  out.append(simple_copies)
   out
 }
 
@@ -137,7 +137,7 @@ fn merge_acroforms(pdf : @pdf.Pdf, pdfs : Array[@pdf.Pdf]) -> Int? raise {
   let merged_field_arrays = Array::new()
   for dict in form_dicts {
     match pdf.lookup_direct("/Fields", dict) {
-      Some(PdfArray(arr)) => merged_field_arrays.append(arr[:])
+      Some(PdfArray(arr)) => merged_field_arrays.append(arr)
       _ => ()
     }
   }
