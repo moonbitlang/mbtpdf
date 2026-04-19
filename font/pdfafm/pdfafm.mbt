@@ -33,7 +33,7 @@ fn split_whitespace(line : String) -> Array[String] {
 
 ///|
 fn parse_int(token : String) -> Int raise {
-  @strconv.parse_int(token, base=10)
+  @string.parse_int(token, base=10)
 }
 
 ///|
@@ -106,7 +106,7 @@ fn extract_section(
 }
 
 ///|
-fn split_header(line : String) -> (String, String) raise {
+fn split_header(line : String) -> (String, String) {
   match line.find(" ") {
     None => (line, "")
     Some(pos) =>
