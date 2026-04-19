@@ -35,12 +35,12 @@ fn bytes_prefix(values : Array[Byte], len : Int) -> Array[Byte] {
 
 ///|
 fn array_equal(a : Array[Int], b : Array[Int]) -> Bool {
-  a[:].equal(b[:])
+  a[:].equal(b)
 }
 
 ///|
 fn bytes_equal(a : Array[Byte], b : Array[Byte]) -> Bool {
-  a[:].equal(b[:])
+  a[:].equal(b)
 }
 
 ///|

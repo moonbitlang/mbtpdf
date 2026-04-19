@@ -41,10 +41,10 @@ test "decrypt_pdf treats /Crypt with non-Identity name as decryptable" {
   set_encrypt_metadata_false(enc)
   let crypt_stream_dict : @pdf.PdfObject = Dictionary([
     ("/Length", Integer(3)),
-    ("/Filter", Name(PdfName("/Crypt"))),
+    ("/Filter", Name(PdfName(b"/Crypt"))),
     (
       "/DecodeParms",
-      PdfArray([Dictionary([("/Name", Name(PdfName("/NotIdentity")))])]),
+      PdfArray([Dictionary([("/Name", Name(PdfName(b"/NotIdentity")))])]),
     ),
   ])
   let stream_bytes = @pdfio.bytes_of_string("abc")
