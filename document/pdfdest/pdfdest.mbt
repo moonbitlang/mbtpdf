@@ -48,7 +48,7 @@ fn read_array_destination(
   arr : Array[PdfObject],
 ) -> Destination? raise {
   match arr {
-    [page, Name(PdfName("/XYZ")), left, top, zoom] =>
+    [page, Name(PdfName(b"/XYZ")), left, top, zoom] =>
       match TargetPage::read(page) {
         Some(p) =>
           Some(
@@ -61,48 +61,48 @@ fn read_array_destination(
           )
         None => None
       }
-    [page, Name(PdfName("/XYZ")), left, top] =>
+    [page, Name(PdfName(b"/XYZ")), left, top] =>
       match TargetPage::read(page) {
         Some(p) =>
           Some(XYZ(p, option_getnum(pdf, left), option_getnum(pdf, top), None))
         None => None
       }
-    [page, Name(PdfName("/XYZ")), left] =>
+    [page, Name(PdfName(b"/XYZ")), left] =>
       match TargetPage::read(page) {
         Some(p) => Some(XYZ(p, option_getnum(pdf, left), None, None))
         None => None
       }
-    [page, Name(PdfName("/FitH")), top] =>
+    [page, Name(PdfName(b"/FitH")), top] =>
       match TargetPage::read(page) {
         Some(p) => Some(FitH(p, option_getnum(pdf, top)))
         None => None
       }
-    [page, Name(PdfName("/FitV")), left] =>
+    [page, Name(PdfName(b"/FitV")), left] =>
       match TargetPage::read(page) {
         Some(p) => Some(FitV(p, option_getnum(pdf, left)))
         None => None
       }
-    [page, Name(PdfName("/FitBH")), top] =>
+    [page, Name(PdfName(b"/FitBH")), top] =>
       match TargetPage::read(page) {
         Some(p) => Some(FitBH(p, option_getnum(pdf, top)))
         None => None
       }
-    [page, Name(PdfName("/FitBV")), left] =>
+    [page, Name(PdfName(b"/FitBV")), left] =>
       match TargetPage::read(page) {
         Some(p) => Some(FitBV(p, option_getnum(pdf, left)))
         None => None
       }
-    [page, Name(PdfName("/Fit"))] =>
+    [page, Name(PdfName(b"/Fit"))] =>
       match TargetPage::read(page) {
         Some(p) => Some(Fit(p))
         None => None
       }
-    [page, Name(PdfName("/FitB"))] =>
+    [page, Name(PdfName(b"/FitB"))] =>
       match TargetPage::read(page) {
         Some(p) => Some(FitB(p))
         None => None
       }
-    [page, Name(PdfName("/FitR")), left, bottom, right, top] =>
+    [page, Name(PdfName(b"/FitR")), left, bottom, right, top] =>
       match TargetPage::read(page) {
         Some(p) =>
           Some(
@@ -213,30 +213,30 @@ pub fn Destination::to_pdf_object(self : Destination) -> PdfObject {
     XYZ(p, left, top, zoom) =>
       PdfArray([
         p.to_pdf_object(),
-        Name(PdfName("/XYZ")),
+        Name(PdfName(b"/XYZ")),
         pos_null(left),
         pos_null(top),
         pos_null(zoom),
       ])
-    Fit(p) => PdfArray([p.to_pdf_object(), Name(PdfName("/Fit"))])
+    Fit(p) => PdfArray([p.to_pdf_object(), Name(PdfName(b"/Fit"))])
     FitH(p, top) =>
-      PdfArray([p.to_pdf_object(), Name(PdfName("/FitH")), pos_null(top)])
+      PdfArray([p.to_pdf_object(), Name(PdfName(b"/FitH")), pos_null(top)])
     FitV(p, left) =>
-      PdfArray([p.to_pdf_object(), Name(PdfName("/FitV")), pos_null(left)])
+      PdfArray([p.to_pdf_object(), Name(PdfName(b"/FitV")), pos_null(left)])
     FitR(p, left, bottom, right, top) =>
       PdfArray([
         p.to_pdf_object(),
-        Name(PdfName("/FitR")),
+        Name(PdfName(b"/FitR")),
         Real(left),
         Real(bottom),
         Real(right),
         Real(top),
       ])
-    FitB(p) => PdfArray([p.to_pdf_object(), Name(PdfName("/FitB"))])
+    FitB(p) => PdfArray([p.to_pdf_object(), Name(PdfName(b"/FitB"))])
     FitBH(p, top) =>
-      PdfArray([p.to_pdf_object(), Name(PdfName("/FitBH")), pos_null(top)])
+      PdfArray([p.to_pdf_object(), Name(PdfName(b"/FitBH")), pos_null(top)])
     FitBV(p, left) =>
-      PdfArray([p.to_pdf_object(), Name(PdfName("/FitBV")), pos_null(left)])
+      PdfArray([p.to_pdf_object(), Name(PdfName(b"/FitBV")), pos_null(left)])
   }
 }
 
@@ -298,7 +298,7 @@ pub fn Destination::transform(
     }
     Action(a) =>
       match (pdf.lookup_direct("/S", a), pdf.lookup_direct("/D", a)) {
-        (Some(Name(PdfName("/GoTo"))), Some(d)) => {
+        (Some(Name(PdfName(b"/GoTo"))), Some(d)) => {
           let transformed = Destination::read(pdf, d, shallow=true).transform(
             pdf, t,
           )
