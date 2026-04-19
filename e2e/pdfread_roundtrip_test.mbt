@@ -71,8 +71,8 @@ test "pdf_of_input removes xref and objstm objects after eager parse" {
       Stream(r) => {
         let (dict, _) = r.val
         match (parsed.lookup_direct("/Type", dict) : @pdf.PdfObject?) {
-          Some(Name(PdfName("/XRef"))) => fail("expected xref streams removed")
-          Some(Name(PdfName("/ObjStm"))) =>
+          Some(Name(PdfName(b"/XRef"))) => fail("expected xref streams removed")
+          Some(Name(PdfName(b"/ObjStm"))) =>
             fail("expected objstm streams removed")
           _ => ()
         }

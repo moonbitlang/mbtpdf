@@ -9,10 +9,13 @@ import {
   "bobzhang/mbtpdf/graphics/pdfops",
   "bobzhang/mbtpdf/io/pdfwritefs",
   "moonbitlang/async",
-  "moonbitlang/async/fs",
   "moonbitlang/core/env",
   "moonbitlang/core/math",
 }
+
+import {
+  "moonbitlang/async/fs",
+} for "test"
 
 options(
   "is-main": true,
