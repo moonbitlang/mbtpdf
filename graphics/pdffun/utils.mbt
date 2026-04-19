@@ -112,7 +112,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
   }
   let out = Array::new(capacity=total)
   for list in lists {
-    out.append(list[:])
+    out.append(list)
   }
   out
 }
@@ -195,7 +195,7 @@ fn eval_function_sampled(
 ///|
 fn[T] concat_arrays(a : Array[T], b : Array[T]) -> Array[T] {
   let out = Array::new(capacity=a.length() + b.length())
-  out.append(a[:])
-  out.append(b[:])
+  out.append(a)
+  out.append(b)
   out
 }

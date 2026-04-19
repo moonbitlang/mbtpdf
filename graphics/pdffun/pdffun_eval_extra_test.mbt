@@ -88,7 +88,7 @@ test "parse_function rejects bad bits per sample" {
     ("/Domain", PdfArray([Real(0.0), Real(1.0)])),
     ("/Range", PdfArray([Real(0.0), Real(1.0)])),
     ("/Size", PdfArray([Integer(1)])),
-    ("/BitsPerSample", Name(PdfName("/Bad"))),
+    ("/BitsPerSample", Name(PdfName(b"/Bad"))),
   ])
   let res : Result[PdfFunction, Error] = try? PdfFunction::parse(pdf, dict)
   assert_true(res is Err(_))
