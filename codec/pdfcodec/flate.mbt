@@ -279,7 +279,7 @@ pub impl PdfFilterNameDecode for @pdf.PdfName with decode_stage(
   data : Array[Byte],
   jbig2dec : String?,
 ) -> Array[Byte] raise CodecError {
-  if filter_name is PdfName("/FlateDecode" | "/Fl") {
+  if filter_name is PdfName(b"/FlateDecode" | b"/Fl") {
     let mut decoded = ctx.decode_flate(data)
     match parms {
       Some(Dictionary(_)) => {
@@ -294,21 +294,21 @@ pub impl PdfFilterNameDecode for @pdf.PdfName with decode_stage(
       _ => ()
     }
     decoded
-  } else if filter_name is PdfName("/ASCIIHexDecode" | "/AHx") {
+  } else if filter_name is PdfName(b"/ASCIIHexDecode" | b"/AHx") {
     decode_asciihex(@pdfio.Input::of_bytes(data, source="asciihex"))
-  } else if filter_name is PdfName("/ASCII85Decode" | "/A85") {
+  } else if filter_name is PdfName(b"/ASCII85Decode" | b"/A85") {
     decode_ascii85(@pdfio.Input::of_bytes(data, source="ascii85"))
-  } else if filter_name is PdfName("/RunLengthDecode" | "/RL") {
+  } else if filter_name is PdfName(b"/RunLengthDecode" | b"/RL") {
     decode_runlength(@pdfio.Input::of_bytes(data, source="runlength"))
-  } else if filter_name is PdfName("/LZWDecode" | "/LZW") {
+  } else if filter_name is PdfName(b"/LZWDecode" | b"/LZW") {
     let early = get_int_param(pdf, parms, "/EarlyChange", 1)
     decode_lzw(early, @pdfio.Input::of_bytes(data, source="lzw"))
-  } else if filter_name is PdfName("/Crypt") {
+  } else if filter_name is PdfName(b"/Crypt") {
     data
-  } else if filter_name is PdfName("/JBIG2Decode") {
+  } else if filter_name is PdfName(b"/JBIG2Decode") {
     let _ = jbig2dec
     raise DecodeNotSupported("JBIG2Decode requires decode_pdfstream_async")
-  } else if filter_name is PdfName("/CCITTFaxDecode" | "/CCF") {
+  } else if filter_name is PdfName(b"/CCITTFaxDecode" | b"/CCF") {
     let k = get_int_param(pdf, parms, "/K", 0)
     let eol = get_bool_param(pdf, parms, "/EndOfLine", false)
     let eba = get_bool_param(pdf, parms, "/EncodedByteAlign", false)
