@@ -22,8 +22,8 @@ fn merge_bookmarks(
         _ => []
       }
       let out = Array::new(capacity=oldstyle.length() + newstyle.length())
-      out.append(oldstyle[:])
-      out.append(newstyle[:])
+      out.append(oldstyle)
+      out.append(newstyle)
       out
     }
     fn process_mark(
@@ -94,7 +94,7 @@ fn merge_bookmarks(
             }
           Action(a) =>
             match pdf.lookup_direct("/S", a) {
-              Some(Name(PdfName("/GoTo"))) =>
+              Some(Name(PdfName(b"/GoTo"))) =>
                 match pdf.lookup_direct("/D", a) {
                   Some(PdfString(s)) =>
                     match lookup(s, dest_nametree) {

@@ -25,7 +25,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
   }
   let out = Array::new(capacity=total)
   for list in lists {
-    out.append(list[:])
+    out.append(list)
   }
   out
 }
