@@ -17,8 +17,8 @@ test "encode/decode flate stream" {
     _ => fail("expected encoded stream bytes")
   }
   match (pdf.lookup_direct("/Filter", encoded_dict) : @pdf.PdfObject?) {
-    Some(Name(PdfName("/FlateDecode")))
-    | Some(PdfArray([Name(PdfName("/FlateDecode")), ..])) => ()
+    Some(Name(PdfName(b"/FlateDecode")))
+    | Some(PdfArray([Name(PdfName(b"/FlateDecode")), ..])) => ()
     _ => fail("expected /Filter entry")
   }
   match (pdf.lookup_direct("/Length", encoded_dict) : @pdf.PdfObject?) {
@@ -112,7 +112,7 @@ test "encode/decode ASCII85 roundtrips short chunks (1..3 bytes)" {
 ///|
 test "decode_from_bytes ASCIIHex handles odd nibble" {
   let dict : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/ASCIIHexDecode"))),
+    ("/Filter", Name(PdfName(b"/ASCIIHexDecode"))),
   ])
   let out = @pdfcodec.PdfCodec::new().decode_from_bytes(
     @pdfio.bytes_of_string("F>"),
@@ -147,7 +147,7 @@ test "encode ASCII85 uses z for zero tuple" {
 ///|
 test "decode_from_bytes ASCII85 handles z tuple" {
   let dict : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/ASCII85Decode"))),
+    ("/Filter", Name(PdfName(b"/ASCII85Decode"))),
   ])
   let out = @pdfcodec.PdfCodec::new().decode_from_bytes(
     @pdfio.bytes_of_string("z~>"),
@@ -167,7 +167,7 @@ test "decode_from_bytes ASCII85 handles z tuple" {
 ///|
 test "decode_from_bytes ASCII85 flushes full groups and ignores 1-digit tail" {
   let dict : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/ASCII85Decode"))),
+    ("/Filter", Name(PdfName(b"/ASCII85Decode"))),
   ])
   let out = @pdfcodec.PdfCodec::new().decode_from_bytes(
     @pdfio.bytes_of_string("!!!!!!~>"),
@@ -187,7 +187,7 @@ test "decode_from_bytes ASCII85 flushes full groups and ignores 1-digit tail" {
 ///|
 test "decode_from_bytes ASCII85 returns None on invalid characters" {
   let dict : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/ASCII85Decode"))),
+    ("/Filter", Name(PdfName(b"/ASCII85Decode"))),
   ])
   let out = @pdfcodec.PdfCodec::new().decode_from_bytes(
     @pdfio.bytes_of_string("v~>"),
@@ -216,7 +216,7 @@ test "encode_pdfstream prepends filter when name already set" {
   let data = @pdfio.bytes_of_string("filter chain")
   let dict : @pdf.PdfObject = Dictionary([
     ("/Length", Integer(@pdfio.bytes_size(data))),
-    ("/Filter", Name(PdfName("/ASCII85Decode"))),
+    ("/Filter", Name(PdfName(b"/ASCII85Decode"))),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(data)))
   let stream_obj : @pdf.PdfObject = Stream(stream_ref)
@@ -225,7 +225,7 @@ test "encode_pdfstream prepends filter when name already set" {
     Some(PdfArray(filters)) => {
       assert_true(filters.length() >= 2)
       match (filters[0] : @pdf.PdfObject) {
-        Name(PdfName("/FlateDecode")) => ()
+        Name(PdfName(b"/FlateDecode")) => ()
         _ => fail("expected /FlateDecode to be first")
       }
     }
@@ -239,7 +239,7 @@ test "encode_pdfstream prepends filter when array already set" {
   let data = @pdfio.bytes_of_string("array filter")
   let dict : @pdf.PdfObject = Dictionary([
     ("/Length", Integer(@pdfio.bytes_size(data))),
-    ("/Filter", PdfArray([Name(PdfName("/ASCIIHexDecode"))])),
+    ("/Filter", PdfArray([Name(PdfName(b"/ASCIIHexDecode"))])),
   ])
   let stream_ref = Ref::new((dict, @pdf.Stream::Got(data)))
   let stream_obj : @pdf.PdfObject = Stream(stream_ref)
@@ -247,7 +247,7 @@ test "encode_pdfstream prepends filter when array already set" {
   match (pdf.lookup_direct("/Filter", stream_ref.val.0) : @pdf.PdfObject?) {
     Some(PdfArray(filters)) =>
       match (filters[0] : @pdf.PdfObject) {
-        Name(PdfName("/FlateDecode")) => ()
+        Name(PdfName(b"/FlateDecode")) => ()
         _ => fail("expected /FlateDecode to be first")
       }
     _ => fail("expected filter array")
