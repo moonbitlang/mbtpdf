@@ -31,7 +31,7 @@ fn next_string(s : String) -> String {
 
 ///|
 fn is_prefix(prefix : String, name : String) -> Bool {
-  name.has_prefix(prefix[:])
+  name.has_prefix(prefix)
 }
 
 ///|
@@ -41,7 +41,7 @@ fn names_used(pdf : @pdf.Pdf) -> Array[String] {
     if x == "" {
       ""
     } else {
-      (try! x[1:]).to_string()
+      x[1:].to_string()
     }
   }
 
@@ -49,7 +49,7 @@ fn names_used(pdf : @pdf.Pdf) -> Array[String] {
     match obj {
       Dictionary(_) | Stream(_) =>
         match pdf.lookup_direct("/Type", obj) {
-          Some(Name(PdfName("/Page" | "/Pages"))) =>
+          Some(Name(PdfName(b"/Page" | b"/Pages"))) =>
             match pdf.lookup_direct("/Resources", obj) {
               Some(resources) =>
                 for key in resource_keys {
@@ -93,7 +93,7 @@ fn addp(prefix : String, name : String) -> String raise {
   if name == "" {
     raise @pdf.PdfError::Msg("addp: blank name")
   }
-  "/" + prefix + (try! name[1:]).to_string()
+  "/" + prefix + name[1:].to_string()
 }
 
 ///|
@@ -209,7 +209,7 @@ fn add_prefix_impl(pdf : @pdf.Pdf, prefix : String) -> Unit raise {
     match obj {
       Dictionary(dict) =>
         match pdf.lookup_direct("/Type", obj) {
-          Some(Name(PdfName("/Page" | "/Pages"))) => {
+          Some(Name(PdfName(b"/Page" | b"/Pages"))) => {
             let (resources, resources_updated) = match
               pdf.lookup_direct("/Resources", obj) {
               Some(res) => (Some(res), Some(change_resources(pdf, prefix, res)))
@@ -292,7 +292,7 @@ fn merge_content_streams(pdf : @pdf.Pdf) -> Unit raise {
     match obj {
       Dictionary(dict) =>
         match pdf.lookup_direct("/Type", obj) {
-          Some(Name(PdfName("/Page" | "/Pages"))) =>
+          Some(Name(PdfName(b"/Page" | b"/Pages"))) =>
             match dict.search_by(pair => pair.0 == "/Contents") {
               Some(index) =>
                 match dict[index].1 {
