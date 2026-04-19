@@ -74,7 +74,7 @@ test "nametree lookup" {
     kids_pdf.nametree_lookup(PdfString("M"), parent_with_kids),
     2,
   )
-  match kids_pdf.nametree_lookup(Name(PdfName("/M")), parent_with_kids) {
+  match kids_pdf.nametree_lookup(Name(PdfName(b"/M")), parent_with_kids) {
     None => ()
     _ => fail("expected none for name key")
   }
@@ -107,6 +107,6 @@ test "contents_of_nametree" {
   let parent = PdfObject::Dictionary([("/Kids", PdfArray([kid1, kid2]))])
   let flattened = pdf.contents_of_nametree(parent)
   assert_eq(flattened.length(), 2)
-  let bad = PdfObject::Dictionary([("/Type", Name(PdfName("/Other")))])
+  let bad = PdfObject::Dictionary([("/Type", Name(PdfName(b"/Other")))])
   assert_is_err(try? pdf.contents_of_nametree(bad))
 }

@@ -1,11 +1,11 @@
 ///|
 test "PdfName compare, bytes, and show" {
-  let a = @pdf.PdfName("/A")
-  let b = @pdf.PdfName("/B")
+  let a = @pdf.PdfName(b"/A")
+  let b = @pdf.PdfName(b"/B")
   assert_eq(a.to_bytes().length(), 2)
   let names = [b, a]
   names.sort()
-  assert_true(names[0] is PdfName("/A"))
+  assert_true(names[0] is PdfName(b"/A"))
   assert_eq(a.to_string(), "/A")
 }
 
@@ -91,7 +91,7 @@ test "real formatting expands scientific notation when present" {
   ]
   let mut exercised = false
   for s in candidates {
-    let parsed : Result[Double, Error] = try? @strconv.parse_double(s)
+    let parsed : Result[Double, Error] = try? @string.parse_double(s)
     let v = match parsed {
       Ok(v) => v
       Err(_) => continue

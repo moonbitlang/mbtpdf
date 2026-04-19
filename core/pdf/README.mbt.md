@@ -123,7 +123,7 @@ test "direct follows indirects" {
 test "lookup_direct finds keys" {
   let pdf = @pdf.Pdf::empty()
   let dict = @pdf.PdfObject::Dictionary([
-    ("/Type", Name(PdfName("/Page"))),
+    ("/Type", Name(PdfName(b"/Page"))),
     ("/Count", Integer(5)),
   ])
   guard pdf.lookup_direct("/Type", dict) is Some(Name(name)) else {
@@ -144,7 +144,7 @@ test "lookup_chain navigates nested dicts" {
   let pdf = @pdf.Pdf::empty()
   let inner = @pdf.PdfObject::Dictionary([("/Value", Integer(100))])
   let outer = @pdf.PdfObject::Dictionary([("/Inner", inner)])
-  guard pdf.lookup_chain(outer, ["/Inner", "/Value"][:]) is Some(Integer(n)) else {
+  guard pdf.lookup_chain(outer, ["/Inner", "/Value"]) is Some(Integer(n)) else {
     fail("expected Integer")
   }
   inspect(n, content="100")
@@ -158,7 +158,7 @@ test "lookup_chain navigates nested dicts" {
 ```mbt check
 ///|
 test "add_dict_entry" {
-  let dict = @pdf.PdfObject::Dictionary([("/Type", Name(PdfName("/Page")))])
+  let dict = @pdf.PdfObject::Dictionary([("/Type", Name(PdfName(b"/Page")))])
   let updated = dict.add_entry("/Count", Integer(1))
   match updated {
     Dictionary(entries) => inspect(entries.length(), content="2")
@@ -206,7 +206,7 @@ test "replace_dict_entry" {
 ///|
 test "remove_dict_entry" {
   let dict = @pdf.PdfObject::Dictionary([
-    ("/Type", Name(PdfName("/Page"))),
+    ("/Type", Name(PdfName(b"/Page"))),
     ("/Count", Integer(1)),
   ])
   let updated = dict.remove_entry("/Count")
