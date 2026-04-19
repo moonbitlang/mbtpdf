@@ -389,9 +389,9 @@ pub fn CMap::parse(pdf : @pdf.Pdf, cmap : @pdf.PdfObject) -> CMap raise {
           match contents {
             Got(data) => {
               let wmode = extract_specifics(data)
-              let chars = @pdfio.charlist_of_bytes(data).filter(c => !is_whitespace(
-                c,
-              ))
+              let chars = @pdfio.charlist_of_bytes(data).filter(c => {
+                !is_whitespace(c)
+              })
               let sections = get_sections(chars)
               let pairs = Array::new()
               for section in sections {

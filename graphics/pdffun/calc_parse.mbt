@@ -288,9 +288,11 @@ pub fn PdfFunction::parse(pdf : @pdf.Pdf, obj : PdfObject) -> PdfFunction raise 
     Integer(0) => {
       let size = match pdf.lookup_fail("no /Size (sampled fun)", "/Size", f) {
         PdfArray(values) =>
-          values.map(value => match value {
-            Integer(n) => n
-            _ => raise @pdf.PdfError::Msg("bad /Size (sampled fun)")
+          values.map(value => {
+            match value {
+              Integer(n) => n
+              _ => raise @pdf.PdfError::Msg("bad /Size (sampled fun)")
+            }
           })
         _ => raise @pdf.PdfError::Msg("Bad /Size (sampled fun)")
       }

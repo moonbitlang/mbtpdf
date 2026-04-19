@@ -206,10 +206,9 @@ fn add_parent(parent : Int?, node : Ntree) -> Ntree raise {
     Some(parent_num) =>
       ntree_obj(node).add_entry("/Parent", Indirect(parent_num))
   }
-  let children = ntree_children(node).map(child => add_parent(
-    Some(ntree_objnum(node)),
-    child,
-  ))
+  let children = ntree_children(node).map(child => {
+    add_parent(Some(ntree_objnum(node)), child)
+  })
   Br(ntree_objnum(node), obj, children, ntree_isopen(node))
 }
 

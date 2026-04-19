@@ -45,26 +45,28 @@ fn names_used(pdf : @pdf.Pdf) -> Array[String] {
     }
   }
 
-  pdf.objiter((_, obj) => match obj {
-    Dictionary(_) | Stream(_) =>
-      match pdf.lookup_direct("/Type", obj) {
-        Some(Name(PdfName("/Page" | "/Pages"))) =>
-          match pdf.lookup_direct("/Resources", obj) {
-            Some(resources) =>
-              for key in resource_keys {
-                match pdf.lookup_direct(key, resources) {
-                  Some(Dictionary(d)) =>
-                    for entry in d {
-                      names.push(unslash(entry.0))
-                    }
-                  _ => ()
+  pdf.objiter((_, obj) => {
+    match obj {
+      Dictionary(_) | Stream(_) =>
+        match pdf.lookup_direct("/Type", obj) {
+          Some(Name(PdfName("/Page" | "/Pages"))) =>
+            match pdf.lookup_direct("/Resources", obj) {
+              Some(resources) =>
+                for key in resource_keys {
+                  match pdf.lookup_direct(key, resources) {
+                    Some(Dictionary(d)) =>
+                      for entry in d {
+                        names.push(unslash(entry.0))
+                      }
+                    _ => ()
+                  }
                 }
-              }
-            _ => ()
-          }
-        _ => ()
-      }
-    _ => ()
+              _ => ()
+            }
+          _ => ()
+        }
+      _ => ()
+    }
   })
   names.sort()
   names.dedup()
@@ -180,9 +182,9 @@ fn fix_stream(
     Indirect(i) =>
       if fixed_streams.get(i) is None {
         let operators = @pdfops.Op::parse_operators(pdf, resources, [obj])
-        let operators_updated = operators.map(op => prefix_operator(
-          pdf, prefix, op,
-        ))
+        let operators_updated = operators.map(op => {
+          prefix_operator(pdf, prefix, op)
+        })
         let stream_obj = pdf.lookup_obj(i)
         match stream_obj {
           Stream(r) =>

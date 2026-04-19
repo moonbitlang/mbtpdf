@@ -52,10 +52,9 @@ test "build_name_tree handles empty input" {
 test "build_name_tree uses kids for large inputs" {
   let pdf = @pdf.Pdf::empty()
   let tree_ctx = @pdftree.PdfTree::new(pdf)
-  let entries : Array[(String, @pdf.PdfObject)] = Array::makei(11, i => (
-    "Key\{i}",
-    Integer(i),
-  ))
+  let entries : Array[(String, @pdf.PdfObject)] = Array::makei(11, i => {
+    ("Key\{i}", Integer(i))
+  })
   let tree = tree_ctx.build_name_tree(false, entries)
   match pdf.lookup_direct("/Kids", tree) {
     Some(PdfArray(kids)) => assert_true(kids.length() > 0)
@@ -77,10 +76,9 @@ test "build_name_tree uses kids for large inputs" {
 test "build_name_tree uses integer limits for large number trees" {
   let pdf = @pdf.Pdf::empty()
   let tree_ctx = @pdftree.PdfTree::new(pdf)
-  let entries : Array[(String, @pdf.PdfObject)] = Array::makei(11, i => (
-    i.to_string(),
-    Integer(i),
-  ))
+  let entries : Array[(String, @pdf.PdfObject)] = Array::makei(11, i => {
+    (i.to_string(), Integer(i))
+  })
   let tree = tree_ctx.build_name_tree(true, entries)
   match pdf.lookup_direct("/Kids", tree) {
     Some(PdfArray(kids)) => assert_true(kids.length() > 0)

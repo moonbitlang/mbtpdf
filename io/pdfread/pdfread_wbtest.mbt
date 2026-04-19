@@ -40,7 +40,9 @@ test "@pdfsyntax.lex_next recovers from lex errors" {
   let array_level : Ref[Int] = { val: 0 }
   let previous = Array::new()
   let token = @pdfe.with_logger(_ => (), fn() {
-    @pdfsyntax.lex_next(dict_level, array_level, false, input, previous, true, _ => [])
+    @pdfsyntax.lex_next(dict_level, array_level, false, input, previous, true, _ => {
+      []
+    })
   })
   match token {
     StopLexing => ()

@@ -148,13 +148,12 @@ fn get_tables(
   for line in header_lines {
     headers.push(split_header(line))
   }
-  let charmetrics = char_metrics_lines.filter_map(line => if line
-    .trim()
-    .length() <
-    5 {
-    None
-  } else {
-    Some(read_char_metrics_line(line))
+  let charmetrics = char_metrics_lines.filter_map(line => {
+    if line.trim().length() < 5 {
+      None
+    } else {
+      Some(read_char_metrics_line(line))
+    }
   })
   let charmetrics_hash : Map[String, (Int, Int)] = Map::new(
     capacity=charmetrics.length(),
@@ -162,10 +161,12 @@ fn get_tables(
   for entry in charmetrics {
     charmetrics_hash.set(entry.0, entry.1)
   }
-  let kerns = kern_lines.filter_map(line => if line.trim().length() < 5 {
-    None
-  } else {
-    Some(read_kern_line(line))
+  let kerns = kern_lines.filter_map(line => {
+    if line.trim().length() < 5 {
+      None
+    } else {
+      Some(read_kern_line(line))
+    }
   })
   let ws = Array::new(capacity=charmetrics.length())
   for entry in charmetrics {

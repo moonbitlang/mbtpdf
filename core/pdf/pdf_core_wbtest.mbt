@@ -231,9 +231,9 @@ test "lookup and chains" {
   let map_missing : Map[Int, Array[Int]] = Map::new()
   map_missing.set(12, [0])
   let ref_missing = Ref::new(
-    ObjectData::ToParseFromObjectStream(map_missing, 6, 0, (_stream, _idx) => [
-      (13, (Ref::new(Parsed(Integer(7))), 0)),
-    ]),
+    ObjectData::ToParseFromObjectStream(map_missing, 6, 0, (_stream, _idx) => {
+      [(13, (Ref::new(Parsed(Integer(7))), 0))]
+    }),
   )
   pdf_parse.objects.objects.set(12, (ref_missing, 0))
   match pdf_parse.lookup_obj(12) {
@@ -243,9 +243,9 @@ test "lookup and chains" {
   let map_found : Map[Int, Array[Int]] = Map::new()
   map_found.set(14, [0])
   let ref_found = Ref::new(
-    ObjectData::ToParseFromObjectStream(map_found, 7, 0, (_stream, _idx) => [
-      (14, (Ref::new(Parsed(Integer(8))), 0)),
-    ]),
+    ObjectData::ToParseFromObjectStream(map_found, 7, 0, (_stream, _idx) => {
+      [(14, (Ref::new(Parsed(Integer(8))), 0))]
+    }),
   )
   pdf_parse.objects.objects.set(14, (ref_found, 0))
   assert_integer(pdf_parse.lookup_obj(14), 8)

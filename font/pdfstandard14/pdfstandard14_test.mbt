@@ -32,9 +32,9 @@ test "afm_data loads standard fonts" {
 
 ///|
 test "baseline_adjustment covers all fonts" {
-  let values = all_standard_fonts().map(font => @pdfstandard14.PdfStandard14::new().baseline_adjustment(
-    font,
-  ))
+  let values = all_standard_fonts().map(font => {
+    @pdfstandard14.PdfStandard14::new().baseline_adjustment(font)
+  })
   assert_eq(values.length(), all_standard_fonts().length())
   assert_eq(
     @pdfstandard14.PdfStandard14::new().baseline_adjustment(TimesBold),
@@ -48,9 +48,9 @@ test "baseline_adjustment covers all fonts" {
 
 ///|
 test "stemv_of_standard_font covers all fonts" {
-  let values = all_standard_fonts().map(font => @pdfstandard14.PdfStandard14::new().stemv_of_standard_font(
-    font,
-  ))
+  let values = all_standard_fonts().map(font => {
+    @pdfstandard14.PdfStandard14::new().stemv_of_standard_font(font)
+  })
   assert_eq(values.length(), all_standard_fonts().length())
   assert_eq(
     @pdfstandard14.PdfStandard14::new().stemv_of_standard_font(TimesBold),

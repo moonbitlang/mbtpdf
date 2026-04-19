@@ -51,9 +51,11 @@ test "recurse and iterators" {
   pdf.addobj_given_num((1, Integer(1)))
   match
     recurse_array(
-      obj => match obj {
-        Integer(v) => Integer(v + 1)
-        _ => obj
+      obj => {
+        match obj {
+          Integer(v) => Integer(v + 1)
+          _ => obj
+        }
       },
       [Integer(1), Integer(2)],
     ) {
@@ -70,16 +72,20 @@ test "recurse and iterators" {
   pdf.objiter_inorder((num, _) => seen_inorder.val.push(num))
   assert_eq(seen_inorder.val, [1, 2])
   pdf.objects.objects.set(3, ({ val: ParsedAlreadyDecrypted(Integer(5)) }, 0))
-  pdf.objselfmap(obj => match obj {
-    Integer(v) => Integer(v + 1)
-    _ => obj
+  pdf.objselfmap(obj => {
+    match obj {
+      Integer(v) => Integer(v + 1)
+      _ => obj
+    }
   })
   assert_integer(pdf.lookup_obj(3), 6)
   let stream = make_stream(Dictionary([]), @pdfio.bytes_of_string("x"))
   pdf.addobj_given_num((4, stream))
-  let selected = pdf.objselect(obj => match obj {
-    Integer(_) => true
-    _ => false
+  let selected = pdf.objselect(obj => {
+    match obj {
+      Integer(_) => true
+      _ => false
+    }
   })
   assert_true(selected.contains(1))
 }

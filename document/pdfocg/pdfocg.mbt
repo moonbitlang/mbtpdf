@@ -100,9 +100,11 @@ fn read_config(pdf : @pdf.Pdf, config : @pdf.PdfObject) -> OcgConfig {
   let ocgconfig_on = match pdf.lookup_direct("/ON", config) {
     Some(PdfArray(indirects)) =>
       Some(
-        indirects.map(obj => match obj {
-          Indirect(n) => n
-          _ => 0
+        indirects.map(obj => {
+          match obj {
+            Indirect(n) => n
+            _ => 0
+          }
         }),
       )
     _ => None
@@ -110,9 +112,11 @@ fn read_config(pdf : @pdf.Pdf, config : @pdf.PdfObject) -> OcgConfig {
   let ocgconfig_off = match pdf.lookup_direct("/OFF", config) {
     Some(PdfArray(indirects)) =>
       Some(
-        indirects.map(obj => match obj {
-          Indirect(n) => n
-          _ => 0
+        indirects.map(obj => {
+          match obj {
+            Indirect(n) => n
+            _ => 0
+          }
         }),
       )
     _ => None
@@ -120,9 +124,11 @@ fn read_config(pdf : @pdf.Pdf, config : @pdf.PdfObject) -> OcgConfig {
   let ocgconfig_intent = match pdf.lookup_direct("/Intent", config) {
     Some(Name(n)) => [n.to_string_bytes()]
     Some(PdfArray(items)) =>
-      items.map(item => match pdf.direct(item) {
-        Name(n) => n.to_string_bytes()
-        _ => ""
+      items.map(item => {
+        match pdf.direct(item) {
+          Name(n) => n.to_string_bytes()
+          _ => ""
+        }
       })
     _ => ["/View"]
   }
@@ -140,9 +146,11 @@ fn read_config(pdf : @pdf.Pdf, config : @pdf.PdfObject) -> OcgConfig {
   let ocgconfig_rbgroups = []
   let ocgconfig_locked = match pdf.lookup_direct("/Locked", config) {
     Some(PdfArray(items)) =>
-      items.map(item => match pdf.direct(item) {
-        Indirect(n) => n
-        _ => 0
+      items.map(item => {
+        match pdf.direct(item) {
+          Indirect(n) => n
+          _ => 0
+        }
       })
     _ => []
   }
@@ -177,9 +185,11 @@ fn read_individual_ocg(pdf : @pdf.Pdf, ocg : @pdf.PdfObject) -> Ocg raise {
   let ocg_intent = match pdf.lookup_direct("/Intent", ocg) {
     Some(Name(n)) => [n.to_string_bytes()]
     Some(PdfArray(items)) =>
-      items.filter_map(item => match pdf.direct(item) {
-        Name(n) => Some(n.to_string_bytes())
-        _ => None
+      items.filter_map(item => {
+        match pdf.direct(item) {
+          Name(n) => Some(n.to_string_bytes())
+          _ => None
+        }
       })
     _ => ["/View"]
   }

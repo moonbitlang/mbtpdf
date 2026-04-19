@@ -25,5 +25,4 @@ async test "pdfmarks bookmark string roundtrip through file output" {
   assert_eq(parsed_marks.length(), 1)
   assert_eq(parsed_marks[0].text, "Café")
   let _ : Result[Unit, Error] = try? @fs.remove(filename)
-
 }

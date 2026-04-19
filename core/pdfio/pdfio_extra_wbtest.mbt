@@ -43,7 +43,9 @@ test "input utils handle EOF and rewind paths" {
     _ => fail("expected rewind")
   }
   assert_is_err(
-    try? Input::of_string("abc", source="eof-string").getuntil_string(false, _ => false),
+    try? Input::of_string("abc", source="eof-string").getuntil_string(false, _ => {
+      false
+    }),
   )
   let eof_fail = Input::of_string("", source="eof")
   assert_is_err(try? eof_fail.ignoreuntil(false, _ => true))

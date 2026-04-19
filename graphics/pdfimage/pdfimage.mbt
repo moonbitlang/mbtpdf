@@ -64,11 +64,13 @@ fn decode(fs : Array[Double], bpc : Int, image : Array[Byte]) -> Unit raise {
     return
   }
   let max_val = (1 << bpc) - 1
-  let interpolate = (dmin : Double, dmax : Double, x : Int) => if max_val <= 0 {
-    0
-  } else {
-    let numerator = Double::from_int(x) * (dmax - dmin)
-    (dmin + numerator / Double::from_int(max_val)).to_int()
+  let interpolate = (dmin : Double, dmax : Double, x : Int) => {
+    if max_val <= 0 {
+      0
+    } else {
+      let numerator = Double::from_int(x) * (dmax - dmin)
+      (dmin + numerator / Double::from_int(max_val)).to_int()
+    }
   }
   let pairs = Array::new(capacity=fs.length() / 2)
   for i in 0..<(fs.length() / 2) {
@@ -335,10 +337,12 @@ fn xyz_of_lab(
   yw : Double,
   zw : Double,
 ) -> (Double, Double, Double) {
-  let g = (x : Double) => if x >= 6.0 / 29.0 {
-    x * x * x
-  } else {
-    108.0 / 841.0 * (x - 4.0 / 29.0)
+  let g = (x : Double) => {
+    if x >= 6.0 / 29.0 {
+      x * x * x
+    } else {
+      108.0 / 841.0 * (x - 4.0 / 29.0)
+    }
   }
   let l = (l_in + 16.0) / 116.0 + a_in / 500.0
   let m = (l_in + 16.0) / 116.0

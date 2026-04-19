@@ -15,10 +15,12 @@ pub async fn run(args : Array[String], quiet? : Bool = false) -> Unit {
   let out_file = args[2]
   try {
     let pdf = @pdfreadfs.PdfReadFs::new().pdf_of_file(None, None, in_file)
-    pdf.objiter((_, obj) => match obj {
-      Stream(_) =>
-        @pdfcodec.PdfCodec::new().decode_pdfstream_until_unknown(pdf, obj)
-      _ => ()
+    pdf.objiter((_, obj) => {
+      match obj {
+        Stream(_) =>
+          @pdfcodec.PdfCodec::new().decode_pdfstream_until_unknown(pdf, obj)
+        _ => ()
+      }
     })
     @pdfwritefs.PdfWriteFs::new().pdf_to_file(pdf, out_file)
   } catch {

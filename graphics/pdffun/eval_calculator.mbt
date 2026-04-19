@@ -318,7 +318,6 @@ fn eval_function_calculator(
       }
       Pop => {
         let _ = pop_value(stack)
-
       }
       Dup => {
         let a = pop_value(stack)

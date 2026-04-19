@@ -1,4 +1,7 @@
 import {
   "bobzhang/mbtpdf/core/pdfe",
-  "moonbitlang/async",
 }
+
+import {
+  "moonbitlang/async",
+} for "wbtest"
