@@ -1194,10 +1194,8 @@ async fn main {
   match args {
     [_, out] => run(out_file=out)
     [_, out, seed] =>
-      try @strconv.parse_int(seed) catch {
+      run(out_file=out, seed=@string.parse_int(seed).reinterpret_as_uint()) catch {
         _ => run(out_file=out)
-      } noraise {
-        n => run(out_file=out, seed=n.reinterpret_as_uint())
       }
     _ => run()
   }

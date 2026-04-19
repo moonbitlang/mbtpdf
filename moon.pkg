@@ -5,6 +5,9 @@ import {
   "bobzhang/mbtpdf/io/pdfreadfs",
   "bobzhang/mbtpdf/io/pdfwrite",
   "bobzhang/mbtpdf/io/pdfwritefs",
-  "moonbitlang/async/fs",
-  "moonbitlang/async",
 }
+
+import {
+  "moonbitlang/async",
+  "moonbitlang/async/fs",
+} for "test"
