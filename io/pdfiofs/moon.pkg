@@ -1,6 +1,9 @@
 import {
   "bobzhang/mbtpdf/core/pdfio",
-  "moonbitlang/async",
   "moonbitlang/async/fs",
   "moonbitlang/async/io",
 }
+
+import {
+  "moonbitlang/async",
+} for "test"
