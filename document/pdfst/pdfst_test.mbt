@@ -3,14 +3,14 @@ test "trim_structure_tree no-ops on empty pdf" {
   let pdf0 = @pdf.Pdf::empty()
   let pages_root_num = pdf0.addobj(
     Dictionary([
-      ("/Type", Name(PdfName("/Pages"))),
+      ("/Type", Name(PdfName(b"/Pages"))),
       ("/Kids", PdfArray([])),
       ("/Count", Integer(0)),
     ]),
   )
   let catalog_num = pdf0.addobj(
     Dictionary([
-      ("/Type", Name(PdfName("/Catalog"))),
+      ("/Type", Name(PdfName(b"/Catalog"))),
       ("/Pages", Indirect(pages_root_num)),
     ]),
   )

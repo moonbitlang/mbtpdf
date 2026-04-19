@@ -87,7 +87,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
   }
   let out = Array::new(capacity=total)
   for list in lists {
-    out.append(list[:])
+    out.append(list)
   }
   out
 }
@@ -238,7 +238,7 @@ pub fn PdfStructTrees::renumber_parent_trees(
   for i, tree in parent_trees {
     let pdfn = i + 1
     for pair in tree {
-      let key = @strconv.parse_int(pair.0)
+      let key = @string.parse_int(pair.0)
       mapping.set((pdfn, key), next)
       next = next + 1
     }
@@ -291,7 +291,7 @@ pub fn PdfStructTrees::renumber_parent_trees(
     let pdfn = i + 1
     let out = Array::new(capacity=tree.length())
     for pair in tree {
-      let key = @strconv.parse_int(pair.0)
+      let key = @string.parse_int(pair.0)
       match mapping.get((pdfn, key)) {
         Some(new_key) => out.push((new_key.to_string(), pair.1))
         None =>
@@ -406,7 +406,7 @@ pub fn PdfStructTree::merge_structure_trees(
     let out = Array::new()
     for arr in arrays {
       match arr {
-        PdfArray(items) => out.append(items[:])
+        PdfArray(items) => out.append(items)
         _ => @pdfe.log("merge_array: not an array\n")
       }
     }
@@ -499,16 +499,16 @@ pub fn PdfStructTree::merge_structure_trees(
 
   let standard_entries = Array::new()
   standard_entries.push(
-    ("/Type", @pdf.PdfObject::Name(PdfName("/StructTreeRoot"))),
+    ("/Type", @pdf.PdfObject::Name(PdfName(b"/StructTreeRoot"))),
   )
-  standard_entries.append(optional("/IDTree", merged_idtree)[:])
-  standard_entries.append(optional("/ParentTree", merged_parenttree)[:])
-  standard_entries.append(optional("/RoleMap", merged_rolemap)[:])
-  standard_entries.append(optional("/ClassMap", merged_classmap)[:])
+  standard_entries.append(optional("/IDTree", merged_idtree))
+  standard_entries.append(optional("/ParentTree", merged_parenttree))
+  standard_entries.append(optional("/RoleMap", merged_rolemap))
+  standard_entries.append(optional("/ClassMap", merged_classmap))
   standard_entries.append(
-    optional("/PronunciationLexicon", merged_pronunciation_lexicon)[:],
+    optional("/PronunciationLexicon", merged_pronunciation_lexicon),
   )
-  standard_entries.append(optional("/AF", merged_af)[:])
+  standard_entries.append(optional("/AF", merged_af))
   if add_toplevel_document {
     let namespace_objnum = pdf.addobj(
       Dictionary([("/NS", PdfString("http://iso.org/pdf2/ssn"))]),
@@ -517,7 +517,7 @@ pub fn PdfStructTree::merge_structure_trees(
       PdfArray(items) => {
         let out = Array::new(capacity=items.length() + 1)
         out.push(@pdf.PdfObject::Indirect(namespace_objnum))
-        out.append(items[:])
+        out.append(items)
         @pdf.PdfObject::PdfArray(out)
       }
       _ => merged_namespaces
@@ -525,22 +525,22 @@ pub fn PdfStructTree::merge_structure_trees(
     let top_level_objnum = pdf.addobj(
       Dictionary([
         ("/NS", Indirect(namespace_objnum)),
-        ("/S", Name(PdfName("/Document"))),
+        ("/S", Name(PdfName(b"/Document"))),
         ("/P", Indirect(struct_tree_objnum)),
         ("/K", merged_k),
       ]),
     )
     let new_entries = Array::new()
-    new_entries.append(standard_entries[:])
-    new_entries.append(optional("/Namespaces", merged_namespaces)[:])
+    new_entries.append(standard_entries)
+    new_entries.append(optional("/Namespaces", merged_namespaces))
     new_entries.push(("/K", Indirect(top_level_objnum)))
     pdf.addobj_given_num((struct_tree_objnum, Dictionary(new_entries)))
     Some(struct_tree_objnum)
   } else {
     let new_entries = Array::new()
-    new_entries.append(standard_entries[:])
-    new_entries.append(optional("/Namespaces", merged_namespaces)[:])
-    new_entries.append(optional("/K", merged_k)[:])
+    new_entries.append(standard_entries)
+    new_entries.append(optional("/Namespaces", merged_namespaces))
+    new_entries.append(optional("/K", merged_k))
     pdf.addobj_given_num((struct_tree_objnum, Dictionary(new_entries)))
     Some(struct_tree_objnum)
   }
