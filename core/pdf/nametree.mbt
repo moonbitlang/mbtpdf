@@ -9,7 +9,7 @@ fn compare_string(a : String, b : String) -> Int {
   //
   // Use `lexical_compare` to match the previous "scan until first difference,
   // then compare lengths" semantics.
-  a[:].lexical_compare(b[:])
+  a[:].lexical_compare(b)
 }
 
 ///|
@@ -20,7 +20,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
   }
   let out = Array::new(capacity=total)
   for list in lists {
-    out.append(list[:])
+    out.append(list)
   }
   out
 }

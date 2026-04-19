@@ -99,11 +99,7 @@ fn array_index_from_key(key : String) -> Int? {
   if !key.has_prefix("/[") {
     return None
   }
-  let rest = try key[2:] catch {
-    _ => return None
-  } noraise {
-    view => view
-  }
+  let rest = key[2:]
   let mut value = 0
   let mut seen = false
   for ch in rest {
