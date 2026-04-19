@@ -163,7 +163,7 @@ fn bake_object_streams(
     }
     let data = @pdfio.bytes_of_string(data_sb.to_string())
     let dict = PdfObject::Dictionary([
-      ("/Type", Name(PdfName("/ObjStm"))),
+      ("/Type", Name(PdfName(b"/ObjStm"))),
       ("/Length", Integer(@pdfio.bytes_size(data))),
       ("/N", Integer(objs.length())),
       ("/First", Integer(first)),
@@ -174,7 +174,7 @@ fn bake_object_streams(
       if @pdfio.bytes_size(encoded) + 20 < @pdfio.bytes_size(data) {
         let dict_with_filter = dict.add_entry(
           "/Filter",
-          Name(PdfName("/FlateDecode")),
+          Name(PdfName(b"/FlateDecode")),
         )
         let dict_with_length = dict_with_filter.add_entry(
           "/Length",
