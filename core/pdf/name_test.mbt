@@ -1,12 +1,12 @@
 ///|
 test "PdfName basics" {
   let n1 = PdfName::of_string("/Type")
-  assert_true(n1 is PdfName("/Type"))
+  assert_true(n1 is PdfName(b"/Type"))
   assert_eq(n1.to_string_bytes(), "/Type")
 
   // Missing leading slash gets normalized on construction.
   let n2 = @pdfe.with_logger(_ => (), fn() { PdfName::of_string("Type") })
-  assert_true(n2 is PdfName("/Type"))
+  assert_true(n2 is PdfName(b"/Type"))
   assert_eq(n2.to_string_bytes(), "/Type")
 }
 
