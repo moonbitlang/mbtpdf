@@ -61,7 +61,7 @@ pub fn Page::postpend_operators(
   if fast {
     let wrapped : Array[@pdfops.Op] = Array::new()
     wrapped.push(Opq)
-    wrapped.append(ops[:])
+    wrapped.append(ops)
     wrapped.push(OpQ)
     {
       content: self.content + [@pdfops.Op::stream_of_ops(wrapped)],
@@ -88,10 +88,10 @@ pub fn Page::postpend_operators(
       let protected_ops = Page::protect_ops(existing_ops)
       let combined : Array[@pdfops.Op] = Array::new()
       combined.push(Opq)
-      combined.append(existing_ops[:])
-      combined.append(protected_ops[:])
+      combined.append(existing_ops)
+      combined.append(protected_ops)
       combined.push(OpQ)
-      combined.append(ops[:])
+      combined.append(ops)
       {
         content: [@pdfops.Op::stream_of_ops(combined)],
         mediabox: self.mediabox,

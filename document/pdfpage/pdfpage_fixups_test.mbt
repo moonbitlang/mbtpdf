@@ -39,7 +39,7 @@ test "fixup_duplicate_annots clones duplicates and updates popup" {
   ])
   let pdf = @pdfpage.PdfPageDoc::new(pdf1).add_root(pageroot, [])
   let annot_base : @pdf.PdfObject = Dictionary([
-    ("/Subtype", Name(PdfName("/Text"))),
+    ("/Subtype", Name(PdfName(b"/Text"))),
   ])
   let unrelated_num = pdf.addobj(annot_base)
   let annot_num = pdf.addobj(annot_base)
@@ -75,7 +75,9 @@ test "fixup_duplicate_annots tolerates missing popup/parent links" {
     page, page,
   ])
   let pdf = @pdfpage.PdfPageDoc::new(pdf1).add_root(pageroot, [])
-  let annot : @pdf.PdfObject = Dictionary([("/Subtype", Name(PdfName("/Text")))])
+  let annot : @pdf.PdfObject = Dictionary([
+    ("/Subtype", Name(PdfName(b"/Text"))),
+  ])
   let annot_num = pdf.addobj(annot)
   let refs = pdf.page_reference_numbers()
   for refnum in refs {
@@ -97,11 +99,11 @@ test "fixup_destinations removes nulled entries" {
   }
   let dead_dest : @pdf.PdfObject = PdfArray([
     Indirect(null_num),
-    Name(PdfName("/Fit")),
+    Name(PdfName(b"/Fit")),
   ])
   let live_dest : @pdf.PdfObject = PdfArray([
     Indirect(live_page_num),
-    Name(PdfName("/Fit")),
+    Name(PdfName(b"/Fit")),
   ])
   let tree_ctx = @pdftree.PdfTree::new(pdf)
   let tree = tree_ctx.build_name_tree(false, [
@@ -152,12 +154,12 @@ test "fixup_parents raises without page tree" {
 test "fixup_parents skips direct kids" {
   let pdf0 = @pdf.Pdf::empty()
   let page : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/Page"))),
+    ("/Type", Name(PdfName(b"/Page"))),
     ("/Resources", Dictionary([])),
     ("/MediaBox", fixups_sample_rect()),
   ])
   let pages : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/Pages"))),
+    ("/Type", Name(PdfName(b"/Pages"))),
     ("/Kids", PdfArray([page])),
     ("/Count", Integer(1)),
   ])
@@ -226,7 +228,7 @@ test "fixup_duplicate_pages scans malformed page trees" {
   // Pages node with a non-indirect kid.
   let pages_num = base.addobj(
     Dictionary([
-      ("/Type", Name(PdfName("/Pages"))),
+      ("/Type", Name(PdfName(b"/Pages"))),
       ("/Kids", PdfArray([Integer(1)])),
       ("/Count", Integer(1)),
     ]),
@@ -247,7 +249,7 @@ test "fixup_duplicate_pages scans malformed page trees" {
   let base2 = @pdf.Pdf::empty()
   let pages_num2 = base2.addobj(
     Dictionary([
-      ("/Type", Name(PdfName("/Pages"))),
+      ("/Type", Name(PdfName(b"/Pages"))),
       ("/Kids", Integer(1)),
       ("/Count", Integer(1)),
     ]),

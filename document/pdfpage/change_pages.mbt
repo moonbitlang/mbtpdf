@@ -27,7 +27,7 @@ pub fn PdfPageDoc::pagenumber_of_target(
     NullDestination | NamedDestination(_) | StringDestination(_) => 0
     Action(a) =>
       match pdf.lookup_direct("/S", a) {
-        Some(Name(PdfName("/GoTo"))) =>
+        Some(Name(PdfName(b"/GoTo"))) =>
           match pdf.lookup_direct("/D", a) {
             Some(dest) =>
               match fastrefnums {
@@ -157,7 +157,7 @@ fn rewrite_action(
   action : @pdf.PdfObject,
 ) -> @pdf.PdfObject? raise {
   match pdf.lookup_direct("/S", action) {
-    Some(Name(PdfName("/GoTo"))) =>
+    Some(Name(PdfName(b"/GoTo"))) =>
       match pdf.lookup_direct("/D", action) {
         Some(dest) =>
           match rewrite_dest(pdf, mattable, refnumstable, dest) {
@@ -187,7 +187,7 @@ fn change_pages_process_annotations(
             Indirect(i) => {
               let annot = pdf.lookup_obj(i)
               match pdf.lookup_direct("/Subtype", annot) {
-                Some(Name(PdfName("/Link"))) =>
+                Some(Name(PdfName(b"/Link"))) =>
                   match pdf.lookup_direct("/Dest", annot) {
                     Some(dest) =>
                       match rewrite_dest(pdf, mattable, refnumstable, dest) {

@@ -95,7 +95,7 @@ test "pdf_of_pages builds pagetree for many pages" {
     None => fail("expected /Pages")
   }
   match (subset.lookup_direct("/Type", pages) : @pdf.PdfObject?) {
-    Some(Name(PdfName("/Pages"))) => ()
+    Some(Name(PdfName(b"/Pages"))) => ()
     _ => fail("expected /Type /Pages")
   }
   let count = match (subset.lookup_direct("/Count", pages) : @pdf.PdfObject?) {
@@ -139,7 +139,7 @@ test "pdf_of_pages retains page labels when requested" {
 test "pdf_of_pages trims structure tree" {
   let pdf = pdf_of_pages_make_pdf(2)
   let struct_tree : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/StructTreeRoot"))),
+    ("/Type", Name(PdfName(b"/StructTreeRoot"))),
   ])
   let struct_num = pdf.addobj(struct_tree)
   let root = pdf.catalog_of_pdf()
@@ -174,12 +174,12 @@ test "endpage_fast handles missing count" {
   let pdf0 = @pdf.Pdf::empty()
   let rect = pdf_of_pages_rect()
   let page : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/Page"))),
+    ("/Type", Name(PdfName(b"/Page"))),
     ("/MediaBox", rect),
   ])
   let page_num = pdf0.addobj(page)
   let pages : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/Pages"))),
+    ("/Type", Name(PdfName(b"/Pages"))),
     ("/Kids", PdfArray([Indirect(page_num)])),
   ])
   let pages_num = pdf0.addobj(pages)

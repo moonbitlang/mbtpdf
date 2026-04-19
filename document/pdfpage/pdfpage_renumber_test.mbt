@@ -3,7 +3,7 @@ fn renumber_resources() -> @pdf.PdfObject {
   Dictionary([
     ("/Font", Dictionary([("/F1", Null)])),
     ("/ExtGState", Dictionary([("/GS1", Null)])),
-    ("/ColorSpace", Dictionary([("/CS1", Name(PdfName("/DeviceRGB")))])),
+    ("/ColorSpace", Dictionary([("/CS1", Name(PdfName(b"/DeviceRGB")))])),
     ("/Pattern", Dictionary([("/P1", Null)])),
     ("/Shading", Dictionary([("/Sh1", Null)])),
     ("/XObject", Dictionary([("/X1", Null)])),
@@ -24,9 +24,9 @@ fn renumber_page(rect : @pdf.PdfObject) -> @pdfpage.Page raise {
     OpscnName("/P1", [0.2]),
     Opsh("/Sh1"),
     OpDo("/X1"),
-    OpDP("/Span", Name(PdfName("/Prop1"))),
-    OpBDC("/Span", Name(PdfName("/Prop1"))),
-    OpBDC("/Span", Name(PdfName("/PropMissing"))),
+    OpDP("/Span", Name(PdfName(b"/Prop1"))),
+    OpBDC("/Span", Name(PdfName(b"/Prop1"))),
+    OpBDC("/Span", Name(PdfName(b"/PropMissing"))),
   ]
   Page(
     content=[@pdfops.Op::stream_of_ops(ops)],
@@ -100,15 +100,15 @@ test "renumber_pages renames resource operators consistently" {
     _ => fail("expected OpDo")
   }
   match (ops[10] : @pdfops.Op) {
-    OpDP(_, Name(name)) => assert_true(!(name is PdfName("/Prop1")))
+    OpDP(_, Name(name)) => assert_true(!(name is PdfName(b"/Prop1")))
     _ => fail("expected OpDP")
   }
   match (ops[11] : @pdfops.Op) {
-    OpBDC(_, Name(name)) => assert_true(!(name is PdfName("/Prop1")))
+    OpBDC(_, Name(name)) => assert_true(!(name is PdfName(b"/Prop1")))
     _ => fail("expected OpBDC renamed")
   }
   match (ops[12] : @pdfops.Op) {
-    OpBDC(_, Name(name)) => assert_true(name is PdfName("/PropMissing"))
+    OpBDC(_, Name(name)) => assert_true(name is PdfName(b"/PropMissing"))
     _ => fail("expected OpBDC missing")
   }
 }
@@ -123,13 +123,13 @@ test "renumber_pages rewrites inline image colorspace names" {
     Real(100.0),
   ])
   let resources : @pdf.PdfObject = Dictionary([
-    ("/ColorSpace", Dictionary([("/CS1", Name(PdfName("/DeviceRGB")))])),
+    ("/ColorSpace", Dictionary([("/CS1", Name(PdfName(b"/DeviceRGB")))])),
   ])
   let img1_dict : @pdf.PdfObject = Dictionary([
     ("/W", Integer(1)),
     ("/H", Integer(1)),
     ("/BPC", Integer(8)),
-    ("/CS", Name(PdfName("/CS1"))),
+    ("/CS", Name(PdfName(b"/CS1"))),
   ])
   let img2_dict : @pdf.PdfObject = Dictionary([
     ("/W", Integer(1)),
@@ -138,8 +138,8 @@ test "renumber_pages rewrites inline image colorspace names" {
     (
       "/CS",
       PdfArray([
-        Name(PdfName("/Indexed")),
-        Name(PdfName("/DeviceRGB")),
+        Name(PdfName(b"/Indexed")),
+        Name(PdfName(b"/DeviceRGB")),
         Integer(0),
         PdfString(@pdfio.string_of_bytes(@pdfio.bytes_of_list([255, 0, 0]))),
       ]),
@@ -149,7 +149,7 @@ test "renumber_pages rewrites inline image colorspace names" {
     ("/W", Integer(1)),
     ("/H", Integer(1)),
     ("/BPC", Integer(8)),
-    ("/CS", Name(PdfName("/DeviceRGB"))),
+    ("/CS", Name(PdfName(b"/DeviceRGB"))),
   ])
   let ops : Array[@pdfops.Op] = [
     InlineImage((img1_dict, None, @pdfio.bytes_of_string("RGB"))),
@@ -178,10 +178,10 @@ test "renumber_pages rewrites inline image colorspace names" {
       InlineImage((inline_dict, _, _)) =>
         match pdf.lookup_direct("/CS", inline_dict) {
           Some(Name(name)) =>
-            if name is PdfName("/DeviceRGB") {
+            if name is PdfName(b"/DeviceRGB") {
               saw_device = true
             } else {
-              assert_true(!(name is PdfName("/CS1")))
+              assert_true(!(name is PdfName(b"/CS1")))
               saw_renamed = true
             }
           Some(PdfArray(_)) => saw_passthrough = true

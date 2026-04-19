@@ -63,11 +63,11 @@ fn find_pages(
               Dictionary(d) => Dictionary(d)
               _ => raise @pdf.PdfError::Msg("malformed kid")
             }
-            out.append(find_pages(kid_obj, pdf, resources, mediabox, rotate)[:])
+            out.append(find_pages(kid_obj, pdf, resources, mediabox, rotate))
           }
           out
         }
-        Some(Name(PdfName("/Pages"))) => {
+        Some(Name(PdfName(b"/Pages"))) => {
           let kids = match
             pdf.lookup_fail("No /Kids in page tree", "/Kids", pages) {
             PdfArray(values) => values
@@ -98,7 +98,7 @@ fn find_pages(
               Dictionary(d) => Dictionary(d)
               _ => raise @pdf.PdfError::Msg("malformed kid")
             }
-            out.append(find_pages(kid_obj, pdf, resources, mediabox, rotate)[:])
+            out.append(find_pages(kid_obj, pdf, resources, mediabox, rotate))
           }
           out
         }
@@ -239,7 +239,7 @@ fn find_pages_quick(
           }
           total
         }
-        Some(Name(PdfName("/Pages"))) => {
+        Some(Name(PdfName(b"/Pages"))) => {
           let kids = match
             pdf.lookup_fail("No /Kids in page tree", "/Kids", resolved) {
             PdfArray(values) => values

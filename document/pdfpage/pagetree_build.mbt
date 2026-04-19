@@ -75,7 +75,7 @@ fn mkpage(
     }
   }
   let entries : Array[(String, PdfObject)] = [
-    ("/Type", Name(PdfName("/Page"))),
+    ("/Type", Name(PdfName(b"/Page"))),
     ("/Parent", Indirect(parent)),
     ("/Resources", page.resources),
     ("/MediaBox", page.mediabox),
@@ -88,7 +88,7 @@ fn mkpage(
     Dictionary(d) => d
     _ => raise @pdf.PdfError::Msg("mkpage")
   }
-  entries.append(rest_entries[:])
+  entries.append(rest_entries)
   if indirects.length() > 0 {
     entries.push(("/Contents", PdfArray(indirects)))
   }
@@ -125,7 +125,7 @@ fn objects_of_ptree(
       let page_objects : Array[(Int, PdfObject)] = Array::new()
       for page in pages {
         let (objnum, obj, extra) = mkpage(getobjnum, this, page)
-        extras.val.append(extra[:])
+        extras.val.append(extra)
         page_objects.push((objnum, obj))
       }
       let parent_entry = match parent {
@@ -134,15 +134,15 @@ fn objects_of_ptree(
       }
       let kids = page_objects.map(pair => PdfObject::Indirect(pair.0))
       let node_entries : Array[(String, PdfObject)] = [
-        ("/Type", Name(PdfName("/Pages"))),
+        ("/Type", Name(PdfName(b"/Pages"))),
         ("/Kids", PdfArray(kids)),
         ("/Count", Integer(pages.length())),
       ]
-      node_entries.append(parent_entry[:])
+      node_entries.append(parent_entry)
       let node = PdfObject::Dictionary(node_entries)
       let result = Array::new(capacity=1 + page_objects.length())
       result.push((this, node))
-      result.append(page_objects[:])
+      result.append(page_objects)
       result
     }
     Br(pages, left, right, parent, this) => {
@@ -155,7 +155,7 @@ fn objects_of_ptree(
       let page_objects : Array[(Int, PdfObject)] = Array::new()
       for page in pages {
         let (objnum, obj, extra) = mkpage(getobjnum, this, page)
-        extras.val.append(extra[:])
+        extras.val.append(extra)
         page_objects.push((objnum, obj))
       }
       let parent_entry = match parent {
@@ -164,20 +164,20 @@ fn objects_of_ptree(
       }
       let kids = Array::new()
       kids.push(PdfObject::Indirect(left_num))
-      kids.append(page_objects.map(pair => PdfObject::Indirect(pair.0))[:])
+      kids.append(page_objects.map(pair => Indirect(pair.0)))
       kids.push(Indirect(right_num))
       let node_entries : Array[(String, PdfObject)] = [
-        ("/Type", Name(PdfName("/Pages"))),
+        ("/Type", Name(PdfName(b"/Pages"))),
         ("/Kids", PdfArray(kids)),
         ("/Count", Integer(count_left + count_right + page_objects.length())),
       ]
-      node_entries.append(parent_entry[:])
+      node_entries.append(parent_entry)
       let node = PdfObject::Dictionary(node_entries)
       let result = Array::new()
       result.push((this, node))
-      result.append(page_objects[:])
-      result.append(objs_left[:])
-      result.append(objs_right[:])
+      result.append(page_objects)
+      result.append(objs_left)
+      result.append(objs_right)
       result
     }
   }
@@ -226,7 +226,7 @@ pub fn PdfPageDoc::add_root(
   for entry in existing_entries {
     root = root.add_entry(entry.0, entry.1)
   }
-  root = root.add_entry("/Type", Name(PdfName("/Catalog")))
+  root = root.add_entry("/Type", Name(PdfName(b"/Catalog")))
   root = root.add_entry("/Pages", Indirect(pageroot))
   let rootnum = pdf.addobj(root)
   let trailerdict = match pdf.trailerdict {
@@ -248,7 +248,7 @@ pub fn PdfPageDoc::add_root(
 test "split3 errors on invalid n" {
   let res : Result[(ArrayView[Int], ArrayView[Int], ArrayView[Int]), Error] = try? split3(
     3,
-    [1, 2, 3][:],
+    [1, 2, 3],
   )
   assert_true(res is Err(_))
 }
