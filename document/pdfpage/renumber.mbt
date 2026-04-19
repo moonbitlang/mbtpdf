@@ -30,7 +30,7 @@ fn make_changes(
   let entries : Array[(String, Int, String, String)] = Array::new()
   for name in resource_keys {
     for i, page in pages {
-      entries.append(entries_of_page(name, pagenums[i], page)[:])
+      entries.append(entries_of_page(name, pagenums[i], page))
     }
   }
   let table : Map[(String, Int, String), String] = Map::new(
@@ -91,12 +91,12 @@ fn change_operator(
         Some(Name(n)) =>
           if n
             is PdfName(
-              "/DeviceGray"
-              | "/DeviceRGB"
-              | "/DeviceCMYK"
-              | "/G"
-              | "/RGB"
-              | "/CMYK"
+              b"/DeviceGray"
+              | b"/DeviceRGB"
+              | b"/DeviceCMYK"
+              | b"/G"
+              | b"/RGB"
+              | b"/CMYK"
             ) {
             dict
           } else {

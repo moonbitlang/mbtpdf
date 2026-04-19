@@ -71,7 +71,7 @@ fn page_tree_nodes_not_pages_inner(
   pages_node : PdfObject,
   node_number : Int,
 ) -> Array[Int] {
-  if pdf.lookup_direct("/Type", pages_node) is Some(Name(PdfName("/Page"))) {
+  if pdf.lookup_direct("/Type", pages_node) is Some(Name(PdfName(b"/Page"))) {
     []
   } else {
     match pdf.lookup_direct("/Kids", pages_node) {
@@ -82,7 +82,7 @@ fn page_tree_nodes_not_pages_inner(
           match elt {
             Indirect(i) =>
               out.append(
-                page_tree_nodes_not_pages_inner(pdf, pdf.direct(elt), i)[:],
+                page_tree_nodes_not_pages_inner(pdf, pdf.direct(elt), i),
               )
             _ => ()
           }
@@ -147,7 +147,7 @@ fn page_reference_numbers_unordered_inner(
   node_number : Int,
   acc : Ref[Array[Int]],
 ) -> Unit {
-  if pdf.lookup_direct("/Type", pages_node) is Some(Name(PdfName("/Page"))) {
+  if pdf.lookup_direct("/Type", pages_node) is Some(Name(PdfName(b"/Page"))) {
     acc.val.push(node_number)
   } else {
     match pdf.lookup_direct("/Kids", pages_node) {

@@ -35,7 +35,7 @@ fn buildnode(kids : ArrayView[Int], parent : Int, count : Int) -> PdfObject {
     kid_refs.push(PdfObject::Indirect(kid))
   }
   let entries : Array[(String, PdfObject)] = [
-    ("/Type", Name(PdfName("/Pages"))),
+    ("/Type", Name(PdfName(b"/Pages"))),
     ("/Kids", PdfArray(kid_refs)),
     ("/Count", Integer(count)),
   ]
@@ -72,7 +72,7 @@ fn objects_of_ptree_objnumbers(pdf : @pdf.Pdf, node : PtreeObjnumbers) -> Unit {
     OBr(objnumbers, left, right, parent, objnum_branch) => {
       let kids = Array::new()
       kids.push(objnumfrom(left))
-      kids.append(objnumbers[:])
+      kids.append(objnumbers)
       kids.push(objnumfrom(right))
       pdf.addobj_given_num(
         (objnum_branch, buildnode(kids, parent, countof(node))),
@@ -96,7 +96,7 @@ fn pdf_of_pages_build_pagetree(
       objects_of_ptree_objnumbers(pdf, right)
       let kids = Array::new()
       kids.push(objnumfrom(left))
-      kids.append(objnumbers[:])
+      kids.append(objnumbers)
       kids.push(objnumfrom(right))
       buildnode(kids, parent, countof(tree))
     }
@@ -236,8 +236,8 @@ pub fn PdfPageDoc::pdf_of_pages(
     match o {
       Dictionary(_) =>
         match pdf.lookup_direct("/Type", o) {
-          Some(Name(PdfName("/Pages"))) => pdf.removeobj(i)
-          Some(Name(PdfName("/Page"))) =>
+          Some(Name(PdfName(b"/Pages"))) => pdf.removeobj(i)
+          Some(Name(PdfName(b"/Page"))) =>
             if objnumbers_set.get(i) is None {
               pdf.removeobj(i)
             }

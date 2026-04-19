@@ -57,14 +57,14 @@ test "pages_of_pagetree reads inherited resources and contents shapes" {
   let bad_contents_num = pdf0.addobj(Integer(0))
   let resources_parent : @pdf.PdfObject = Dictionary([("/Font", Dictionary([]))])
   let page1_dict : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/Page"))),
+    ("/Type", Name(PdfName(b"/Page"))),
     ("/MediaBox", sample_rect()),
     ("/Contents", Indirect(contents_array_num)),
     ("/Extra", Integer(1)),
   ])
   let page2_num = pdf0.addobj(
     Dictionary([
-      ("/Type", Name(PdfName("/Page"))),
+      ("/Type", Name(PdfName(b"/Page"))),
       ("/Contents", Indirect(bad_contents_num)),
       ("/Extra2", Integer(2)),
     ]),
@@ -80,7 +80,7 @@ test "pages_of_pagetree reads inherited resources and contents shapes" {
   )
   let pages_root_num = pdf0.addobj(
     Dictionary([
-      ("/Type", Name(PdfName("/Pages"))),
+      ("/Type", Name(PdfName(b"/Pages"))),
       ("/Kids", PdfArray([Indirect(intermediate_num)])),
       ("/Count", Integer(2)),
     ]),
@@ -123,7 +123,7 @@ test "pages_of_pagetree inherits resources and rotate through typ-none nodes" {
   let mediabox_parent : @pdf.PdfObject = sample_rect()
   let stream_num = empty_stream(pdf0)
   let page_dict : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/Page"))),
+    ("/Type", Name(PdfName(b"/Page"))),
     ("/Contents", Indirect(stream_num)),
   ])
   let intermediate_num = pdf0.addobj(
@@ -134,7 +134,7 @@ test "pages_of_pagetree inherits resources and rotate through typ-none nodes" {
   )
   let pages_root_num = pdf0.addobj(
     Dictionary([
-      ("/Type", Name(PdfName("/Pages"))),
+      ("/Type", Name(PdfName(b"/Pages"))),
       ("/Kids", PdfArray([Indirect(intermediate_num)])),
       ("/Resources", resources_parent),
       ("/MediaBox", mediabox_parent),
@@ -158,14 +158,14 @@ test "pages_of_pagetree inherits resources and rotate through typ-none nodes" {
 test "pages_of_pagetree errors on malformed and missing kids" {
   let base = @pdf.Pdf::empty()
   let bad_kids_num = base.addobj(
-    Dictionary([("/Type", Name(PdfName("/Pages"))), ("/Kids", Integer(1))]),
+    Dictionary([("/Type", Name(PdfName(b"/Pages"))), ("/Kids", Integer(1))]),
   )
   let pdf_bad_kids = @pdfpage.PdfPageDoc::new(base).add_root(bad_kids_num, [])
   assert_is_err(try? @pdfpage.PdfPageDoc::new(pdf_bad_kids).pages_of_pagetree())
   let base2 = @pdf.Pdf::empty()
   let missing_kid_num = base2.addobj(
     Dictionary([
-      ("/Type", Name(PdfName("/Pages"))),
+      ("/Type", Name(PdfName(b"/Pages"))),
       ("/Kids", PdfArray([Indirect(999999)])),
     ]),
   )
@@ -179,7 +179,7 @@ test "pages_of_pagetree errors on malformed and missing kids" {
   let base3 = @pdf.Pdf::empty()
   let malformed_kid_num = base3.addobj(
     Dictionary([
-      ("/Type", Name(PdfName("/Pages"))),
+      ("/Type", Name(PdfName(b"/Pages"))),
       ("/Kids", PdfArray([Integer(0)])),
     ]),
   )
@@ -203,7 +203,7 @@ test "pages_of_pagetree errors when typ is missing and /Kids malformed" {
   )
   let root_num = base.addobj(
     Dictionary([
-      ("/Type", Name(PdfName("/Pages"))),
+      ("/Type", Name(PdfName(b"/Pages"))),
       ("/Kids", PdfArray([Indirect(bad_node_num)])),
       ("/Count", Integer(1)),
     ]),
@@ -240,7 +240,7 @@ test "add_root errors when trailer is not a dictionary" {
   pdf0.trailerdict = Integer(0)
   let pages_root_num = pdf0.addobj(
     Dictionary([
-      ("/Type", Name(PdfName("/Pages"))),
+      ("/Type", Name(PdfName(b"/Pages"))),
       ("/Kids", PdfArray([])),
       ("/Count", Integer(0)),
     ]),
