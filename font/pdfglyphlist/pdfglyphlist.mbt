@@ -3628,7 +3628,7 @@ let truetypemap_arr : Array[(String, Array[Int])] = [
 ]
 
 ///|
-fn parse_glyphlist_line(line : String) -> (String, Array[Int])? raise {
+fn parse_glyphlist_line(line : String) -> (String, Array[Int])? {
   if line.length() == 0 {
     return None
   }
@@ -3647,7 +3647,7 @@ fn parse_glyphlist_line(line : String) -> (String, Array[Int])? raise {
         if token.length() == 0 {
           continue
         }
-        let value : Int = @strconv.parse_int(token, base=16) catch {
+        let value : Int = @string.parse_int(token, base=16) catch {
           _ => continue
         }
         codes.push(value)

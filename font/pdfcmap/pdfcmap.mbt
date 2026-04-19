@@ -147,7 +147,7 @@ fn read_hex_bytes(
   let bytes = Array::new()
   for j = 0; j < hex_chars.length(); j = j + 2 {
     let hex_str = String::from_array(hex_chars[j:j + 2].to_array())
-    let value = @strconv.parse_int(hex_str, base=16)
+    let value = @string.parse_int(hex_str, base=16)
     bytes.push(value)
   }
   (bytes, i + 1)
@@ -363,7 +363,7 @@ fn extract_specifics(data : Array[Byte]) -> Int? {
         j = j + 1
       }
       if digits.length() > 0 {
-        let parsed : Result[Int, Error] = try? @strconv.parse_int(
+        let parsed : Result[Int, Error] = try? @string.parse_int(
           String::from_array(digits),
           base=10,
         )
