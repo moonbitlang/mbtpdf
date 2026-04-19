@@ -169,7 +169,7 @@ test "write/read DeviceN with attributes" {
   let pdf = @pdf.Pdf::empty()
   let tint = sample_tint_function()
   let attrs : @pdf.PdfObject = Dictionary([
-    ("/Subtype", Name(PdfName("/NChannel"))),
+    ("/Subtype", Name(PdfName(b"/NChannel"))),
   ])
   let space = @pdfspace.ColourSpace::DeviceN(
     ["C1", "C2"],
