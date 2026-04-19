@@ -6,8 +6,11 @@ import {
   "bobzhang/mbtpdf/core/pdftransform",
   "bobzhang/mbtpdf/io/pdfwritefs",
   "moonbitlang/async",
-  "moonbitlang/async/fs",
 }
+
+import {
+  "moonbitlang/async/fs",
+} for "test"
 
 options(
   "is-main": true,
