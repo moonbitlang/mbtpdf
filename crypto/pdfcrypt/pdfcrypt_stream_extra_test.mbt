@@ -32,7 +32,7 @@ test "decrypt_single_stream skips metadata when EncryptMetadata is false" {
     pdf,
   )
   let dict : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/Metadata"))),
+    ("/Type", Name(PdfName(b"/Metadata"))),
     ("/Length", Integer(4)),
   ])
   let data = @pdfio.bytes_of_string("meta")
@@ -66,8 +66,8 @@ test "decrypt_single_stream skips identity crypt filters" {
     pdf,
   )
   let dict : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/Crypt"))),
-    ("/DecodeParms", Dictionary([("/Name", Name(PdfName("/Identity")))])),
+    ("/Filter", Name(PdfName(b"/Crypt"))),
+    ("/DecodeParms", Dictionary([("/Name", Name(PdfName(b"/Identity")))])),
     ("/Length", Integer(3)),
   ])
   let data = @pdfio.bytes_of_string("abc")
@@ -89,10 +89,10 @@ test "decrypt_single_stream skips identity crypt filters" {
     _ => fail("expected stream")
   }
   let dict_array : @pdf.PdfObject = Dictionary([
-    ("/Filter", PdfArray([Name(PdfName("/Crypt"))])),
+    ("/Filter", PdfArray([Name(PdfName(b"/Crypt"))])),
     (
       "/DecodeParms",
-      PdfArray([Dictionary([("/Name", Name(PdfName("/Identity")))])]),
+      PdfArray([Dictionary([("/Name", Name(PdfName(b"/Identity")))])]),
     ),
     ("/Length", Integer(3)),
   ])

@@ -18,21 +18,21 @@ fn is_identity(
   dict : @pdf.PdfObject,
 ) -> Bool {
   let identity_crypt_filter_present = match pdf.lookup_direct("/Filter", dict) {
-    Some(Name(PdfName("/Crypt"))) => true
-    Some(PdfArray([Name(PdfName("/Crypt")), ..])) => true
+    Some(Name(PdfName(b"/Crypt"))) => true
+    Some(PdfArray([Name(PdfName(b"/Crypt")), ..])) => true
     _ => false
   }
   let identity_param = if identity_crypt_filter_present {
     match pdf.lookup_direct("/DecodeParms", dict) {
       Some(Dictionary(decodeparms)) =>
         match pdf.lookup_direct("/Name", Dictionary(decodeparms)) {
-          Some(Name(PdfName("/Identity"))) => true
+          Some(Name(PdfName(b"/Identity"))) => true
           None => true
           _ => false
         }
       Some(PdfArray([Dictionary(decodeparms), ..])) =>
         match pdf.lookup_direct("/Name", Dictionary(decodeparms)) {
-          Some(Name(PdfName("/Identity"))) => true
+          Some(Name(PdfName(b"/Identity"))) => true
           None => true
           _ => false
         }
@@ -44,7 +44,7 @@ fn is_identity(
   }
   let is_metadata = if no_encrypt_metadata {
     match pdf.lookup_direct("/Type", dict) {
-      Some(Name(PdfName("/Metadata"))) => true
+      Some(Name(PdfName(b"/Metadata"))) => true
       _ => false
     }
   } else {
@@ -293,26 +293,26 @@ pub fn PdfCrypt::get_encryption_values(
   let r_val = pdf.lookup_direct("/R", encryptdict)
   let crypt_type = match (filter, v_val, length_val, r_val) {
     (Some(Name(name)), Some(Integer(1)), _, Some(Integer(r))) if name
-      is PdfName("/Standard") =>
+      is PdfName(b"/Standard") =>
       Some(@pdfcryptprimitives.Encryption::ARC4(40, r))
     (Some(Name(name)), Some(Integer(2)), None, Some(Integer(r))) if name
-      is PdfName("/Standard") => Some(ARC4(40, r))
+      is PdfName(b"/Standard") => Some(ARC4(40, r))
     (Some(Name(name)), Some(Integer(2)), Some(Integer(n)), _) if name
-      is PdfName("/Standard") =>
+      is PdfName(b"/Standard") =>
       if n % 8 == 0 && n >= 40 && n <= 128 {
         Some(ARC4(n, 3))
       } else {
         None
       }
     (Some(Name(name)), Some(Integer(v)), length, Some(Integer(r))) if name
-      is PdfName("/Standard") =>
+      is PdfName(b"/Standard") =>
       if v == 4 || v == 5 {
         match pdf.lookup_direct("/CF", encryptdict) {
           Some(cfdict) =>
             match pdf.lookup_direct("/StdCF", cfdict) {
               Some(stdcfdict) =>
                 match pdf.lookup_direct("/CFM", stdcfdict) {
-                  Some(Name(PdfName("/V2"))) =>
+                  Some(Name(PdfName(b"/V2"))) =>
                     match length {
                       Some(Integer(i)) => Some(ARC4(i, 4))
                       _ =>
@@ -321,8 +321,8 @@ pub fn PdfCrypt::get_encryption_values(
                           _ => None
                         }
                     }
-                  Some(Name(PdfName("/AESV2"))) => Some(AESV2)
-                  Some(Name(PdfName("/AESV3"))) => Some(AESV3(r == 6))
+                  Some(Name(PdfName(b"/AESV2"))) => Some(AESV2)
+                  Some(Name(PdfName(b"/AESV3"))) => Some(AESV3(r == 6))
                   _ => None
                 }
               _ => None

@@ -13,7 +13,7 @@ fn encrypt_pdf_AES256_inner(
   pdf : @pdf.Pdf,
 ) -> @pdf.Pdf raise {
   let crypt_dict = @pdf.PdfObject::Dictionary([
-    ("/Filter", Name(PdfName("/Standard"))),
+    ("/Filter", Name(PdfName(b"/Standard"))),
     ("/V", Integer(5)),
     (
       "/CF",
@@ -22,8 +22,8 @@ fn encrypt_pdf_AES256_inner(
           "/StdCF",
           Dictionary([
             ("/Length", Integer(32)),
-            ("/AuthEvent", Name(PdfName("/DocOpen"))),
-            ("/CFM", Name(PdfName("/AESV3"))),
+            ("/AuthEvent", Name(PdfName(b"/DocOpen"))),
+            ("/CFM", Name(PdfName(b"/AESV3"))),
           ]),
         ),
       ]),
@@ -34,8 +34,8 @@ fn encrypt_pdf_AES256_inner(
     ("/O", PdfString(owner)),
     ("/U", PdfString(user)),
     ("/P", Integer(p)),
-    ("/StrF", Name(PdfName("/StdCF"))),
-    ("/StmF", Name(PdfName("/StdCF"))),
+    ("/StrF", Name(PdfName(b"/StdCF"))),
+    ("/StmF", Name(PdfName(b"/StdCF"))),
     ("/Perms", PdfString(perms)),
     ("/OE", PdfString(oe)),
     ("/UE", PdfString(ue)),
