@@ -6,7 +6,7 @@ test "log forwards to logger" {
     @pdfe.log("world")
     ()
   })
-  inspect(messages, content="[\"hello\", \"world\"]")
+  debug_inspect(messages, content="[\"hello\", \"world\"]")
 }
 
 ///|
@@ -19,7 +19,7 @@ test "quiet suppresses log output" {
     @pdfe.log("world")
     ()
   })
-  inspect(messages, content="[\"world\"]")
+  debug_inspect(messages, content="[\"world\"]")
 }
 
 ///|
@@ -35,7 +35,7 @@ test "with_silenced_logs restores quiet flag" {
     ()
   })
   assert_false(@pdfe.quiet.val)
-  inspect(messages, content="[\"shown\"]")
+  debug_inspect(messages, content="[\"shown\"]")
 }
 
 ///|
@@ -43,19 +43,21 @@ test "with_logger restores previous logger on error" {
   let outer_messages : Array[String] = []
   let inner_messages : Array[String] = []
   @pdfe.with_logger(fn(message) { outer_messages.push(message) }, fn() {
-    let res : Result[Unit, Error] = try? @pdfe.with_logger(
-      fn(message) { inner_messages.push(message) },
-      fn() {
+    let res : Result[Unit, Error] = try
+      @pdfe.with_logger(fn(message) { inner_messages.push(message) }, fn() {
         @pdfe.log("inner")
         fail("boom")
-      },
-    )
+      })
+      |> Ok
+    catch {
+      e => Err(e)
+    }
     assert_true(res is Err(_))
     @pdfe.log("outer")
     ()
   })
-  inspect(inner_messages, content="[\"inner\"]")
-  inspect(outer_messages, content="[\"outer\"]")
+  debug_inspect(inner_messages, content="[\"inner\"]")
+  debug_inspect(outer_messages, content="[\"outer\"]")
 }
 
 ///|
@@ -66,7 +68,7 @@ test "warn appends newline (and preserves existing newline)" {
     @pdfe.warn("world\n")
     ()
   })
-  inspect(messages, content="[\"hello\\n\", \"world\\n\"]")
+  debug_inspect(messages, content="[\"hello\\n\", \"world\\n\"]")
 }
 
 ///|
@@ -81,7 +83,7 @@ test "debug logs only when read_debug is enabled" {
     @pdfe.read_debug.val = prev
     ()
   })
-  inspect(messages, content="[\"shown\\n\"]")
+  debug_inspect(messages, content="[\"shown\\n\"]")
 }
 
 ///|

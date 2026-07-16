@@ -8,7 +8,7 @@ test "string_of_pdf basic" {
 ///|
 test "string_of_pdf dictionary" {
   let obj : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/Example"))),
+    ("/Type", Name(PdfName(b"/Example"))),
     ("/Count", Integer(2)),
   ])
   let s = @pdfwrite.PdfWrite::new().string_of_pdf(obj)
@@ -17,7 +17,7 @@ test "string_of_pdf dictionary" {
 
 ///|
 test "string_of_pdf escapes names" {
-  let obj : @pdf.PdfObject = Name(PdfName("/A B#C/D"))
+  let obj : @pdf.PdfObject = Name(PdfName(b"/A B#C/D"))
   let s = @pdfwrite.PdfWrite::new().string_of_pdf(obj)
   assert_eq(s, "/A#20B#23C#2FD")
 }

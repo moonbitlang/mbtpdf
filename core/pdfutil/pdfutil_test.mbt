@@ -27,7 +27,7 @@ test "PdfUtil print shims respect quiet and printer" {
 ///|
 test "PdfUtil::memoize caches computed values" {
   let util = @pdfutil.PdfUtil::new()
-  let calls : Ref[Int] = Ref::new(0)
+  let calls : Ref[Int] = Ref(0)
   let memo = util.memoize(fn() {
     calls.val = calls.val + 1
     calls.val

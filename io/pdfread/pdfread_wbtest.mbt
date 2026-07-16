@@ -53,9 +53,11 @@ test "@pdfsyntax.lex_next recovers from lex errors" {
 ///|
 test "@pdfsyntax.lex_hexstring rejects invalid hex" {
   let input = @pdfio.Input::of_string("<G>")
-  let res : Result[@pdftoken.Token, Error] = try? @pdfsyntax.lex_hexstring(
-    input,
-  )
+  let res : Result[@pdftoken.Token, Error] = try
+    @pdfsyntax.lex_hexstring(input) |> Ok
+  catch {
+    e => Err(e)
+  }
   match res {
     Err(_) => ()
     _ => fail("expected @pdfsyntax.lex_hexstring failure")
@@ -108,7 +110,11 @@ test "@pdfsyntax.lex_dictionary minus_one stops after closing dict" {
 ///|
 test "@pdfsyntax.lex_name rejects invalid hex" {
   let input = @pdfio.Input::of_string("/#GZ")
-  let res : Result[@pdftoken.Token, Error] = try? @pdfsyntax.lex_name(input)
+  let res : Result[@pdftoken.Token, Error] = try
+    @pdfsyntax.lex_name(input) |> Ok
+  catch {
+    e => Err(e)
+  }
   match res {
     Err(_) => ()
     _ => fail("expected @pdfsyntax.lex_name failure")
@@ -118,7 +124,11 @@ test "@pdfsyntax.lex_name rejects invalid hex" {
 ///|
 test "@pdfsyntax.lex_name rejects truncated hex" {
   let input = @pdfio.Input::of_string("/#1")
-  let res : Result[@pdftoken.Token, Error] = try? @pdfsyntax.lex_name(input)
+  let res : Result[@pdftoken.Token, Error] = try
+    @pdfsyntax.lex_name(input) |> Ok
+  catch {
+    e => Err(e)
+  }
   match res {
     Err(_) => ()
     _ => fail("expected @pdfsyntax.lex_name failure")

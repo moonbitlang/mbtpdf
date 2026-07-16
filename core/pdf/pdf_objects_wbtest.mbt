@@ -2,12 +2,12 @@
 fn make_basic_pdf() -> Pdf {
   let base = Pdf::empty()
   let pages = PdfObject::Dictionary([
-    ("/Type", Name(PdfName("/Pages"))),
+    ("/Type", Name(PdfName(b"/Pages"))),
     ("/Kids", PdfArray([Indirect(2)])),
   ])
-  let page = PdfObject::Dictionary([("/Type", Name(PdfName("/Page")))])
+  let page = PdfObject::Dictionary([("/Type", Name(PdfName(b"/Page")))])
   let catalog = PdfObject::Dictionary([
-    ("/Type", Name(PdfName("/Catalog"))),
+    ("/Type", Name(PdfName(b"/Catalog"))),
     ("/Pages", Indirect(1)),
   ])
   base.addobj_given_num((1, pages))
@@ -29,19 +29,31 @@ test "lookup helpers and catalog" {
   let pdf = Pdf::empty()
   let dict = PdfObject::Dictionary([("/A", Integer(1))])
   assert_integer(pdf.lookup_fail("err", "/A", dict), 1)
-  assert_is_err(try? pdf.lookup_fail("err", "/B", dict))
+  assert_is_err(
+    try pdf.lookup_fail("err", "/B", dict) |> Ok catch {
+      e => Err(e)
+    },
+  )
   let dict_indirect = PdfObject::Dictionary([("/A", Indirect(5))])
   assert_eq(dict_indirect.find_indirect("/A"), Some(5))
   let dict_non_indirect = PdfObject::Dictionary([("/A", Integer(7))])
   assert_eq(dict_non_indirect.find_indirect("/A"), None)
-  assert_is_err(try? PdfObject::Integer(1).find_indirect("/A"))
+  assert_is_err(
+    try PdfObject::Integer(1).find_indirect("/A") |> Ok catch {
+      e => Err(e)
+    },
+  )
   let catalog_pdf = make_basic_pdf()
   match catalog_pdf.catalog_of_pdf() {
     Dictionary(_) => ()
     _ => fail("expected catalog")
   }
   let missing = Pdf::empty()
-  assert_is_err(try? missing.catalog_of_pdf())
+  assert_is_err(
+    try missing.catalog_of_pdf() |> Ok catch {
+      e => Err(e)
+    },
+  )
 }
 
 ///|
@@ -62,13 +74,13 @@ test "recurse and iterators" {
     PdfArray(values) => assert_eq(values.length(), 2)
     _ => fail("expected array")
   }
-  let seen = Ref::new(([] : Array[Int]))
+  let seen = Ref(([] : Array[Int]))
   pdf.objiter((num, _) => seen.val.push(num))
   assert_eq(seen.val, [1, 2])
-  let seen_gen = Ref::new(([] : Array[(Int, Int)]))
+  let seen_gen = Ref(([] : Array[(Int, Int)]))
   pdf.objiter_gen((num, gen, _) => seen_gen.val.push((num, gen)))
   assert_eq(seen_gen.val, [(1, 0), (2, 0)])
-  let seen_inorder = Ref::new(([] : Array[Int]))
+  let seen_inorder = Ref(([] : Array[Int]))
   pdf.objiter_inorder((num, _) => seen_inorder.val.push(num))
   assert_eq(seen_inorder.val, [1, 2])
   pdf.objects.objects.set(3, ({ val: ParsedAlreadyDecrypted(Integer(5)) }, 0))
@@ -103,7 +115,7 @@ test "references and renumbering" {
   assert_eq(pages, [2])
   let table = pdf.changes()
   assert_eq(table.get(2), Some(2))
-  let renum_table : Map[Int, Int] = Map::new()
+  let renum_table : Map[Int, Int] = Map([])
   renum_table.set(1, 10)
   renum_table.set(2, 11)
   renum_table.set(3, 12)
@@ -139,5 +151,9 @@ test "references and renumbering" {
   }
   let bad = Pdf::empty()
   bad.trailerdict = Integer(1)
-  assert_is_err(try? bad.change_id("path-"))
+  assert_is_err(
+    try bad.change_id("path-") |> Ok catch {
+      e => Err(e)
+    },
+  )
 }

@@ -75,27 +75,35 @@ test "Date::of_pdf_string handles special 19100 year" {
 
 ///|
 test "Date::of_pdf_string rejects invalid values" {
-  let bad_month : Result[@pdfdate.Date, Error] = try? @pdfdate.Date::of_pdf_string(
-    "D:20241301",
-  )
+  let bad_month : Result[@pdfdate.Date, Error] = try
+    @pdfdate.Date::of_pdf_string("D:20241301") |> Ok
+  catch {
+    e => Err(e)
+  }
   // FIXME: upstream Error:Debug
   // debug_inspect(bad_month)
   assert_true(bad_month is Err(_))
-  let bad_format : Result[@pdfdate.Date, Error] = try? @pdfdate.Date::of_pdf_string(
-    "D:20A4",
-  )
+  let bad_format : Result[@pdfdate.Date, Error] = try
+    @pdfdate.Date::of_pdf_string("D:20A4") |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(bad_format is Err(_))
 }
 
 ///|
 test "Date::of_pdf_string rejects too-short strings" {
-  let r1 : Result[@pdfdate.Date, Error] = try? @pdfdate.Date::of_pdf_string(
-    "D:",
-  )
+  let r1 : Result[@pdfdate.Date, Error] = try
+    @pdfdate.Date::of_pdf_string("D:") |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(r1 is Err(_))
-  let r2 : Result[@pdfdate.Date, Error] = try? @pdfdate.Date::of_pdf_string(
-    "202",
-  )
+  let r2 : Result[@pdfdate.Date, Error] = try
+    @pdfdate.Date::of_pdf_string("202") |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(r2 is Err(_))
 }
 
@@ -119,12 +127,16 @@ test "Date::of_pdf_string parses Z when it appears early" {
 
 ///|
 test "Date::of_pdf_string rejects malformed trailing timezone/junk" {
-  let bad1 : Result[@pdfdate.Date, Error] = try? @pdfdate.Date::of_pdf_string(
-    "D:20241301020304+",
-  )
+  let bad1 : Result[@pdfdate.Date, Error] = try
+    @pdfdate.Date::of_pdf_string("D:20241301020304+") |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(bad1 is Err(_))
-  let bad2 : Result[@pdfdate.Date, Error] = try? @pdfdate.Date::of_pdf_string(
-    "D:20241301020304X",
-  )
+  let bad2 : Result[@pdfdate.Date, Error] = try
+    @pdfdate.Date::of_pdf_string("D:20241301020304X") |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(bad2 is Err(_))
 }

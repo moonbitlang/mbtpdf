@@ -63,9 +63,14 @@ test "malformed pdf honors error_on_malformed" {
     #|<< /Type /Pages /Count 0 /Kids [] >>
     #|endobj
     #|%%EOF
-  let res : Result[@pdf.Pdf, Error] = try? @pdfe.with_silenced_logs(fn() {
-    reader.pdf_of_input(None, None, @pdfio.Input::of_string(data))
-  })
+  let res : Result[@pdf.Pdf, Error] = try
+    @pdfe.with_silenced_logs(fn() {
+      reader.pdf_of_input(None, None, @pdfio.Input::of_string(data))
+    })
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }
 
@@ -98,8 +103,13 @@ test "malformed pdf skips bad objects and trailers" {
 ///|
 async test "revision -1 returns revisions error" {
   let input = @pdfiofs.input_of_file("testdata/pdfjs_identity_tounicode.pdf")
-  let res : Result[@pdf.Pdf, Error] = try? @pdfe.with_silenced_logs(fn() {
-    PdfRead::new(logger=_ => ()).pdf_of_input(revision=-1, None, None, input)
-  })
+  let res : Result[@pdf.Pdf, Error] = try
+    @pdfe.with_silenced_logs(fn() {
+      PdfRead::new(logger=_ => ()).pdf_of_input(revision=-1, None, None, input)
+    })
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }

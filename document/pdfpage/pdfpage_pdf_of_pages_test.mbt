@@ -52,8 +52,11 @@ fn pdf_of_pages_with_bookmarks(count : Int) -> @pdf.Pdf raise {
 ///|
 test "pdf_of_pages rejects empty range" {
   let pdf = pdf_of_pages_make_pdf(1)
-  let res : Result[@pdf.Pdf, Error] = try? @pdfpage.PdfPageDoc::new(pdf).pdf_of_pages([],
-  )
+  let res : Result[@pdf.Pdf, Error] = try
+    @pdfpage.PdfPageDoc::new(pdf).pdf_of_pages([]) |> Ok
+  catch {
+    e => Err(e)
+  }
   match res {
     Err(_) => ()
     _ => fail("expected error for empty range")
@@ -63,10 +66,11 @@ test "pdf_of_pages rejects empty range" {
 ///|
 test "pdf_of_pages errors on invalid page index" {
   let pdf = pdf_of_pages_make_pdf(2)
-  let res : Result[@pdf.Pdf, Error] = try? @pdfpage.PdfPageDoc::new(pdf).pdf_of_pages([
-      3,
-    ],
-  )
+  let res : Result[@pdf.Pdf, Error] = try
+    @pdfpage.PdfPageDoc::new(pdf).pdf_of_pages([3]) |> Ok
+  catch {
+    e => Err(e)
+  }
   match res {
     Err(_) => ()
     _ => fail("expected invalid page error")
@@ -76,10 +80,11 @@ test "pdf_of_pages errors on invalid page index" {
 ///|
 test "pdf_of_pages errors on index < 1" {
   let pdf = pdf_of_pages_make_pdf(2)
-  let res : Result[@pdf.Pdf, Error] = try? @pdfpage.PdfPageDoc::new(pdf).pdf_of_pages([
-      0,
-    ],
-  )
+  let res : Result[@pdf.Pdf, Error] = try
+    @pdfpage.PdfPageDoc::new(pdf).pdf_of_pages([0]) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }
 
@@ -95,7 +100,7 @@ test "pdf_of_pages builds pagetree for many pages" {
     None => fail("expected /Pages")
   }
   match (subset.lookup_direct("/Type", pages) : @pdf.PdfObject?) {
-    Some(Name(PdfName("/Pages"))) => ()
+    Some(Name(PdfName(b"/Pages"))) => ()
     _ => fail("expected /Type /Pages")
   }
   let count = match (subset.lookup_direct("/Count", pages) : @pdf.PdfObject?) {
@@ -139,7 +144,7 @@ test "pdf_of_pages retains page labels when requested" {
 test "pdf_of_pages trims structure tree" {
   let pdf = pdf_of_pages_make_pdf(2)
   let struct_tree : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/StructTreeRoot"))),
+    ("/Type", Name(PdfName(b"/StructTreeRoot"))),
   ])
   let struct_num = pdf.addobj(struct_tree)
   let root = pdf.catalog_of_pdf()
@@ -159,10 +164,11 @@ test "pdf_of_pages trims structure tree" {
 ///|
 test "pdf_of_pages fails without root" {
   let pdf = @pdf.Pdf::empty()
-  let res : Result[@pdf.Pdf, Error] = try? @pdfpage.PdfPageDoc::new(pdf).pdf_of_pages([
-      1,
-    ],
-  )
+  let res : Result[@pdf.Pdf, Error] = try
+    @pdfpage.PdfPageDoc::new(pdf).pdf_of_pages([1]) |> Ok
+  catch {
+    e => Err(e)
+  }
   match res {
     Err(_) => ()
     _ => fail("expected missing /Root error")
@@ -174,12 +180,12 @@ test "endpage_fast handles missing count" {
   let pdf0 = @pdf.Pdf::empty()
   let rect = pdf_of_pages_rect()
   let page : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/Page"))),
+    ("/Type", Name(PdfName(b"/Page"))),
     ("/MediaBox", rect),
   ])
   let page_num = pdf0.addobj(page)
   let pages : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/Pages"))),
+    ("/Type", Name(PdfName(b"/Pages"))),
     ("/Kids", PdfArray([Indirect(page_num)])),
   ])
   let pages_num = pdf0.addobj(pages)
@@ -192,9 +198,10 @@ test "pdf_of_pages errors when trailer missing /Root" {
   let pdf = pdf_of_pages_make_pdf(2)
   // Make trailer dict malformed for pdf_of_pages.
   pdf.trailerdict = Dictionary([])
-  let res : Result[@pdf.Pdf, Error] = try? @pdfpage.PdfPageDoc::new(pdf).pdf_of_pages([
-      1,
-    ],
-  )
+  let res : Result[@pdf.Pdf, Error] = try
+    @pdfpage.PdfPageDoc::new(pdf).pdf_of_pages([1]) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }

@@ -32,8 +32,10 @@ test "ignoreuntil leaves delimiter" {
 ///|
 test "getuntil fails on eof when required" {
   let input = @pdfio.Input::of_string("abc")
-  let res : Result[Array[Char], Error] = try? input.getuntil(false, c => {
-    c == '/'
-  })
+  let res : Result[Array[Char], Error] = try
+    input.getuntil(false, c => c == '/') |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }

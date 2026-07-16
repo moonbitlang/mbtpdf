@@ -46,10 +46,10 @@ test "pages_of_pagetree treats stream /Contents as singleton array" {
   let stream_dict : @pdf.PdfObject = Dictionary([
     ("/Length", Integer(@pdfio.bytes_size(data))),
   ])
-  let stream_num = pdf0.addobj(Stream(Ref::new((stream_dict, Got(data)))))
+  let stream_num = pdf0.addobj(Stream(Ref((stream_dict, Got(data)))))
   let page_num = pdf0.addobj(
     Dictionary([
-      ("/Type", Name(PdfName("/Page"))),
+      ("/Type", Name(PdfName(b"/Page"))),
       ("/MediaBox", coverage_rect()),
       ("/Rotate", Integer(180)),
       ("/Contents", Indirect(stream_num)),
@@ -58,7 +58,7 @@ test "pages_of_pagetree treats stream /Contents as singleton array" {
   )
   let pages_root_num = pdf0.addobj(
     Dictionary([
-      ("/Type", Name(PdfName("/Pages"))),
+      ("/Type", Name(PdfName(b"/Pages"))),
       ("/Kids", PdfArray([Indirect(page_num)])),
       ("/Count", Integer(1)),
     ]),

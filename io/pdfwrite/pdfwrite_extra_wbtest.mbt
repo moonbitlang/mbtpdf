@@ -71,7 +71,7 @@ test "string_of_pdf encodes control and delimiter bytes" {
 
 ///|
 test "string_of_pdf encodes greater-than in names" {
-  let rendered = write_ctx.string_of_pdf(Name(PdfName("/A>")))
+  let rendered = write_ctx.string_of_pdf(Name(PdfName(b"/A>")))
   assert_true(rendered.contains("#3E"))
 }
 
@@ -88,7 +88,7 @@ test "string_of_pdf encodes delimiter bytes in names" {
 
 ///|
 test "string_of_pdf handles short names" {
-  let rendered = write_ctx.string_of_pdf(Name(PdfName("/")))
+  let rendered = write_ctx.string_of_pdf(Name(PdfName(b"/")))
   assert_eq(rendered, "/")
 }
 
@@ -109,7 +109,7 @@ test "pdf_to_output generates object streams with indirect lengths" {
   let length_obj = pdf.addobj(Integer(3))
   let data = @pdfio.bytes_of_string("abc")
   let dict : @pdf.PdfObject = Dictionary([("/Length", Indirect(length_obj))])
-  let stream_num = pdf.addobj(Stream(Ref::new((dict, Got(data)))))
+  let stream_num = pdf.addobj(Stream(Ref((dict, Got(data)))))
   let marked_obj = pdf.addobj(Integer(123))
   pdf.objects.object_stream_ids.set(marked_obj, stream_num)
   pdf.objects.object_stream_ids.set(stream_num, stream_num)
@@ -177,7 +177,7 @@ test "pdf_to_output skips indirect length objects for objstm hints" {
   let length_obj = pdf.addobj(Integer(4))
   let data = @pdfio.bytes_of_string("data")
   let dict : @pdf.PdfObject = Dictionary([("/Length", Indirect(length_obj))])
-  let stream_num = pdf.addobj(Stream(Ref::new((dict, Got(data)))))
+  let stream_num = pdf.addobj(Stream(Ref((dict, Got(data)))))
   pdf.objects.object_stream_ids.set(stream_num, stream_num)
   pdf.objects.object_stream_ids.set(length_obj, stream_num)
   let (output, buffer) = @pdfio.Output::of_bytes(1024)
@@ -213,7 +213,7 @@ test "pdf_to_output drops invalid object stream ids and writes toget" {
   }
   let toget = @pdf.ToGet::new(input, 0, 4, crypt=ToDecrypt(deferred))
   let dict : @pdf.PdfObject = Dictionary([("/Length", Integer(4))])
-  let stream : @pdf.PdfObject = Stream(Ref::new((dict, ToGet(toget))))
+  let stream : @pdf.PdfObject = Stream(Ref((dict, ToGet(toget))))
   let stream_num = pdf.addobj(stream)
   pdf.objects.object_stream_ids.set(9999, stream_num)
   pdf.objects.object_stream_ids.set(stream_num, stream_num)
@@ -237,7 +237,12 @@ test "pdf_to_output drops invalid object stream ids and writes toget" {
 async test "pdf_to_file writes output" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   let path = "pdfwrite_async_test.pdf"
-  let file = @fs.open(path, mode=WriteOnly, create=0o644, truncate=true)
+  let file = @fs.open(
+    path,
+    mode=WriteOnly,
+    create_mode=CreateOrTruncate,
+    permission=0o644,
+  )
   defer file.close()
   let output = @pdfiofs.output_of_channel(file)
   write_ctx.pdf_to_output(None, true, pdf, output)
@@ -253,12 +258,10 @@ async test "pdf_to_file writes output" {
 test "pdf_to_output supports recrypt" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   let (output, _) = @pdfio.Output::of_bytes(2048)
-  let res : Result[Unit, Error] = try? write_ctx.pdf_to_output(
-    recrypt="pass",
-    None,
-    true,
-    pdf,
-    output,
-  )
+  let res : Result[Unit, Error] = try
+    write_ctx.pdf_to_output(recrypt="pass", None, true, pdf, output) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }

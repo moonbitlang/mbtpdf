@@ -19,7 +19,7 @@ fn pdf_with_stream() -> @pdf.Pdf raise {
   let dict : @pdf.PdfObject = Dictionary([
     ("/Length", Integer(@pdfio.bytes_size(data))),
   ])
-  let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
+  let stream : @pdf.PdfObject = Stream(Ref((dict, Got(data))))
   let mediabox : @pdf.PdfObject = PdfArray([
     Real(0.0),
     Real(0.0),
@@ -159,13 +159,18 @@ test "decrypt_single_stream rejects bad owner password for ARC4 128" {
     pdf,
   )
   let (objnum, gen, stream) = first_stream(enc)
-  let res : Result[@pdf.PdfObject, Error] = try? @pdfcrypt.PdfCrypt::new().decrypt_single_stream(
-    None,
-    Some("wrong"),
-    enc,
-    objnum,
-    gen,
-    stream,
-  )
+  let res : Result[@pdf.PdfObject, Error] = try
+    @pdfcrypt.PdfCrypt::new().decrypt_single_stream(
+      None,
+      Some("wrong"),
+      enc,
+      objnum,
+      gen,
+      stream,
+    )
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }

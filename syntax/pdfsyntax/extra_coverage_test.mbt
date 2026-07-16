@@ -11,7 +11,12 @@ test "lexer covers name, number, and string error paths" {
 
   // Bad name hex escape.
   assert_is_err(
-    try? @pdfsyntax.lex_name(@pdfio.Input::of_string("/Name#GG", source="name")),
+    try
+      @pdfsyntax.lex_name(@pdfio.Input::of_string("/Name#GG", source="name"))
+      |> Ok
+    catch {
+      e => Err(e)
+    },
   )
 
   // Number parsing fallbacks.
@@ -35,14 +40,22 @@ test "lexer covers name, number, and string error paths" {
 
   // lex_string expects '('.
   assert_is_err(
-    try? @pdfsyntax.lex_string(@pdfio.Input::of_string("abc", source="string")),
+    try
+      @pdfsyntax.lex_string(@pdfio.Input::of_string("abc", source="string"))
+      |> Ok
+    catch {
+      e => Err(e)
+    },
   )
 
   // lex_string escape unexpected EOF.
   assert_is_err(
-    try? @pdfsyntax.lex_string(
-      @pdfio.Input::of_string("(\\", source="eof-string"),
-    ),
+    try
+      @pdfsyntax.lex_string(@pdfio.Input::of_string("(\\", source="eof-string"))
+      |> Ok
+    catch {
+      e => Err(e)
+    },
   )
 
   // lex_string CR escape path with rewind.
@@ -108,12 +121,17 @@ test "lex_keyword covers R and unknown keywords" {
 
 ///|
 test "lex_stream errors when previous lexemes are not a dictionary" {
-  let res : Result[@pdftoken.Token, Error] = try? @pdfsyntax.lex_stream(
-    @pdfio.Input::of_string("stream\nabc", source="stream-bad"),
-    [LexInt(1)],
-    _k => [],
-    false,
-  )
+  let res : Result[@pdftoken.Token, Error] = try
+    @pdfsyntax.lex_stream(
+      @pdfio.Input::of_string("stream\nabc", source="stream-bad"),
+      [LexInt(1)],
+      _k => [],
+      false,
+    )
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_is_err(res)
 }
 

@@ -21,7 +21,7 @@ test "objmap basics" {
 
 ///|
 fn make_stream(dict : PdfObject, data : Array[Byte]) -> PdfObject {
-  Stream(Ref::new((dict, Got(data))))
+  Stream(Ref((dict, Got(data))))
 }
 
 ///|
@@ -63,16 +63,25 @@ test "dictionary helpers" {
       }
     _ => fail("expected stream")
   }
-  assert_is_err(try? PdfObject::Integer(1).remove_entry("/A"))
+  assert_is_err(
+    try PdfObject::Integer(1).remove_entry("/A") |> Ok catch {
+      e => Err(e)
+    },
+  )
   match PdfObject::Null.replace_entry("/A", Integer(1)) {
     Dictionary(entries) => assert_eq(entries.length(), 1)
     _ => fail("expected dictionary from null")
   }
   assert_is_err(
-    try? PdfObject::Dictionary([("/B", Integer(2))]).replace_entry(
-      "/A",
-      Integer(1),
-    ),
+    try
+      PdfObject::Dictionary([("/B", Integer(2))]).replace_entry(
+        "/A",
+        Integer(1),
+      )
+      |> Ok
+    catch {
+      e => Err(e)
+    },
   )
   let stream_obj2 = make_stream(Dictionary([("/A", Integer(1))]), data)
   match stream_obj2.replace_entry("/A", Integer(9)) {
@@ -87,7 +96,11 @@ test "dictionary helpers" {
       }
     _ => fail("expected stream")
   }
-  assert_is_err(try? PdfObject::Integer(1).replace_entry("/A", Integer(2)))
+  assert_is_err(
+    try PdfObject::Integer(1).replace_entry("/A", Integer(2)) |> Ok catch {
+      e => Err(e)
+    },
+  )
   match PdfObject::Null.add_entry("/A", Integer(1)) {
     Dictionary(entries) => assert_eq(entries.length(), 1)
     _ => fail("expected dictionary from null")
@@ -111,7 +124,11 @@ test "dictionary helpers" {
       }
     _ => fail("expected stream")
   }
-  assert_is_err(try? PdfObject::Integer(1).add_entry("/A", Integer(2)))
+  assert_is_err(
+    try PdfObject::Integer(1).add_entry("/A", Integer(2)) |> Ok catch {
+      e => Err(e)
+    },
+  )
 }
 
 ///|
@@ -172,9 +189,21 @@ test "lookup and chains" {
   pdf2.trailerdict = Dictionary([("/A", PdfArray([Integer(1), Integer(2)]))])
   pdf2.replace_chain(["/A", "/[1]"][:], Integer(9))
   assert_some_integer(pdf2.lookup_chain(pdf2.trailerdict, ["/A", "/[1]"][:]), 9)
-  assert_is_err(try? pdf2.replace_chain(["/A", "/[5]"][:], Integer(3)))
-  assert_is_err(try? pdf2.replace_chain(["/A", "/[0]", "/B"][:], Integer(3)))
-  assert_is_err(try? pdf2.replace_chain(["/[0]"][:], Integer(1)))
+  assert_is_err(
+    try pdf2.replace_chain(["/A", "/[5]"][:], Integer(3)) |> Ok catch {
+      e => Err(e)
+    },
+  )
+  assert_is_err(
+    try pdf2.replace_chain(["/A", "/[0]", "/B"][:], Integer(3)) |> Ok catch {
+      e => Err(e)
+    },
+  )
+  assert_is_err(
+    try pdf2.replace_chain(["/[0]"][:], Integer(1)) |> Ok catch {
+      e => Err(e)
+    },
+  )
   let dict_chain = ["/X", "/Y"]
   pdf2.replace_chain(dict_chain[:], Integer(7))
   assert_some_integer(pdf2.lookup_chain(pdf2.trailerdict, dict_chain[:]), 7)
@@ -214,13 +243,13 @@ test "lookup and chains" {
   let dict_alt = PdfObject::Dictionary([("/Alt", Integer(3))])
   assert_some_integer(pdf.lookup_direct_orelse("/Missing", "/Alt", dict_alt), 3)
   let pdf_parse = Pdf::empty()
-  pdf_parse.objects.objects.set(10, (Ref::new(ToParse), 0))
+  pdf_parse.objects.objects.set(10, (Ref(ToParse), 0))
   match pdf_parse.lookup_obj(10) {
     Null => ()
     _ => fail("expected null")
   }
-  let map_none : Map[Int, Array[Int]] = Map::new()
-  let ref_none = Ref::new(
+  let map_none : Map[Int, Array[Int]] = Map([])
+  let ref_none = Ref(
     ObjectData::ToParseFromObjectStream(map_none, 5, 0, (_stream, _idx) => []),
   )
   pdf_parse.objects.objects.set(11, (ref_none, 0))
@@ -228,11 +257,11 @@ test "lookup and chains" {
     Null => ()
     _ => fail("expected null")
   }
-  let map_missing : Map[Int, Array[Int]] = Map::new()
+  let map_missing : Map[Int, Array[Int]] = Map([])
   map_missing.set(12, [0])
-  let ref_missing = Ref::new(
+  let ref_missing = Ref(
     ObjectData::ToParseFromObjectStream(map_missing, 6, 0, (_stream, _idx) => {
-      [(13, (Ref::new(Parsed(Integer(7))), 0))]
+      [(13, (Ref(Parsed(Integer(7))), 0))]
     }),
   )
   pdf_parse.objects.objects.set(12, (ref_missing, 0))
@@ -240,11 +269,11 @@ test "lookup and chains" {
     Null => ()
     _ => fail("expected null")
   }
-  let map_found : Map[Int, Array[Int]] = Map::new()
+  let map_found : Map[Int, Array[Int]] = Map([])
   map_found.set(14, [0])
-  let ref_found = Ref::new(
+  let ref_found = Ref(
     ObjectData::ToParseFromObjectStream(map_found, 7, 0, (_stream, _idx) => {
-      [(14, (Ref::new(Parsed(Integer(8))), 0))]
+      [(14, (Ref(Parsed(Integer(8))), 0))]
     }),
   )
   pdf_parse.objects.objects.set(14, (ref_found, 0))

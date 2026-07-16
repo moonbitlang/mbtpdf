@@ -50,7 +50,9 @@ test "read rejects malformed kern lines" {
       Array[(String, Int)],
     ),
     Error,
-  ] = try? @pdfafm.PdfAfm::new().read(input)
+  ] = try @pdfafm.PdfAfm::new().read(input) |> Ok catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }
 
@@ -101,6 +103,8 @@ test "read rejects malformed char metrics lines" {
       Array[(String, Int)],
     ),
     Error,
-  ] = try? @pdfafm.PdfAfm::new().read(input)
+  ] = try @pdfafm.PdfAfm::new().read(input) |> Ok catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }

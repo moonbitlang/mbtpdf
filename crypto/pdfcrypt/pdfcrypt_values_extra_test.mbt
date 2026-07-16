@@ -19,7 +19,7 @@ test "get_encryption_values handles V2 without length" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   add_id(pdf)
   let encrypt_dict : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/Standard"))),
+    ("/Filter", Name(PdfName(b"/Standard"))),
     ("/V", Integer(2)),
     ("/R", Integer(3)),
     ("/O", PdfString(bytes_string(32, 65))),
@@ -41,7 +41,7 @@ test "get_encryption_values rejects invalid length" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   add_id(pdf)
   let encrypt_dict : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/Standard"))),
+    ("/Filter", Name(PdfName(b"/Standard"))),
     ("/V", Integer(2)),
     ("/R", Integer(3)),
     ("/Length", Integer(42)),
@@ -50,7 +50,11 @@ test "get_encryption_values rejects invalid length" {
     ("/P", Integer(-4)),
   ])
   attach_encrypt(pdf, encrypt_dict)
-  let result = try? @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf)
+  let result = try
+    @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(result is Err(_))
 }
 
@@ -59,13 +63,13 @@ test "get_encryption_values handles V4 CF V2 length" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   add_id(pdf)
   let encrypt_dict : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/Standard"))),
+    ("/Filter", Name(PdfName(b"/Standard"))),
     ("/V", Integer(4)),
     ("/R", Integer(4)),
     ("/Length", Integer(64)),
     (
       "/CF",
-      Dictionary([("/StdCF", Dictionary([("/CFM", Name(PdfName("/V2")))]))]),
+      Dictionary([("/StdCF", Dictionary([("/CFM", Name(PdfName(b"/V2")))]))]),
     ),
     ("/O", PdfString(bytes_string(32, 65))),
     ("/U", PdfString(bytes_string(32, 66))),
@@ -86,16 +90,16 @@ test "get_encryption_values falls back to /CF /Length for V4 V2" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   add_id(pdf)
   let encrypt_dict : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/Standard"))),
+    ("/Filter", Name(PdfName(b"/Standard"))),
     ("/V", Integer(4)),
     ("/R", Integer(4)),
     // Non-integer /Length triggers the fallback to /CF /Length.
-    ("/Length", Name(PdfName("/NotAnInt"))),
+    ("/Length", Name(PdfName(b"/NotAnInt"))),
     (
       "/CF",
       Dictionary([
         ("/Length", Integer(128)),
-        ("/StdCF", Dictionary([("/CFM", Name(PdfName("/V2")))])),
+        ("/StdCF", Dictionary([("/CFM", Name(PdfName(b"/V2")))])),
       ]),
     ),
     ("/O", PdfString(bytes_string(32, 65))),
@@ -117,7 +121,7 @@ test "get_encryption_values rejects V4 without CF dictionary" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   add_id(pdf)
   let encrypt_dict : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/Standard"))),
+    ("/Filter", Name(PdfName(b"/Standard"))),
     ("/V", Integer(4)),
     ("/R", Integer(4)),
     ("/Length", Integer(64)),
@@ -126,7 +130,11 @@ test "get_encryption_values rejects V4 without CF dictionary" {
     ("/P", Integer(-4)),
   ])
   attach_encrypt(pdf, encrypt_dict)
-  let result = try? @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf)
+  let result = try
+    @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(result is Err(_))
 }
 
@@ -135,7 +143,7 @@ test "get_encryption_values rejects nonstandard V in encryption dictionary" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   add_id(pdf)
   let encrypt_dict : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/Standard"))),
+    ("/Filter", Name(PdfName(b"/Standard"))),
     ("/V", Integer(3)),
     ("/R", Integer(3)),
     ("/O", PdfString(bytes_string(32, 65))),
@@ -143,7 +151,11 @@ test "get_encryption_values rejects nonstandard V in encryption dictionary" {
     ("/P", Integer(-4)),
   ])
   attach_encrypt(pdf, encrypt_dict)
-  let result = try? @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf)
+  let result = try
+    @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(result is Err(_))
 }
 
@@ -152,17 +164,17 @@ test "get_encryption_values rejects V4 V2 when /CF /Length is not an integer" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   add_id(pdf)
   let encrypt_dict : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/Standard"))),
+    ("/Filter", Name(PdfName(b"/Standard"))),
     ("/V", Integer(4)),
     ("/R", Integer(4)),
     // Non-integer /Length triggers the /CF fallback.
-    ("/Length", Name(PdfName("/NotAnInt"))),
+    ("/Length", Name(PdfName(b"/NotAnInt"))),
     (
       "/CF",
       Dictionary([
         // Non-integer /CF /Length should fail ARC4 length extraction.
-        ("/Length", Name(PdfName("/AlsoNotInt"))),
-        ("/StdCF", Dictionary([("/CFM", Name(PdfName("/V2")))])),
+        ("/Length", Name(PdfName(b"/AlsoNotInt"))),
+        ("/StdCF", Dictionary([("/CFM", Name(PdfName(b"/V2")))])),
       ]),
     ),
     ("/O", PdfString(bytes_string(32, 65))),
@@ -170,7 +182,11 @@ test "get_encryption_values rejects V4 V2 when /CF /Length is not an integer" {
     ("/P", Integer(-4)),
   ])
   attach_encrypt(pdf, encrypt_dict)
-  let result = try? @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf)
+  let result = try
+    @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(result is Err(_))
 }
 
@@ -179,7 +195,7 @@ test "get_encryption_values rejects unknown encryption filter" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   add_id(pdf)
   let encrypt_dict : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/NotStandard"))),
+    ("/Filter", Name(PdfName(b"/NotStandard"))),
     ("/V", Integer(2)),
     ("/R", Integer(3)),
     ("/O", PdfString(bytes_string(32, 65))),
@@ -187,7 +203,11 @@ test "get_encryption_values rejects unknown encryption filter" {
     ("/P", Integer(-4)),
   ])
   attach_encrypt(pdf, encrypt_dict)
-  let result = try? @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf)
+  let result = try
+    @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(result is Err(_))
 }
 
@@ -196,12 +216,12 @@ test "decrypt_pdf AESV3 errors when /Perms is missing" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   add_id(pdf)
   let encrypt_dict : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/Standard"))),
+    ("/Filter", Name(PdfName(b"/Standard"))),
     ("/V", Integer(5)),
     ("/R", Integer(6)),
     (
       "/CF",
-      Dictionary([("/StdCF", Dictionary([("/CFM", Name(PdfName("/AESV3")))]))]),
+      Dictionary([("/StdCF", Dictionary([("/CFM", Name(PdfName(b"/AESV3")))]))]),
     ),
     ("/O", PdfString(bytes_string(48, 65))),
     ("/U", PdfString(bytes_string(48, 66))),
@@ -210,7 +230,11 @@ test "decrypt_pdf AESV3 errors when /Perms is missing" {
     ("/P", Integer(-4)),
   ])
   attach_encrypt(pdf, encrypt_dict)
-  let result = try? @pdfcrypt.PdfCrypt::new().decrypt_pdf("pw", pdf)
+  let result = try
+    @pdfcrypt.PdfCrypt::new().decrypt_pdf("pw", pdf) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(result is Err(_))
 }
 
@@ -219,7 +243,7 @@ test "get_encryption_values rejects missing stdcf" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   add_id(pdf)
   let encrypt_dict : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/Standard"))),
+    ("/Filter", Name(PdfName(b"/Standard"))),
     ("/V", Integer(4)),
     ("/R", Integer(4)),
     ("/CF", Dictionary([("/Other", Dictionary([]))])),
@@ -228,7 +252,11 @@ test "get_encryption_values rejects missing stdcf" {
     ("/P", Integer(-4)),
   ])
   attach_encrypt(pdf, encrypt_dict)
-  let result = try? @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf)
+  let result = try
+    @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(result is Err(_))
 }
 
@@ -237,19 +265,25 @@ test "get_encryption_values rejects unknown cfm" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   add_id(pdf)
   let encrypt_dict : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/Standard"))),
+    ("/Filter", Name(PdfName(b"/Standard"))),
     ("/V", Integer(4)),
     ("/R", Integer(4)),
     (
       "/CF",
-      Dictionary([("/StdCF", Dictionary([("/CFM", Name(PdfName("/Unknown")))]))]),
+      Dictionary([
+        ("/StdCF", Dictionary([("/CFM", Name(PdfName(b"/Unknown")))])),
+      ]),
     ),
     ("/O", PdfString(bytes_string(32, 65))),
     ("/U", PdfString(bytes_string(32, 66))),
     ("/P", Integer(-4)),
   ])
   attach_encrypt(pdf, encrypt_dict)
-  let result = try? @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf)
+  let result = try
+    @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(result is Err(_))
 }
 
@@ -257,7 +291,7 @@ test "get_encryption_values rejects unknown cfm" {
 test "get_encryption_values rejects missing id entry" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   let encrypt_dict : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/Standard"))),
+    ("/Filter", Name(PdfName(b"/Standard"))),
     ("/V", Integer(2)),
     ("/R", Integer(3)),
     ("/O", PdfString(bytes_string(32, 65))),
@@ -265,7 +299,11 @@ test "get_encryption_values rejects missing id entry" {
     ("/P", Integer(-4)),
   ])
   attach_encrypt(pdf, encrypt_dict)
-  let result = try? @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf)
+  let result = try
+    @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(result is Err(_))
 }
 
@@ -276,49 +314,61 @@ test "get_encryption_values rejects missing or malformed O/U/P entries" {
   attach_encrypt(
     pdf_o,
     Dictionary([
-      ("/Filter", Name(PdfName("/Standard"))),
+      ("/Filter", Name(PdfName(b"/Standard"))),
       ("/V", Integer(2)),
       ("/R", Integer(3)),
       ("/U", PdfString(bytes_string(32, 66))),
       ("/P", Integer(-4)),
     ]),
   )
-  let o_res = try? @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf_o)
+  let o_res = try
+    @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf_o) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(o_res is Err(_))
   let pdf_u = @pdfpage.PdfPageDoc::minimum_valid()
   add_id(pdf_u)
   attach_encrypt(
     pdf_u,
     Dictionary([
-      ("/Filter", Name(PdfName("/Standard"))),
+      ("/Filter", Name(PdfName(b"/Standard"))),
       ("/V", Integer(2)),
       ("/R", Integer(3)),
       ("/O", PdfString(bytes_string(32, 65))),
       ("/P", Integer(-4)),
     ]),
   )
-  let u_res = try? @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf_u)
+  let u_res = try
+    @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf_u) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(u_res is Err(_))
   let pdf_p = @pdfpage.PdfPageDoc::minimum_valid()
   add_id(pdf_p)
   attach_encrypt(
     pdf_p,
     Dictionary([
-      ("/Filter", Name(PdfName("/Standard"))),
+      ("/Filter", Name(PdfName(b"/Standard"))),
       ("/V", Integer(2)),
       ("/R", Integer(3)),
       ("/O", PdfString(bytes_string(32, 65))),
       ("/U", PdfString(bytes_string(32, 66))),
     ]),
   )
-  let p_res = try? @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf_p)
+  let p_res = try
+    @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf_p) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(p_res is Err(_))
   let pdf_bad_types = @pdfpage.PdfPageDoc::minimum_valid()
   add_id(pdf_bad_types)
   attach_encrypt(
     pdf_bad_types,
     Dictionary([
-      ("/Filter", Name(PdfName("/Standard"))),
+      ("/Filter", Name(PdfName(b"/Standard"))),
       ("/V", Integer(2)),
       ("/R", Integer(3)),
       ("/O", Integer(0)),
@@ -326,9 +376,11 @@ test "get_encryption_values rejects missing or malformed O/U/P entries" {
       ("/P", PdfString("x")),
     ]),
   )
-  let bad_types_res = try? @pdfcrypt.PdfCrypt::new().get_encryption_values(
-    pdf_bad_types,
-  )
+  let bad_types_res = try
+    @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf_bad_types) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(bad_types_res is Err(_))
 }
 
@@ -339,7 +391,7 @@ test "get_encryption_values rejects too-short O/U strings" {
   attach_encrypt(
     pdf_short,
     Dictionary([
-      ("/Filter", Name(PdfName("/Standard"))),
+      ("/Filter", Name(PdfName(b"/Standard"))),
       ("/V", Integer(2)),
       ("/R", Integer(3)),
       ("/O", PdfString("x")),
@@ -347,9 +399,11 @@ test "get_encryption_values rejects too-short O/U strings" {
       ("/P", Integer(-4)),
     ]),
   )
-  let short_res = try? @pdfcrypt.PdfCrypt::new().get_encryption_values(
-    pdf_short,
-  )
+  let short_res = try
+    @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf_short) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(short_res is Err(_))
 }
 
@@ -369,14 +423,12 @@ test "encrypt AES V2 without metadata and AES256 with long passwords" {
   pdf.addobj_given_num((10, string_obj))
   let stream_dict : @pdf.PdfObject = Dictionary([("/Length", Integer(4))])
   let got_stream : @pdf.PdfObject = Stream(
-    Ref::new((stream_dict, Got(@pdfio.bytes_of_string("data")))),
+    Ref((stream_dict, Got(@pdfio.bytes_of_string("data")))),
   )
   pdf.addobj_given_num((11, got_stream))
   let input = @pdfio.Input::of_string("data", source="stream")
   let toget = @pdf.ToGet::new(input, 0, 4)
-  let toget_stream : @pdf.PdfObject = Stream(
-    Ref::new((stream_dict, ToGet(toget))),
-  )
+  let toget_stream : @pdf.PdfObject = Stream(Ref((stream_dict, ToGet(toget))))
   pdf.addobj_given_num((12, toget_stream))
   let long_pw = "a".repeat(130)
   let enc256 = @pdfcrypt.PdfCrypt::new().encrypt_pdf_AES256(

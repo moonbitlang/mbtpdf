@@ -68,14 +68,14 @@ test "merge_pdfs keeps named and action bookmarks while dropping out of range" {
   ]
   add_names_dests(pdf, entries)
   let action : @pdf.PdfObject = Dictionary([
-    ("/S", Name(PdfName("/GoTo"))),
+    ("/S", Name(PdfName(b"/GoTo"))),
     ("/D", PdfString("DestB")),
   ])
   let bookmarks : Array[@pdfmarks.Bookmark] = [
     {
       level: 0,
       text: "Named",
-      target: NamedDestination(PdfName("/DestA")),
+      target: NamedDestination(PdfName(b"/DestA")),
       isopen: false,
       colour: (0.0, 0.0, 0.0),
       flags: 0,
@@ -122,7 +122,7 @@ test "merge_pdfs handles malformed names and optional catalog entries" {
   set_catalog_entry(
     pdf1,
     "/OCProperties",
-    Dictionary([("/OCGs", PdfArray([Name(PdfName("/OCG1"))]))]),
+    Dictionary([("/OCGs", PdfArray([Name(PdfName(b"/OCG1"))]))]),
   )
   set_catalog_entry(pdf1, "/AcroForm", Null)
   set_catalog_entry(
@@ -161,14 +161,19 @@ test "merge_pdfs handles malformed names and optional catalog entries" {
 test "merge_pdfs warns on duplicate names with struct trees" {
   let pdf1 = @pdfpage.PdfPageDoc::minimum_valid()
   let pdf2 = @pdfpage.PdfPageDoc::minimum_valid()
-  let res : Result[@pdf.Pdf, Error] = try? @pdfe.with_logger(_ => (), fn() {
-    PdfMerger::new(["dup", "dup"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
-      false,
-      false,
-      process_struct_trees=true,
-      add_toplevel_document=false,
-    )
-  })
+  let res : Result[@pdf.Pdf, Error] = try
+    @pdfe.with_logger(_ => (), fn() {
+      PdfMerger::new(["dup", "dup"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
+        false,
+        false,
+        process_struct_trees=true,
+        add_toplevel_document=false,
+      )
+    })
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   match res {
     Ok(merged) =>
       assert_eq(@pdfpage.PdfPageDoc::new(merged).pages_of_pagetree_quick(), 2)
@@ -197,7 +202,7 @@ test "merge_pdfs rewrites string and legacy named bookmarks" {
     {
       level: 0,
       text: "Named",
-      target: NamedDestination(PdfName("/DestA")),
+      target: NamedDestination(PdfName(b"/DestA")),
       isopen: false,
       colour: (0.0, 0.0, 0.0),
       flags: 0,
@@ -228,16 +233,17 @@ test "merge_pdfs rewrites string and legacy named bookmarks" {
 test "merge_pdfs uses highest version and removes duplicates" {
   let pdf1 = with_version(@pdfpage.PdfPageDoc::minimum_valid(), 1, 4)
   let pdf2 = with_version(@pdfpage.PdfPageDoc::minimum_valid(), 1, 6)
-  let res : Result[@pdf.Pdf, Error] = try? PdfMerger::new(
-    ["one", "two"],
-    [pdf1, pdf2],
-    [[1], [1]],
-  ).merge_pdfs(
-    false,
-    true,
-    process_struct_trees=false,
-    add_toplevel_document=false,
-  )
+  let res : Result[@pdf.Pdf, Error] = try
+    PdfMerger::new(["one", "two"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
+      false,
+      true,
+      process_struct_trees=false,
+      add_toplevel_document=false,
+    )
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   match res {
     Ok(merged) => {
       assert_eq(merged.major, 1)
@@ -252,8 +258,8 @@ test "merge_pdfs uses highest version and removes duplicates" {
 test "remove_duplicate_fonts updates object_stream_ids" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = Dictionary([("/Length", Integer(1))])
-  let stream1 : @pdf.PdfObject = Stream(Ref::new((dict, Got([0x01]))))
-  let stream2 : @pdf.PdfObject = Stream(Ref::new((dict, Got([0x01]))))
+  let stream1 : @pdf.PdfObject = Stream(Ref((dict, Got([0x01]))))
+  let stream2 : @pdf.PdfObject = Stream(Ref((dict, Got([0x01]))))
   let obj1 = pdf.addobj(stream1)
   let obj2 = pdf.addobj(stream2)
   pdf.objects.object_stream_ids.set(obj1, 10)
@@ -266,8 +272,8 @@ test "remove_duplicate_fonts updates object_stream_ids" {
 test "remove_duplicate_fonts keeps distinct stream lengths" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = Dictionary([("/Length", Integer(1))])
-  let stream1 : @pdf.PdfObject = Stream(Ref::new((dict, Got([0x01]))))
-  let stream2 : @pdf.PdfObject = Stream(Ref::new((dict, Got([0x01, 0x02]))))
+  let stream1 : @pdf.PdfObject = Stream(Ref((dict, Got([0x01]))))
+  let stream2 : @pdf.PdfObject = Stream(Ref((dict, Got([0x01, 0x02]))))
   ignore(pdf.addobj(stream1))
   ignore(pdf.addobj(stream2))
   let before = pdf.objcard()
@@ -277,62 +283,79 @@ test "remove_duplicate_fonts keeps distinct stream lengths" {
 
 ///|
 test "merge_pdfs errors on empty inputs" {
-  let res : Result[@pdf.Pdf, Error] = try? PdfMerger::new([], [], []).merge_pdfs(
-    false,
-    false,
-    process_struct_trees=false,
-    add_toplevel_document=false,
-  )
+  let res : Result[@pdf.Pdf, Error] = try
+    PdfMerger::new([], [], []).merge_pdfs(
+      false,
+      false,
+      process_struct_trees=false,
+      add_toplevel_document=false,
+    )
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }
 
 ///|
 test "merge_pdfs errors on mismatched names" {
   let pdf = make_pdf_pages(1)
-  let res : Result[@pdf.Pdf, Error] = try? PdfMerger::new(
-    ["one", "two"],
-    [pdf],
-    [[1]],
-  ).merge_pdfs(
-    false,
-    false,
-    process_struct_trees=false,
-    add_toplevel_document=false,
-  )
+  let res : Result[@pdf.Pdf, Error] = try
+    PdfMerger::new(["one", "two"], [pdf], [[1]]).merge_pdfs(
+      false,
+      false,
+      process_struct_trees=false,
+      add_toplevel_document=false,
+    )
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }
 
 ///|
 test "merge_pdfs errors on mismatched pdfs and ranges lengths" {
   let pdf = make_pdf_pages(1)
-  let res : Result[@pdf.Pdf, Error] = try? PdfMerger::new(["one"], [pdf], [
-    [1],
-    [1],
-  ]).merge_pdfs(false, false)
+  let res : Result[@pdf.Pdf, Error] = try
+    PdfMerger::new(["one"], [pdf], [[1], [1]]).merge_pdfs(false, false) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }
 
 ///|
 test "merge_pdfs errors on page out of range" {
   let pdf = make_pdf_pages(1)
-  let res : Result[@pdf.Pdf, Error] = try? PdfMerger::new(["one"], [pdf], [[2]]).merge_pdfs(
-    false,
-    false,
-    process_struct_trees=false,
-    add_toplevel_document=false,
-  )
+  let res : Result[@pdf.Pdf, Error] = try
+    PdfMerger::new(["one"], [pdf], [[2]]).merge_pdfs(
+      false,
+      false,
+      process_struct_trees=false,
+      add_toplevel_document=false,
+    )
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }
 
 ///|
 test "merge_pdfs errors on non-positive page indices" {
   let pdf = make_pdf_pages(1)
-  let res : Result[@pdf.Pdf, Error] = try? PdfMerger::new(["one"], [pdf], [[0]]).merge_pdfs(
-    false,
-    false,
-    process_struct_trees=false,
-    add_toplevel_document=false,
-  )
+  let res : Result[@pdf.Pdf, Error] = try
+    PdfMerger::new(["one"], [pdf], [[0]]).merge_pdfs(
+      false,
+      false,
+      process_struct_trees=false,
+      add_toplevel_document=false,
+    )
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }
 
@@ -357,8 +380,8 @@ test "merge_pdfs rewrites and preserves diverse destination bookmark targets" {
     Dictionary([("/LegacyFit", legacy_fit), ("/LegacyOther", legacy_other)]),
   )
   let bookmarks : Array[@pdfmarks.Bookmark] = [
-    mk_mark("LegacyFit", NamedDestination(PdfName("/LegacyFit"))),
-    mk_mark("LegacyOther", NamedDestination(PdfName("/LegacyOther"))),
+    mk_mark("LegacyFit", NamedDestination(PdfName(b"/LegacyFit"))),
+    mk_mark("LegacyOther", NamedDestination(PdfName(b"/LegacyOther"))),
     mk_mark("DirectFitH", FitH(tp1, Some(0.0))),
     mk_mark("DirectFitV", FitV(tp1, Some(0.0))),
     mk_mark("DirectFitR", FitR(tp1, 0.0, 0.0, 1.0, 1.0)),
@@ -401,30 +424,30 @@ test "merge_pdfs resolves NamedDestination via name tree when /Dests missing" {
     ("NoDStr", Dictionary([])),
   ])
   let action_goto : @pdf.PdfObject = Dictionary([
-    ("/S", Name(PdfName("/GoTo"))),
+    ("/S", Name(PdfName(b"/GoTo"))),
     ("/D", PdfString("TreeStr")),
   ])
   let action_bad_d : @pdf.PdfObject = Dictionary([
-    ("/S", Name(PdfName("/GoTo"))),
+    ("/S", Name(PdfName(b"/GoTo"))),
     ("/D", Integer(0)),
   ])
   let action_bad_s : @pdf.PdfObject = Dictionary([
-    ("/S", Name(PdfName("/NotGoTo"))),
+    ("/S", Name(PdfName(b"/NotGoTo"))),
     ("/D", PdfString("TreeStr")),
   ])
   let action_missing_dest : @pdf.PdfObject = Dictionary([
-    ("/S", Name(PdfName("/GoTo"))),
+    ("/S", Name(PdfName(b"/GoTo"))),
     ("/D", PdfString("MissingStr")),
   ])
   let action_no_d : @pdf.PdfObject = Dictionary([
-    ("/S", Name(PdfName("/GoTo"))),
+    ("/S", Name(PdfName(b"/GoTo"))),
     ("/D", PdfString("NoDStr")),
   ])
   let bookmarks : Array[@pdfmarks.Bookmark] = [
     {
       level: 0,
       text: "TreeOnly",
-      target: NamedDestination(PdfName("/OnlyInTree")),
+      target: NamedDestination(PdfName(b"/OnlyInTree")),
       isopen: false,
       colour: (0.0, 0.0, 0.0),
       flags: 0,
@@ -448,7 +471,7 @@ test "merge_pdfs resolves NamedDestination via name tree when /Dests missing" {
     {
       level: 0,
       text: "OtherDocNamed",
-      target: NamedDestination(PdfName("/OtherDocNamed")),
+      target: NamedDestination(PdfName(b"/OtherDocNamed")),
       isopen: false,
       colour: (0.0, 0.0, 0.0),
       flags: 0,
@@ -456,7 +479,7 @@ test "merge_pdfs resolves NamedDestination via name tree when /Dests missing" {
     {
       level: 0,
       text: "NoDNamed",
-      target: NamedDestination(PdfName("/NoDNamed")),
+      target: NamedDestination(PdfName(b"/NoDNamed")),
       isopen: false,
       colour: (0.0, 0.0, 0.0),
       flags: 0,
@@ -550,7 +573,7 @@ test "merge_pdfs drops NamedDestination when no destination trees exist" {
     {
       level: 0,
       text: "MissingDest",
-      target: NamedDestination(PdfName("/MissingDest")),
+      target: NamedDestination(PdfName(b"/MissingDest")),
       isopen: false,
       colour: (0.0, 0.0, 0.0),
       flags: 0,

@@ -1,14 +1,18 @@
 ///|
 test "getuntil functions error on EOF when delimiter required" {
   let input = @pdfio.Input::of_string("abc")
-  let res_chars : Result[Array[Char], Error] = try? input.getuntil(false, c => {
-    c == 'z'
-  })
+  let res_chars : Result[Array[Char], Error] = try
+    input.getuntil(false, c => c == 'z') |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res_chars is Err(_))
   let input2 = @pdfio.Input::of_string("q")
-  let res_ignore : Result[Unit, Error] = try? input2.ignoreuntil(false, c => {
-    c == 'z'
-  })
+  let res_ignore : Result[Unit, Error] = try
+    input2.ignoreuntil(false, c => c == 'z') |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res_ignore is Err(_))
 }
 
@@ -53,9 +57,11 @@ test "lex_hexstring handles odd and invalid digits" {
     }
     _ => fail("expected LexString")
   }
-  let bad : Result[@pdftoken.Token, Error] = try? @pdfsyntax.lex_hexstring(
-    @pdfio.Input::of_string("<GG>"),
-  )
+  let bad : Result[@pdftoken.Token, Error] = try
+    @pdfsyntax.lex_hexstring(@pdfio.Input::of_string("<GG>")) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(bad is Err(_))
 }
 

@@ -5,7 +5,7 @@ fn font_with_encoding_name(
 ) -> @pdf.PdfObject {
   Dictionary([
     ("/Subtype", Name(@pdf.PdfName::of_string(subtype))),
-    ("/BaseFont", Name(PdfName("/CustomFont"))),
+    ("/BaseFont", Name(PdfName(b"/CustomFont"))),
     ("/Encoding", Name(@pdf.PdfName::of_string(encoding_name))),
   ])
 }
@@ -13,11 +13,11 @@ fn font_with_encoding_name(
 ///|
 fn truetype_font_with_encoding_dict() -> @pdf.PdfObject {
   Dictionary([
-    ("/Subtype", Name(PdfName("/TrueType"))),
-    ("/BaseFont", Name(PdfName("/CustomFont"))),
+    ("/Subtype", Name(PdfName(b"/TrueType"))),
+    ("/BaseFont", Name(PdfName(b"/CustomFont"))),
     (
       "/Encoding",
-      Dictionary([("/BaseEncoding", Name(PdfName("/MacRomanEncoding")))]),
+      Dictionary([("/BaseEncoding", Name(PdfName(b"/MacRomanEncoding")))]),
     ),
   ])
 }
@@ -25,13 +25,13 @@ fn truetype_font_with_encoding_dict() -> @pdf.PdfObject {
 ///|
 fn embedded_font_with_custom_encoding() -> @pdf.PdfObject {
   Dictionary([
-    ("/Subtype", Name(PdfName("/Type1"))),
-    ("/BaseFont", Name(PdfName("/CustomFont"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
+    ("/BaseFont", Name(PdfName(b"/CustomFont"))),
     ("/FontDescriptor", Dictionary([("/FontFile2", Indirect(10))])),
     (
       "/Encoding",
       Dictionary([
-        ("/Differences", PdfArray([Integer(65), Name(PdfName("/A"))])),
+        ("/Differences", PdfArray([Integer(65), Name(PdfName(b"/A"))])),
       ]),
     ),
   ])
@@ -40,8 +40,8 @@ fn embedded_font_with_custom_encoding() -> @pdf.PdfObject {
 ///|
 fn font_with_difference(name : String) -> @pdf.PdfObject {
   Dictionary([
-    ("/Subtype", Name(PdfName("/Type1"))),
-    ("/BaseFont", Name(PdfName("/CustomFont"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
+    ("/BaseFont", Name(PdfName(b"/CustomFont"))),
     (
       "/Encoding",
       Dictionary([
@@ -82,8 +82,8 @@ test "reverse tables handle implicit and mac encodings" {
   let pdf = @pdf.Pdf::empty()
   let ctx = @pdftext.PdfText::new(pdf)
   let font_dict : @pdf.PdfObject = Dictionary([
-    ("/Subtype", Name(PdfName("/Type1"))),
-    ("/BaseFont", Name(PdfName("/CustomFont"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
+    ("/BaseFont", Name(PdfName(b"/CustomFont"))),
   ])
   let implicit_encoding = ctx.read_encoding(font_dict)
   let implicit = @pdftext.PdfTextUtil::new().reverse_table_of_encoding(
@@ -132,7 +132,7 @@ test "text extractor handles missing glyph hashes" {
   let pairs = extractor.glyphnames_and_codepoints_of_text("F")
   assert_eq(pairs.length(), 1)
   assert_true(pairs[0].0.contains("NotAGlyph"))
-  inspect(pairs[0].1, content="[70]")
+  debug_inspect(pairs[0].1, content="[70]")
   let names = extractor.glyphnames_of_text("F")
   assert_eq(names.length(), 1)
 }
@@ -141,7 +141,7 @@ test "text extractor handles missing glyph hashes" {
 test "charcode extractor uses tounicode bytes map" {
   let pdf = @pdf.Pdf::empty()
   let ctx = @pdftext.PdfText::new(pdf)
-  let tounicode : Map[Int, String] = Map::new()
+  let tounicode : Map[Int, String] = Map([])
   tounicode.set(33, @pdfio.string_of_int_array([0x00, 0x42]))
   let tounicode_ref = ctx.write_tounicode(tounicode)
   let charcode = ctx.charcode_extractor_of_font(
@@ -153,26 +153,35 @@ test "charcode extractor uses tounicode bytes map" {
 ///|
 test "codepoints_of_utf16be rejects invalid surrogate pairs" {
   let missing_low = @pdfio.string_of_int_array([0xd8, 0x00])
-  let missing_result : Result[Array[Int], Error] = try? @pdftext.PdfTextUtil::new().codepoints_of_utf16be(
-    missing_low,
-  )
+  let missing_result : Result[Array[Int], Error] = try
+    @pdftext.PdfTextUtil::new().codepoints_of_utf16be(missing_low) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(missing_result is Err(_))
   let bad_low = @pdfio.string_of_int_array([0xd8, 0x00, 0x00, 0x41])
-  let bad_low_result : Result[Array[Int], Error] = try? @pdftext.PdfTextUtil::new().codepoints_of_utf16be(
-    bad_low,
-  )
+  let bad_low_result : Result[Array[Int], Error] = try
+    @pdftext.PdfTextUtil::new().codepoints_of_utf16be(bad_low) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(bad_low_result is Err(_))
   let low_only = @pdfio.string_of_int_array([0xdc, 0x00, 0x00, 0x41])
-  let low_only_result : Result[Array[Int], Error] = try? @pdftext.PdfTextUtil::new().codepoints_of_utf16be(
-    low_only,
-  )
+  let low_only_result : Result[Array[Int], Error] = try
+    @pdftext.PdfTextUtil::new().codepoints_of_utf16be(low_only) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(low_only_result is Err(_))
 }
 
 ///|
 test "codepoints_of_utf8 handles two byte sequences" {
   let utf8 = @pdftext.PdfTextUtil::new().utf8_of_codepoints([0x00e9])
-  inspect(@pdftext.PdfTextUtil::new().codepoints_of_utf8(utf8), content="[233]")
+  debug_inspect(
+    @pdftext.PdfTextUtil::new().codepoints_of_utf8(utf8),
+    content="[233]",
+  )
 }
 
 ///|
@@ -199,9 +208,12 @@ test "pdfdocencoding rejects missing glyph mappings" {
   }
   match missing {
     Some(code) => {
-      let res : Result[Int, Error] = try? @pdftext.PdfTextUtil::new().codepoint_of_pdfdocencoding_character(
-        code,
-      )
+      let res : Result[Int, Error] = try
+        @pdftext.PdfTextUtil::new().codepoint_of_pdfdocencoding_character(code)
+        |> Ok
+      catch {
+        e => Err(e)
+      }
       assert_true(res is Err(_))
     }
     None => {
@@ -212,9 +224,12 @@ test "pdfdocencoding rejects missing glyph mappings" {
         Some(name) => @pdfglyphlist.reverse_name_to_pdf_hashes.set(code, name)
         None => @pdfglyphlist.reverse_name_to_pdf_hashes.remove(code)
       })
-      let res : Result[Int, Error] = try? @pdftext.PdfTextUtil::new().codepoint_of_pdfdocencoding_character(
-        code,
-      )
+      let res : Result[Int, Error] = try
+        @pdftext.PdfTextUtil::new().codepoint_of_pdfdocencoding_character(code)
+        |> Ok
+      catch {
+        e => Err(e)
+      }
       assert_true(res is Err(_))
     }
   }

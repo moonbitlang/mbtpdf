@@ -14,9 +14,11 @@ test "get_jpeg_data reads until EOI marker" {
 test "get_jpeg_data errors on missing EOI" {
   let bytes = @pdfio.bytes_of_list([0x00, 0x01, 0x02])
   let input = @pdfio.Input::of_bytes(bytes)
-  let res : Result[Array[Byte], Error] = try? @pdfjpeg.PdfJpeg::new().get_jpeg_data(
-    input,
-  )
+  let res : Result[Array[Byte], Error] = try
+    @pdfjpeg.PdfJpeg::new().get_jpeg_data(input) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }
 

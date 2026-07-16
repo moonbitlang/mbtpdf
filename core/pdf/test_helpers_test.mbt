@@ -8,7 +8,7 @@ fn[T] assert_is_err(result : Result[T, Error]) -> Unit raise {
 
 ///|
 fn make_stream(dict : @pdf.PdfObject, data : Array[Byte]) -> @pdf.PdfObject {
-  Stream(Ref::new((dict, Got(data))))
+  Stream(Ref((dict, Got(data))))
 }
 
 ///|
@@ -32,12 +32,12 @@ fn assert_some_integer(obj : @pdf.PdfObject?, expected : Int) -> Unit raise {
 fn make_basic_pdf() -> @pdf.Pdf {
   let base = @pdf.Pdf::empty()
   let pages = @pdf.PdfObject::Dictionary([
-    ("/Type", Name(PdfName("/Pages"))),
+    ("/Type", Name(PdfName(b"/Pages"))),
     ("/Kids", PdfArray([Indirect(2)])),
   ])
-  let page = @pdf.PdfObject::Dictionary([("/Type", Name(PdfName("/Page")))])
+  let page = @pdf.PdfObject::Dictionary([("/Type", Name(PdfName(b"/Page")))])
   let catalog = @pdf.PdfObject::Dictionary([
-    ("/Type", Name(PdfName("/Catalog"))),
+    ("/Type", Name(PdfName(b"/Catalog"))),
     ("/Pages", Indirect(1)),
   ])
   base.addobj_given_num((1, pages))

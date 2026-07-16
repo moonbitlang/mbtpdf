@@ -1,20 +1,21 @@
 ///|
 test "PdfName compare, bytes, and show" {
-  let a = @pdf.PdfName("/A")
-  let b = @pdf.PdfName("/B")
+  let a = @pdf.PdfName(b"/A")
+  let b = @pdf.PdfName(b"/B")
   assert_eq(a.to_bytes().length(), 2)
   let names = [b, a]
   names.sort()
-  assert_true(names[0] is PdfName("/A"))
+  assert_true(names[0] is PdfName(b"/A"))
   assert_eq(a.to_string(), "/A")
 }
 
 ///|
 test "pdfobjmap_find fails on missing key" {
-  let res : Result[(Ref[ObjectData], Int), Error] = try? pdfobjmap_find(
-    1,
-    pdfobjmap_empty(),
-  )
+  let res : Result[(Ref[ObjectData], Int), Error] = try
+    pdfobjmap_find(1, pdfobjmap_empty()) |> Ok
+  catch {
+    e => Err(e)
+  }
   match res {
     Err(_) => ()
     _ => fail("expected Not_found")
@@ -24,13 +25,13 @@ test "pdfobjmap_find fails on missing key" {
 ///|
 test "lookup_immediate_all works on stream dictionaries" {
   let dict = PdfObject::Dictionary([("/A", Integer(1)), ("/A", Integer(2))])
-  let stream_ref = Ref::new((dict, Stream::Got(@pdfio.bytes_of_string("x"))))
+  let stream_ref = Ref((dict, Stream::Got(@pdfio.bytes_of_string("x"))))
   let stream_obj = PdfObject::Stream(stream_ref)
   let values = stream_obj.lookup_immediate_all("/A")
   assert_eq(values.length(), 2)
   assert_eq(stream_obj.lookup_immediate_all("/Missing").length(), 0)
   assert_eq(PdfObject::Integer(1).lookup_immediate_all("/A").length(), 0)
-  let stream_ref_bad = Ref::new(
+  let stream_ref_bad = Ref(
     (PdfObject::Integer(0), Stream::Got(@pdfio.mkbytes(0))),
   )
   let stream_bad = PdfObject::Stream(stream_ref_bad)
@@ -70,7 +71,7 @@ test "to_string_including_data warns when stream cannot be got" {
     r: 5,
   })
   let toget = ToGet::new(input, 0, 3, crypt~)
-  let stream_ref = Ref::new(
+  let stream_ref = Ref(
     (PdfObject::Dictionary([("/Length", Integer(3))]), Stream::ToGet(toget)),
   )
   let stream_obj = PdfObject::Stream(stream_ref)
@@ -91,7 +92,11 @@ test "real formatting expands scientific notation when present" {
   ]
   let mut exercised = false
   for s in candidates {
-    let parsed : Result[Double, Error] = try? @strconv.parse_double(s)
+    let parsed : Result[Double, Error] = try
+      @string.parse_double(s) |> Ok
+    catch {
+      e => Err(e)
+    }
     let v = match parsed {
       Ok(v) => v
       Err(_) => continue

@@ -41,8 +41,13 @@ fn build_minimal_pdf_with_xref_section_header_semicolon() -> String {
 test "PdfRead tolerates ';' after xref section header" {
   let data = build_minimal_pdf_with_xref_section_header_semicolon()
   let input = @pdfio.Input::of_string(data)
-  let res : Result[@pdf.Pdf, Error] = try? @pdfe.with_logger(_ => (), fn() {
-    @pdfread.PdfRead::new(logger=_ => ()).pdf_of_input(None, None, input)
-  })
+  let res : Result[@pdf.Pdf, Error] = try
+    @pdfe.with_logger(_ => (), fn() {
+      @pdfread.PdfRead::new(logger=_ => ()).pdf_of_input(None, None, input)
+    })
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Ok(_))
 }

@@ -32,11 +32,11 @@ test "decrypt_single_stream skips metadata when EncryptMetadata is false" {
     pdf,
   )
   let dict : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/Metadata"))),
+    ("/Type", Name(PdfName(b"/Metadata"))),
     ("/Length", Integer(4)),
   ])
   let data = @pdfio.bytes_of_string("meta")
-  let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
+  let stream : @pdf.PdfObject = Stream(Ref((dict, Got(data))))
   let out = @pdfcrypt.PdfCrypt::new().decrypt_single_stream(
     Some("user"),
     None,
@@ -66,12 +66,12 @@ test "decrypt_single_stream skips identity crypt filters" {
     pdf,
   )
   let dict : @pdf.PdfObject = Dictionary([
-    ("/Filter", Name(PdfName("/Crypt"))),
-    ("/DecodeParms", Dictionary([("/Name", Name(PdfName("/Identity")))])),
+    ("/Filter", Name(PdfName(b"/Crypt"))),
+    ("/DecodeParms", Dictionary([("/Name", Name(PdfName(b"/Identity")))])),
     ("/Length", Integer(3)),
   ])
   let data = @pdfio.bytes_of_string("abc")
-  let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
+  let stream : @pdf.PdfObject = Stream(Ref((dict, Got(data))))
   let out = @pdfcrypt.PdfCrypt::new().decrypt_single_stream(
     Some("user"),
     None,
@@ -89,15 +89,15 @@ test "decrypt_single_stream skips identity crypt filters" {
     _ => fail("expected stream")
   }
   let dict_array : @pdf.PdfObject = Dictionary([
-    ("/Filter", PdfArray([Name(PdfName("/Crypt"))])),
+    ("/Filter", PdfArray([Name(PdfName(b"/Crypt"))])),
     (
       "/DecodeParms",
-      PdfArray([Dictionary([("/Name", Name(PdfName("/Identity")))])]),
+      PdfArray([Dictionary([("/Name", Name(PdfName(b"/Identity")))])]),
     ),
     ("/Length", Integer(3)),
   ])
   let stream_array : @pdf.PdfObject = Stream(
-    Ref::new((dict_array, Got(@pdfio.bytes_of_string("abc")))),
+    Ref((dict_array, Got(@pdfio.bytes_of_string("abc")))),
   )
   let out_array = @pdfcrypt.PdfCrypt::new().decrypt_single_stream(
     Some("user"),
@@ -129,7 +129,7 @@ test "decrypt_single_stream handles AES256 streams" {
   )
   let dict : @pdf.PdfObject = Dictionary([("/Length", Integer(4))])
   let got_stream : @pdf.PdfObject = Stream(
-    Ref::new((dict, Got(@pdfio.bytes_of_string("data")))),
+    Ref((dict, Got(@pdfio.bytes_of_string("data")))),
   )
   let got_out = @pdfcrypt.PdfCrypt::new().decrypt_single_stream(
     Some("user"),
@@ -149,7 +149,7 @@ test "decrypt_single_stream handles AES256 streams" {
   }
   let input = @pdfio.Input::of_string("data", source="stream")
   let toget = @pdf.ToGet::new(input, 0, 4)
-  let toget_stream : @pdf.PdfObject = Stream(Ref::new((dict, ToGet(toget))))
+  let toget_stream : @pdf.PdfObject = Stream(Ref((dict, ToGet(toget))))
   let toget_out = @pdfcrypt.PdfCrypt::new().decrypt_single_stream(
     Some("user"),
     None,
@@ -179,7 +179,11 @@ test "decrypt_pdf fails with short perms" {
     pdf,
   )
   update_perms(enc, "short")
-  let result = try? @pdfcrypt.PdfCrypt::new().decrypt_pdf("user", enc)
+  let result = try
+    @pdfcrypt.PdfCrypt::new().decrypt_pdf("user", enc) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(result is Err(_))
 }
 
@@ -195,6 +199,10 @@ test "decrypt_pdf fails with corrupted perms marker" {
   )
   let bad_perms = @pdfio.string_of_int_array(Array::make(16, 0))
   update_perms(enc, bad_perms)
-  let result = try? @pdfcrypt.PdfCrypt::new().decrypt_pdf("user", enc)
+  let result = try
+    @pdfcrypt.PdfCrypt::new().decrypt_pdf("user", enc) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(result is Err(_))
 }

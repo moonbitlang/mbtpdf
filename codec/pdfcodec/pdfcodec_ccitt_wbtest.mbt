@@ -83,13 +83,13 @@ test "encode_pdfstream ccitt g3 roundtrip" {
     ("/Length", Integer(@pdfio.bytes_size(raw))),
     ("/DecodeParms", decodeparms),
   ])
-  let stream_ref = Ref::new((dict, @pdf.Stream::Got(raw)))
+  let stream_ref = Ref((dict, @pdf.Stream::Got(raw)))
   let stream_obj = @pdf.PdfObject::Stream(stream_ref)
   ccitt_ctx.encode_pdfstream(pdf, CCITT(columns, rows), stream_obj)
   let (encoded_dict, _encoded_stream) = stream_ref.val
   match pdf.lookup_direct("/Filter", encoded_dict) {
-    Some(Name(PdfName("/CCITTFaxDecode")))
-    | Some(PdfArray([Name(PdfName("/CCITTFaxDecode")), ..])) => ()
+    Some(Name(PdfName(b"/CCITTFaxDecode")))
+    | Some(PdfArray([Name(PdfName(b"/CCITTFaxDecode")), ..])) => ()
     _ => fail("expected /Filter entry")
   }
   ccitt_ctx.decode_pdfstream_onestage(pdf, stream_obj)
@@ -117,13 +117,13 @@ test "encode_pdfstream ccitt g4 roundtrip" {
     ("/Length", Integer(@pdfio.bytes_size(raw))),
     ("/DecodeParms", decodeparms),
   ])
-  let stream_ref = Ref::new((dict, @pdf.Stream::Got(raw)))
+  let stream_ref = Ref((dict, @pdf.Stream::Got(raw)))
   let stream_obj = @pdf.PdfObject::Stream(stream_ref)
   ccitt_ctx.encode_pdfstream(pdf, CCITTG4(columns, rows), stream_obj)
   let (encoded_dict, _encoded_stream) = stream_ref.val
   match pdf.lookup_direct("/Filter", encoded_dict) {
-    Some(Name(PdfName("/CCITTFaxDecode")))
-    | Some(PdfArray([Name(PdfName("/CCITTFaxDecode")), ..])) => ()
+    Some(Name(PdfName(b"/CCITTFaxDecode")))
+    | Some(PdfArray([Name(PdfName(b"/CCITTFaxDecode")), ..])) => ()
     _ => fail("expected /Filter entry")
   }
   ccitt_ctx.decode_pdfstream_onestage(pdf, stream_obj)

@@ -65,12 +65,14 @@ test "lex_dictionary minus_one accepts preconsumed marker" {
 
 ///|
 test "lex_dictionary errors on unexpected token" {
-  let res : Result[Array[@pdftoken.Token], Error] = try? @pdfe.with_logger(
-    _ => (),
-    fn() {
+  let res : Result[Array[@pdftoken.Token], Error] = try
+    @pdfe.with_logger(_ => (), fn() {
       @pdfsyntax.lex_dictionary(false, @pdfio.Input::of_string("<< @ >>"))
-    },
-  )
+    })
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }
 

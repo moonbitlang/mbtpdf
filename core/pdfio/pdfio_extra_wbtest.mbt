@@ -43,14 +43,31 @@ test "input utils handle EOF and rewind paths" {
     _ => fail("expected rewind")
   }
   assert_is_err(
-    try? Input::of_string("abc", source="eof-string").getuntil_string(false, _ => {
-      false
-    }),
+    try
+      Input::of_string("abc", source="eof-string").getuntil_string(false, _ => {
+        false
+      })
+      |> Ok
+    catch {
+      e => Err(e)
+    },
   )
   let eof_fail = Input::of_string("", source="eof")
-  assert_is_err(try? eof_fail.ignoreuntil(false, _ => true))
+  assert_is_err(
+    try eof_fail.ignoreuntil(false, _ => true) |> Ok catch {
+      e => Err(e)
+    },
+  )
   let line = Input::of_string("", source="line").input_line()
   assert_eq(line, "")
-  assert_is_err(try? Input::of_string("", source="backline").backline())
-  assert_is_err(try? Input::of_string("abc", source="chunk").read_chunk(5))
+  assert_is_err(
+    try Input::of_string("", source="backline").backline() |> Ok catch {
+      e => Err(e)
+    },
+  )
+  assert_is_err(
+    try Input::of_string("abc", source="chunk").read_chunk(5) |> Ok catch {
+      e => Err(e)
+    },
+  )
 }

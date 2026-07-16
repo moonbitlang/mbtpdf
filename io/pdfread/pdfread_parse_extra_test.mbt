@@ -1,14 +1,22 @@
 ///|
 test "parse errors on non-name dictionary key" {
   let tokens : Array[Token] = [LexLeftDict, LexInt(1), LexInt(2), LexRightDict]
-  let res : Result[(Int, @pdf.PdfObject), Error] = try? @pdfsyntax.parse(tokens)
+  let res : Result[(Int, @pdf.PdfObject), Error] = try
+    @pdfsyntax.parse(tokens) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }
 
 ///|
 test "parse errors on invalid array element" {
   let tokens : Array[Token] = [LexLeftSquare, LexRightDict]
-  let res : Result[(Int, @pdf.PdfObject), Error] = try? @pdfsyntax.parse(tokens)
+  let res : Result[(Int, @pdf.PdfObject), Error] = try
+    @pdfsyntax.parse(tokens) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }
 

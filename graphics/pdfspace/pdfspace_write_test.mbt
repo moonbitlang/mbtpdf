@@ -28,7 +28,7 @@ test "write/read CalGray" {
 ///|
 test "write/read Indexed" {
   let pdf = @pdf.Pdf::empty()
-  let table : Map[Int, Array[Int]] = Map::new()
+  let table : Map[Int, Array[Int]] = Map([])
   table.set(0, [0, 0, 0])
   table.set(1, [255, 255, 255])
   let space = @pdfspace.ColourSpace::Indexed(DeviceRGB, table)
@@ -58,7 +58,7 @@ test "write/read ICCBased" {
   let pdf = @pdf.Pdf::empty()
   let dict : @pdf.PdfObject = Dictionary([])
   let data = @pdfio.bytes_of_string("ICC")
-  let stream_obj : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
+  let stream_obj : @pdf.PdfObject = Stream(Ref((dict, Got(data))))
   let icc = @pdfspace.ICCBased::{
     icc_n: 3,
     icc_alternate: DeviceRGB,
@@ -169,7 +169,7 @@ test "write/read DeviceN with attributes" {
   let pdf = @pdf.Pdf::empty()
   let tint = sample_tint_function()
   let attrs : @pdf.PdfObject = Dictionary([
-    ("/Subtype", Name(PdfName("/NChannel"))),
+    ("/Subtype", Name(PdfName(b"/NChannel"))),
   ])
   let space = @pdfspace.ColourSpace::DeviceN(
     ["C1", "C2"],

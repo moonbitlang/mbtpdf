@@ -8,7 +8,7 @@ fn build_minimal_pdf_for_encrypt() -> @pdf.Pdf {
       max_obj_num: 0,
       parse: None,
       objects: @pdf.pdfobjmap_empty(),
-      object_stream_ids: Map::new(),
+      object_stream_ids: Map([]),
     },
     trailerdict: Dictionary([]),
     was_linearized: false,
@@ -20,18 +20,18 @@ fn build_minimal_pdf_for_encrypt() -> @pdf.Pdf {
     ("/Length", Integer(@pdfio.bytes_size(stream_bytes))),
   ])
   let stream_obj : @pdf.PdfObject = Stream(
-    Ref::new((stream_dict, Got(stream_bytes))),
+    Ref((stream_dict, Got(stream_bytes))),
   )
   let font_dict : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
-    ("/BaseFont", Name(PdfName("/Times-Roman"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
+    ("/BaseFont", Name(PdfName(b"/Times-Roman"))),
   ])
   let resources : @pdf.PdfObject = Dictionary([
     ("/Font", Dictionary([("/F0", font_dict)])),
   ])
   let page : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/Page"))),
+    ("/Type", Name(PdfName(b"/Page"))),
     ("/Parent", Indirect(1)),
     ("/Resources", resources),
     (
@@ -41,12 +41,12 @@ fn build_minimal_pdf_for_encrypt() -> @pdf.Pdf {
     ("/Contents", Indirect(2)),
   ])
   let pages : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/Pages"))),
+    ("/Type", Name(PdfName(b"/Pages"))),
     ("/Kids", PdfArray([Indirect(3)])),
     ("/Count", Integer(1)),
   ])
   let catalog : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/Catalog"))),
+    ("/Type", Name(PdfName(b"/Catalog"))),
     ("/Pages", Indirect(1)),
   ])
   pdf.addobj_given_num((1, pages))
@@ -200,9 +200,14 @@ test "pdfread returns pdf for encrypted objstm without password" {
   )
   let pdf_bytes = output.extract_bytes(buffer)
   let input = @pdfio.Input::of_bytes(pdf_bytes, source="encrypt-objstm-nopw")
-  let res : Result[@pdf.Pdf, Error] = try? @pdfe.with_silenced_logs(fn() {
-    @pdfread.PdfRead::new(logger=_ => ()).pdf_of_input(None, None, input)
-  })
+  let res : Result[@pdf.Pdf, Error] = try
+    @pdfe.with_silenced_logs(fn() {
+      @pdfread.PdfRead::new(logger=_ => ()).pdf_of_input(None, None, input)
+    })
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   match res {
     Ok(parsed) =>
       if @pdfread.PdfRead::new().what_encryption(parsed) is None {
@@ -245,13 +250,18 @@ test "pdfread skips malformed object stream" {
   let n_value_index = n_pos + n_marker.length()
   pdf_bytes[n_value_index] = '/'.to_int().to_byte()
   let input = @pdfio.Input::of_bytes(pdf_bytes, source="malformed-objstm")
-  let res : Result[@pdf.Pdf, Error] = try? @pdfe.with_silenced_logs(fn() {
-    @pdfread.PdfRead::new(logger=_ => ()).pdf_of_input(
-      Some("user"),
-      None,
-      input,
-    )
-  })
+  let res : Result[@pdf.Pdf, Error] = try
+    @pdfe.with_silenced_logs(fn() {
+      @pdfread.PdfRead::new(logger=_ => ()).pdf_of_input(
+        Some("user"),
+        None,
+        input,
+      )
+    })
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   match res {
     Ok(_) => ()
     Err(_) => fail("expected read to succeed despite malformed objstm")

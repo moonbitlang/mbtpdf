@@ -122,7 +122,9 @@ test "decrypt_pdf returns original when unencrypted" {
       String?,
     ),
     Error,
-  ] = try? @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf)
+  ] = try @pdfcrypt.PdfCrypt::new().get_encryption_values(pdf) |> Ok catch {
+    e => Err(e)
+  }
   assert_true(missing is Err(_))
 }
 
@@ -136,11 +138,16 @@ test "recrypt_pdf requires correct password" {
     [],
     pdf,
   )
-  let reenc_user : Result[@pdf.Pdf, Error] = try? @pdfcrypt.PdfCrypt::new().recrypt_pdf(
-    enc.deep_copy(),
-    "user",
-    renumber=false,
-  )
+  let reenc_user : Result[@pdf.Pdf, Error] = try
+    @pdfcrypt.PdfCrypt::new().recrypt_pdf(
+      enc.deep_copy(),
+      "user",
+      renumber=false,
+    )
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   match reenc_user {
     Ok(pdf_reenc) =>
       match
@@ -150,11 +157,16 @@ test "recrypt_pdf requires correct password" {
       }
     Err(_) => fail("expected user recrypt to succeed")
   }
-  let reenc_owner : Result[@pdf.Pdf, Error] = try? @pdfcrypt.PdfCrypt::new().recrypt_pdf(
-    enc.deep_copy(),
-    "owner",
-    renumber=false,
-  )
+  let reenc_owner : Result[@pdf.Pdf, Error] = try
+    @pdfcrypt.PdfCrypt::new().recrypt_pdf(
+      enc.deep_copy(),
+      "owner",
+      renumber=false,
+    )
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   match reenc_owner {
     Ok(pdf_reenc) =>
       match
@@ -167,11 +179,16 @@ test "recrypt_pdf requires correct password" {
       }
     Err(_) => fail("expected owner recrypt to succeed")
   }
-  let bad : Result[@pdf.Pdf, Error] = try? @pdfcrypt.PdfCrypt::new().recrypt_pdf(
-    enc.deep_copy(),
-    "wrong",
-    renumber=false,
-  )
+  let bad : Result[@pdf.Pdf, Error] = try
+    @pdfcrypt.PdfCrypt::new().recrypt_pdf(
+      enc.deep_copy(),
+      "wrong",
+      renumber=false,
+    )
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(bad is Err(_))
 }
 
@@ -181,10 +198,10 @@ test "recrypt_pdf handles failure to load saved encryption metadata" {
   // Mark the document as "encrypted" with an invalid /Encrypt entry, so
   // load_saved_encryption_from_pdf fails and is ignored.
   pdf.trailerdict = pdf.trailerdict.add_entry("/Encrypt", Integer(0))
-  let res : Result[@pdf.Pdf, Error] = try? @pdfcrypt.PdfCrypt::new().recrypt_pdf(
-    pdf,
-    "pw",
-    renumber=false,
-  )
+  let res : Result[@pdf.Pdf, Error] = try
+    @pdfcrypt.PdfCrypt::new().recrypt_pdf(pdf, "pw", renumber=false) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }

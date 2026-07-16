@@ -25,12 +25,12 @@ test "already_decrypted returns true for ParsedAlreadyDecrypted" {
 ///|
 test "is_identity handles decodeparms shapes" {
   let pdf = @pdf.Pdf::empty()
-  let base : @pdf.PdfObject = Dictionary([("/Filter", Name(PdfName("/Crypt")))])
+  let base : @pdf.PdfObject = Dictionary([("/Filter", Name(PdfName(b"/Crypt")))])
   let dict_none_name = base.add_entry("/DecodeParms", Dictionary([]))
   assert_true(is_identity(false, pdf, dict_none_name))
   let dict_bad_name = base.add_entry(
     "/DecodeParms",
-    Dictionary([("/Name", Name(PdfName("/NotIdentity")))]),
+    Dictionary([("/Name", Name(PdfName(b"/NotIdentity")))]),
   )
   assert_false(is_identity(false, pdf, dict_bad_name))
   let dict_array_first = base.add_entry(
@@ -84,41 +84,39 @@ test "decrypt returns unchanged values when already_decrypted is set" {
 test "decrypt raises when AESV3 key is missing" {
   let pdf = @pdf.Pdf::empty()
   let ct = @pdfcryptprimitives.Encryption::AESV3(false)
-  let res : Result[@pdf.PdfObject, Error] = try? decrypt(
-    ct,
-    pdf,
-    false,
-    false,
-    1,
-    0,
-    [1],
-    256,
-    5,
-    None,
-    PdfString("x"),
-  )
+  let res : Result[@pdf.PdfObject, Error] = try
+    decrypt(ct, pdf, false, false, 1, 0, [1], 256, 5, None, PdfString("x"))
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
-  let stream_ref = Ref::new(
+  let stream_ref = Ref(
     (
       @pdf.PdfObject::Dictionary([]),
       @pdf.Stream::Got(@pdfio.bytes_of_string("x")),
     ),
   )
   let stream_obj = @pdf.PdfObject::Stream(stream_ref)
-  let res2 : Result[@pdf.PdfObject, Error] = try? decrypt_stream(
-    v => v,
-    ct,
-    pdf,
-    false,
-    false,
-    1,
-    0,
-    [1],
-    256,
-    5,
-    None,
-    stream_obj,
-  )
+  let res2 : Result[@pdf.PdfObject, Error] = try
+    decrypt_stream(
+      v => v,
+      ct,
+      pdf,
+      false,
+      false,
+      1,
+      0,
+      [1],
+      256,
+      5,
+      None,
+      stream_obj,
+    )
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res2 is Err(_))
 }
 
@@ -145,9 +143,7 @@ test "decrypt_stream handles non-stream and non-dictionary stream dict cases" {
     _ => fail("expected passthrough")
   }
   let toget = @pdf.ToGet::new(@pdfio.Input::of_string("", source="toget"), 0, 0)
-  let stream_ref = Ref::new(
-    (@pdf.PdfObject::Integer(0), @pdf.Stream::ToGet(toget)),
-  )
+  let stream_ref = Ref((@pdf.PdfObject::Integer(0), @pdf.Stream::ToGet(toget)))
   let out = decrypt_stream(
     v => v,
     ct,
@@ -195,20 +191,28 @@ test "aesv3 helpers cover iso branch and length errors" {
   }
 
   // Length error branches.
-  let short_owner_res : Result[Array[Byte], Error] = try? file_encryption_key_aesv3(
-    true, pw, "short", oe, u48,
-  )
+  let short_owner_res : Result[Array[Byte], Error] = try
+    file_encryption_key_aesv3(true, pw, "short", oe, u48) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(short_owner_res is Err(_))
-  let short_user_res : Result[Array[Byte], Error] = try? file_encryption_key_aesv3_user(
-    true, pw, "short", ue,
-  )
+  let short_user_res : Result[Array[Byte], Error] = try
+    file_encryption_key_aesv3_user(true, pw, "short", ue) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(short_user_res is Err(_))
-  let short_auth_owner_res : Result[Bool, Error] = try? authenticate_owner_password_aesv3(
-    true, pw, u48, "short",
-  )
+  let short_auth_owner_res : Result[Bool, Error] = try
+    authenticate_owner_password_aesv3(true, pw, u48, "short") |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(short_auth_owner_res is Err(_))
-  let short_auth_user_res : Result[Bool, Error] = try? authenticate_user_password_aesv3(
-    true, pw, "short",
-  )
+  let short_auth_user_res : Result[Bool, Error] = try
+    authenticate_user_password_aesv3(true, pw, "short") |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(short_auth_user_res is Err(_))
 }

@@ -104,11 +104,10 @@ test "encode_ccitt handles shifted runs" {
 ///|
 test "encode_ccittg4 rejects imagemagick path" {
   let raw = @pdfio.bytes_of_list([0xFF])
-  let res : Result[Array[Byte], Error] = try? encode_ccittg4(
-    8,
-    1,
-    raw,
-    im="magick",
-  )
+  let res : Result[Array[Byte], Error] = try
+    encode_ccittg4(8, 1, raw, im="magick") |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }

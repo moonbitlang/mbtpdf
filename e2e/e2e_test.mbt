@@ -156,13 +156,13 @@ fn add_embedded_file(
 ) -> Unit raise {
   let bytes = @pdfio.bytes_of_string(payload)
   let stream_dict : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/EmbeddedFile"))),
+    ("/Type", Name(PdfName(b"/EmbeddedFile"))),
     ("/Length", Integer(@pdfio.bytes_size(bytes))),
   ])
-  let stream_obj : @pdf.PdfObject = Stream(Ref::new((stream_dict, Got(bytes))))
+  let stream_obj : @pdf.PdfObject = Stream(Ref((stream_dict, Got(bytes))))
   let stream_num = pdf.addobj(stream_obj)
   let filespec : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/Filespec"))),
+    ("/Type", Name(PdfName(b"/Filespec"))),
     ("/F", PdfString(filename)),
     ("/UF", PdfString(filename)),
     ("/EF", Dictionary([("/F", Indirect(stream_num))])),
@@ -174,13 +174,13 @@ fn add_embedded_file(
 fn make_ap_stream(payload : String) -> @pdf.PdfObject {
   let bytes = @pdfio.bytes_of_string(payload)
   let dict : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/XObject"))),
-    ("/Subtype", Name(PdfName("/Form"))),
+    ("/Type", Name(PdfName(b"/XObject"))),
+    ("/Subtype", Name(PdfName(b"/Form"))),
     ("/BBox", PdfArray([Integer(0), Integer(0), Integer(10), Integer(10)])),
     ("/Resources", Dictionary([])),
     ("/Length", Integer(@pdfio.bytes_size(bytes))),
   ])
-  Stream(Ref::new((dict, Got(bytes))))
+  Stream(Ref((dict, Got(bytes))))
 }
 
 ///|
@@ -197,7 +197,7 @@ fn make_ap_entry(
 ///|
 fn make_rendition_dict(name : String, tag : String) -> @pdf.PdfObject {
   Dictionary([
-    ("/S", Name(PdfName("/MR"))),
+    ("/S", Name(PdfName(b"/MR"))),
     ("/N", PdfString(name)),
     ("/T", PdfString(tag)),
   ])
@@ -206,7 +206,7 @@ fn make_rendition_dict(name : String, tag : String) -> @pdf.PdfObject {
 ///|
 fn make_alt_presentation_dict(name : String, tag : String) -> @pdf.PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/AlternatePresentations"))),
+    ("/Type", Name(PdfName(b"/AlternatePresentations"))),
     ("/Title", PdfString(name)),
     ("/T", PdfString(tag)),
   ])
@@ -247,19 +247,19 @@ fn make_bulk_url_entries(
 
 ///|
 fn make_url_action(uri : String) -> @pdf.PdfObject {
-  Dictionary([("/S", Name(PdfName("/URI"))), ("/URI", PdfString(uri))])
+  Dictionary([("/S", Name(PdfName(b"/URI"))), ("/URI", PdfString(uri))])
 }
 
 ///|
 fn add_ocg_properties(pdf : @pdf.Pdf, ocg_name : String) -> Unit raise {
   let ocg : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString(ocg_name)),
   ])
   let ocg_num = pdf.addobj(ocg)
   let default_dict : @pdf.PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/ON"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/ON"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
     ("/ON", PdfArray([Indirect(ocg_num)])),
   ])
@@ -278,20 +278,20 @@ fn add_ocg_properties_with_config(
   config_name : String,
 ) -> Unit raise {
   let ocg : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString(ocg_name)),
   ])
   let ocg_num = pdf.addobj(ocg)
   let default_dict : @pdf.PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/ON"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/ON"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
     ("/ON", PdfArray([Indirect(ocg_num)])),
   ])
   let config_dict : @pdf.PdfObject = Dictionary([
     ("/Name", PdfString(config_name)),
-    ("/BaseState", Name(PdfName("/OFF"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/OFF"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/ON", PdfArray([Indirect(ocg_num)])),
   ])
   let ocprops : @pdf.PdfObject = Dictionary([
@@ -377,8 +377,8 @@ fn add_struct_tree_root(
   parent_key : Int,
 ) -> Unit raise {
   let struct_elem : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/StructElem"))),
-    ("/S", Name(PdfName("/P"))),
+    ("/Type", Name(PdfName(b"/StructElem"))),
+    ("/S", Name(PdfName(b"/P"))),
     ("/Pg", Indirect(page_ref)),
   ])
   let struct_elem_num = pdf.addobj(struct_elem)
@@ -386,7 +386,7 @@ fn add_struct_tree_root(
     (parent_key.to_string(), Indirect(struct_elem_num)),
   ])
   let struct_root : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/StructTreeRoot"))),
+    ("/Type", Name(PdfName(b"/StructTreeRoot"))),
     ("/K", Indirect(struct_elem_num)),
     ("/ParentTree", parent_tree),
   ])
@@ -419,7 +419,7 @@ fn assert_url_action(
 ) -> Unit raise {
   let action = pdf.direct(action_obj)
   match (pdf.lookup_direct("/S", action) : @pdf.PdfObject?) {
-    Some(Name(PdfName("/URI"))) => ()
+    Some(Name(PdfName(b"/URI"))) => ()
     _ => fail("expected /S /URI")
   }
   match (pdf.lookup_direct("/URI", action) : @pdf.PdfObject?) {
@@ -436,11 +436,11 @@ fn assert_ap_stream(
 ) -> Unit raise {
   let stream = pdf.direct(stream_obj)
   match (pdf.lookup_direct("/Type", stream) : @pdf.PdfObject?) {
-    Some(Name(PdfName("/XObject"))) => ()
+    Some(Name(PdfName(b"/XObject"))) => ()
     _ => fail("expected /Type /XObject")
   }
   match (pdf.lookup_direct("/Subtype", stream) : @pdf.PdfObject?) {
-    Some(Name(PdfName("/Form"))) => ()
+    Some(Name(PdfName(b"/Form"))) => ()
     _ => fail("expected /Subtype /Form")
   }
   let bytes = stream.bigarray_of_stream()
@@ -498,7 +498,7 @@ fn assert_embedded_file_stream(
   expected_payload : String,
 ) -> Unit raise {
   match (pdf.lookup_direct("/Type", stream_obj) : @pdf.PdfObject?) {
-    Some(Name(PdfName("/EmbeddedFile"))) => ()
+    Some(Name(PdfName(b"/EmbeddedFile"))) => ()
     _ => fail("expected /Type /EmbeddedFile")
   }
   let bytes = stream_obj.bigarray_of_stream()
@@ -519,7 +519,7 @@ fn assert_embedded_file_spec(
 ) -> Unit raise {
   let spec = pdf.direct(filespec_obj)
   match (pdf.lookup_direct("/Type", spec) : @pdf.PdfObject?) {
-    Some(Name(PdfName("/Filespec"))) => ()
+    Some(Name(PdfName(b"/Filespec"))) => ()
     _ => fail("expected /Type /Filespec")
   }
   match (pdf.lookup_direct("/F", spec) : @pdf.PdfObject?) {
@@ -591,7 +591,7 @@ fn assert_rendition_entry(
   }
   let dict = pdf.direct(entry)
   match (pdf.lookup_direct("/S", dict) : @pdf.PdfObject?) {
-    Some(Name(PdfName("/MR"))) => ()
+    Some(Name(PdfName(b"/MR"))) => ()
     _ => fail("expected /S /MR")
   }
   match (pdf.lookup_direct("/N", dict) : @pdf.PdfObject?) {
@@ -617,7 +617,7 @@ fn assert_alt_presentation_entry(
   }
   let dict = pdf.direct(entry)
   match (pdf.lookup_direct("/Type", dict) : @pdf.PdfObject?) {
-    Some(Name(PdfName("/AlternatePresentations"))) => ()
+    Some(Name(PdfName(b"/AlternatePresentations"))) => ()
     _ => fail("expected /Type /AlternatePresentations")
   }
   match (pdf.lookup_direct("/Title", dict) : @pdf.PdfObject?) {
@@ -674,7 +674,9 @@ async test "e2e merge writes and reads back" {
   write_pdf(out_path, merged)
   let parsed = read_pdf(out_path)
   assert_eq(page_count(parsed), left_count + right_count + third_count)
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -726,7 +728,9 @@ async test "e2e merge preserves text extraction" {
     @pdftext.PdfText::new(parsed).extract_text()
   })
   assert_true(extracted.contains("ABCdef"))
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -741,7 +745,9 @@ async test "e2e split subset of large pdf" {
   write_pdf(out_path, split)
   let parsed = read_pdf(out_path)
   assert_eq(page_count(parsed), subset.length())
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -776,7 +782,9 @@ async test "e2e split then bookmark" {
     parsed_marks[0].target,
   )
   assert_eq(target_page, 1)
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -808,7 +816,9 @@ async test "e2e annotation roundtrip" {
     Some("E2E note") => ()
     _ => fail("expected annotation contents")
   }
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -855,7 +865,9 @@ async test "e2e merge preserves annotations" {
     Some("Merged note") => ()
     _ => fail("expected merged annotation contents")
   }
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -925,7 +937,9 @@ async test "e2e merge preserves page labels" {
   let parsed = read_pdf(out_path)
   let labels = @pdfpagelabels.PageLabel::read_all(parsed)
   assert_merged_label_prefixes(labels, left_count)
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -974,7 +988,9 @@ async test "e2e merge preserves named destinations" {
   let parsed_right_dest = read_named_destination(parsed, "RightDest")
   assert_destination_page(parsed_left_dest, parsed_left)
   assert_destination_page(parsed_right_dest, parsed_right)
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1010,10 +1026,13 @@ async test "e2e merge preserves /Dests dictionary" {
   let merged_pages = merged.page_reference_numbers()
   let left_expected = merged_pages[0]
   let right_expected = merged_pages[left_count]
-  let left_read = @pdfdest.Destination::read(merged, Name(PdfName("/LeftDest")))
+  let left_read = @pdfdest.Destination::read(
+    merged,
+    Name(PdfName(b"/LeftDest")),
+  )
   let right_read = @pdfdest.Destination::read(
     merged,
-    Name(PdfName("/RightDest")),
+    Name(PdfName(b"/RightDest")),
   )
   assert_destination_page(left_read, left_expected)
   assert_destination_page(right_read, right_expected)
@@ -1026,15 +1045,17 @@ async test "e2e merge preserves /Dests dictionary" {
   let parsed_right = parsed_pages[left_count]
   let parsed_left_read = @pdfdest.Destination::read(
     parsed,
-    Name(PdfName("/LeftDest")),
+    Name(PdfName(b"/LeftDest")),
   )
   let parsed_right_read = @pdfdest.Destination::read(
     parsed,
-    Name(PdfName("/RightDest")),
+    Name(PdfName(b"/RightDest")),
   )
   assert_destination_page(parsed_left_read, parsed_left)
   assert_destination_page(parsed_right_read, parsed_right)
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1100,7 +1121,9 @@ async test "e2e merge preserves AcroForm entries" {
     Some(Integer(1)) => ()
     _ => fail("expected parsed /SigFlags 1")
   }
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1153,7 +1176,9 @@ async test "e2e merge preserves /OCProperties" {
     None => fail("missing parsed OCG LayerRight")
   }
   assert_eq(read_ocg_on_count(parsed), 2)
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1214,7 +1239,9 @@ async test "e2e merge preserves OCG configs" {
     None => fail("missing parsed config ConfigRight")
   }
   assert_eq(read_ocg_on_count(parsed), 2)
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1259,7 +1286,9 @@ async test "e2e merge preserves structure trees" {
   assert_eq(parsed_keys.length(), 2)
   assert_true(parsed_keys.contains("0"))
   assert_true(parsed_keys.contains("1"))
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1267,11 +1296,11 @@ async test "e2e merge preserves /Names JavaScript" {
   let left = @pdfpage.PdfPageDoc::minimum_valid()
   let right = @pdfpage.PdfPageDoc::minimum_valid()
   let left_action : @pdf.PdfObject = Dictionary([
-    ("/S", Name(PdfName("/JavaScript"))),
+    ("/S", Name(PdfName(b"/JavaScript"))),
     ("/JS", PdfString("app.alert('left')")),
   ])
   let right_action : @pdf.PdfObject = Dictionary([
-    ("/S", Name(PdfName("/JavaScript"))),
+    ("/S", Name(PdfName(b"/JavaScript"))),
     ("/JS", PdfString("app.alert('right')")),
   ])
   add_names_tree(left, "/JavaScript", [("LeftScript", left_action)])
@@ -1300,7 +1329,9 @@ async test "e2e merge preserves /Names JavaScript" {
   assert_true(
     parsed_entries.search_by(pair => pair.0 == "RightScript") is Some(_),
   )
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1337,7 +1368,9 @@ async test "e2e merge preserves /Names /EmbeddedFiles" {
   assert_embedded_file_entry(
     parsed, parsed_entries, "RightFile", "right.txt", "right payload",
   )
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1374,7 +1407,9 @@ async test "e2e merge preserves /Names /URLS" {
   assert_url_entry(
     parsed, parsed_entries, "RightURL", "https://example.com/right",
   )
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1407,7 +1442,9 @@ async test "e2e merge preserves /Names /AP" {
   let parsed_entries = read_name_tree_entries(parsed, "/AP")
   assert_ap_entry(parsed, parsed_entries, "LeftAP", "left ap")
   assert_ap_entry(parsed, parsed_entries, "RightAP", "right ap")
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1440,7 +1477,9 @@ async test "e2e merge preserves /Names /Renditions" {
   let parsed_entries = read_name_tree_entries(parsed, "/Renditions")
   assert_rendition_entry(parsed, parsed_entries, "LeftRendition", "left")
   assert_rendition_entry(parsed, parsed_entries, "RightRendition", "right")
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1473,7 +1512,9 @@ async test "e2e merge preserves /Names /AlternatePresentations" {
   let parsed_entries = read_name_tree_entries(parsed, "/AlternatePresentations")
   assert_alt_presentation_entry(parsed, parsed_entries, "LeftAlt", "left")
   assert_alt_presentation_entry(parsed, parsed_entries, "RightAlt", "right")
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1547,7 +1588,9 @@ async test "e2e merge stress large name trees" {
       None => fail("missing parsed bulk url: " + name)
     }
   }
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1643,7 +1686,9 @@ async test "e2e merge mixed feature pipeline" {
   assert_embedded_file_entry(
     parsed, parsed_embedded, "MixFile", "mixed.txt", "mix payload",
   )
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1721,7 +1766,9 @@ async test "e2e merge multi-copy mixed stress" {
       None => fail("missing parsed stress url: " + name)
     }
   }
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1782,7 +1829,9 @@ async test "e2e merge varied page counts stress" {
   assert_url_entry(
     parsed, parsed_urls, "VariedURL-3", "https://example.com/varied/3",
   )
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1828,7 +1877,9 @@ async test "e2e merge preserves bookmark targets" {
     parsed_marks[0].target,
   )
   assert_eq(target_page, 1)
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1871,7 +1922,9 @@ async test "e2e bookmarks roundtrip" {
   assert_eq(parsed_marks.length(), 2)
   assert_eq(parsed_marks[0].text, "E2E Intro")
   assert_eq(parsed_marks[1].text, "E2E Details")
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1879,7 +1932,12 @@ async test "e2e write object streams and read back" {
   let pdf = read_pdf(MERGE_THIRD_PATH)
   ensure_dir(OUTPUT_DIR)
   let out_path = OUTPUT_DIR + "/objstm.pdf"
-  let file = @fs.open(out_path, mode=WriteOnly, create=0o644, truncate=true)
+  let file = @fs.open(
+    out_path,
+    mode=WriteOnly,
+    create_mode=CreateOrTruncate,
+    permission=0o644,
+  )
   defer file.close()
   @pdfwritefs.PdfWriteFs::new().pdf_to_channel(
     generate_objstm=true,
@@ -1891,7 +1949,9 @@ async test "e2e write object streams and read back" {
   )
   let parsed = read_pdf(out_path)
   assert_true(parsed.objects.object_stream_ids.length() > 0)
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -1905,14 +1965,19 @@ async test "e2e encrypt pdf and require password" {
   )
   ensure_dir(OUTPUT_DIR)
   let out_path = OUTPUT_DIR + "/encrypted.pdf"
-  let file = @fs.open(out_path, mode=WriteOnly, create=0o644, truncate=true)
+  let file = @fs.open(
+    out_path,
+    mode=WriteOnly,
+    create_mode=CreateOrTruncate,
+    permission=0o644,
+  )
   defer file.close()
   @pdfwritefs.PdfWriteFs::new().pdf_to_channel(Some(enc), true, pdf, file)
-  let res : Result[@pdf.Pdf, Error] = try? @pdfreadfs.PdfReadFs::new().pdf_of_file(
-    None,
-    None,
-    out_path,
-  )
+  let res : Result[@pdf.Pdf, Error] = try
+    @pdfreadfs.PdfReadFs::new().pdf_of_file(None, None, out_path) |> Ok
+  catch {
+    e => Err(e)
+  }
   match res {
     Ok(parsed) =>
       if @pdfread.PdfRead::new().what_encryption(parsed) is None {
@@ -1926,7 +1991,9 @@ async test "e2e encrypt pdf and require password" {
     out_path,
   )
   assert_eq(page_count(parsed_pw), page_count(pdf))
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -2005,7 +2072,9 @@ async test "e2e page labels roundtrip" {
     ),
     "E2E-1",
   )
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }
 
 ///|
@@ -2050,5 +2119,7 @@ async test "e2e page ops roundtrip" {
     }
   }
   assert_true(found)
-  let _ : Result[Unit, Error] = try? @fs.remove(out_path)
+  let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
+    e => Err(e)
+  }
 }

@@ -77,7 +77,7 @@ test "textwidth handles missing widths and kerning" {
   let pdf = @pdf.Pdf::empty()
   let ctx = @pdftext.PdfText::new(pdf)
   let implicit_font : @pdf.PdfObject = Dictionary([
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
   ])
   let implicit_encoding = ctx.read_encoding(implicit_font)
   let implicit_width = @pdfstandard14.PdfStandard14::new().textwidth(
@@ -89,11 +89,11 @@ test "textwidth handles missing widths and kerning" {
     @pdf.PdfName::of_string("NoSlash")
   })
   let custom_font : @pdf.PdfObject = Dictionary([
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     (
       "/Encoding",
       Dictionary([
-        ("/BaseEncoding", Name(PdfName("/WinAnsiEncoding"))),
+        ("/BaseEncoding", Name(PdfName(b"/WinAnsiEncoding"))),
         ("/Differences", PdfArray([Integer(65), Name(no_slash)])),
       ]),
     ),
@@ -111,8 +111,8 @@ test "textwidth handles empty string and unicode fallback" {
   let pdf = @pdf.Pdf::empty()
   let ctx = @pdftext.PdfText::new(pdf)
   let winansi_font : @pdf.PdfObject = Dictionary([
-    ("/Subtype", Name(PdfName("/Type1"))),
-    ("/Encoding", Name(PdfName("/WinAnsiEncoding"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
+    ("/Encoding", Name(PdfName(b"/WinAnsiEncoding"))),
   ])
   let encoding = ctx.read_encoding(winansi_font)
   let width_empty = @pdfstandard14.PdfStandard14::new().textwidth(
@@ -132,7 +132,7 @@ test "textwidth applies kerning for standard fonts" {
   let pdf = @pdf.Pdf::empty()
   let ctx = @pdftext.PdfText::new(pdf)
   let implicit_font : @pdf.PdfObject = Dictionary([
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
   ])
   let encoding = ctx.read_encoding(implicit_font)
   let kerned = @pdfstandard14.PdfStandard14::new().textwidth(

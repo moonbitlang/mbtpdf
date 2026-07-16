@@ -13,7 +13,11 @@ fn eval_calc_inputs(
 
 ///|
 fn assert_calc_err(ops : Array[Calculator]) -> Unit raise {
-  let res : Result[Array[Double], Error] = try? calc_fun(ops).eval([0.0])
+  let res : Result[Array[Double], Error] = try
+    calc_fun(ops).eval([0.0]) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }
 
@@ -30,7 +34,7 @@ test "parse_function sampled order" {
     ("/Length", Integer(1)),
   ])
   let data = @pdfio.bytes_of_list([0x80])
-  let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
+  let stream : @pdf.PdfObject = Stream(Ref((dict, Got(data))))
   let parsed = PdfFunction::parse(pdf, stream)
   match parsed.func {
     Sampled(s) => assert_eq(s.order, 3)
@@ -68,7 +72,7 @@ test "parse_function calculator supports nested procedures" {
     ("/Length", Integer(program.length())),
   ])
   let data = @pdfio.bytes_of_string(program)
-  let stream : @pdf.PdfObject = Stream(Ref::new((dict, Got(data))))
+  let stream : @pdf.PdfObject = Stream(Ref((dict, Got(data))))
   let parsed = PdfFunction::parse(pdf, stream)
   match parsed.func {
     Calculator(ops) =>
@@ -88,16 +92,24 @@ test "parse_function rejects bad bits per sample" {
     ("/Domain", PdfArray([Real(0.0), Real(1.0)])),
     ("/Range", PdfArray([Real(0.0), Real(1.0)])),
     ("/Size", PdfArray([Integer(1)])),
-    ("/BitsPerSample", Name(PdfName("/Bad"))),
+    ("/BitsPerSample", Name(PdfName(b"/Bad"))),
   ])
-  let res : Result[PdfFunction, Error] = try? PdfFunction::parse(pdf, dict)
+  let res : Result[PdfFunction, Error] = try
+    PdfFunction::parse(pdf, dict) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }
 
 ///|
 test "calculator bool output errors" {
   let ops = [Calculator::Float(1.0), Float(1.0), Eq]
-  let res : Result[Array[Double], Error] = try? calc_fun(ops).eval([0.0])
+  let res : Result[Array[Double], Error] = try
+    calc_fun(ops).eval([0.0]) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }
 
@@ -222,9 +234,17 @@ test "stitching bad arity and NaN input" {
     domain: [0.0, 1.0],
     range: Some([0.0, 1.0]),
   }
-  let res_bad : Result[Array[Double], Error] = try? fun.eval([0.1, 0.2])
+  let res_bad : Result[Array[Double], Error] = try
+    fun.eval([0.1, 0.2]) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res_bad is Err(_))
-  let res_nan : Result[Array[Double], Error] = try? fun.eval([0.0 / 0.0])
+  let res_nan : Result[Array[Double], Error] = try
+    fun.eval([0.0 / 0.0]) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res_nan is Err(_))
 }
 
