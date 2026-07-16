@@ -1,6 +1,8 @@
 ///|
 async fn cleanup(path : String) -> Unit {
-  let _ : Result[Unit, Error] = try? @fs.remove(path)
+  @fs.remove(path) catch {
+    _ => ()
+  }
 }
 
 ///|

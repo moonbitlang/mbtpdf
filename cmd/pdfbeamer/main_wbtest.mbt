@@ -1,11 +1,13 @@
 ///|
 async fn cleanup(path : String) -> Unit {
-  let _ : Result[Unit, Error] = try? @fs.remove(path)
+  @fs.remove(path) catch {
+    _ => ()
+  }
 }
 
 ///|
 async test "run writes output pdf" {
-  let out = "cmd_pdfbirthday_test.pdf"
+  let out = "cmd_pdfbeamer_test.pdf"
   cleanup(out)
   run(out_file=out, quiet=true)
   assert_true(@fs.exists(out))

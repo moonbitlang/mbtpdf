@@ -1,28 +1,34 @@
 ///|
 async fn cleanup(path : String) -> Unit {
-  let _ : Result[Unit, Error] = try? @fs.remove(path)
+  @fs.remove(path) catch {
+    _ => ()
+  }
 }
 
 ///|
 async fn write_pdf_bytes(pdf : @pdf.Pdf, path : String) -> Unit {
   let (output, buffer) = @pdfio.Output::of_bytes(1024)
-  let write_res : Result[Unit, Error] = try? @pdfwrite.PdfWrite::new().pdf_to_output(
-    None,
-    true,
-    pdf,
-    output,
-  )
+  let write_res : Result[Unit, Error] = try
+    @pdfwrite.PdfWrite::new().pdf_to_output(None, true, pdf, output) |> Ok
+  catch {
+    e => Err(e)
+  }
   match write_res {
     Ok(_) => ()
     Err(_) => fail("failed to serialize pdf")
   }
   let bytes = output.extract_bytes(buffer)
-  let fs_res : Result[Unit, Error] = try? @fs.write_file(
-    path,
-    Bytes::from_array(bytes),
-    create=0o644,
-    truncate=true,
-  )
+  let fs_res : Result[Unit, Error] = try
+    @fs.write_file(
+      path,
+      Bytes::from_array(bytes),
+      create_mode=CreateOrTruncate,
+      permission=0o644,
+    )
+    |> Ok
+  catch {
+    e => Err(e)
+  }
   match fs_res {
     Ok(_) => ()
     Err(_) => fail("failed to write pdf bytes")
