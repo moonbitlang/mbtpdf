@@ -7,8 +7,8 @@ type Op = @pdfops.Op
 ///|
 fn font_type1(base_font : String) -> PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
   ])
 }
@@ -173,18 +173,18 @@ fn set_catalog_entry(
 ///|
 fn add_layers(pdf : @pdf.Pdf) -> (Int, Int) raise {
   let color : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("COLOR")),
   ])
   let answers : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("ANSWERS")),
   ])
   let color_num = pdf.addobj(color)
   let answers_num = pdf.addobj(answers)
   let default_dict : PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/ON"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/ON"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
     ("/OFF", PdfArray([Indirect(color_num), Indirect(answers_num)])),
   ])
@@ -225,7 +225,7 @@ fn add_layer_properties_to_pages(
 ///|
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
 
 ///|
@@ -409,7 +409,7 @@ fn cupcake_ops() -> Array[Op] {
   )
 
   // COLOR layer fills
-  ops.push(OpBDC("/OC", Name(PdfName("/COLOR"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/COLOR"))))
   ops.append(ops_fill_polygon(wrapper, (0.97, 0.9, 0.65))[:])
   ops.append(ops_fill_polygon(frosting, (0.95, 0.75, 0.9))[:])
   ops.append(ops_fill_polygon(cherry, (0.92, 0.33, 0.36))[:])
@@ -503,7 +503,7 @@ fn rocket_ops() -> Array[Op] {
   }
 
   // COLOR layer
-  ops.push(OpBDC("/OC", Name(PdfName("/COLOR"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/COLOR"))))
   ops.append(
     ops_fill_rect(
       cx - body_w / 2.0,
@@ -660,7 +660,7 @@ fn hidden_objects_ops() -> Array[Op] {
   ops.append(ops_stroke_polyline(bolt + [bolt[0]], (0.1, 0.1, 0.1), 3.5)[:])
 
   // ANSWERS layer: circles + labels
-  ops.push(OpBDC("/OC", Name(PdfName("/ANSWERS"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/ANSWERS"))))
   fn circle_mark(cx : Double, cy : Double, r : Double, label : String) -> Unit {
     let c = circle_points(cx, cy, r, 40)
     ops.append(ops_stroke_polyline(c + [c[0]], (0.92, 0.33, 0.36), 3.0)[:])

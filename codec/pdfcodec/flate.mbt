@@ -188,7 +188,7 @@ pub fn PdfCodec::decode_pdfstream_onestage(
           ) = match (filter_obj : @pdf.PdfObject) {
             Name(name) => (name, None)
             PdfArray([]) => raise DecodeNotSupported("empty filter array")
-            PdfArray([Name(name), .. rest]) => (name, Some(rest.to_array()))
+            PdfArray([Name(name), .. rest]) => (name, Some(rest.to_owned()))
             PdfArray(_) => raise DecodeNotSupported("invalid filter entry")
             _ => raise DecodeNotSupported("invalid filter")
           }
@@ -236,7 +236,7 @@ pub fn PdfCodec::decode_pdfstream_onestage(
                   new_dict.remove_entry(parms_key)
                 })
               } else {
-                let rest = arr[1:].to_array()
+                let rest = arr[1:].to_owned()
                 if rest.length() == 0 {
                   map_pdf_error("remove decode parms", fn() raise {
                     new_dict.remove_entry(parms_key)
@@ -271,7 +271,7 @@ pub fn PdfCodec::decode_pdfstream_onestage(
 /// This keeps the set of supported filter names and their parameter handling
 /// in one place, while leaving higher-level `/Filter` array trimming and
 /// dictionary mutation to `decode_pdfstream_onestage`.
-pub impl PdfFilterNameDecode for @pdf.PdfName with decode_stage(
+pub impl PdfFilterNameDecode for @pdf.PdfName with fn decode_stage(
   filter_name : @pdf.PdfName,
   ctx : PdfCodec,
   pdf : @pdf.Pdf,
@@ -279,7 +279,7 @@ pub impl PdfFilterNameDecode for @pdf.PdfName with decode_stage(
   data : Array[Byte],
   jbig2dec : String?,
 ) -> Array[Byte] raise CodecError {
-  if filter_name is PdfName("/FlateDecode" | "/Fl") {
+  if filter_name is PdfName(b"/FlateDecode" | b"/Fl") {
     let mut decoded = ctx.decode_flate(data)
     match parms {
       Some(Dictionary(_)) => {
@@ -294,21 +294,21 @@ pub impl PdfFilterNameDecode for @pdf.PdfName with decode_stage(
       _ => ()
     }
     decoded
-  } else if filter_name is PdfName("/ASCIIHexDecode" | "/AHx") {
+  } else if filter_name is PdfName(b"/ASCIIHexDecode" | b"/AHx") {
     decode_asciihex(@pdfio.Input::of_bytes(data, source="asciihex"))
-  } else if filter_name is PdfName("/ASCII85Decode" | "/A85") {
+  } else if filter_name is PdfName(b"/ASCII85Decode" | b"/A85") {
     decode_ascii85(@pdfio.Input::of_bytes(data, source="ascii85"))
-  } else if filter_name is PdfName("/RunLengthDecode" | "/RL") {
+  } else if filter_name is PdfName(b"/RunLengthDecode" | b"/RL") {
     decode_runlength(@pdfio.Input::of_bytes(data, source="runlength"))
-  } else if filter_name is PdfName("/LZWDecode" | "/LZW") {
+  } else if filter_name is PdfName(b"/LZWDecode" | b"/LZW") {
     let early = get_int_param(pdf, parms, "/EarlyChange", 1)
     decode_lzw(early, @pdfio.Input::of_bytes(data, source="lzw"))
-  } else if filter_name is PdfName("/Crypt") {
+  } else if filter_name is PdfName(b"/Crypt") {
     data
-  } else if filter_name is PdfName("/JBIG2Decode") {
+  } else if filter_name is PdfName(b"/JBIG2Decode") {
     let _ = jbig2dec
     raise DecodeNotSupported("JBIG2Decode requires decode_pdfstream_async")
-  } else if filter_name is PdfName("/CCITTFaxDecode" | "/CCF") {
+  } else if filter_name is PdfName(b"/CCITTFaxDecode" | b"/CCF") {
     let k = get_int_param(pdf, parms, "/K", 0)
     let eol = get_bool_param(pdf, parms, "/EndOfLine", false)
     let eba = get_bool_param(pdf, parms, "/EncodedByteAlign", false)
@@ -364,14 +364,19 @@ pub fn PdfCodec::decode_from_bytes(
     filter_name : @pdf.PdfName,
     parms : @pdf.PdfObject?,
   ) -> Array[Byte]? {
-    let decoded_result : Result[Array[Byte], Error] = try? PdfFilterNameDecode::decode_stage(
-      filter_name,
-      self,
-      pdf,
-      parms,
-      bytes,
-      None,
-    )
+    let decoded_result : Result[Array[Byte], Error] = try
+      PdfFilterNameDecode::decode_stage(
+        filter_name,
+        self,
+        pdf,
+        parms,
+        bytes,
+        None,
+      )
+      |> Ok
+    catch {
+      e => Err(e)
+    }
     match decoded_result {
       Ok(decoded) => Some(decoded)
       Err(_) => None

@@ -26,7 +26,7 @@ fn slice_from(value : String, start : Int) -> String {
   if start < 0 || start > value.length() {
     return ""
   }
-  value[start:].to_string()
+  value[start:].to_owned()
 }
 
 ///|
@@ -35,7 +35,7 @@ fn slice_range(value : String, start : Int, end : Int) -> String {
   if start < 0 || start > len || end < start || end > len {
     return ""
   }
-  value[start:end].to_string()
+  value[start:end].to_owned()
 }
 
 ///|

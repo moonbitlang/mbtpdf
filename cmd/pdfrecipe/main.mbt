@@ -13,8 +13,8 @@ const CARD_H : Double = 560.0
 ///|
 fn font_type1(base_font : String) -> PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
   ])
 }
@@ -147,13 +147,13 @@ fn set_catalog_entry(
 ///|
 fn add_swaps_layer(pdf : @pdf.Pdf) -> Int raise {
   let swaps : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("SWAPS")),
   ])
   let swaps_num = pdf.addobj(swaps)
   let default_dict : PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/ON"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/ON"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
     ("/OFF", PdfArray([Indirect(swaps_num)])),
   ])
@@ -190,12 +190,12 @@ fn add_layer_properties_to_pages(
 ///|
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
 
 ///|
 fn uri_action(uri : String) -> PdfObject {
-  Dictionary([("/S", Name(PdfName("/URI"))), ("/URI", PdfString(uri))])
+  Dictionary([("/S", Name(PdfName(b"/URI"))), ("/URI", PdfString(uri))])
 }
 
 ///|
@@ -473,7 +473,7 @@ fn mugcake_front_ops() -> Array[Op] {
   )
 
   // SWAPS layer
-  out.push(OpBDC("/OC", Name(PdfName("/SWAPS"))))
+  out.push(OpBDC("/OC", Name(PdfName(b"/SWAPS"))))
   out.append(
     ops_fill_rect(cx + 24.0, cy + 124.0, CARD_W - 48.0, 68.0, (1.0, 0.97, 0.9))[:],
   )
@@ -541,7 +541,7 @@ fn mugcake_back_ops() -> Array[Op] {
       ops_rule(cx + 24.0, yy, cx + CARD_W - 24.0, (0.78, 0.8, 0.84), 1.0)[:],
     )
   }
-  out.push(OpBDC("/OC", Name(PdfName("/SWAPS"))))
+  out.push(OpBDC("/OC", Name(PdfName(b"/SWAPS"))))
   out.append(
     ops_text(
       cx + 24.0,
@@ -622,7 +622,7 @@ fn parfait_front_ops() -> Array[Op] {
       (0.12, 0.14, 0.18),
     )[:],
   )
-  out.push(OpBDC("/OC", Name(PdfName("/SWAPS"))))
+  out.push(OpBDC("/OC", Name(PdfName(b"/SWAPS"))))
   out.append(
     ops_fill_rect(cx + 24.0, cy + 124.0, CARD_W - 48.0, 68.0, (0.92, 1.0, 0.95))[:],
   )
@@ -692,7 +692,7 @@ fn parfait_back_ops() -> Array[Op] {
       ops_rule(cx + 24.0, yy, cx + CARD_W - 24.0, (0.78, 0.8, 0.84), 1.0)[:],
     )
   }
-  out.push(OpBDC("/OC", Name(PdfName("/SWAPS"))))
+  out.push(OpBDC("/OC", Name(PdfName(b"/SWAPS"))))
   out.append(
     ops_text(
       cx + 24.0,
@@ -780,7 +780,7 @@ fn bites_front_ops() -> Array[Op] {
       (0.12, 0.14, 0.18),
     )[:],
   )
-  out.push(OpBDC("/OC", Name(PdfName("/SWAPS"))))
+  out.push(OpBDC("/OC", Name(PdfName(b"/SWAPS"))))
   out.append(
     ops_fill_rect(cx + 24.0, cy + 124.0, CARD_W - 48.0, 68.0, (0.96, 0.93, 1.0))[:],
   )
@@ -848,7 +848,7 @@ fn bites_back_ops() -> Array[Op] {
       ops_rule(cx + 24.0, yy, cx + CARD_W - 24.0, (0.78, 0.8, 0.84), 1.0)[:],
     )
   }
-  out.push(OpBDC("/OC", Name(PdfName("/SWAPS"))))
+  out.push(OpBDC("/OC", Name(PdfName(b"/SWAPS"))))
   out.append(
     ops_text(
       cx + 24.0,

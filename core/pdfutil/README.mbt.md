@@ -69,7 +69,7 @@ pub fn PdfUtil::hashtable_of_dictionary[K : Hash + Eq, V](
 Construct an empty hash table.
 
 ```moonbit nocheck
-pub fn PdfUtil::null_hash[K, V](self : PdfUtil) -> Map[K, V]
+pub fn PdfUtil::null_hash[K : Hash + Eq, V](self : PdfUtil) -> Map[K, V]
 ```
 
 ### PdfUtil::list_of_hashtbl

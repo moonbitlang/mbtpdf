@@ -91,7 +91,7 @@ pub(all) enum Op {
   OpEX
   OpUnknown(String)
   OpComment(String)
-}
+} derive(@debug.Debug)
 pub fn Op::components(@pdf.Pdf, @pdf.PdfObject, @pdf.PdfObject) -> Int raise
 pub fn Op::concat_bytess(Array[Array[Byte]]) -> Array[Byte]
 pub fn Op::parse_operators(@pdf.Pdf, @pdf.PdfObject, Array[@pdf.PdfObject]) -> Array[Self] raise
@@ -100,7 +100,6 @@ pub fn Op::parse_stream(@pdf.Pdf, @pdf.PdfObject, Array[Array[Byte]]) -> Array[S
 pub fn Op::stream_of_ops(Array[Self]) -> @pdf.PdfObject raise
 pub fn Op::string_of_ops(Array[Self]) -> String raise
 pub fn Op::to_string(Self) -> String raise
-pub impl @debug.Debug for Op
 
 // Type aliases
 

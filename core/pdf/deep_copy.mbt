@@ -11,7 +11,7 @@ fn deep_copy_pdfobject(obj : PdfObject) -> PdfObject {
         Got(bytes) => Stream::Got(bytes.copy())
         ToGet(toget) => ToGet(toget)
       }
-      Stream(Ref::new((dict_copy, stream_copy)))
+      Stream(Ref((dict_copy, stream_copy)))
     }
     _ => obj
   }
@@ -32,7 +32,8 @@ fn deep_copy_objdata(objdata : ObjectData) -> ObjectData {
 ///|
 /// Create a deep copy of a PDF document.
 pub fn Pdf::deep_copy(self : Pdf) -> Pdf {
-  let object_stream_ids = Map::new(
+  let object_stream_ids = Map(
+    [],
     capacity=self.objects.object_stream_ids.length(),
   )
   for key, value in self.objects.object_stream_ids {

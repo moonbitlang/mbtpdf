@@ -70,7 +70,7 @@ test "bytes_of_list" {
 test "int_array_of_bytes" {
   let bytes = @pdfio.bytes_of_string("Hi")
   let ints = @pdfio.int_array_of_bytes(bytes)
-  inspect(ints, content="[72, 105]")
+  debug_inspect(ints, content="[72, 105]")
 }
 ```
 
@@ -123,8 +123,8 @@ test "input_of_bytes" {
 ///|
 test "input_of_string" {
   let input = @pdfio.Input::of_string("ABC")
-  inspect((input.input_char)(), content="Some('A')")
-  inspect((input.input_char)(), content="Some('B')")
+  debug_inspect((input.input_char)(), content="Some('A')")
+  debug_inspect((input.input_char)(), content="Some('B')")
 }
 ```
 

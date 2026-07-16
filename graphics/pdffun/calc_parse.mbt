@@ -119,9 +119,9 @@ fn calc_token_of_word(word : String) -> CalcTok {
     "true" => Bool(true)
     "false" => Bool(false)
     _ =>
-      try @strconv.parse_int(word) catch {
+      try @string.parse_int(word) catch {
         _ =>
-          try @strconv.parse_double(word) catch {
+          try @string.parse_double(word) catch {
             _ => Name(word)
           } noraise {
             f => Real(f)

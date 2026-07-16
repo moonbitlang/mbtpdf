@@ -123,7 +123,7 @@ test "direct follows indirects" {
 test "lookup_direct finds keys" {
   let pdf = @pdf.Pdf::empty()
   let dict = @pdf.PdfObject::Dictionary([
-    ("/Type", Name(PdfName("/Page"))),
+    ("/Type", Name(PdfName(b"/Page"))),
     ("/Count", Integer(5)),
   ])
   guard pdf.lookup_direct("/Type", dict) is Some(Name(name)) else {
@@ -158,7 +158,7 @@ test "lookup_chain navigates nested dicts" {
 ```mbt check
 ///|
 test "add_dict_entry" {
-  let dict = @pdf.PdfObject::Dictionary([("/Type", Name(PdfName("/Page")))])
+  let dict = @pdf.PdfObject::Dictionary([("/Type", Name(PdfName(b"/Page")))])
   let updated = dict.add_entry("/Count", Integer(1))
   match updated {
     Dictionary(entries) => inspect(entries.length(), content="2")
@@ -206,7 +206,7 @@ test "replace_dict_entry" {
 ///|
 test "remove_dict_entry" {
   let dict = @pdf.PdfObject::Dictionary([
-    ("/Type", Name(PdfName("/Page"))),
+    ("/Type", Name(PdfName(b"/Page"))),
     ("/Count", Integer(1)),
   ])
   let updated = dict.remove_entry("/Count")
@@ -287,7 +287,7 @@ test "parse_rectangle" {
     Real(792.0),
   ])
   let (minx, miny, maxx, maxy) = pdf.parse_rectangle(rect)
-  inspect((minx, miny, maxx, maxy), content="(0, 0, 612, 792)")
+  debug_inspect((minx, miny, maxx, maxy), content="(0, 0, 612, 792)")
 }
 ```
 

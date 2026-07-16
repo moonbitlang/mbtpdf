@@ -70,7 +70,12 @@ pub async fn PdfWriteFs::pdf_to_file_options(
   pdf : @pdf.Pdf,
   filename : String,
 ) -> Unit {
-  let file = @fs.open(filename, mode=WriteOnly, create=0o644, truncate=true)
+  let file = @fs.open(
+    filename,
+    mode=WriteOnly,
+    create_mode=CreateOrTruncate,
+    permission=0o644,
+  )
   defer file.close()
   match recrypt {
     Some(value) =>

@@ -5,6 +5,7 @@ import {
   "bobzhang/mbtpdf/core/pdf",
   "bobzhang/mbtpdf/core/pdfio",
   "bobzhang/mbtpdf/syntax/pdftoken",
+  "moonbitlang/core/ref",
 }
 
 // Values
@@ -20,7 +21,7 @@ pub fn lex_keyword(@pdfio.Input) -> @pdftoken.Token raise
 
 pub fn lex_name(@pdfio.Input) -> @pdftoken.Token raise
 
-pub fn lex_next(Ref[Int], Ref[Int], Bool, @pdfio.Input, Array[@pdftoken.Token], Bool, (Int) -> Array[@pdftoken.Token] raise) -> @pdftoken.Token
+pub fn lex_next(@ref.Ref[Int], @ref.Ref[Int], Bool, @pdfio.Input, Array[@pdftoken.Token], Bool, (Int) -> Array[@pdftoken.Token] raise) -> @pdftoken.Token
 
 pub fn lex_number(@pdfio.Input) -> @pdftoken.Token raise
 

@@ -47,8 +47,8 @@ fn theme_accent2() -> (Double, Double, Double) {
 ///|
 fn font_type1(base_font : String) -> PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
   ])
 }
@@ -219,7 +219,7 @@ fn notes_ops(note : String) -> Array[Op] {
   let w = SLIDE_W - 2.0 * MARGIN_X
   let y = FOOTER_H + 10.0
   let h = 54.0
-  ops.push(OpBDC("/OC", Name(PdfName("/NOTES"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/NOTES"))))
   ops.append(ops_fill_rect(x, y, w, h, (1.0, 1.0, 0.9))[:])
   ops.append(ops_stroke_rect(x, y, w, h, (0.88, 0.84, 0.4), 1.0)[:])
   ops.append(
@@ -385,13 +385,13 @@ fn set_catalog_entry(
 ///|
 fn add_notes_layer(pdf : @pdf.Pdf) -> Int raise {
   let ocg_notes : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("NOTES")),
   ])
   let notes_num = pdf.addobj(ocg_notes)
   let default_dict : PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/OFF"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/OFF"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
   ])
   let ocprops : PdfObject = Dictionary([
@@ -427,7 +427,7 @@ fn add_notes_properties_to_pages(
 ///|
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
 
 ///|

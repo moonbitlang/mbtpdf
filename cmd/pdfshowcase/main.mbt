@@ -44,8 +44,8 @@ fn hsv_to_rgb(h : Double, s : Double, v : Double) -> (Double, Double, Double) {
 ///|
 fn font_type1(base_font : String) -> @pdf.PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
   ])
 }
@@ -285,7 +285,7 @@ fn layers_ops() -> Array[@pdfops.Op] {
   let ops : Array[@pdfops.Op] = Array::new()
 
   // "Day" layer
-  ops.push(OpBDC("/OC", Name(PdfName("/DAY"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/DAY"))))
   ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.75, 0.9, 1.0))[:])
   ops.append(ops_fill_rect(0.0, 0.0, 595.0, 160.0, (0.9, 0.95, 0.98))[:])
   ops.append(
@@ -308,7 +308,7 @@ fn layers_ops() -> Array[@pdfops.Op] {
   ops.push(OpEMC)
 
   // "Night" layer
-  ops.push(OpBDC("/OC", Name(PdfName("/NIGHT"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/NIGHT"))))
   ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.05, 0.06, 0.1))[:])
   ops.append(ops_fill_rect(0.0, 0.0, 595.0, 160.0, (0.09, 0.1, 0.16))[:])
   for i in 0..<120 {
@@ -611,18 +611,18 @@ fn set_catalog_entry(
 ///|
 fn add_day_night_layers(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
   let ocg_day : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("DAY")),
   ])
   let ocg_night : @pdf.PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("NIGHT")),
   ])
   let day_num = pdf.addobj(ocg_day)
   let night_num = pdf.addobj(ocg_night)
   let default_dict : @pdf.PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/ON"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/ON"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
     ("/OFF", PdfArray([Indirect(night_num)])),
     ("/ON", PdfArray([Indirect(day_num)])),
@@ -688,12 +688,12 @@ fn add_bookmarks(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
 ///|
 fn goto_action(refnum : Int) -> @pdf.PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
 
 ///|
 fn uri_action(uri : String) -> @pdf.PdfObject {
-  Dictionary([("/S", Name(PdfName("/URI"))), ("/URI", PdfString(uri))])
+  Dictionary([("/S", Name(PdfName(b"/URI"))), ("/URI", PdfString(uri))])
 }
 
 ///|

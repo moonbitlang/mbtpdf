@@ -22,9 +22,8 @@ pub struct Page {
   resources : @pdf.PdfObject
   rotate : Rotation
   rest : @pdf.PdfObject
-
-  fn new(content~ : Array[@pdf.PdfObject], mediabox~ : @pdf.PdfObject, resources~ : @pdf.PdfObject, rotate~ : Rotation, rest~ : @pdf.PdfObject) -> Page
 }
+pub fn Page::Page(content~ : Array[@pdf.PdfObject], mediabox~ : @pdf.PdfObject, resources~ : @pdf.PdfObject, rotate~ : Rotation, rest~ : @pdf.PdfObject) -> Self
 pub fn Page::blank(@pdfpaper.Paper) -> Self
 pub fn Page::custom(@pdf.PdfObject) -> Self
 pub fn Page::postpend_operators(Self, @pdf.Pdf, Array[@pdfops.Op], fast? : Bool) -> Self raise
@@ -64,10 +63,9 @@ pub(all) enum Rotation {
   Rotate90
   Rotate180
   Rotate270
-}
+} derive(@debug.Debug)
 pub fn Rotation::from_int(Int) -> Self raise
 pub fn Rotation::to_int(Self) -> Int
-pub impl @debug.Debug for Rotation
 
 // Type aliases
 

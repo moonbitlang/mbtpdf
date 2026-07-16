@@ -45,8 +45,8 @@ fn hsv_to_rgb(h : Double, s : Double, v : Double) -> (Double, Double, Double) {
 ///|
 fn font_type1(base_font : String) -> PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
   ])
 }
@@ -455,18 +455,18 @@ fn set_catalog_entry(
 ///|
 fn add_layers(pdf : @pdf.Pdf) -> (Int, Int) raise {
   let fog : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("FOG")),
   ])
   let solution : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("SOLUTION")),
   ])
   let fog_num = pdf.addobj(fog)
   let sol_num = pdf.addobj(solution)
   let default_dict : PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/ON"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/ON"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
     ("/ON", PdfArray([Indirect(fog_num)])),
     ("/OFF", PdfArray([Indirect(sol_num)])),
@@ -508,7 +508,7 @@ fn add_layer_properties_to_pages(
 ///|
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
 
 ///|
@@ -749,7 +749,7 @@ fn room_ops(
   )
 
   // Fog layer: soft crosshatch overlay
-  ops.push(OpBDC("/OC", Name(PdfName("/FOG"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/FOG"))))
   ops.append(ops_crosshatch(rx, ry, rw, rh, 18.0, (0.92, 0.93, 0.95), 0.5)[:])
   ops.push(OpEMC)
 
@@ -757,7 +757,7 @@ fn room_ops(
   match next_hint {
     None => ()
     Some(d) => {
-      ops.push(OpBDC("/OC", Name(PdfName("/SOLUTION"))))
+      ops.push(OpBDC("/OC", Name(PdfName(b"/SOLUTION"))))
       let arrow_color = (0.95, 0.3, 0.35)
       let ax0 = cx
       let ay0 = cy
@@ -911,7 +911,7 @@ fn draw_map_ops(
   )
 
   // Solution path (layer)
-  ops.push(OpBDC("/OC", Name(PdfName("/SOLUTION"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/SOLUTION"))))
   for i in 0..<(path.length() - 1) {
     let a = path[i]
     let b = path[i + 1]
@@ -1077,7 +1077,7 @@ pub async fn run(
     let start_i = idx(maze.w, 0, 0)
     let exit_i = farthest(dist)
     let path = build_path(parent, start_i, exit_i)
-    let path_set = Map::new(capacity=path.length())
+    let path_set = Map([], capacity=path.length())
     for p in path {
       path_set.set(p, ())
     }
@@ -1136,7 +1136,7 @@ pub async fn run(
     let refs = pdf.page_reference_numbers()
     // refs: cover at 0, rooms at 1..(w*h), map at end.
     let map_ref = refs[refs.length() - 1]
-    let room_refs = refs[:refs.length() - 1].to_array()
+    let room_refs = refs[:refs.length() - 1].to_owned()
     let pdf = add_bookmarks(pdf, room_refs, map_ref)
 
     // Annotate pages (links).
@@ -1196,7 +1196,7 @@ async fn main {
   match args {
     [_, out] => run(out_file=out)
     [_, out, seed] =>
-      try @strconv.parse_int(seed) catch {
+      try @string.parse_int(seed) catch {
         _ => run(out_file=out)
       } noraise {
         n => run(out_file=out, seed=n.reinterpret_as_uint())

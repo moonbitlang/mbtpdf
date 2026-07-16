@@ -50,8 +50,8 @@ pub async fn run(args : Array[String], quiet? : Bool = false) -> Unit {
     @fs.write_file(
       out_name,
       Bytes::from_array(out_bytes),
-      create=0o644,
-      truncate=true,
+      create_mode=CreateOrTruncate,
+      permission=0o644,
     )
   } catch {
     err =>

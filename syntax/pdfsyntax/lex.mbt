@@ -75,7 +75,7 @@ pub fn lex_number(input : @pdfio.Input) -> Token raise {
   let mut number = s
   if number.length() > 1 {
     match (number.get_char(0), number.get_char(1)) {
-      (Some('-'), Some('-')) => number = number[:].sub(start=1).to_string()
+      (Some('-'), Some('-')) => number = number[:].sub(start=1).to_owned()
       _ => ()
     }
   }
@@ -83,9 +83,9 @@ pub fn lex_number(input : @pdfio.Input) -> Token raise {
     number.contains("e") ||
     number.contains("E")
   if !has_decimal {
-    try @strconv.parse_int(number) catch {
+    try @string.parse_int(number) catch {
       _ =>
-        try @strconv.parse_double(number) catch {
+        try @string.parse_double(number) catch {
           _ => LexNone
         } noraise {
           f => LexReal(f)
@@ -94,7 +94,7 @@ pub fn lex_number(input : @pdfio.Input) -> Token raise {
       i => LexInt(i)
     }
   } else {
-    try @strconv.parse_double(number) catch {
+    try @string.parse_double(number) catch {
       _ => LexNone
     } noraise {
       f => LexReal(f)

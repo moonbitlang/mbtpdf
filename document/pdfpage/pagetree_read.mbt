@@ -67,7 +67,7 @@ fn find_pages(
           }
           out
         }
-        Some(Name(PdfName("/Pages"))) => {
+        Some(Name(PdfName(b"/Pages"))) => {
           let kids = match
             pdf.lookup_fail("No /Kids in page tree", "/Kids", pages) {
             PdfArray(values) => values
@@ -239,7 +239,7 @@ fn find_pages_quick(
           }
           total
         }
-        Some(Name(PdfName("/Pages"))) => {
+        Some(Name(PdfName(b"/Pages"))) => {
           let kids = match
             pdf.lookup_fail("No /Kids in page tree", "/Kids", resolved) {
             PdfArray(values) => values
@@ -277,7 +277,7 @@ pub fn PdfPageDoc::pages_of_pagetree_quick(self : PdfPageDoc) -> Int raise {
       let pages = pdf.lookup_fail(
         "No or malformed /Pages", "/Pages", document_catalog,
       )
-      let stack : Map[Int, Bool] = Map::new()
+      let stack : Map[Int, Bool] = Map([])
       find_pages_quick(0, pages, pdf, stack)
     }
   }

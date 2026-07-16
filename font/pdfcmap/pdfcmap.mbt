@@ -146,8 +146,8 @@ fn read_hex_bytes(
   }
   let bytes = Array::new()
   for j = 0; j < hex_chars.length(); j = j + 2 {
-    let hex_str = String::from_array(hex_chars[j:j + 2].to_array())
-    let value = @strconv.parse_int(hex_str, base=16)
+    let hex_str = String::from_array(hex_chars[j:j + 2].to_owned())
+    let value = @string.parse_int(hex_str, base=16)
     bytes.push(value)
   }
   (bytes, i + 1)
@@ -169,7 +169,11 @@ fn read_code_opt(chars : ArrayView[Char], start : Int) -> (String, Int)? {
   let mut i = skip_whitespace(chars, start)
   while i < chars.length() {
     if chars[i] == '<' {
-      let result : Result[(String, Int), Error] = try? read_code(chars, i)
+      let result : Result[(String, Int), Error] = try
+        read_code(chars, i) |> Ok
+      catch {
+        e => Err(e)
+      }
       match result {
         Ok(value) => return Some(value)
         Err(_) => i = i + 1
@@ -186,7 +190,11 @@ fn read_unicode_opt(chars : ArrayView[Char], start : Int) -> (String, Int)? {
   let mut i = skip_whitespace(chars, start)
   while i < chars.length() {
     if chars[i] == '<' {
-      let result : Result[(String, Int), Error] = try? read_code(chars, i)
+      let result : Result[(String, Int), Error] = try
+        read_code(chars, i) |> Ok
+      catch {
+        e => Err(e)
+      }
       match result {
         Ok(value) => return Some(value)
         Err(_) => i = i + 1
@@ -363,10 +371,11 @@ fn extract_specifics(data : Array[Byte]) -> Int? {
         j = j + 1
       }
       if digits.length() > 0 {
-        let parsed : Result[Int, Error] = try? @strconv.parse_int(
-          String::from_array(digits),
-          base=10,
-        )
+        let parsed : Result[Int, Error] = try
+          @string.parse_int(String::from_array(digits), base=10) |> Ok
+        catch {
+          e => Err(e)
+        }
         match parsed {
           Ok(value) => return Some(value)
           Err(_) => return None

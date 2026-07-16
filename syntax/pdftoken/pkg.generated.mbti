@@ -30,8 +30,7 @@ pub(all) enum Token {
   LexComment(String)
   StopLexing
   LexNone
-}
-pub impl @debug.Debug for Token
+} derive(@debug.Debug)
 
 // Type aliases
 

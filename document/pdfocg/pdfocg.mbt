@@ -92,9 +92,9 @@ fn read_config(pdf : @pdf.Pdf, config : @pdf.PdfObject) -> OcgConfig {
     _ => None
   }
   let ocgconfig_basestate = match pdf.lookup_direct("/BaseState", config) {
-    Some(Name(PdfName("/ON"))) => OcgState::On
-    Some(Name(PdfName("/OFF"))) => Off
-    Some(Name(PdfName("/Unchanged"))) => Unchanged
+    Some(Name(PdfName(b"/ON"))) => OcgState::On
+    Some(Name(PdfName(b"/OFF"))) => Off
+    Some(Name(PdfName(b"/Unchanged"))) => Unchanged
     _ => On
   }
   let ocgconfig_on = match pdf.lookup_direct("/ON", config) {
@@ -140,7 +140,7 @@ fn read_config(pdf : @pdf.Pdf, config : @pdf.PdfObject) -> OcgConfig {
   }
   let ocgconfig_order = None
   let ocgconfig_listmode = match pdf.lookup_direct("/ListMode", config) {
-    Some(Name(PdfName("/VisiblePages"))) => OcgListMode::VisiblePages
+    Some(Name(PdfName(b"/VisiblePages"))) => OcgListMode::VisiblePages
     _ => AllPages
   }
   let ocgconfig_rbgroups = []

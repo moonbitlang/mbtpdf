@@ -7,8 +7,8 @@ type Op = @pdfops.Op
 ///|
 fn font_type1(base_font : String) -> PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
   ])
 }
@@ -173,23 +173,23 @@ fn set_catalog_entry(
 ///|
 fn add_layers(pdf : @pdf.Pdf) -> (Int, Int, Int, Int, Int) raise {
   let dress : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("DRESS")),
   ])
   let space : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("SPACE SUIT")),
   ])
   let hero : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("HERO CAPE")),
   ])
   let hat : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("HAT")),
   ])
   let sparkles : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("SPARKLES")),
   ])
   let dress_num = pdf.addobj(dress)
@@ -198,8 +198,8 @@ fn add_layers(pdf : @pdf.Pdf) -> (Int, Int, Int, Int, Int) raise {
   let hat_num = pdf.addobj(hat)
   let sparkles_num = pdf.addobj(sparkles)
   let default_dict : PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/ON"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/ON"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
     (
       "/OFF",
@@ -264,7 +264,7 @@ fn add_layer_properties_to_pages(
 ///|
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
 
 ///|
@@ -435,7 +435,7 @@ fn ops_outfits_layers() -> Array[Op] {
   let (cx, base_y) = doll_origin()
 
   // Dress layer
-  ops.push(OpBDC("/OC", Name(PdfName("/DRESS"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/DRESS"))))
   let skirt : Array[(Double, Double)] = [
     (cx - 94.0, base_y + 250.0),
     (cx + 94.0, base_y + 250.0),
@@ -470,7 +470,7 @@ fn ops_outfits_layers() -> Array[Op] {
   ops.push(OpEMC)
 
   // Space suit layer
-  ops.push(OpBDC("/OC", Name(PdfName("/SPACE"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/SPACE"))))
   ops.append(
     ops_fill_rect(cx - 78.0, base_y + 250.0, 156.0, 230.0, (0.92, 0.95, 0.98))[:],
   )
@@ -503,7 +503,7 @@ fn ops_outfits_layers() -> Array[Op] {
   ops.push(OpEMC)
 
   // Hero layer
-  ops.push(OpBDC("/OC", Name(PdfName("/HERO"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/HERO"))))
   let cape : Array[(Double, Double)] = [
     (cx - 70.0, base_y + 420.0),
     (cx + 70.0, base_y + 420.0),
@@ -533,7 +533,7 @@ fn ops_outfits_layers() -> Array[Op] {
   ops.push(OpEMC)
 
   // Hat layer
-  ops.push(OpBDC("/OC", Name(PdfName("/HAT"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/HAT"))))
   let hat : Array[(Double, Double)] = [
     (cx - 82.0, base_y + 550.0),
     (cx + 82.0, base_y + 550.0),
@@ -550,7 +550,7 @@ fn ops_outfits_layers() -> Array[Op] {
   ops.push(OpEMC)
 
   // Sparkles layer (tiny stars)
-  ops.push(OpBDC("/OC", Name(PdfName("/SPARKLES"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/SPARKLES"))))
   let spark : Array[(Double, Double)] = [
     (cx - 120.0, base_y + 520.0),
     (cx - 150.0, base_y + 470.0),

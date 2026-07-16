@@ -110,7 +110,7 @@ fn split_header(line : String) -> (String, String) {
   match line.find(" ") {
     None => (line, "")
     Some(pos) =>
-      (line[0:pos].to_string(), line[pos + 1:].to_string().trim().to_string())
+      (line[0:pos].to_owned(), line[pos + 1:].to_owned().trim().to_owned())
   }
 }
 
@@ -155,7 +155,8 @@ fn get_tables(
       Some(read_char_metrics_line(line))
     }
   })
-  let charmetrics_hash : Map[String, (Int, Int)] = Map::new(
+  let charmetrics_hash : Map[String, (Int, Int)] = Map(
+    [],
     capacity=charmetrics.length(),
   )
   for entry in charmetrics {

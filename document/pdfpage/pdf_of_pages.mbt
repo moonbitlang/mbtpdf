@@ -35,7 +35,7 @@ fn buildnode(kids : ArrayView[Int], parent : Int, count : Int) -> PdfObject {
     kid_refs.push(PdfObject::Indirect(kid))
   }
   let entries : Array[(String, PdfObject)] = [
-    ("/Type", Name(PdfName("/Pages"))),
+    ("/Type", Name(PdfName(b"/Pages"))),
     ("/Kids", PdfArray(kid_refs)),
     ("/Count", Integer(count)),
   ]
@@ -116,7 +116,7 @@ fn select_page_ref(refs : Array[Int], index_1 : Int) -> Int raise {
 
 ///|
 fn range_to_set(range : Array[Int]) -> Map[Int, Unit] {
-  let out = Map::new(capacity=range.length())
+  let out = Map([], capacity=range.length())
   for page in range {
     out.set(page, ())
   }
@@ -125,7 +125,7 @@ fn range_to_set(range : Array[Int]) -> Map[Int, Unit] {
 
 ///|
 fn build_fastrefnums(refnums : Array[Int]) -> Map[Int, Int] {
-  let out = Map::new(capacity=refnums.length())
+  let out = Map([], capacity=refnums.length())
   for i in 0..<refnums.length() {
     out.set(refnums[i], i + 1)
   }
@@ -236,8 +236,8 @@ pub fn PdfPageDoc::pdf_of_pages(
     match o {
       Dictionary(_) =>
         match pdf.lookup_direct("/Type", o) {
-          Some(Name(PdfName("/Pages"))) => pdf.removeobj(i)
-          Some(Name(PdfName("/Page"))) =>
+          Some(Name(PdfName(b"/Pages"))) => pdf.removeobj(i)
+          Some(Name(PdfName(b"/Page"))) =>
             if objnumbers_set.get(i) is None {
               pdf.removeobj(i)
             }

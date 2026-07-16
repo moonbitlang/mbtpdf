@@ -94,7 +94,7 @@ fn build_xref_stream(
   let data = output.extract_bytes(buffer)
   let dict_with_type = pdf.trailerdict.add_entry(
     "/Type",
-    Name(PdfName("/XRef")),
+    Name(PdfName(b"/XRef")),
   )
   let dict_with_size = dict_with_type.add_entry("/Size", Integer(size))
   let dict_with_root = dict_with_size.add_entry("/Root", Indirect(pdf.root))
@@ -106,7 +106,7 @@ fn build_xref_stream(
     "/Length",
     Integer(@pdfio.bytes_size(data)),
   )
-  let stream_obj = PdfObject::Stream(Ref::new((dict_with_length, Got(data))))
+  let stream_obj = PdfObject::Stream(Ref((dict_with_length, Got(data))))
   stream_obj
 }
 
@@ -167,7 +167,7 @@ pub fn PdfWrite::pdf_to_output_with_options(
   if encrypting {
     pdf.objects.object_stream_ids.remove(pdf.root)
   }
-  let mut object_stream_entries : Map[Int, (Int, Int)] = Map::new()
+  let mut object_stream_entries : Map[Int, (Int, Int)] = Map([])
   if preserve_objstm || generate_objstm {
     if generate_objstm {
       generate_object_stream_hints(pdf, preserve_objstm, encrypting)

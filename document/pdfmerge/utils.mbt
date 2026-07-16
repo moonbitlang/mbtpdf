@@ -52,7 +52,7 @@ fn[T] slice(values : Array[T], start : Int, count : Int) -> Array[T] raise {
   if start < 0 || count < 0 || start + count > values.length() {
     raise @pdf.PdfError::Msg("slice: out of bounds")
   }
-  values[start:start + count].to_array()
+  values[start:start + count].to_owned()
 }
 
 ///|
@@ -107,7 +107,7 @@ fn[T] collate(items : Array[T], cmp : (T, T) -> Int) -> Array[Array[T]] {
 
 ///|
 fn setify_strings(values : Array[String]) -> Array[String] {
-  let seen = Map::new(capacity=values.length())
+  let seen = Map([], capacity=values.length())
   let out = Array::new()
   for value in values {
     if seen.get(value) is None {
@@ -134,7 +134,7 @@ fn add_entry(
 ) -> Array[(String, PdfObject)] {
   match entries.search_by(entry => entry.0 == key) {
     None => {
-      let out = entries[:].to_array()
+      let out = entries[:].to_owned()
       out.push((key, value))
       out
     }

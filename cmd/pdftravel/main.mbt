@@ -13,8 +13,8 @@ const TAB_H : Double = 30.0
 ///|
 fn font_type1(base_font : String) -> PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
   ])
 }
@@ -180,18 +180,18 @@ fn set_catalog_entry(
 ///|
 fn add_layers(pdf : @pdf.Pdf) -> (Int, Int) raise {
   let night : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("NIGHT MODE")),
   ])
   let surprise : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("SURPRISE")),
   ])
   let night_num = pdf.addobj(night)
   let surprise_num = pdf.addobj(surprise)
   let default_dict : PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/ON"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/ON"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
     ("/OFF", PdfArray([Indirect(night_num), Indirect(surprise_num)])),
   ])
@@ -232,12 +232,12 @@ fn add_layer_properties_to_pages(
 ///|
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
 
 ///|
 fn uri_action(uri : String) -> PdfObject {
-  Dictionary([("/S", Name(PdfName("/URI"))), ("/URI", PdfString(uri))])
+  Dictionary([("/S", Name(PdfName(b"/URI"))), ("/URI", PdfString(uri))])
 }
 
 ///|
@@ -356,7 +356,7 @@ fn ops_night_sky(
   y1 : Double,
 ) -> Array[Op] {
   let ops : Array[Op] = Array::new()
-  ops.push(OpBDC("/OC", Name(PdfName("/NIGHT"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/NIGHT"))))
   let ww = x1 - x0
   let hh = y1 - y0
   let stars : Array[(Double, Double)] = [
@@ -442,7 +442,7 @@ fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
   )
   ops.append(ops_tabs()[:])
   ops.append(ops_night_sky(0.0, h() - 130.0, w(), h())[:])
-  ops.push(OpBDC("/OC", Name(PdfName("/NIGHT"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/NIGHT"))))
   ops.append(ops_fill_rect(0.0, h() - 130.0, w(), 130.0, (0.06, 0.07, 0.1))[:])
   ops.append(
     ops_text(
@@ -621,7 +621,7 @@ fn itinerary_ops() -> Array[Op] {
   item(228.0, "13:30", "Head home")
 
   // Night sticker
-  ops.push(OpBDC("/OC", Name(PdfName("/NIGHT"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/NIGHT"))))
   ops.append(
     ops_text(
       54.0,
@@ -727,7 +727,7 @@ fn coupons_ops() -> Array[Op] {
         (0.45, 0.48, 0.52),
       )[:],
     )
-    ops.push(OpBDC("/OC", Name(PdfName("/SURPRISE"))))
+    ops.push(OpBDC("/OC", Name(PdfName(b"/SURPRISE"))))
     ops.append(
       ops_fill_rect(x + ww - 170.0, y + 18.0, 150.0, 34.0, (1.0, 1.0, 1.0))[:],
     )
@@ -892,7 +892,7 @@ fn packing_ops() -> Array[Op] {
     line(y, it)
     y = y - 26.0
   }
-  ops.push(OpBDC("/OC", Name(PdfName("/SURPRISE"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/SURPRISE"))))
   ops.append(
     ops_fill_rect(54.0, 120.0, w() - 170.0, 62.0, (0.95, 0.96, 0.98))[:],
   )

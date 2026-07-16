@@ -47,7 +47,7 @@ fn read_malformed_pdf_objects(
   input : @pdfio.Input,
   read_stream_data : Bool,
 ) -> (@pdf.PdfObjMap, Int) raise {
-  let objects : @pdf.PdfObjMap = Map::new()
+  let objects : @pdf.PdfObjMap = Map([])
   let mut max_obj = 0
   (input.seek_in)(0)
   while true {
@@ -170,7 +170,7 @@ fn find_catalog_object(objects : @pdf.PdfObjMap) -> Int? {
     match obj_ref.val {
       Parsed(obj) | ParsedAlreadyDecrypted(obj) =>
         match obj.lookup_immediate("/Type") {
-          Some(Name(PdfName("/Catalog"))) => return Some(objnum)
+          Some(Name(PdfName(b"/Catalog"))) => return Some(objnum)
           _ => ()
         }
       _ => ()
@@ -225,7 +225,7 @@ fn read_malformed_pdf(
     max_obj_num: max_obj,
     parse: None,
     objects,
-    object_stream_ids: Map::new(),
+    object_stream_ids: Map([]),
   }
   let pdf_tmp = @pdf.Pdf::{
     major: major_header,

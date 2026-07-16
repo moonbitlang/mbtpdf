@@ -155,15 +155,19 @@ Both methods raise `BadDate` on invalid input:
 ///|
 test "Date::of_pdf_string rejects invalid values" {
   // Invalid month (13)
-  let bad_month : Result[@pdfdate.Date, Error] = try? @pdfdate.Date::of_pdf_string(
-    "D:20241301",
-  )
+  let bad_month : Result[@pdfdate.Date, Error] = try
+    @pdfdate.Date::of_pdf_string("D:20241301") |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(bad_month is Err(_))
 
   // Non-digit characters in date
-  let bad_format : Result[@pdfdate.Date, Error] = try? @pdfdate.Date::of_pdf_string(
-    "D:20A4",
-  )
+  let bad_format : Result[@pdfdate.Date, Error] = try
+    @pdfdate.Date::of_pdf_string("D:20A4") |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(bad_format is Err(_))
 }
 ```

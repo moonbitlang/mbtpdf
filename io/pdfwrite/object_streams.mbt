@@ -29,7 +29,8 @@ fn generate_object_stream_hints(
   if !preserve_existing {
     clear_object_stream_ids(pdf.objects.object_stream_ids)
   }
-  let indirect_lengths : Map[Int, Bool] = Map::new(
+  let indirect_lengths : Map[Int, Bool] = Map(
+    [],
     capacity=pdf.objects.objects.length(),
   )
   let entries = @pdf.pdfobjmap_bindings(pdf.objects.objects)
@@ -79,7 +80,8 @@ fn generate_object_stream_hints(
 
 ///|
 fn build_object_stream_groups(pdf : @pdf.Pdf) -> Array[(Int, Array[Int])] {
-  let groups : Map[Int, Array[Int]] = Map::new(
+  let groups : Map[Int, Array[Int]] = Map(
+    [],
     capacity=pdf.objects.object_stream_ids.length(),
   )
   for pair in pdf.objects.object_stream_ids.to_array() {
@@ -121,7 +123,8 @@ fn bake_object_streams(
   compress : Bool,
   groups : Array[(Int, Array[Int])],
 ) -> Map[Int, (Int, Int)] raise {
-  let entries : Map[Int, (Int, Int)] = Map::new(
+  let entries : Map[Int, (Int, Int)] = Map(
+    [],
     capacity=pdf.objects.object_stream_ids.length(),
   )
   for group in groups {
@@ -163,24 +166,24 @@ fn bake_object_streams(
     }
     let data = @pdfio.bytes_of_string(data_sb.to_string())
     let dict = PdfObject::Dictionary([
-      ("/Type", Name(PdfName("/ObjStm"))),
+      ("/Type", Name(PdfName(b"/ObjStm"))),
       ("/Length", Integer(@pdfio.bytes_size(data))),
       ("/N", Integer(objs.length())),
       ("/First", Integer(first)),
     ])
-    let mut stream_obj = PdfObject::Stream(Ref::new((dict, Got(data))))
+    let mut stream_obj = PdfObject::Stream(Ref((dict, Got(data))))
     if compress {
       let encoded = @pdfcodec.PdfCodec::new().encode_flate(data)
       if @pdfio.bytes_size(encoded) + 20 < @pdfio.bytes_size(data) {
         let dict_with_filter = dict.add_entry(
           "/Filter",
-          Name(PdfName("/FlateDecode")),
+          Name(PdfName(b"/FlateDecode")),
         )
         let dict_with_length = dict_with_filter.add_entry(
           "/Length",
           Integer(@pdfio.bytes_size(encoded)),
         )
-        stream_obj = Stream(Ref::new((dict_with_length, Got(encoded))))
+        stream_obj = Stream(Ref((dict_with_length, Got(encoded))))
       }
     }
     pdf.addobj_given_num((stream_id, stream_obj))

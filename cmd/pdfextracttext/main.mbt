@@ -20,7 +20,13 @@ pub async fn run(args : Array[String], quiet? : Bool = false) -> Unit {
     }
     let text = @pdftext.PdfText::new(pdf).extract_text()
     match out_file {
-      Some(path) => @fs.write_file(path, text, create=0o644, truncate=true)
+      Some(path) =>
+        @fs.write_file(
+          path,
+          text,
+          create_mode=CreateOrTruncate,
+          permission=0o644,
+        )
       None => if !quiet { println(text) }
     }
   } catch {

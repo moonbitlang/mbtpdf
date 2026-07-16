@@ -111,7 +111,7 @@ fn Pdf::nullify_deleted_page_references(self : Pdf) -> Unit raise {
     match obj {
       Dictionary(_) =>
         match self.lookup_direct("/Type", obj) {
-          Some(Name(PdfName("/Page"))) => page_object_numbers.push(objnum)
+          Some(Name(PdfName(b"/Page"))) => page_object_numbers.push(objnum)
           _ => ()
         }
       _ => ()
@@ -119,7 +119,7 @@ fn Pdf::nullify_deleted_page_references(self : Pdf) -> Unit raise {
   })
   let refnums = self.page_reference_numbers()
   if refnums.length() != page_object_numbers.length() {
-    let table = Map::new(capacity=page_object_numbers.length())
+    let table = Map([], capacity=page_object_numbers.length())
     for num in page_object_numbers {
       table.set(num, true)
     }

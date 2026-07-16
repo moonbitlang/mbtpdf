@@ -116,7 +116,7 @@ test "lex_comment skips comment" {
     fail("expected comment")
   }
   // After lex_comment, input is at the newline
-  inspect((input.input_char)(), content="Some('\\n')")
+  debug_inspect((input.input_char)(), content="Some('\\n')")
 }
 ```
 
@@ -170,7 +170,7 @@ test "string_of_lexeme" {
 test "dropwhite skips whitespace" {
   let input = @pdfio.Input::of_string("   hello")
   input.dropwhite()
-  inspect((input.input_char)(), content="Some('h')")
+  debug_inspect((input.input_char)(), content="Some('h')")
 }
 ```
 

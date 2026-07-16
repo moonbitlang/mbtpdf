@@ -83,11 +83,7 @@ fn trim_trailing_zeros(value : String) -> String {
       if end < 0 {
         "0"
       } else {
-        try value[:end + 1] catch {
-          _ => ""
-        } noraise {
-          view => view.to_string()
-        }
+        value[:end + 1].to_owned()
       }
     }
   }
@@ -98,7 +94,7 @@ fn slice_from(value : String, start : Int) -> String {
   if start < 0 || start > value.length() {
     return ""
   }
-  value[start:].to_string()
+  value[start:].to_owned()
 }
 
 ///|
@@ -107,7 +103,7 @@ fn slice_range(value : String, start : Int, end : Int) -> String {
   if start < 0 || start > len || end < start || end > len {
     return ""
   }
-  value[start:end].to_string()
+  value[start:end].to_owned()
 }
 
 ///|

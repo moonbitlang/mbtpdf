@@ -15,9 +15,8 @@ pub suberror NonInvertable {
 // Types and methods
 pub struct Transform {
   ops : Array[TransformOp]
-
-  fn new(Array[TransformOp]) -> Transform
-}
+} derive(@debug.Debug)
+pub fn Transform::Transform(Array[TransformOp]) -> Self
 pub fn Transform::append(Self, Self) -> Self
 pub fn Transform::apply(Self, (Double, Double)) -> (Double, Double)
 pub fn Transform::compose(Self, TransformOp) -> Self
@@ -25,7 +24,6 @@ pub fn Transform::identity() -> Self
 pub fn Transform::new(Array[TransformOp]) -> Self
 pub fn Transform::to_matrix(Self) -> TransformMatrix
 pub fn Transform::to_string(Self) -> String
-pub impl @debug.Debug for Transform
 
 pub struct TransformMatrix {
   a : Double
@@ -34,9 +32,8 @@ pub struct TransformMatrix {
   d : Double
   e : Double
   f : Double
-
-  fn new(a~ : Double, b~ : Double, c~ : Double, d~ : Double, e~ : Double, f~ : Double) -> TransformMatrix
-}
+} derive(@debug.Debug)
+pub fn TransformMatrix::TransformMatrix(a~ : Double, b~ : Double, c~ : Double, d~ : Double, e~ : Double, f~ : Double) -> Self
 pub fn TransformMatrix::apply(Self, (Double, Double)) -> (Double, Double)
 pub fn TransformMatrix::compose(Self, Self) -> Self
 pub fn TransformMatrix::decompose(Self) -> (Double, Double, Double, Double, Double, Double)
@@ -49,7 +46,6 @@ pub fn TransformMatrix::shear_x((Double, Double), Double) -> Self
 pub fn TransformMatrix::shear_y((Double, Double), Double) -> Self
 pub fn TransformMatrix::to_string(Self) -> String
 pub fn TransformMatrix::translate(Double, Double) -> Self
-pub impl @debug.Debug for TransformMatrix
 
 pub(all) enum TransformOp {
   Scale((Double, Double), Double, Double)
@@ -57,9 +53,8 @@ pub(all) enum TransformOp {
   Translate(Double, Double)
   ShearX((Double, Double), Double)
   ShearY((Double, Double), Double)
-}
+} derive(@debug.Debug)
 pub fn TransformOp::to_matrix(Self) -> TransformMatrix
-pub impl @debug.Debug for TransformOp
 
 // Type aliases
 

@@ -32,7 +32,7 @@ fn ilist(start : Int, finish : Int) -> Array[Int] {
 
 ///|
 fn setminus(full : Array[Int], remove : Array[Int]) -> Array[Int] {
-  let remove_set = Map::new(capacity=remove.length())
+  let remove_set = Map([], capacity=remove.length())
   for v in remove {
     remove_set.set(v, ())
   }
@@ -47,7 +47,7 @@ fn setminus(full : Array[Int], remove : Array[Int]) -> Array[Int] {
 
 ///|
 fn set_of_ints(values : Array[Int]) -> Map[Int, Unit] {
-  let out = Map::new(capacity=values.length())
+  let out = Map([], capacity=values.length())
   for v in values {
     out.set(v, ())
   }
@@ -68,7 +68,7 @@ fn dedup_ints(values : Array[Int]) -> Array[Int] {
 fn dedup_pairs(
   values : Array[(Int, @pdf.PdfObject)],
 ) -> Array[(Int, @pdf.PdfObject)] {
-  let set = Map::new(capacity=values.length())
+  let set = Map([], capacity=values.length())
   for pair in values {
     set.set(pair.0, pair.1)
   }
@@ -233,12 +233,12 @@ pub fn PdfStructTrees::renumber_parent_trees(
   for tree in parent_trees {
     total_entries = total_entries + tree.length()
   }
-  let mapping : Map[(Int, Int), Int] = Map::new(capacity=total_entries)
+  let mapping : Map[(Int, Int), Int] = Map([], capacity=total_entries)
   let mut next = 0
   for i, tree in parent_trees {
     let pdfn = i + 1
     for pair in tree {
-      let key = @strconv.parse_int(pair.0)
+      let key = @string.parse_int(pair.0)
       mapping.set((pdfn, key), next)
       next = next + 1
     }
@@ -291,7 +291,7 @@ pub fn PdfStructTrees::renumber_parent_trees(
     let pdfn = i + 1
     let out = Array::new(capacity=tree.length())
     for pair in tree {
-      let key = @strconv.parse_int(pair.0)
+      let key = @string.parse_int(pair.0)
       match mapping.get((pdfn, key)) {
         Some(new_key) => out.push((new_key.to_string(), pair.1))
         None =>
@@ -499,7 +499,7 @@ pub fn PdfStructTree::merge_structure_trees(
 
   let standard_entries = Array::new()
   standard_entries.push(
-    ("/Type", @pdf.PdfObject::Name(PdfName("/StructTreeRoot"))),
+    ("/Type", @pdf.PdfObject::Name(PdfName(b"/StructTreeRoot"))),
   )
   standard_entries.append(optional("/IDTree", merged_idtree)[:])
   standard_entries.append(optional("/ParentTree", merged_parenttree)[:])
@@ -525,7 +525,7 @@ pub fn PdfStructTree::merge_structure_trees(
     let top_level_objnum = pdf.addobj(
       Dictionary([
         ("/NS", Indirect(namespace_objnum)),
-        ("/S", Name(PdfName("/Document"))),
+        ("/S", Name(PdfName(b"/Document"))),
         ("/P", Indirect(struct_tree_objnum)),
         ("/K", merged_k),
       ]),

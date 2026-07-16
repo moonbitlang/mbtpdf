@@ -6,6 +6,7 @@ import {
   "bobzhang/mbtpdf/core/pdfio",
   "bobzhang/mbtpdf/core/pdftransform",
   "moonbitlang/core/debug",
+  "moonbitlang/core/ref",
 }
 
 // Values
@@ -15,11 +16,11 @@ pub fn is_whitespace(Char) -> Bool
 
 pub fn make_matrix(@pdftransform.TransformMatrix) -> PdfObject
 
-pub fn pdfobjmap_bindings(Map[Int, (Ref[ObjectData], Int)]) -> Array[(Int, (Ref[ObjectData], Int))]
+pub fn pdfobjmap_bindings(Map[Int, (@ref.Ref[ObjectData], Int)]) -> Array[(Int, (@ref.Ref[ObjectData], Int))]
 
-pub fn pdfobjmap_empty() -> Map[Int, (Ref[ObjectData], Int)]
+pub fn pdfobjmap_empty() -> Map[Int, (@ref.Ref[ObjectData], Int)]
 
-pub fn pdfobjmap_find(Int, Map[Int, (Ref[ObjectData], Int)]) -> (Ref[ObjectData], Int) raise
+pub fn pdfobjmap_find(Int, Map[Int, (@ref.Ref[ObjectData], Int)]) -> (@ref.Ref[ObjectData], Int) raise
 
 pub fn recurse_array((PdfObject) -> PdfObject, Array[PdfObject]) -> PdfObject
 
@@ -39,14 +40,13 @@ pub(all) struct DeferredEncryption {
   key : Array[Int]
   keylength : Int
   r : Int
-}
-pub impl @debug.Debug for DeferredEncryption
+} derive(@debug.Debug)
 
 pub(all) enum ObjectData {
   Parsed(PdfObject)
   ParsedAlreadyDecrypted(PdfObject)
   ToParse
-  ToParseFromObjectStream(Map[Int, Array[Int]], Int, Int, (Int, Array[Int]) -> Array[(Int, (Ref[ObjectData], Int))])
+  ToParseFromObjectStream(Map[Int, Array[Int]], Int, Int, (Int, Array[Int]) -> Array[(Int, (@ref.Ref[ObjectData], Int))])
 }
 
 pub(all) struct Pdf {
@@ -95,20 +95,15 @@ pub fn Pdf::replace_chain(Self, ArrayView[String], PdfObject) -> Unit raise
 pub fn Pdf::transform_quadpoints(Self, @pdftransform.TransformMatrix, PdfObject) -> PdfObject raise
 pub fn Pdf::transform_rect(Self, @pdftransform.TransformMatrix, PdfObject) -> PdfObject raise
 
-pub(all) struct PdfName(Bytes)
+pub(all) struct PdfName(Bytes) derive(Eq, Hash, @debug.Debug)
 pub fn PdfName::equal_string_bytes(Self, String) -> Bool
-#deprecated
-pub fn PdfName::inner(Self) -> Bytes
 pub fn PdfName::lexical_compare(Self, Self) -> Int
 pub fn PdfName::of_bytes(Bytes) -> Self
 pub fn PdfName::of_string(String) -> Self
 pub fn PdfName::to_bytes(Self) -> Bytes
 pub fn PdfName::to_string_bytes(Self) -> String
 pub impl Compare for PdfName
-pub impl Eq for PdfName
-pub impl Hash for PdfName
 pub impl Show for PdfName
-pub impl @debug.Debug for PdfName
 
 pub(all) enum PdfObject {
   Null
@@ -119,9 +114,9 @@ pub(all) enum PdfObject {
   Name(PdfName)
   PdfArray(Array[PdfObject])
   Dictionary(Array[(String, PdfObject)])
-  Stream(Ref[(PdfObject, Stream)])
+  Stream(@ref.Ref[(PdfObject, Stream)])
   Indirect(Int)
-}
+} derive(@debug.Debug)
 pub fn PdfObject::add_entry(Self, String, Self) -> Self raise
 pub fn PdfObject::bigarray_of_stream(Self) -> Array[Byte] raise
 pub fn PdfObject::find_indirect(Self, String) -> Int? raise
@@ -132,12 +127,11 @@ pub fn PdfObject::remove_entry(Self, String) -> Self raise
 pub fn PdfObject::replace_entry(Self, String, Self) -> Self raise
 pub fn PdfObject::to_string(Self) -> String
 pub fn PdfObject::to_string_including_data(Self) -> String
-pub impl @debug.Debug for PdfObject
 
 pub(all) struct PdfObjects {
   mut max_obj_num : Int
   parse : ((Int) -> PdfObject)?
-  objects : Map[Int, (Ref[ObjectData], Int)]
+  objects : Map[Int, (@ref.Ref[ObjectData], Int)]
   object_stream_ids : Map[Int, Int]
 }
 
@@ -150,33 +144,30 @@ pub(all) struct SavedEncryption {
 pub(all) enum Stream {
   Got(Array[Byte])
   ToGet(ToGet)
-}
-pub impl @debug.Debug for Stream
+} derive(@debug.Debug)
 
 pub(all) struct ToGet {
   input : @pdfio.Input
   position : Int
   length : Int
   crypt : ToGetCrypt
-}
+} derive(@debug.Debug)
 pub fn ToGet::length(Self) -> Int
 pub fn ToGet::new(@pdfio.Input, Int, Int, crypt? : ToGetCrypt) -> Self
-pub impl @debug.Debug for ToGet
 
 pub(all) enum ToGetCrypt {
   NoChange
   ToDecrypt(DeferredEncryption)
-}
-pub impl @debug.Debug for ToGetCrypt
+} derive(@debug.Debug)
 
 // Type aliases
 pub type EncryptionValues = (@pdfcryptprimitives.Encryption, String, String, Int, String, String?, String?)
 
-pub type PdfObjMap = Map[Int, (Ref[ObjectData], Int)]
+pub type PdfObjMap = Map[Int, (@ref.Ref[ObjectData], Int)]
 
 // Traits
 pub trait ToPdfNumber {
-  to_pdf_number(Self) -> PdfObject
+  fn to_pdf_number(Self) -> PdfObject
 }
 pub impl ToPdfNumber for Int
 pub impl ToPdfNumber for Double

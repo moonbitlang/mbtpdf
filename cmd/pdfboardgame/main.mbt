@@ -13,8 +13,8 @@ const ROWS : Int = 3
 ///|
 fn font_type1(base_font : String) -> PdfObject {
   Dictionary([
-    ("/Type", Name(PdfName("/Font"))),
-    ("/Subtype", Name(PdfName("/Type1"))),
+    ("/Type", Name(PdfName(b"/Font"))),
+    ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(@pdf.PdfName::of_string("/" + base_font))),
   ])
 }
@@ -199,18 +199,18 @@ fn set_catalog_entry(
 ///|
 fn add_layers(pdf : @pdf.Pdf) -> (Int, Int) raise {
   let hints : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("HINTS")),
   ])
   let solution : PdfObject = Dictionary([
-    ("/Type", Name(PdfName("/OCG"))),
+    ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("SOLUTION")),
   ])
   let hints_num = pdf.addobj(hints)
   let solution_num = pdf.addobj(solution)
   let default_dict : PdfObject = Dictionary([
-    ("/BaseState", Name(PdfName("/ON"))),
-    ("/Intent", Name(PdfName("/View"))),
+    ("/BaseState", Name(PdfName(b"/ON"))),
+    ("/Intent", Name(PdfName(b"/View"))),
     ("/Name", PdfString("Default")),
     ("/OFF", PdfArray([Indirect(hints_num), Indirect(solution_num)])),
   ])
@@ -251,7 +251,7 @@ fn add_layer_properties_to_pages(
 ///|
 fn goto_action(refnum : Int) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
-  Dictionary([("/S", Name(PdfName("/GoTo"))), ("/D", dest)])
+  Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
 
 ///|
@@ -457,7 +457,7 @@ fn rules_ops() -> Array[Op] {
     )
     y = y - 28.0
   }
-  ops.push(OpBDC("/OC", Name(PdfName("/HINTS"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/HINTS"))))
   ops.append(
     ops_text(
       72.0,
@@ -533,7 +533,7 @@ fn clue_cards_ops() -> Array[Op] {
       i = i + 1
     }
   }
-  ops.push(OpBDC("/OC", Name(PdfName("/SOLUTION"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/SOLUTION"))))
   ops.append(
     ops_text(
       72.0,
@@ -649,7 +649,7 @@ fn board_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
   }
 
   // Solution overlay: a red path
-  ops.push(OpBDC("/OC", Name(PdfName("/SOLUTION"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/SOLUTION"))))
   let path_rooms : Array[Int] = [1, 2, 6, 10, 11, 12]
   for i in 0..<(path_rooms.length() - 1) {
     let a = path_rooms[i] - 1
@@ -665,7 +665,7 @@ fn board_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
     ops.append(ops_line(x0, y0, x1, y1, (0.92, 0.33, 0.36), 6.0)[:])
   }
   ops.push(OpEMC)
-  ops.push(OpBDC("/OC", Name(PdfName("/HINTS"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/HINTS"))))
   ops.append(
     ops_text(
       72.0,
@@ -753,7 +753,7 @@ fn room_ops(
     ops.append(ops_text(72.0, y, "/F1", 20.0, line, (0.12, 0.14, 0.18))[:])
     y = y - 30.0
   }
-  ops.push(OpBDC("/OC", Name(PdfName("/HINTS"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/HINTS"))))
   ops.append(
     ops_text(
       72.0,
@@ -765,7 +765,7 @@ fn room_ops(
     )[:],
   )
   ops.push(OpEMC)
-  ops.push(OpBDC("/OC", Name(PdfName("/SOLUTION"))))
+  ops.push(OpBDC("/OC", Name(PdfName(b"/SOLUTION"))))
   ops.append(
     ops_text(
       72.0,
@@ -882,7 +882,7 @@ pub async fn run(
     let board_ref = refs[1]
     let rules_ref = refs[2]
     let clue_ref = refs[3]
-    let room_refs = refs[4:4 + ROWS * COLS].to_array()
+    let room_refs = refs[4:4 + ROWS * COLS].to_owned()
     let solution_ref = refs[refs.length() - 1]
     let pdf = add_bookmarks(
       pdf, refs, room_refs, board_ref, rules_ref, clue_ref, solution_ref,

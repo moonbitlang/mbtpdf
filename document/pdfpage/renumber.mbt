@@ -33,7 +33,8 @@ fn make_changes(
       entries.append(entries_of_page(name, pagenums[i], page)[:])
     }
   }
-  let table : Map[(String, Int, String), String] = Map::new(
+  let table : Map[(String, Int, String), String] = Map(
+    [],
     capacity=entries.length(),
   )
   for entry in entries {
@@ -91,12 +92,12 @@ fn change_operator(
         Some(Name(n)) =>
           if n
             is PdfName(
-              "/DeviceGray"
-              | "/DeviceRGB"
-              | "/DeviceCMYK"
-              | "/G"
-              | "/RGB"
-              | "/CMYK"
+              b"/DeviceGray"
+              | b"/DeviceRGB"
+              | b"/DeviceCMYK"
+              | b"/G"
+              | b"/RGB"
+              | b"/CMYK"
             ) {
             dict
           } else {

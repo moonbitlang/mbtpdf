@@ -25,12 +25,12 @@ fn bytes_of_int_arrays(values : Array[Array[Int]]) -> Array[Byte] {
 
 ///|
 fn int_array_prefix(values : Array[Int], len : Int) -> Array[Int] {
-  values[:len].to_array()
+  values[:len].to_owned()
 }
 
 ///|
 fn bytes_prefix(values : Array[Byte], len : Int) -> Array[Byte] {
-  values[:len].to_array()
+  values[:len].to_owned()
 }
 
 ///|
@@ -83,7 +83,7 @@ fn make_utf8(pw : String) -> String {
 let zero_iv : String = @pdfio.string_of_bytes(@pdfio.mkbytes(16))
 
 ///|
-let rand_state : Ref[@random.Rand] = Ref::new(@random.Rand::new())
+let rand_state : Ref[@random.Rand] = Ref(@random.Rand::new())
 
 ///|
 fn mksalt() -> String {

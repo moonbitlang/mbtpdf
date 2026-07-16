@@ -1,6 +1,6 @@
 ///|
 fn source(start : Int) -> () -> Int {
-  let counter = Ref::new(start)
+  let counter = Ref(start)
   fn() {
     counter.val = counter.val + 1
     counter.val
@@ -75,7 +75,7 @@ fn mkpage(
     }
   }
   let entries : Array[(String, PdfObject)] = [
-    ("/Type", Name(PdfName("/Page"))),
+    ("/Type", Name(PdfName(b"/Page"))),
     ("/Parent", Indirect(parent)),
     ("/Resources", page.resources),
     ("/MediaBox", page.mediabox),
@@ -134,7 +134,7 @@ fn objects_of_ptree(
       }
       let kids = page_objects.map(pair => PdfObject::Indirect(pair.0))
       let node_entries : Array[(String, PdfObject)] = [
-        ("/Type", Name(PdfName("/Pages"))),
+        ("/Type", Name(PdfName(b"/Pages"))),
         ("/Kids", PdfArray(kids)),
         ("/Count", Integer(pages.length())),
       ]
@@ -167,7 +167,7 @@ fn objects_of_ptree(
       kids.append(page_objects.map(pair => PdfObject::Indirect(pair.0))[:])
       kids.push(Indirect(right_num))
       let node_entries : Array[(String, PdfObject)] = [
-        ("/Type", Name(PdfName("/Pages"))),
+        ("/Type", Name(PdfName(b"/Pages"))),
         ("/Kids", PdfArray(kids)),
         ("/Count", Integer(count_left + count_right + page_objects.length())),
       ]
@@ -226,7 +226,7 @@ pub fn PdfPageDoc::add_root(
   for entry in existing_entries {
     root = root.add_entry(entry.0, entry.1)
   }
-  root = root.add_entry("/Type", Name(PdfName("/Catalog")))
+  root = root.add_entry("/Type", Name(PdfName(b"/Catalog")))
   root = root.add_entry("/Pages", Indirect(pageroot))
   let rootnum = pdf.addobj(root)
   let trailerdict = match pdf.trailerdict {
@@ -246,9 +246,10 @@ pub fn PdfPageDoc::add_root(
 
 ///|
 test "split3 errors on invalid n" {
-  let res : Result[(ArrayView[Int], ArrayView[Int], ArrayView[Int]), Error] = try? split3(
-    3,
-    [1, 2, 3][:],
-  )
+  let res : Result[(ArrayView[Int], ArrayView[Int], ArrayView[Int]), Error] = try
+    split3(3, [1, 2, 3][:]) |> Ok
+  catch {
+    e => Err(e)
+  }
   assert_true(res is Err(_))
 }

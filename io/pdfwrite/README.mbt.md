@@ -164,7 +164,7 @@ PDF 1.5+ supports object streams for compression:
 ```mbt check
 ///|
 test "string_of_pdf serializes objects" {
-  let obj : @pdf.PdfObject = Dictionary([("/Type", Name(PdfName("/Page")))])
+  let obj : @pdf.PdfObject = Dictionary([("/Type", Name(PdfName(b"/Page")))])
   let s = @pdfwrite.PdfWrite::new().string_of_pdf(obj)
   assert_true(s.contains("/Type"))
   assert_true(s.contains("/Page"))
