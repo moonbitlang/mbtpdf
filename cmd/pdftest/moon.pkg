@@ -1,6 +1,4 @@
 import {
-  "bobzhang/mbtpdf/core/pdfe",
-  "bobzhang/mbtpdf/core/pdfutil",
   "bobzhang/mbtpdf/core/pdf",
   "bobzhang/mbtpdf/crypto/pdfcrypt",
   "bobzhang/mbtpdf/core/pdfio",
@@ -14,6 +12,9 @@ import {
   "moonbitlang/async/io",
 }
 
-options(
-  "is-main": true,
-)
+import {
+  "bobzhang/mbtpdf/core/pdfe",
+  "bobzhang/mbtpdf/core/pdfutil",
+} for "wbtest"
+
+pkgtype(kind: "executable")

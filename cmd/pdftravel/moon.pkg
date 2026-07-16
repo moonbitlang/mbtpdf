@@ -9,11 +9,12 @@ import {
   "bobzhang/mbtpdf/graphics/pdfops",
   "bobzhang/mbtpdf/io/pdfwritefs",
   "moonbitlang/async",
-  "moonbitlang/async/fs",
   "moonbitlang/core/env",
   "moonbitlang/core/math",
 }
 
-options(
-  "is-main": true,
-)
+import {
+  "moonbitlang/async/fs",
+} for "wbtest"
+
+pkgtype(kind: "executable")

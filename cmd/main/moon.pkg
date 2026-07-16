@@ -1,7 +1,1 @@
-import {
-  "bobzhang/mbtpdf" @lib,
-}
-
-options(
-  "is-main": true,
-)
+pkgtype(kind: "executable")

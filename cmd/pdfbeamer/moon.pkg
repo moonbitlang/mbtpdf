@@ -10,10 +10,11 @@ import {
   "bobzhang/mbtpdf/io/pdfwritefs",
   "bobzhang/mbtpdf/core/pdfunits",
   "moonbitlang/async",
-  "moonbitlang/async/fs",
   "moonbitlang/core/env",
 }
 
-options(
-  "is-main": true,
-)
+import {
+  "moonbitlang/async/fs",
+} for "wbtest"
+
+pkgtype(kind: "executable")
