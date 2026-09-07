@@ -8,7 +8,7 @@ pub struct PdfJpeg {
 
 ///|
 pub fn PdfJpeg::new() -> PdfJpeg {
-  { unit: () }
+  { unit: (), }
 }
 
 ///|

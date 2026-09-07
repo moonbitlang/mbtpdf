@@ -26,4 +26,3 @@ pub fn PdfStructTrees::renumber_parent_trees(Self) -> Unit raise
 // Type aliases
 
 // Traits
-

@@ -6,7 +6,7 @@ fn merge_rect() -> @pdf.PdfObject {
 ///|
 fn make_pdf_pages(count : Int) -> @pdf.Pdf raise {
   let rect = merge_rect()
-  let pages = Array::new(capacity=count)
+  let pages = Array(capacity=count)
   for _ in 0..<count {
     pages.push(@pdfpage.Page::custom(rect))
   }
@@ -365,7 +365,14 @@ test "merge_pdfs rewrites and preserves diverse destination bookmark targets" {
     text : String,
     target : @pdfdest.Destination,
   ) -> @pdfmarks.Bookmark {
-    { level: 0, text, target, isopen: false, colour: (0.0, 0.0, 0.0), flags: 0 }
+    {
+      level: 0,
+      text,
+      target,
+      isopen: false,
+      colour: (0.0, 0.0, 0.0),
+      flags: 0,
+    }
   }
 
   let pdf = make_pdf_pages(2)

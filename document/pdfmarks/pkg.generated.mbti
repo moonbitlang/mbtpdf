@@ -34,4 +34,3 @@ pub fn PdfMarks::remove_bookmarks(Self) -> @pdf.Pdf raise
 // Type aliases
 
 // Traits
-

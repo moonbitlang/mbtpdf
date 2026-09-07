@@ -186,3 +186,21 @@ pub fn Font::to_string(self : Font) -> String {
     CIDKeyedFont(name, _, _) => "CIDKeyedFont " + name
   }
 }
+
+// Explicit method promotion for derived/implemented traits.
+// (Previously implicit; see warning [0079] implicit_impl_as_method.)
+
+///|
+pub extend CIDSystemInfo with Debug::{to_repr}
+
+///|
+pub extend CMapEncoding with Debug::{to_repr}
+
+///|
+pub extend FontFile with Debug::{to_repr}
+
+///|
+pub extend StandardFont with Debug::{to_repr}
+
+///|
+pub extend StandardFont with Eq::{not_equal, equal}

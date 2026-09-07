@@ -38,7 +38,7 @@ pub fn Input::getuntil(
   eof_is_delimiter : Bool,
   pred : (Char) -> Bool,
 ) -> Array[Char] raise {
-  let out = Array::new()
+  let out = Array()
   let mut done = false
   while !done {
     let b = (self.input_byte)()
@@ -68,7 +68,7 @@ pub fn Input::getuntil_string(
   eof_is_delimiter : Bool,
   pred : (Char) -> Bool,
 ) -> String raise {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   let mut done = false
   while !done {
     let b = (self.input_byte)()
@@ -128,7 +128,7 @@ pub fn Input::dropwhite(self : Input) -> Unit raise {
 ///
 /// Unlike `Input::read_line`, this returns `""` at EOF instead of raising.
 pub fn Input::input_line(self : Input) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   let mut got_eol = false
   let mut finished = false
   while !finished {
@@ -172,7 +172,7 @@ pub fn Input::backline(self : Input) -> Unit raise {
 /// Read `count` characters from `input` without advancing the cursor.
 pub fn Input::read_chunk(self : Input, count : Int) -> String raise {
   let pos = (self.pos_in)()
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   let mut i = 0
   while i < count {
     match (self.input_char)() {

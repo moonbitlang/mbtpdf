@@ -62,8 +62,8 @@ fn mkpage(
   parent : Int,
   page : Page,
 ) -> (Int, PdfObject, Array[(Int, PdfObject)]) raise {
-  let extras : Array[(Int, PdfObject)] = Array::new()
-  let indirects : Array[PdfObject] = Array::new()
+  let extras : Array[(Int, PdfObject)] = Array()
+  let indirects : Array[PdfObject] = Array()
   for c in page.content {
     match c {
       Indirect(i) => indirects.push(Indirect(i))
@@ -122,7 +122,7 @@ fn objects_of_ptree(
 ) -> Array[(Int, PdfObject)] raise {
   match tree {
     Lf(pages, parent, this) => {
-      let page_objects : Array[(Int, PdfObject)] = Array::new()
+      let page_objects : Array[(Int, PdfObject)] = Array()
       for page in pages {
         let (objnum, obj, extra) = mkpage(getobjnum, this, page)
         extras.val.append(extra[:])
@@ -140,7 +140,7 @@ fn objects_of_ptree(
       ]
       node_entries.append(parent_entry[:])
       let node = PdfObject::Dictionary(node_entries)
-      let result = Array::new(capacity=1 + page_objects.length())
+      let result = Array(capacity=1 + page_objects.length())
       result.push((this, node))
       result.append(page_objects[:])
       result
@@ -152,7 +152,7 @@ fn objects_of_ptree(
       let right_num = objnum_of_ptree(right)
       let count_left = count_ptree(left)
       let count_right = count_ptree(right)
-      let page_objects : Array[(Int, PdfObject)] = Array::new()
+      let page_objects : Array[(Int, PdfObject)] = Array()
       for page in pages {
         let (objnum, obj, extra) = mkpage(getobjnum, this, page)
         extras.val.append(extra[:])
@@ -162,7 +162,7 @@ fn objects_of_ptree(
         0 => []
         _ => [("/Parent", PdfObject::Indirect(parent))]
       }
-      let kids = Array::new()
+      let kids = Array()
       kids.push(PdfObject::Indirect(left_num))
       kids.append(page_objects.map(pair => PdfObject::Indirect(pair.0))[:])
       kids.push(Indirect(right_num))
@@ -173,7 +173,7 @@ fn objects_of_ptree(
       ]
       node_entries.append(parent_entry[:])
       let node = PdfObject::Dictionary(node_entries)
-      let result = Array::new()
+      let result = Array()
       result.push((this, node))
       result.append(page_objects[:])
       result.append(objs_left[:])
@@ -190,7 +190,7 @@ pub fn PdfPageDoc::add_pagetree(
   pages : Array[Page],
 ) -> (@pdf.Pdf, Int) raise {
   let pdf = self.pdf
-  let extras : Ref[Array[(Int, PdfObject)]] = { val: [] }
+  let extras : Ref[Array[(Int, PdfObject)]] = { val: [], }
   let getobjnum = source(pdf.objects.max_obj_num)
   let ptree = pagetree(getobjnum, pages, 0)
   let objects = objects_of_ptree(getobjnum, extras, ptree)

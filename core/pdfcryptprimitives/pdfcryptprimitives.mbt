@@ -31,7 +31,7 @@ pub struct PdfCryptPrimitives {
 
 ///|
 pub fn PdfCryptPrimitives::new() -> PdfCryptPrimitives {
-  { unit: () }
+  { unit: (), }
 }
 
 ///|
@@ -133,3 +133,9 @@ pub fn PdfCryptPrimitives::decrypt_stream_data(
     }
   }
 }
+
+// Explicit method promotion for derived/implemented traits.
+// (Previously implicit; see warning [0079] implicit_impl_as_method.)
+
+///|
+pub extend Encryption with Debug::{to_repr}

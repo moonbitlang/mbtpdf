@@ -1,6 +1,6 @@
 ///|
 fn repeat_char(ch : Char, count : Int) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   for _ in 0..<count {
     sb.write_char(ch)
   }

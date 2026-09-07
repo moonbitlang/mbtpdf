@@ -32,7 +32,7 @@ pub fn PdfMerger::merge_pdfs(
     range : Array[Int],
     pagelist : Array[@pdfpage.Page],
   ) -> Array[@pdfpage.Page] raise {
-    let out = Array::new(capacity=range.length())
+    let out = Array(capacity=range.length())
     for n in range {
       if n <= 0 {
         raise @pdf.PdfError::Msg("merge_pdfs: page out of range")
@@ -45,7 +45,7 @@ pub fn PdfMerger::merge_pdfs(
     out
   }
 
-  let pages = Array::new()
+  let pages = Array()
   for pair in combine(ranges, pagelists) {
     let selected = select_pages(pair.0, pair.1)
     pages.append(selected[:])
@@ -139,7 +139,7 @@ pub fn PdfMerger::merge_pdfs(
   )
   let old_page_numbers = {
     let page_nums = pdfs.map(p => p.page_reference_numbers())
-    let out = Array::new()
+    let out = Array()
     for pair in combine(ranges, page_nums) {
       let numbers = pair.1
       for n in pair.0 {

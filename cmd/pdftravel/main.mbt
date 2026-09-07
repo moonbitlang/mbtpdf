@@ -121,7 +121,7 @@ fn circle_points(
   r : Double,
   n : Int,
 ) -> Array[(Double, Double)] {
-  let out = Array::new(capacity=n)
+  let out = Array(capacity=n)
   let two_pi = 8.0 * @math.atan(1.0)
   for i in 0..<n {
     let t = two_pi * (i.to_double() / n.to_double())
@@ -264,7 +264,7 @@ fn add_bookmarks(pdf : @pdf.Pdf, refs : Array[Int]) -> @pdf.Pdf raise {
   let titles : Array[String] = [
     "Cover", "Map", "Itinerary", "Coupons", "Postcard", "Packing List",
   ]
-  let marks : Array[@pdfmarks.Bookmark] = Array::new()
+  let marks : Array[@pdfmarks.Bookmark] = Array()
   for i in 0..<titles.length() {
     marks.push({
       level: 0,
@@ -307,7 +307,7 @@ fn tab_rect(i : Int) -> (Double, Double, Double, Double) {
 fn ops_tabs(active? : Int = -1) -> Array[Op] {
   let titles = tab_titles()
   let colors = tab_colors()
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   for i in 0..<titles.length() {
     let (x0, y0, x1, y1) = tab_rect(i)
     let ww = x1 - x0
@@ -339,7 +339,7 @@ fn ops_home_badge() -> Array[Op] {
   let ww = x1 - x0
   let hh = y1 - y0
   let accent = (0.12, 0.14, 0.18)
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(x0, y0, ww, hh, (1.0, 1.0, 1.0))[:])
   ops.append(ops_stroke_rect(x0, y0, ww, hh, accent, 2.0)[:])
   ops.append(
@@ -355,7 +355,7 @@ fn ops_night_sky(
   x1 : Double,
   y1 : Double,
 ) -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.push(OpBDC("/OC", Name(PdfName(b"/NIGHT"))))
   let ww = x1 - x0
   let hh = y1 - y0
@@ -402,7 +402,7 @@ fn ops_button(
   label : String,
   accent : (Double, Double, Double),
 ) -> (Array[Op], (Double, Double, Double, Double)) {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0))[:])
   ops.append(ops_stroke_rect(x, y, ww, hh, accent, 2.0)[:])
   ops.append(ops_fill_rect(x, y + hh - 7.0, ww, 7.0, accent)[:])
@@ -414,7 +414,7 @@ fn ops_button(
 
 ///|
 fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.98, 0.98, 0.99))[:])
   ops.append(ops_fill_rect(0.0, h() - 130.0, w(), 130.0, (0.18, 0.48, 0.86))[:])
   ops.append(
@@ -468,7 +468,7 @@ fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
   let x = 54.0
   let ww = 360.0
   let hh = 54.0
-  let rects : Array[(Double, Double, Double, Double)] = Array::new()
+  let rects : Array[(Double, Double, Double, Double)] = Array()
   let (b1, r1) = ops_button(x, 440.0, ww, hh, "Open Map", (0.18, 0.48, 0.86))
   let (b2, r2) = ops_button(x, 372.0, ww, hh, "Itinerary", (0.18, 0.66, 0.52))
   let (b3, r3) = ops_button(x, 304.0, ww, hh, "Coupons", (0.95, 0.75, 0.2))
@@ -489,7 +489,7 @@ fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
 
 ///|
 fn map_ops() -> (Array[Op], (Double, Double, Double, Double)) {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
   ops.append(ops_tabs(active=0)[:])
   ops.append(ops_home_badge()[:])
@@ -571,7 +571,7 @@ fn map_ops() -> (Array[Op], (Double, Double, Double, Double)) {
 
 ///|
 fn itinerary_ops() -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
   ops.append(ops_tabs(active=1)[:])
   ops.append(ops_home_badge()[:])
@@ -638,7 +638,7 @@ fn itinerary_ops() -> Array[Op] {
 
 ///|
 fn coupons_ops() -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
   ops.append(ops_tabs(active=2)[:])
   ops.append(ops_home_badge()[:])
@@ -773,7 +773,7 @@ fn coupons_ops() -> Array[Op] {
 
 ///|
 fn postcard_ops() -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.98, 0.98, 0.99))[:])
   ops.append(ops_tabs(active=3)[:])
   ops.append(ops_home_badge()[:])
@@ -855,7 +855,7 @@ fn postcard_ops() -> Array[Op] {
 
 ///|
 fn packing_ops() -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
   ops.append(ops_tabs(active=4)[:])
   ops.append(ops_home_badge()[:])

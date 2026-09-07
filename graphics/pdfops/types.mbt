@@ -101,13 +101,13 @@ priv suberror LexingEnd
 priv suberror CouldntHandleContent
 
 ///|
-let write_comments : Ref[Bool] = { val: false }
+let write_comments : Ref[Bool] = { val: false, }
 
 ///|
-let whitespace : Ref[String] = { val: " " }
+let whitespace : Ref[String] = { val: " ", }
 
 ///|
-let always_add_whitespace : Ref[Bool] = { val: false }
+let always_add_whitespace : Ref[Bool] = { val: false, }
 
 ///|
 /// Begin a marked-content section tagged as `/Artifact`.
@@ -119,3 +119,9 @@ pub let begin_artifact : Op = OpBMC("/Artifact")
 ///|
 /// End a marked-content section (pairs with `begin_artifact`).
 pub let end_artifact : Op = OpEMC
+
+// Explicit method promotion for derived/implemented traits.
+// (Previously implicit; see warning [0079] implicit_impl_as_method.)
+
+///|
+pub extend Op with Debug::{to_repr}

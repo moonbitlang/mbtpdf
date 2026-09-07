@@ -198,7 +198,7 @@ test "process_xobjects ignores non-form xobjects" {
     rotate=Rotate0,
     rest=Dictionary([]),
   )
-  let calls : Ref[Int] = { val: 0 }
+  let calls : Ref[Int] = { val: 0, }
   let update = fn(
     _ : @pdf.Pdf,
     _ : @pdf.PdfObject,

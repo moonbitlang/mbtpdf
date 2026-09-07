@@ -59,6 +59,7 @@ pub(all) enum Calculator {
   Index
   Roll
 } derive(@debug.Debug)
+pub fn Calculator::to_repr(Self) -> @debug.Repr
 pub fn Calculator::to_string(Array[Self]) -> String
 
 pub(all) struct Interpolation {
@@ -66,6 +67,7 @@ pub(all) struct Interpolation {
   c1 : Array[Double]
   n : Double
 } derive(@debug.Debug)
+pub fn Interpolation::to_repr(Self) -> @debug.Repr
 
 pub(all) struct PdfFunction {
   func : PdfFunctionKind
@@ -76,6 +78,7 @@ pub fn PdfFunction::eval(Self, Array[Double]) -> Array[Double] raise BadFunction
 pub fn PdfFunction::parse(@pdf.Pdf, @pdf.PdfObject) -> Self raise
 pub fn PdfFunction::print(Self) -> Unit
 pub fn PdfFunction::to_pdf_object(Self, @pdf.Pdf) -> @pdf.PdfObject
+pub fn PdfFunction::to_repr(Self) -> @debug.Repr
 
 pub(all) enum PdfFunctionKind {
   Interpolation(Interpolation)
@@ -83,6 +86,7 @@ pub(all) enum PdfFunctionKind {
   Sampled(Sampled)
   Calculator(Array[Calculator])
 } derive(@debug.Debug)
+pub fn PdfFunctionKind::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Sampled {
   size : Array[Int]
@@ -92,14 +96,15 @@ pub(all) struct Sampled {
   bps : Int
   samples : Array[Int]
 } derive(@debug.Debug)
+pub fn Sampled::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Stitching {
   functions : Array[PdfFunction]
   bounds : Array[Double]
   stitch_encode : Array[Double]
 } derive(@debug.Debug)
+pub fn Stitching::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 
 // Traits
-

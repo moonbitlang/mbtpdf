@@ -65,7 +65,7 @@ fn make_pdf_name(ctx : PdfWrite, name : String) -> String {
   if !needs_processing_name(bytes) {
     return normalized
   }
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   sb.write_char('/')
   for i in 1..<bytes.length() {
     let b = bytes[i].to_int()
@@ -82,7 +82,7 @@ fn make_pdf_name(ctx : PdfWrite, name : String) -> String {
 
 ///|
 fn make_pdf_string(value : String) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   sb.write_char('(')
   for ch in value {
     match ch {
@@ -106,7 +106,7 @@ fn make_pdf_string(value : String) -> String {
 /// Convert a PDF string to hex representation.
 fn make_hex_pdf_string(value : String) -> String {
   let bytes = @pdfio.bytes_of_string(value)
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   sb.write_char('<')
   for b in bytes {
     sb.write_string(b.to_hex())

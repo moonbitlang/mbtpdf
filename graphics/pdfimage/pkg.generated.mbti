@@ -23,6 +23,7 @@ pub fn Image::colspace(@pdf.Pdf, @pdf.PdfObject, @pdf.PdfObject) -> @pdfspace.Co
 pub fn Image::from_raw(Int, @pdfspace.ColourSpace, @pdf.PdfObject?, Int, Int, Array[Byte]) -> Self raise
 pub fn Image::from_stream_data(@pdf.Pdf, @pdf.PdfObject, Int, Int, @pdf.PdfObject, Array[Byte]) -> Self raise
 pub fn Image::get_image_24bpp(@pdf.Pdf, @pdf.PdfObject, @pdf.PdfObject) -> Self raise
+pub fn Image::to_repr(Self) -> @debug.Repr
 
 pub(all) enum PixelLayout {
   BPP1
@@ -30,8 +31,8 @@ pub(all) enum PixelLayout {
   BPP24
   BPP48
 } derive(@debug.Debug)
+pub fn PixelLayout::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 
 // Traits
-

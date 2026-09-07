@@ -82,7 +82,7 @@ fn expand_scientific(value : String) -> String {
       let mantissa = slice_range(body, 0, idx)
       let exp_str = slice_from(body, idx + 1)
       let exp = parse_signed_int(exp_str)
-      let digits = Array::new()
+      let digits = Array()
       let mut int_len = 0
       let mut saw_dot = false
       for ch in mantissa {
@@ -99,7 +99,7 @@ fn expand_scientific(value : String) -> String {
         sign + "0"
       } else {
         let new_pos = int_len + exp
-        let sb = StringBuilder::new()
+        let sb = StringBuilder()
         sb.write_string(sign)
         if new_pos <= 0 {
           sb.write_string("0.")

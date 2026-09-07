@@ -9,11 +9,11 @@ pub type Logger = (String) -> Unit
 
 ///|
 /// The current error logger, set to default upon startup.
-pub let logger : Ref[Logger] = { val: default }
+pub let logger : Ref[Logger] = { val: default, }
 
 ///|
 /// When true, @pdfe.log is suppressed.
-pub let quiet : Ref[Bool] = { val: false }
+pub let quiet : Ref[Bool] = { val: false, }
 
 ///|
 /// Log a string using the current logger.
@@ -25,7 +25,7 @@ pub fn log(message : String) -> Unit {
 
 ///|
 /// Debug flag for PDF reading operations.
-pub let read_debug : Ref[Bool] = { val: false }
+pub let read_debug : Ref[Bool] = { val: false, }
 
 ///|
 /// Log a warning message (ensures a trailing newline).
@@ -50,16 +50,10 @@ pub fn debug(message : String) -> Unit {
 pub fn[T] with_silenced_logs(action : () -> T raise) -> T raise {
   let prev = quiet.val
   quiet.val = true
-  try {
-    let out = action()
+  defer {
     quiet.val = prev
-    out
-  } catch {
-    err => {
-      quiet.val = prev
-      raise err
-    }
   }
+  action()
 }
 
 ///|
@@ -78,16 +72,10 @@ pub async fn[T] with_silenced_logs_async(action : async () -> T) -> T {
 pub fn[T] with_logger(temp : Logger, action : () -> T raise) -> T raise {
   let prev = logger.val
   logger.val = temp
-  try {
-    let out = action()
+  defer {
     logger.val = prev
-    out
-  } catch {
-    err => {
-      logger.val = prev
-      raise err
-    }
   }
+  action()
 }
 
 ///|

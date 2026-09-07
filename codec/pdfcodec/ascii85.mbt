@@ -21,7 +21,7 @@ fn encode_ascii85(stream : Array[Byte]) -> Array[Byte] {
   let size = @pdfio.bytes_size(stream)
   let groups = (size + 3) / 4
   // Each group expands to <= 5 bytes, plus "~>" terminator.
-  let output = Array::new(capacity=groups * 5 + 2)
+  let output = Array(capacity=groups * 5 + 2)
   let mut index = 0
   while index < size {
     let remaining = size - index
@@ -37,7 +37,7 @@ fn encode_ascii85(stream : Array[Byte]) -> Array[Byte] {
     if chunk_len == 4 && value == Int64::from_int(0) {
       output.push(b'z')
     } else {
-      let digits = Array::new(capacity=5)
+      let digits = Array(capacity=5)
       let mut remaining_value = value
       for pow in pow85 {
         let digit = remaining_value / pow
@@ -59,8 +59,8 @@ fn encode_ascii85(stream : Array[Byte]) -> Array[Byte] {
 ///|
 fn decode_ascii85(input : @pdfio.Input) -> Array[Byte] raise CodecError {
   let pow85 = ascii85_pow85()
-  let output = Array::new()
-  let mut digits : Array[Int] = Array::new(capacity=5)
+  let output = Array()
+  let mut digits : Array[Int] = Array(capacity=5)
   fn flush_group(group : Array[Int]) -> Unit {
     let len = group.length()
     if len < 2 {
@@ -88,7 +88,7 @@ fn decode_ascii85(input : @pdfio.Input) -> Array[Byte] raise CodecError {
       let c = get_streamchar(input)
       if c == 'z' {
         flush_group(digits)
-        digits = Array::new(capacity=5)
+        digits = Array(capacity=5)
         output.push((0).to_byte())
         output.push((0).to_byte())
         output.push((0).to_byte())
@@ -99,7 +99,7 @@ fn decode_ascii85(input : @pdfio.Input) -> Array[Byte] raise CodecError {
       } else if c >= '!' && c <= 'u' {
         if digits.length() == 5 {
           flush_group(digits)
-          digits = Array::new(capacity=5)
+          digits = Array(capacity=5)
         }
         digits.push(c.to_int() - '!')
       } else {

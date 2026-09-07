@@ -83,7 +83,7 @@ test "recurse and iterators" {
   let seen_inorder = Ref(([] : Array[Int]))
   pdf.objiter_inorder((num, _) => seen_inorder.val.push(num))
   assert_eq(seen_inorder.val, [1, 2])
-  pdf.objects.objects.set(3, ({ val: ParsedAlreadyDecrypted(Integer(5)) }, 0))
+  pdf.objects.objects.set(3, ({ val: ParsedAlreadyDecrypted(Integer(5)), }, 0))
   pdf.objselfmap(obj => {
     match obj {
       Integer(v) => Integer(v + 1)

@@ -34,4 +34,3 @@ pub async fn[T] with_silenced_logs_async(async () -> T) -> T
 pub type Logger = (String) -> Unit
 
 // Traits
-

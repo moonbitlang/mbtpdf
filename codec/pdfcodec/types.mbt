@@ -90,7 +90,7 @@ pub fn PdfCodec::encode_flate(
       n
     }
   }
-  let out : Array[Byte] = Array::new()
+  let out : Array[Byte] = Array()
   let output = (buf : Array[Byte], length : Int) => out.append(buf[:length])
   @pdfflate.PdfFlate::new().compress(
     level=self.flate_level,
@@ -100,3 +100,12 @@ pub fn PdfCodec::encode_flate(
   )
   out
 }
+
+// Explicit method promotion for derived/implemented traits.
+// (Previously implicit; see warning [0079] implicit_impl_as_method.)
+
+///|
+pub extend Encoding with Debug::{to_repr}
+
+///|
+pub extend Predictor with Debug::{to_repr}

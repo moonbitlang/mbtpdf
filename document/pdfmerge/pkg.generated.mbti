@@ -27,4 +27,3 @@ pub fn PdfMerger::new(Array[String], Array[@pdf.Pdf], Array[Array[Int]]) -> Self
 // Type aliases
 
 // Traits
-

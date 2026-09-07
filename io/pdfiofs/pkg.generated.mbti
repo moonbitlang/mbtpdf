@@ -24,4 +24,3 @@ pub fn output_of_channel(@fs.File) -> @pdfio.Output
 // Type aliases
 
 // Traits
-

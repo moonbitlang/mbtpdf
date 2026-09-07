@@ -93,7 +93,7 @@ fn build_table(
   let table : Map[Int, Array[Int]] = Map([], capacity=hival + 1)
   let mut offset = 0
   for x in 0..<=hival {
-    let row = Array::new(capacity=components)
+    let row = Array(capacity=components)
     for _ in 0..<components {
       row.push(@pdfio.bget_unsafe(data, offset))
       offset = offset + 1
@@ -271,7 +271,7 @@ pub fn ColourSpace::read(
       Separation(sep_name.to_string_bytes(), alt_space, tint_transform)
     }
     PdfArray([Name(PdfName(b"/DeviceN")), PdfArray(names), alternate, tint]) => {
-      let out_names = Array::new(capacity=names.length())
+      let out_names = Array(capacity=names.length())
       for name in names {
         match (name : PdfObject) {
           Name(value) => out_names.push(value.to_string_bytes())
@@ -286,7 +286,7 @@ pub fn ColourSpace::read(
     PdfArray(
       [Name(PdfName(b"/DeviceN")), PdfArray(names), alternate, tint, attributes]
     ) => {
-      let out_names = Array::new(capacity=names.length())
+      let out_names = Array(capacity=names.length())
       for name in names {
         match (name : PdfObject) {
           Name(value) => out_names.push(value.to_string_bytes())
@@ -303,7 +303,7 @@ pub fn ColourSpace::read(
 
 ///|
 fn interleave_defaults(n : Int) -> Array[Double] {
-  let out = Array::new(capacity=2 * n)
+  let out = Array(capacity=2 * n)
   for _ in 0..<n {
     out.push(0.0)
     out.push(1.0)
@@ -348,7 +348,7 @@ fn dict_set(
   key : String,
   value : PdfObject,
 ) -> Array[(String, PdfObject)] {
-  let out = Array::new(capacity=entries.length() + 1)
+  let out = Array(capacity=entries.length() + 1)
   let mut found = false
   for pair in entries {
     if pair.0 == key {
@@ -571,7 +571,7 @@ pub fn ColourSpace::to_pdf_object(
       if is_empty_dict(attrs) {
         PdfArray(base)
       } else {
-        let with_attrs = Array::new(capacity=base.length() + 1)
+        let with_attrs = Array(capacity=base.length() + 1)
         for item in base {
           with_attrs.push(item)
         }

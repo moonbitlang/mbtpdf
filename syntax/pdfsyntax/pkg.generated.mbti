@@ -46,4 +46,3 @@ pub fn string_of_lexeme(@pdftoken.Token) -> String
 // Type aliases
 
 // Traits
-

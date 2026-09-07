@@ -24,4 +24,3 @@ pub async fn PdfReadFs::pdf_of_file(Self, revision? : Int, String?, String?, Str
 // Type aliases
 
 // Traits
-

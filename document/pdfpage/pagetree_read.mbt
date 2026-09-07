@@ -50,7 +50,7 @@ fn find_pages(
             Some(Integer(r)) => Rotation::from_int(r)
             _ => rotate
           }
-          let out = Array::new()
+          let out = Array()
           for kid in kids {
             let kid_obj = match kid {
               Indirect(k) => {
@@ -85,7 +85,7 @@ fn find_pages(
             Some(Integer(r)) => Rotation::from_int(r)
             _ => rotate
           }
-          let out = Array::new()
+          let out = Array()
           for kid in kids {
             let kid_obj = match kid {
               Indirect(k) => {
@@ -168,7 +168,7 @@ fn find_pages(
             Dictionary(d) => PdfObject::Dictionary(remove_dict_entries(d))
             _ => raise @pdf.PdfError::Msg("Bad /Pages")
           }
-          [{ resources, content, mediabox, rotate, rest }]
+          [{ resources, content, mediabox, rotate, rest, }]
         }
       }
     }

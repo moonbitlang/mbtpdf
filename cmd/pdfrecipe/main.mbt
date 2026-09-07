@@ -223,7 +223,7 @@ fn add_bookmarks(pdf : @pdf.Pdf, refs : Array[Int]) -> @pdf.Pdf raise {
     "Cover", "Mug Cake (front)", "Mug Cake (back)", "Fruit Parfait (front)", "Fruit Parfait (back)",
     "Energy Bites (front)", "Energy Bites (back)", "The End",
   ]
-  let marks : Array[@pdfmarks.Bookmark] = Array::new()
+  let marks : Array[@pdfmarks.Bookmark] = Array()
   for i in 0..<titles.length() {
     marks.push({
       level: 0,
@@ -267,7 +267,7 @@ fn ops_badge(
   let (x0, y0, x1, y1) = rect
   let ww = x1 - x0
   let hh = y1 - y0
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(x0, y0, ww, hh, (1.0, 1.0, 1.0))[:])
   ops.append(ops_stroke_rect(x0, y0, ww, hh, accent, 2.0)[:])
   ops.append(ops_fill_rect(x0, y0 + hh - 5.0, ww, 5.0, accent)[:])
@@ -285,7 +285,7 @@ fn card_frame_ops(
 ) -> Array[Op] {
   let cx = card_x()
   let cy = card_y()
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.98, 0.98, 0.99))[:])
   ops.append(ops_fill_rect(cx, cy, CARD_W, CARD_H, (1.0, 1.0, 1.0))[:])
   ops.append(
@@ -316,7 +316,7 @@ fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
   let cx = card_x()
   let cy = card_y()
   let accent = (0.18, 0.48, 0.86)
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.06, 0.07, 0.1))[:])
   ops.append(ops_fill_rect(cx, cy, CARD_W, CARD_H, (1.0, 1.0, 1.0))[:])
   ops.append(
@@ -362,7 +362,7 @@ fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
     let hh = 66.0
     let x = cx + 24.0
     let (r, g, b) = accent2
-    let o : Array[Op] = Array::new()
+    let o : Array[Op] = Array()
     o.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0))[:])
     o.append(ops_stroke_rect(x, y, ww, hh, accent2, 2.5)[:])
     o.append(ops_fill_rect(x, y + hh - 8.0, ww, 8.0, accent2)[:])
@@ -373,7 +373,7 @@ fn cover_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
     (o, (x, y, x + ww, y + hh))
   }
 
-  let rects : Array[(Double, Double, Double, Double)] = Array::new()
+  let rects : Array[(Double, Double, Double, Double)] = Array()
   let (b1, r1) = big_btn(
     cy + CARD_H - 220.0,
     "1) Chocolate Mug Cake",
@@ -868,7 +868,7 @@ fn end_ops() -> Array[Op] {
   let cx = card_x()
   let cy = card_y()
   let accent = (0.18, 0.48, 0.86)
-  let out : Array[Op] = Array::new()
+  let out : Array[Op] = Array()
   out.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.06, 0.07, 0.1))[:])
   out.append(ops_fill_rect(cx, cy, CARD_W, CARD_H, (1.0, 1.0, 1.0))[:])
   out.append(

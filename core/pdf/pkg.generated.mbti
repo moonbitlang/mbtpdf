@@ -41,6 +41,7 @@ pub(all) struct DeferredEncryption {
   keylength : Int
   r : Int
 } derive(@debug.Debug)
+pub fn DeferredEncryption::to_repr(Self) -> @debug.Repr
 
 pub(all) enum ObjectData {
   Parsed(PdfObject)
@@ -96,11 +97,23 @@ pub fn Pdf::transform_quadpoints(Self, @pdftransform.TransformMatrix, PdfObject)
 pub fn Pdf::transform_rect(Self, @pdftransform.TransformMatrix, PdfObject) -> PdfObject raise
 
 pub(all) struct PdfName(Bytes) derive(Eq, Hash, @debug.Debug)
+pub fn PdfName::compare(Self, Self) -> Int
+pub fn PdfName::equal(Self, Self) -> Bool
 pub fn PdfName::equal_string_bytes(Self, String) -> Bool
+pub fn PdfName::hash(Self) -> Int
+pub fn PdfName::hash_combine(Self, Hasher) -> Unit
 pub fn PdfName::lexical_compare(Self, Self) -> Int
+pub fn PdfName::not_equal(Self, Self) -> Bool
 pub fn PdfName::of_bytes(Bytes) -> Self
 pub fn PdfName::of_string(String) -> Self
+pub fn PdfName::op_ge(Self, Self) -> Bool
+pub fn PdfName::op_gt(Self, Self) -> Bool
+pub fn PdfName::op_le(Self, Self) -> Bool
+pub fn PdfName::op_lt(Self, Self) -> Bool
+pub fn PdfName::output(Self, &Logger) -> Unit
 pub fn PdfName::to_bytes(Self) -> Bytes
+pub fn PdfName::to_repr(Self) -> @debug.Repr
+pub fn PdfName::to_string(Self) -> String
 pub fn PdfName::to_string_bytes(Self) -> String
 pub impl Compare for PdfName
 pub impl Show for PdfName
@@ -125,6 +138,7 @@ pub fn PdfObject::lookup_immediate(Self, String) -> Self?
 pub fn PdfObject::lookup_immediate_all(Self, String) -> Array[Self]
 pub fn PdfObject::remove_entry(Self, String) -> Self raise
 pub fn PdfObject::replace_entry(Self, String, Self) -> Self raise
+pub fn PdfObject::to_repr(Self) -> @debug.Repr
 pub fn PdfObject::to_string(Self) -> String
 pub fn PdfObject::to_string_including_data(Self) -> String
 
@@ -145,6 +159,7 @@ pub(all) enum Stream {
   Got(Array[Byte])
   ToGet(ToGet)
 } derive(@debug.Debug)
+pub fn Stream::to_repr(Self) -> @debug.Repr
 
 pub(all) struct ToGet {
   input : @pdfio.Input
@@ -154,11 +169,13 @@ pub(all) struct ToGet {
 } derive(@debug.Debug)
 pub fn ToGet::length(Self) -> Int
 pub fn ToGet::new(@pdfio.Input, Int, Int, crypt? : ToGetCrypt) -> Self
+pub fn ToGet::to_repr(Self) -> @debug.Repr
 
 pub(all) enum ToGetCrypt {
   NoChange
   ToDecrypt(DeferredEncryption)
 } derive(@debug.Debug)
+pub fn ToGetCrypt::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 pub type EncryptionValues = (@pdfcryptprimitives.Encryption, String, String, Int, String, String?, String?)
@@ -171,4 +188,3 @@ pub trait ToPdfNumber {
 }
 pub impl ToPdfNumber for Int
 pub impl ToPdfNumber for Double
-

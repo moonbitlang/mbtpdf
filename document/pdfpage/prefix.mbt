@@ -10,7 +10,7 @@ fn next_string(s : String) -> String {
   } else if s.get_char(0) is Some('z') {
     "a" + s
   } else {
-    let sb = StringBuilder::new()
+    let sb = StringBuilder()
     let mut first = true
     for c in s {
       if first {
@@ -36,7 +36,7 @@ fn is_prefix(prefix : String, name : String) -> Bool {
 
 ///|
 fn names_used(pdf : @pdf.Pdf) -> Array[String] {
-  let names : Array[String] = Array::new()
+  let names : Array[String] = Array()
   fn unslash(x : String) -> String {
     if x == "" {
       ""
@@ -306,7 +306,7 @@ fn merge_content_streams(pdf : @pdf.Pdf) -> Unit raise {
                         @pdfcodec.PdfCodec::new().decode_pdfstream(pdf, stream)
                         stream.getstream()
                       }
-                      let rawstreams : Array[Array[Byte]] = Array::new()
+                      let rawstreams : Array[Array[Byte]] = Array()
                       for stream in direct_streams {
                         match stream {
                           Stream(r) =>

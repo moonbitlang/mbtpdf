@@ -14,7 +14,7 @@ pub fn ToGet::new(
   length : Int,
   crypt? : ToGetCrypt = NoChange,
 ) -> ToGet {
-  { input, position, length, crypt }
+  { input, position, length, crypt, }
 }
 
 ///|
@@ -91,3 +91,12 @@ pub fn PdfObject::bigarray_of_stream(self : PdfObject) -> Array[Byte] raise {
     _ => raise PdfError::Msg("couldn't extract raw stream")
   }
 }
+
+// Explicit method promotion for derived/implemented traits.
+// (Previously implicit; see warning [0079] implicit_impl_as_method.)
+
+///|
+pub extend Stream with Debug::{to_repr}
+
+///|
+pub extend ToGet with Debug::{to_repr}

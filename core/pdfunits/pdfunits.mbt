@@ -45,3 +45,9 @@ pub fn LengthUnit::to_centimetres(self : LengthUnit, value : Double) -> Double {
 pub fn LengthUnit::to_millimetres(self : LengthUnit, value : Double) -> Double {
   self.to_centimetres(value) * 10.0
 }
+
+// Explicit method promotion for derived/implemented traits.
+// (Previously implicit; see warning [0079] implicit_impl_as_method.)
+
+///|
+pub extend LengthUnit with Debug::{to_repr}

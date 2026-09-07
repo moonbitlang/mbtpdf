@@ -29,4 +29,3 @@ pub fn PdfRead::what_encryption(Self, @pdf.Pdf) -> @pdfcrypt.EncryptionMethod?
 // Type aliases
 
 // Traits
-

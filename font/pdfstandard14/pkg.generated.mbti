@@ -23,4 +23,3 @@ pub fn PdfStandard14::textwidth(Self, Bool, @pdffont.Encoding, @pdffont.Standard
 // Type aliases
 
 // Traits
-

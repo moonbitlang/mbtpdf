@@ -96,7 +96,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
   for list in lists {
     total = total + list.length()
   }
-  let out = Array::new(capacity=total)
+  let out = Array(capacity=total)
   for list in lists {
     out.append(list[:])
   }
@@ -159,7 +159,7 @@ fn flatten_tree(
   let root_objnum = fresh(source, pdf)
   let tree = tree.map(node => add_root_parent(root_objnum, node))
   fn really_flatten(node : Ntree) -> Array[(Int, PdfObject)] {
-    let out = Array::new()
+    let out = Array()
     out.push((ntree_objnum(node), ntree_obj(node)))
     let children = ntree_children(node)
     if children.length() > 0 {
@@ -371,7 +371,7 @@ fn make_outline_ntree(
       )
       let tree = make_outline_ntree(source, pdf, lower)
       let current = Br(fresh(source, pdf), node, tree, head.isopen)
-      let out = Array::new(capacity=1 + remaining.length())
+      let out = Array(capacity=1 + remaining.length())
       out.push(current)
       out.append(make_outline_ntree(source, pdf, remaining)[:])
       out
@@ -530,7 +530,7 @@ pub fn PdfMarks::read_bookmarks(
       match pdf.lookup_direct("/Outlines", catalog) {
         None => []
         Some(outlines) => {
-          let out = Ref(Array::new())
+          let out = Ref(Array())
           traverse_outlines_lb(pdf, outlines, Ref(0), preserve_actions, out)
           out.val
         }

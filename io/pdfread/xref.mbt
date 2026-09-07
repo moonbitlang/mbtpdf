@@ -47,7 +47,7 @@ fn count_leading_spaces(chars : StringView) -> Int {
 
 ///|
 fn split_fields(line : String) -> Array[String] {
-  let parts = Array::new()
+  let parts = Array()
   for part in line.split(" ") {
     let s = part.to_owned()
     if s != "" {
@@ -148,7 +148,7 @@ fn read_xref(input : @pdfio.Input) -> Array[(Int, XRef)] raise {
     raise @pdf.PdfError::Msg(message)
   }
 
-  let xrefs = Array::new()
+  let xrefs = Array()
   let mut finished = false
   let mut objnumber = 0
   while !finished {
@@ -243,18 +243,12 @@ fn read_xref_stream(
 ) -> (Array[(Int, XRef)], Int, @pdf.PdfObject) raise {
   let original_pos = (input.pos_in)()
   let err = @pdf.PdfError::Msg(@pdf.input_pdferror(input, "Bad xref stream"))
-  let dict_level : Ref[Int] = { val: 0 }
-  let array_level : Ref[Int] = { val: 0 }
+  let dict_level : Ref[Int] = { val: 0, }
+  let array_level : Ref[Int] = { val: 0, }
   let xrefstream_objectnumber = match
-    @pdfsyntax.lex_next(
-      dict_level,
-      array_level,
-      false,
-      input,
-      Array::new(),
-      true,
-      _ => [],
-    ) {
+    @pdfsyntax.lex_next(dict_level, array_level, false, input, Array(), true, _ => {
+      []
+    }) {
     LexInt(i) => i
     _ => {
       (ctx.logger)("couldn't lex object number\n")
@@ -271,9 +265,9 @@ fn read_xref_stream(
     input : @pdfio.Input,
     read_stream_data : Bool,
   ) -> Array[@pdftoken.Token] {
-    let lexemes = Array::new()
-    let dict_level : Ref[Int] = { val: 0 }
-    let array_level : Ref[Int] = { val: 0 }
+    let lexemes = Array()
+    let dict_level : Ref[Int] = { val: 0, }
+    let array_level : Ref[Int] = { val: 0, }
     let mut done = false
     while !done {
       let t = @pdfsyntax.lex_next(
@@ -302,7 +296,7 @@ fn read_xref_stream(
     _ => raise err
   }
   let stream_token = @pdfsyntax.lex_stream(input, dictlex, _ => [], true)
-  let tokens = Array::new()
+  let tokens = Array()
   for t in dictlex {
     tokens.push(t)
   }
@@ -328,7 +322,7 @@ fn read_xref_stream(
       }
     _ => raise err
   }
-  let xrefs_raw = Array::new()
+  let xrefs_raw = Array()
   try {
     while true {
       xrefs_raw.push(read_xref_line_stream(raw_input, w1, w2, w3))
@@ -340,7 +334,7 @@ fn read_xref_stream(
     @pdf.Pdf::empty().lookup_direct("/Index", stream_obj) {
     Some(PdfArray(elts)) => {
       // PDF spec: /Index is an array of (start, count) pairs, so it must be even-length.
-      let pairs = Array::new()
+      let pairs = Array()
       for i = 0; i < elts.length(); {
         match elts.get_slice(i, i + 2) {
           Some([Integer(s), Integer(l)]) => {
@@ -368,7 +362,7 @@ fn read_xref_stream(
       [(0, size)]
     }
   }
-  let xrefs = Array::new()
+  let xrefs = Array()
   let mut raw_pos = 0
   for pair in starts_and_lens {
     let (start, len) = pair
@@ -465,7 +459,7 @@ fn parse_object_stream(
       )
   }
   let stm_input = @pdfio.Input::of_bytes(raw)
-  let rawnums = Array::new()
+  let rawnums = Array()
   let mut i = 0
   while i < n * 2 {
     rawnums.push(read_int_from_stream(stm_input))
@@ -477,9 +471,9 @@ fn parse_object_stream(
       ordered.sort_by((a, b) => a - b)
       (true, ordered)
     }
-    None => (false, Array::new())
+    None => (false, Array())
   }
-  let objects = Array::new()
+  let objects = Array()
   let mut idx = 0
   let mut current_index = 0
   let mut wanted_pos = 0
@@ -540,7 +534,7 @@ fn build_pdf_objects(
   let stream_id_seen : Map[Int, Bool] = Map([])
   let stream_groups : Map[Int, Array[(Int, Int)]] = Map([])
   let mut max_obj = 0
-  let stream_ids = Array::new()
+  let stream_ids = Array()
   for pair in xref_entries {
     let objnum = pair.0
     let xref = pair.1
@@ -548,7 +542,7 @@ fn build_pdf_objects(
       max_obj = objnum
     }
     match xref {
-      Plain(_, gen) => objects.set(objnum, ({ val: ToParse }, gen))
+      Plain(_, gen) => objects.set(objnum, ({ val: ToParse, }, gen))
       Stream(stream_id, _index) => {
         if stream_id_seen.get(stream_id) is None {
           stream_id_seen.set(stream_id, true)
@@ -558,7 +552,7 @@ fn build_pdf_objects(
         let entries = match stream_groups.get(stream_id) {
           Some(existing) => existing
           None => {
-            let created = Array::new()
+            let created = Array()
             stream_groups.set(stream_id, created)
             created
           }
@@ -603,13 +597,13 @@ fn build_pdf_objects(
       ) catch {
         _ => {
           (ctx.logger)("Warning: unable to parse object stream \{stream_id}\n")
-          Array::new()
+          Array()
         }
       }
       for pair in parsed {
         let objnum = pair.0
         let obj = pair.1
-        objects.set(objnum, ({ val: ParsedAlreadyDecrypted(obj) }, 0))
+        objects.set(objnum, ({ val: ParsedAlreadyDecrypted(obj), }, 0))
         object_stream_ids.set(objnum, stream_id)
       }
     }
@@ -623,7 +617,7 @@ fn build_pdf_objects(
         let indexes = match themap.get(objnum) {
           Some(existing) => existing
           None => {
-            let created = Array::new()
+            let created = Array()
             themap.set(objnum, created)
             created
           }
@@ -645,7 +639,7 @@ fn build_pdf_objects(
           partial_pdf,
           indexes~,
         )
-        let out = Array::new(capacity=parsed.length())
+        let out = Array(capacity=parsed.length())
         for pair in parsed {
           out.push(
             (pair.0, (Ref(@pdf.ObjectData::ParsedAlreadyDecrypted(pair.1)), 0)),
@@ -653,7 +647,7 @@ fn build_pdf_objects(
         }
         out
       } catch {
-        _ => Array::new()
+        _ => Array()
       }
     }
 
@@ -677,5 +671,5 @@ fn build_pdf_objects(
       }
     }
   }
-  { max_obj_num: max_obj, parse: Some(parse_obj), objects, object_stream_ids }
+  { max_obj_num: max_obj, parse: Some(parse_obj), objects, object_stream_ids, }
 }

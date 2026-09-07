@@ -112,7 +112,7 @@ fn circle_points(
   r : Double,
   n : Int,
 ) -> Array[(Double, Double)] {
-  let out = Array::new(capacity=n)
+  let out = Array(capacity=n)
   let two_pi = 8.0 * @math.atan(1.0)
   for i in 0..<n {
     let t = two_pi * (i.to_double() / n.to_double())
@@ -129,7 +129,7 @@ fn ops_poly_path(
   match points {
     [] => []
     [(x0, y0), .. rest] => {
-      let ops : Array[Op] = Array::new(capacity=points.length() + 2)
+      let ops : Array[Op] = Array(capacity=points.length() + 2)
       ops.push(Opm(x0, y0))
       for p in rest {
         let (x, y) = p
@@ -161,7 +161,7 @@ fn ops_button(
   label : String,
   accent : (Double, Double, Double),
 ) -> (Array[Op], (Double, Double, Double, Double)) {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(x, y, w, h, (1.0, 1.0, 1.0))[:])
   ops.append(ops_stroke_rect(x, y, w, h, accent, 2.0)[:])
   ops.append(ops_fill_rect(x, y + h - 6.0, w, 6.0, accent)[:])
@@ -283,7 +283,7 @@ fn add_bookmarks(
   clue_ref : Int,
   solution_ref : Int,
 ) -> @pdf.Pdf raise {
-  let marks : Array[@pdfmarks.Bookmark] = Array::new()
+  let marks : Array[@pdfmarks.Bookmark] = Array()
   marks.push({
     level: 0,
     text: "Mystery Mansion",
@@ -348,7 +348,7 @@ fn add_bookmarks(
 
 ///|
 fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   let accent = (0.18, 0.48, 0.86)
   ops.append(ops_fill_rect(0.0, 0.0, page_w(), page_h(), (0.98, 0.98, 0.99))[:])
   ops.append(ops_fill_rect(0.0, page_h() - 120.0, page_w(), 120.0, accent)[:])
@@ -433,7 +433,7 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
 
 ///|
 fn rules_ops() -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(0.0, 0.0, page_w(), page_h(), (1.0, 1.0, 1.0))[:])
   ops.append(
     ops_text(
@@ -474,7 +474,7 @@ fn rules_ops() -> Array[Op] {
 
 ///|
 fn clue_cards_ops() -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(
     ops_fill_rect(0.0, 0.0, page_w(), page_h(), (0.99, 0.985, 0.97))[:],
   )
@@ -550,7 +550,7 @@ fn clue_cards_ops() -> Array[Op] {
 
 ///|
 fn board_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(0.0, 0.0, page_w(), page_h(), (1.0, 1.0, 1.0))[:])
   ops.append(
     ops_text(
@@ -595,7 +595,7 @@ fn board_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
       ops_line(grid_x, y, grid_x + grid_w, y, (0.85, 0.86, 0.88), 1.0)[:],
     )
   }
-  let links : Array[(Int, (Double, Double, Double, Double))] = Array::new()
+  let links : Array[(Int, (Double, Double, Double, Double))] = Array()
   let mut room = 1
   for r in 0..<ROWS {
     for c in 0..<COLS {
@@ -684,7 +684,7 @@ fn board_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
 fn room_ops(
   room_1 : Int,
 ) -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   let accent = if room_1 % 3 == 0 {
     (0.92, 0.33, 0.36)
   } else if room_1 % 3 == 1 {
@@ -792,7 +792,7 @@ fn room_ops(
 
 ///|
 fn solution_ops() -> (Array[Op], (Double, Double, Double, Double)) {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(0.0, 0.0, page_w(), page_h(), (0.06, 0.07, 0.1))[:])
   ops.append(
     ops_text(72.0, page_h() - 90.0, "/F0", 44.0, "Solution", (0.95, 0.96, 0.98))[:],
@@ -856,8 +856,8 @@ pub async fn run(
     let (board, board_links) = board_ops()
     let rules = rules_ops()
     let clue = clue_cards_ops()
-    let room_pages : Array[@pdfpage.Page] = Array::new(capacity=ROWS * COLS)
-    let room_links : Array[Array[(Int, (Double, Double, Double, Double))]] = Array::new()
+    let room_pages : Array[@pdfpage.Page] = Array(capacity=ROWS * COLS)
+    let room_links : Array[Array[(Int, (Double, Double, Double, Double))]] = Array()
     for i in 1..<=(ROWS * COLS) {
       let (ops, links) = room_ops(i)
       room_pages.push(page_of_ops(ops))

@@ -45,7 +45,7 @@ pub fn PdfText::write_encoding(
     }
     FillUndefinedWithStandard(inner) => self.write_encoding(inner)
     CustomEncoding(base, diffs) => {
-      let diff_array = Array::new()
+      let diff_array = Array()
       for diff in diffs {
         diff_array.push(PdfObject::Integer(diff.1))
         diff_array.push(Name(@pdf.PdfName::of_string(diff.0)))
@@ -120,7 +120,7 @@ fn hex_byte_lower(value : Int) -> String {
 
 ///|
 pub fn PdfTextUtil::hex(_self : PdfTextUtil, u : String) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   let bytes = @pdfio.bytes_of_string(u)
   for b in bytes {
     sb.write_string(hex_byte_upper(b.to_int()))
@@ -134,7 +134,7 @@ pub fn PdfTextUtil::tounicode_map(
   start_code : Int,
   us : Array[String],
 ) -> Array[Byte] {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   let mut code = start_code
   sb
   ..write_string(tounicode_preamble)

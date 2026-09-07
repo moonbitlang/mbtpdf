@@ -24,4 +24,3 @@ pub async fn PdfWriteFs::pdf_to_file_options(Self, preserve_objstm? : Bool, gene
 // Type aliases
 
 // Traits
-

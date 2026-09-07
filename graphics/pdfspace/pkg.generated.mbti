@@ -42,4 +42,3 @@ pub(all) struct ICCBased {
 pub type Point = (Double, Double, Double)
 
 // Traits
-

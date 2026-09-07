@@ -5,10 +5,10 @@ fn clear_object_stream_ids(ids : Map[Int, Int]) -> Unit {
 
 ///|
 fn split_into_groups(items : Array[Int], group_size : Int) -> Array[Array[Int]] {
-  let groups = Array::new()
+  let groups = Array()
   let mut index = 0
   while index < items.length() {
-    let group = Array::new()
+    let group = Array()
     let mut i = 0
     while i < group_size && index < items.length() {
       group.push(items[index])
@@ -48,7 +48,7 @@ fn generate_object_stream_hints(
       _ => ()
     }
   }
-  let candidates = Array::new()
+  let candidates = Array()
   for pair in entries {
     let objnum = pair.0
     if pdf.objects.object_stream_ids.get(objnum) is Some(_) {
@@ -102,7 +102,7 @@ fn build_object_stream_groups(pdf : @pdf.Pdf) -> Array[(Int, Array[Int])] {
     let list = match groups.get(stream_id) {
       Some(existing) => existing
       None => {
-        let created = Array::new()
+        let created = Array()
         groups.set(stream_id, created)
         created
       }
@@ -133,8 +133,8 @@ fn bake_object_streams(
     if objs.length() == 0 {
       continue
     }
-    let object_strings = Array::new()
-    let offsets = Array::new()
+    let object_strings = Array()
+    let offsets = Array()
     let mut offset = 0
     let mut index = 0
     for objnum in objs {
@@ -150,7 +150,7 @@ fn bake_object_streams(
     for objnum in objs {
       pdf.removeobj(objnum)
     }
-    let header = StringBuilder::new()
+    let header = StringBuilder()
     for i in 0..<objs.length() {
       header.write_string(objs[i].to_string())
       header.write_char(' ')
@@ -159,7 +159,7 @@ fn bake_object_streams(
     }
     let header_str = header.to_string()
     let first = header_str.length()
-    let data_sb = StringBuilder::new()
+    let data_sb = StringBuilder()
     data_sb.write_string(header_str)
     for s in object_strings {
       data_sb.write_string(s)

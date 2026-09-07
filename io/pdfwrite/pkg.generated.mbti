@@ -42,4 +42,3 @@ pub fn PdfWriteOptions::default() -> Self
 pub using @pdfcrypt {type EncryptionMethod}
 
 // Traits
-

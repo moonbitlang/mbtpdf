@@ -16,7 +16,7 @@ test "lex_object_at stops at atom when oneonly" {
 ///|
 test "lex_object_at captures array tokens" {
   let tokens = lex_from_string(true, "[1 2]")
-  let rendered : Array[String] = Array::new()
+  let rendered : Array[String] = Array()
   for token in tokens {
     rendered.push(@pdfsyntax.string_of_lexeme(token))
   }
@@ -26,7 +26,7 @@ test "lex_object_at captures array tokens" {
 ///|
 test "lex_object_at captures dictionary tokens" {
   let tokens = lex_from_string(true, "<< /Type /Example /Count 2 >>")
-  let rendered : Array[String] = Array::new()
+  let rendered : Array[String] = Array()
   for token in tokens {
     rendered.push(@pdfsyntax.string_of_lexeme(token))
   }
@@ -36,7 +36,7 @@ test "lex_object_at captures dictionary tokens" {
 ///|
 test "lex_object_at reads until endobj when not oneonly" {
   let tokens = lex_from_string(false, "1 0 obj 7 endobj")
-  let rendered : Array[String] = Array::new()
+  let rendered : Array[String] = Array()
   for token in tokens {
     rendered.push(@pdfsyntax.string_of_lexeme(token))
   }

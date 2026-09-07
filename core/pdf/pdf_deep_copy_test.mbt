@@ -12,7 +12,7 @@ test "deep_copy copies streams and object data" {
   pdf.addobj_given_num((7, toget_stream))
   pdf.objects.objects.set(
     5,
-    ({ val: ParsedAlreadyDecrypted(PdfString("x")) }, 0),
+    ({ val: ParsedAlreadyDecrypted(PdfString("x")), }, 0),
   )
   let themap : Map[Int, Array[Int]] = Map([])
   let parser = (_ : Int, _ : Array[Int]) => {
@@ -20,9 +20,9 @@ test "deep_copy copies streams and object data" {
   }
   pdf.objects.objects.set(
     6,
-    ({ val: ToParseFromObjectStream(themap, 1, 2, parser) }, 0),
+    ({ val: ToParseFromObjectStream(themap, 1, 2, parser), }, 0),
   )
-  pdf.objects.objects.set(8, ({ val: ToParse }, 0))
+  pdf.objects.objects.set(8, ({ val: ToParse, }, 0))
   if pdf.objects.max_obj_num < 8 {
     pdf.objects.max_obj_num = 8
   }

@@ -28,7 +28,7 @@ pub struct PdfPageLabels {
 
 ///|
 pub fn PdfPageLabels::new() -> PdfPageLabels {
-  { unit: () }
+  { unit: (), }
 }
 
 ///|
@@ -91,7 +91,7 @@ fn label_of_range(pdf : @pdf.Pdf, range : (PdfObject, PdfObject)) -> PageLabel {
     Some(Integer(i)) => i
     _ => 1
   }
-  { labelstyle, labelprefix, startpage, startvalue }
+  { labelstyle, labelprefix, startpage, startvalue, }
 }
 
 ///|
@@ -101,7 +101,7 @@ pub fn PageLabel::read_all(pdf : @pdf.Pdf) -> Array[PageLabel] raise {
     None => []
     Some(labeltree) => {
       let labelranges = pdf.contents_of_nametree(labeltree)
-      let out = Array::new(capacity=labelranges.length())
+      let out = Array(capacity=labelranges.length())
       for range in labelranges {
         out.push(label_of_range(pdf, range))
       }
@@ -131,7 +131,7 @@ fn letter_string(n : Int) -> String {
   let count = (n - 1) / 26 + 1
   let code = (n - 1) % 26 + 65
   let c = code.unsafe_to_char()
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   for _ in 0..<count {
     sb.write_char(c)
   }
@@ -158,7 +158,7 @@ fn roman_upper(n : Int) -> String {
     (4, "IV"),
     (1, "I"),
   ]
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   let mut value = n
   for pair in symbols {
     let (num, token) = pair
@@ -318,7 +318,7 @@ pub fn PdfPageLabels::coalesce(
   if labels.length() <= 1 {
     return labels
   }
-  let out = Array::new(capacity=labels.length())
+  let out = Array(capacity=labels.length())
   out.push(labels[0])
   for i in 1..<labels.length() {
     let current = labels[i]
@@ -340,15 +340,15 @@ pub fn PdfPageLabels::merge_pagelabels(
   pdfs : Array[@pdf.Pdf],
   ranges : Array[Array[Int]],
 ) -> Array[PageLabel] raise {
-  let completed = Array::new(capacity=pdfs.length())
+  let completed = Array(capacity=pdfs.length())
   for pdf in pdfs {
     completed.push(self.complete(PageLabel::read_all(pdf)))
   }
-  let new_labels = Array::new(capacity=completed.length())
+  let new_labels = Array(capacity=completed.length())
   for i in 0..<completed.length() {
     let labels = completed[i]
     let range = ranges[i]
-    let mapped = Array::new(capacity=range.length())
+    let mapped = Array(capacity=range.length())
     for page in range {
       mapped.push(self.pagelabel_of_pagenumber(page, labels))
     }
@@ -375,9 +375,9 @@ pub fn PageLabel::write_all(
   if labels.length() == 0 {
     PageLabel::remove_all(pdf)
   } else {
-    let arr = Array::new()
+    let arr = Array()
     for label in labels {
-      let entries = Array::new()
+      let entries = Array()
       match label.labelstyle {
         NoLabelPrefixOnly => ()
         DecimalArabic => entries.push(("/S", PdfObject::Name(PdfName(b"/D"))))
@@ -419,7 +419,7 @@ pub fn PageLabel::remove_all(pdf : @pdf.Pdf) -> Unit raise {
 
 ///|
 fn[T] concat_arrays(a : Array[T], b : Array[T]) -> Array[T] {
-  let out = Array::new(capacity=a.length() + b.length())
+  let out = Array(capacity=a.length() + b.length())
   out.append(a[:])
   out.append(b[:])
   out
@@ -427,8 +427,8 @@ fn[T] concat_arrays(a : Array[T], b : Array[T]) -> Array[T] {
 
 ///|
 fn[T] partition(items : Array[T], pred : (T) -> Bool) -> (Array[T], Array[T]) {
-  let yes = Array::new()
-  let no = Array::new()
+  let yes = Array()
+  let no = Array()
   for item in items {
     if pred(item) {
       yes.push(item)
@@ -453,7 +453,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
   for list in lists {
     total = total + list.length()
   }
-  let out = Array::new(capacity=total)
+  let out = Array(capacity=total)
   for list in lists {
     out.append(list[:])
   }
@@ -462,7 +462,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
 
 ///|
 fn indices_for_length(length : Int) -> Array[Int] {
-  let out = Array::new(capacity=length)
+  let out = Array(capacity=length)
   for i in 1..<=length {
     out.push(i)
   }
@@ -478,9 +478,18 @@ fn[A, B, C] map2(
   if left.length() != right.length() {
     fail("map2: length mismatch")
   }
-  let out = Array::new(capacity=left.length())
+  let out = Array(capacity=left.length())
   for i in 0..<left.length() {
     out.push(f(left[i], right[i]))
   }
   out
 }
+
+// Explicit method promotion for derived/implemented traits.
+// (Previously implicit; see warning [0079] implicit_impl_as_method.)
+
+///|
+pub extend LabelStyle with Debug::{to_repr}
+
+///|
+pub extend PageLabel with Debug::{to_repr}

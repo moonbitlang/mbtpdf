@@ -936,7 +936,7 @@ fn decode_ccittfax(
         raise CodecError::DecodeNotSupported("CCITT k")
       }
     }
-    Array::new()
+    Array()
   } catch {
     Failure::Failure(msg) =>
       if msg == "End_of_file" {

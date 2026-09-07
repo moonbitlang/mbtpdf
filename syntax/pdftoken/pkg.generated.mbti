@@ -31,8 +31,8 @@ pub(all) enum Token {
   StopLexing
   LexNone
 } derive(@debug.Debug)
+pub fn Token::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 
 // Traits
-

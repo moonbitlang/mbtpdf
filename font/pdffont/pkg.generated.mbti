@@ -17,11 +17,13 @@ pub(all) struct CIDSystemInfo {
   ordering : String
   supplement : Int
 } derive(@debug.Debug)
+pub fn CIDSystemInfo::to_repr(Self) -> @debug.Repr
 
 pub(all) enum CMapEncoding {
   Predefined(String)
   CMap(Int)
 } derive(@debug.Debug)
+pub fn CMapEncoding::to_repr(Self) -> @debug.Repr
 
 pub(all) struct CompositeCIDFont {
   cid_system_info : CIDSystemInfo
@@ -73,6 +75,7 @@ pub(all) enum FontFile {
   FontFile2(Int)
   FontFile3(Int)
 } derive(@debug.Debug)
+pub fn FontFile::to_repr(Self) -> @debug.Repr
 
 pub(all) struct SimpleFont {
   fonttype : SimpleFontType
@@ -110,6 +113,9 @@ pub(all) enum StandardFont {
   Symbol
   ZapfDingbats
 } derive(Eq, @debug.Debug)
+pub fn StandardFont::equal(Self, Self) -> Bool
+pub fn StandardFont::not_equal(Self, Self) -> Bool
+pub fn StandardFont::to_repr(Self) -> @debug.Repr
 pub fn StandardFont::to_string(Self) -> String
 
 pub(all) struct Type3Glyphs {
@@ -125,4 +131,3 @@ pub type Differences = Array[(String, Int)]
 pub type FontMetrics = Array[Double]
 
 // Traits
-

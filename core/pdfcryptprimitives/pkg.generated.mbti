@@ -17,6 +17,7 @@ pub(all) enum Encryption {
   AESV3(Bool)
 } derive(@debug.Debug)
 pub fn Encryption::r_and_keylength(Self) -> (Int, Int)
+pub fn Encryption::to_repr(Self) -> @debug.Repr
 
 pub struct PdfCryptPrimitives {
   unit : Unit
@@ -37,4 +38,3 @@ pub fn PdfCryptPrimitives::sha512(Self, @pdfio.Input) -> String raise
 // Type aliases
 
 // Traits
-

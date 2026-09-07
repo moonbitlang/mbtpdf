@@ -8,7 +8,7 @@ pub struct PdfAfmData {
 
 ///|
 pub fn PdfAfmData::new() -> PdfAfmData {
-  { unit: () }
+  { unit: (), }
 }
 
 ///|

@@ -17,7 +17,7 @@ fn ensure_leading_slash(bytes : Bytes) -> Bytes {
     // Be tolerant of internal construction mistakes, but do not silently drop
     // information. Keep behavior aligned with the old `make_pdf_name` path.
     @pdfe.warn("warning: bad name (missing leading '/'): |\{bytes}|")
-    let out = Array::new(capacity=bytes.length() + 1)
+    let out = Array(capacity=bytes.length() + 1)
     out.push('/'.to_int().to_byte())
     out.append(bytes.to_array())
     Bytes::from_array(out[:])
@@ -115,3 +115,21 @@ pub fn PdfName::equal_string_bytes(self : PdfName, key : String) -> Bool {
 pub impl Show for PdfName with fn output(self : PdfName, logger : &Logger) -> Unit {
   logger.write_string(self.to_string_bytes())
 }
+
+// Explicit method promotion for derived/implemented traits.
+// (Previously implicit; see warning [0079] implicit_impl_as_method.)
+
+///|
+pub extend PdfName with Compare::{op_lt, op_le, op_ge, compare, op_gt}
+
+///|
+pub extend PdfName with Debug::{to_repr}
+
+///|
+pub extend PdfName with Eq::{not_equal, equal}
+
+///|
+pub extend PdfName with Hash::{hash, hash_combine}
+
+///|
+pub extend PdfName with Show::{to_string, output}

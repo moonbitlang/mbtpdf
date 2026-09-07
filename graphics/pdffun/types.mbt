@@ -98,3 +98,24 @@ pub(all) suberror BadFunctionEvaluation {
 
 ///|
 type PdfObject = @pdf.PdfObject
+
+// Explicit method promotion for derived/implemented traits.
+// (Previously implicit; see warning [0079] implicit_impl_as_method.)
+
+///|
+pub extend Calculator with Debug::{to_repr}
+
+///|
+pub extend Interpolation with Debug::{to_repr}
+
+///|
+pub extend PdfFunction with Debug::{to_repr}
+
+///|
+pub extend PdfFunctionKind with Debug::{to_repr}
+
+///|
+pub extend Sampled with Debug::{to_repr}
+
+///|
+pub extend Stitching with Debug::{to_repr}

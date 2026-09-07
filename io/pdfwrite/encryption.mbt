@@ -18,7 +18,7 @@ pub fn Encryption::new(
   user_password : String,
   permissions : Array[@pdfcrypt.Permission],
 ) -> Encryption {
-  { encryption_method, owner_password, user_password, permissions }
+  { encryption_method, owner_password, user_password, permissions, }
 }
 
 ///|

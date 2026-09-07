@@ -97,7 +97,7 @@ fn calc_skip_comment(input : @pdfio.Input) -> Unit {
 
 ///|
 fn calc_read_word(input : @pdfio.Input) -> String {
-  let bytes : Array[Byte] = Array::new()
+  let bytes : Array[Byte] = Array()
   while true {
     let b = (input.input_byte)()
     if b == @pdfio.no_more {
@@ -135,7 +135,7 @@ fn calc_token_of_word(word : String) -> CalcTok {
 ///|
 fn calc_lex(text : String) -> Array[CalcTok] {
   let input = @pdfio.Input::of_string(text)
-  let out = Array::new()
+  let out = Array()
   while true {
     calc_dropwhite(input)
     let b = input.peek_byte()
@@ -172,7 +172,7 @@ fn calc_parse_seq(
   start : Int,
   stop_on_rbrace : Bool,
 ) -> (Array[CalcNode], Int) raise {
-  let out = Array::new()
+  let out = Array()
   let mut i = start
   while i < toks.length() {
     match toks[i] {
@@ -221,7 +221,7 @@ fn calc_parse_program(toks : Array[CalcTok]) -> Array[CalcNode] raise {
 
 ///|
 fn calc_compile(nodes : Array[CalcNode]) -> Array[Calculator] raise {
-  let out = Array::new(capacity=nodes.length())
+  let out = Array(capacity=nodes.length())
   let mut i = 0
   while i < nodes.length() {
     if i + 2 < nodes.length() {
@@ -352,7 +352,7 @@ pub fn PdfFunction::parse(pdf : @pdf.Pdf, obj : PdfObject) -> PdfFunction raise 
         _ => [1.0]
       }
       let n = getnum_direct(pdf.lookup_fail("No /N in Type 2 fun", "/N", f))
-      Interpolation({ c0, c1, n })
+      Interpolation({ c0, c1, n, })
     }
     Integer(3) => {
       let functions = match pdf.lookup_fail("no /Functions", "/Functions", f) {
@@ -387,5 +387,5 @@ pub fn PdfFunction::parse(pdf : @pdf.Pdf, obj : PdfObject) -> PdfFunction raise 
     }
     _ => raise @pdf.PdfError::Msg("Unknown function type")
   }
-  { domain, range, func }
+  { domain, range, func, }
 }

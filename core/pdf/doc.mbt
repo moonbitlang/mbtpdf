@@ -119,7 +119,7 @@ pub fn Pdf::addobj_given_num(self : Pdf, pair : (Int, PdfObject)) -> Unit {
   if num > self.objects.max_obj_num {
     self.objects.max_obj_num = num
   }
-  self.objects.objects.set(num, ({ val: Parsed(obj) }, 0))
+  self.objects.objects.set(num, ({ val: Parsed(obj), }, 0))
 }
 
 ///|

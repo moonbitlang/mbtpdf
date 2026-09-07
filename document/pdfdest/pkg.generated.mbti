@@ -34,8 +34,8 @@ pub(all) enum TargetPage {
   PageObject(Int)
   OtherDocPageNumber(Int)
 } derive(@debug.Debug)
+pub fn TargetPage::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 
 // Traits
-

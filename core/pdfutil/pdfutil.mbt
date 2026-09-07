@@ -72,7 +72,7 @@ pub struct PdfUtil {
 
 ///|
 pub fn PdfUtil::new() -> PdfUtil {
-  { stdout_buffer, stderr_buffer }
+  { stdout_buffer, stderr_buffer, }
 }
 
 ///|
@@ -82,11 +82,11 @@ fn flush_buffer(buffer : Ref[String], message : String) -> Unit {
     buffer.val = ""
   } else {
     let combined = buffer.val + message
-    let mut line = StringBuilder::new()
+    let mut line = StringBuilder()
     for ch in combined {
       if ch == '\n' {
         (printer.val)(line.to_string())
-        line = StringBuilder::new()
+        line = StringBuilder()
       } else {
         line.write_char(ch)
       }

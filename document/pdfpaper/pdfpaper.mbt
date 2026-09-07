@@ -19,7 +19,7 @@ pub fn Paper::new(
   width~ : Double,
   height~ : Double,
 ) -> Paper {
-  { unit, width, height }
+  { unit, width, height, }
 }
 
 ///|
@@ -52,17 +52,17 @@ pub fn Paper::rectangle(self : Paper) -> @pdf.PdfObject {
 ///|
 /// Flip a paper size between landscape and portrait.
 pub fn Paper::landscape(self : Paper) -> Paper {
-  { unit: self.unit, width: self.height, height: self.width }
+  { unit: self.unit, width: self.height, height: self.width, }
 }
 
 ///|
 fn mm_paper(width : Double, height : Double) -> Paper {
-  { unit: Millimetre, width, height }
+  { unit: Millimetre, width, height, }
 }
 
 ///|
 fn inch_paper(width : Double, height : Double) -> Paper {
-  { unit: Inch, width, height }
+  { unit: Inch, width, height, }
 }
 
 ///|
@@ -105,3 +105,9 @@ pub let usletter : Paper = inch_paper(8.5, 11.0)
 
 ///|
 pub let uslegal : Paper = inch_paper(8.5, 14.0)
+
+// Explicit method promotion for derived/implemented traits.
+// (Previously implicit; see warning [0079] implicit_impl_as_method.)
+
+///|
+pub extend Paper with Debug::{to_repr}
