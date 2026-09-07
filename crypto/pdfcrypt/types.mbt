@@ -5,7 +5,7 @@ pub struct PdfCrypt {
 
 ///|
 pub fn PdfCrypt::new() -> PdfCrypt {
-  { unit: () }
+  { unit: (), }
 }
 
 ///|

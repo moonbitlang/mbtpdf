@@ -14,7 +14,7 @@ fn[T] assert_is_err(res : Result[T, Error]) -> Unit raise {
 
 ///|
 fn eval_calc(ops : Array[Calculator]) -> Array[Double] raise {
-  let fun : PdfFunction = { func: Calculator(ops), domain: [], range: None }
+  let fun : PdfFunction = { func: Calculator(ops), domain: [], range: None, }
   PdfFunction::eval(fun, [])
 }
 
@@ -37,7 +37,7 @@ test "eval calculator function" {
 ///|
 test "eval interpolation function" {
   let fun : PdfFunction = {
-    func: Interpolation({ c0: [0.0], c1: [1.0], n: 1.0 }),
+    func: Interpolation({ c0: [0.0], c1: [1.0], n: 1.0, }),
     domain: [0.0, 1.0],
     range: Some([0.0, 1.0]),
   }
@@ -118,7 +118,7 @@ test "parse sampled function stream" {
 ///|
 test "serialize interpolation function" {
   let fun : PdfFunction = {
-    func: Interpolation({ c0: [0.0], c1: [2.0], n: 1.0 }),
+    func: Interpolation({ c0: [0.0], c1: [2.0], n: 1.0, }),
     domain: [0.0, 1.0],
     range: Some([0.0, 2.0]),
   }
@@ -133,12 +133,12 @@ test "serialize interpolation function" {
 ///|
 test "serialize stitching function" {
   let f1 : PdfFunction = {
-    func: Interpolation({ c0: [0.0], c1: [1.0], n: 1.0 }),
+    func: Interpolation({ c0: [0.0], c1: [1.0], n: 1.0, }),
     domain: [0.0, 1.0],
     range: Some([0.0, 1.0]),
   }
   let f2 : PdfFunction = {
-    func: Interpolation({ c0: [1.0], c1: [2.0], n: 1.0 }),
+    func: Interpolation({ c0: [1.0], c1: [2.0], n: 1.0, }),
     domain: [0.0, 1.0],
     range: Some([1.0, 2.0]),
   }
@@ -280,7 +280,7 @@ test "PdfFunction::print covers kinds and array sizes" {
       range: Some(some_doubles),
     }
     let interpolation : PdfFunction = {
-      func: Interpolation({ c0: empty_doubles, c1: empty_doubles, n: 1.0 }),
+      func: Interpolation({ c0: empty_doubles, c1: empty_doubles, n: 1.0, }),
       domain: empty_doubles,
       range: None,
     }
@@ -1041,7 +1041,7 @@ test "stitching eval errors on encode length" {
     range: None,
   }
   let fun : PdfFunction = {
-    func: Stitching({ functions: [f], bounds: [0.5], stitch_encode: [] }),
+    func: Stitching({ functions: [f], bounds: [0.5], stitch_encode: [], }),
     domain: [0.0, 1.0],
     range: None,
   }

@@ -309,3 +309,9 @@ pub fn Destination::transform(
     _ => self
   }
 }
+
+// Explicit method promotion for derived/implemented traits.
+// (Previously implicit; see warning [0079] implicit_impl_as_method.)
+
+///|
+pub extend TargetPage with Debug::{to_repr}

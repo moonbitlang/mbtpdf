@@ -11,7 +11,7 @@ pub struct PdfReadFs {
 
 ///|
 pub fn PdfReadFs::new() -> PdfReadFs {
-  { reader: @pdfread.PdfRead::new() }
+  { reader: @pdfread.PdfRead::new(), }
 }
 
 ///|

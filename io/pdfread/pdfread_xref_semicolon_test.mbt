@@ -18,7 +18,7 @@ fn build_minimal_pdf_with_xref_section_header_semicolon() -> String {
   let offset1 = header.length()
   let offset2 = header.length() + obj1.length()
   let xref_offset = header.length() + obj1.length() + obj2.length()
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   sb.write_string(header)
   sb.write_string(obj1)
   sb.write_string(obj2)

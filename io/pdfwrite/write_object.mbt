@@ -140,7 +140,7 @@ fn write_pdf_object(
 ///|
 /// String of a PDF object.
 pub fn PdfWrite::string_of_pdf(self : PdfWrite, obj : @pdf.PdfObject) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   write_pdf_object(self, obj, false, false, sb)
   sb.to_string()
 }

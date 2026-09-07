@@ -1,6 +1,6 @@
 ///|
 fn calc_fun(ops : Array[Calculator]) -> PdfFunction {
-  { func: Calculator(ops), domain: [0.0, 1.0], range: None }
+  { func: Calculator(ops), domain: [0.0, 1.0], range: None, }
 }
 
 ///|
@@ -225,12 +225,12 @@ test "calculator type errors" {
 ///|
 test "stitching bad arity and NaN input" {
   let f1 : PdfFunction = {
-    func: Interpolation({ c0: [0.0], c1: [1.0], n: 1.0 }),
+    func: Interpolation({ c0: [0.0], c1: [1.0], n: 1.0, }),
     domain: [0.0, 1.0],
     range: Some([0.0, 1.0]),
   }
   let fun : PdfFunction = {
-    func: Stitching({ functions: [f1], bounds: [], stitch_encode: [0.0, 1.0] }),
+    func: Stitching({ functions: [f1], bounds: [], stitch_encode: [0.0, 1.0], }),
     domain: [0.0, 1.0],
     range: Some([0.0, 1.0]),
   }

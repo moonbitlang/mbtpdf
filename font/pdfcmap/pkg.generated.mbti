@@ -16,8 +16,8 @@ pub struct CMap {
   wmode : Int?
 } derive(@debug.Debug)
 pub fn CMap::parse(@pdf.Pdf, @pdf.PdfObject) -> Self raise
+pub fn CMap::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 
 // Traits
-

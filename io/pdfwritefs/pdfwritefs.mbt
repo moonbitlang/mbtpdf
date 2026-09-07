@@ -11,7 +11,7 @@ pub struct PdfWriteFs {
 
 ///|
 pub fn PdfWriteFs::new(logger? : (String) -> Unit) -> PdfWriteFs {
-  { writer: @pdfwrite.PdfWrite::new(logger?) }
+  { writer: @pdfwrite.PdfWrite::new(logger?), }
 }
 
 ///|

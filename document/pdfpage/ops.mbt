@@ -59,7 +59,7 @@ pub fn Page::postpend_operators(
   fast? : Bool = false,
 ) -> Page raise {
   if fast {
-    let wrapped : Array[@pdfops.Op] = Array::new()
+    let wrapped : Array[@pdfops.Op] = Array()
     wrapped.push(Opq)
     wrapped.append(ops[:])
     wrapped.push(OpQ)
@@ -86,7 +86,7 @@ pub fn Page::postpend_operators(
       }
     } else {
       let protected_ops = Page::protect_ops(existing_ops)
-      let combined : Array[@pdfops.Op] = Array::new()
+      let combined : Array[@pdfops.Op] = Array()
       combined.push(Opq)
       combined.append(existing_ops[:])
       combined.append(protected_ops[:])

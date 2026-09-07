@@ -477,7 +477,7 @@ test "get_image_24bpp ignores decode for indexed colourspace" {
 ///|
 fn sample_tint_function() -> @pdffun.PdfFunction {
   {
-    func: Interpolation({ c0: [0.0], c1: [1.0], n: 1.0 }),
+    func: Interpolation({ c0: [0.0], c1: [1.0], n: 1.0, }),
     domain: [0.0, 1.0],
     range: Some([0.0, 1.0]),
   }

@@ -23,6 +23,7 @@ pub fn Transform::compose(Self, TransformOp) -> Self
 pub fn Transform::identity() -> Self
 pub fn Transform::new(Array[TransformOp]) -> Self
 pub fn Transform::to_matrix(Self) -> TransformMatrix
+pub fn Transform::to_repr(Self) -> @debug.Repr
 pub fn Transform::to_string(Self) -> String
 
 pub struct TransformMatrix {
@@ -44,6 +45,7 @@ pub fn TransformMatrix::rotate((Double, Double), Double) -> Self
 pub fn TransformMatrix::scale((Double, Double), Double, Double) -> Self
 pub fn TransformMatrix::shear_x((Double, Double), Double) -> Self
 pub fn TransformMatrix::shear_y((Double, Double), Double) -> Self
+pub fn TransformMatrix::to_repr(Self) -> @debug.Repr
 pub fn TransformMatrix::to_string(Self) -> String
 pub fn TransformMatrix::translate(Double, Double) -> Self
 
@@ -55,8 +57,8 @@ pub(all) enum TransformOp {
   ShearY((Double, Double), Double)
 } derive(@debug.Debug)
 pub fn TransformOp::to_matrix(Self) -> TransformMatrix
+pub fn TransformOp::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 
 // Traits
-

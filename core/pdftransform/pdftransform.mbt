@@ -39,7 +39,7 @@ pub fn TransformMatrix::TransformMatrix(
   e~ : Double,
   f~ : Double,
 ) -> TransformMatrix {
-  { a, b, c, d, e, f }
+  { a, b, c, d, e, f, }
 }
 
 ///|
@@ -70,7 +70,7 @@ fn concat_ops(
   a : Array[TransformOp],
   b : Array[TransformOp],
 ) -> Array[TransformOp] {
-  let out = Array::new(capacity=a.length() + b.length())
+  let out = Array(capacity=a.length() + b.length())
   for item in a {
     out.push(item)
   }
@@ -82,9 +82,7 @@ fn concat_ops(
 
 ///|
 fn tail_ops(tr : Array[TransformOp]) -> Array[TransformOp] {
-  let out = Array::new(
-    capacity=if tr.length() > 0 { tr.length() - 1 } else { 0 },
-  )
+  let out = Array(capacity=if tr.length() > 0 { tr.length() - 1 } else { 0 })
   let mut i = 1
   while i < tr.length() {
     out.push(tr[i])
@@ -124,7 +122,7 @@ fn string_of_op(op : TransformOp) -> String {
 ///|
 /// Make a string of a transform for debug purposes.
 pub fn Transform::to_string(self : Transform) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   for op in self.ops[:].rev_iter() {
     sb.write_string(string_of_op(op))
   }
@@ -436,3 +434,15 @@ pub fn TransformMatrix::recompose(
 pub suberror NonInvertable {
   NonInvertable
 }
+
+// Explicit method promotion for derived/implemented traits.
+// (Previously implicit; see warning [0079] implicit_impl_as_method.)
+
+///|
+pub extend Transform with Debug::{to_repr}
+
+///|
+pub extend TransformMatrix with Debug::{to_repr}
+
+///|
+pub extend TransformOp with Debug::{to_repr}

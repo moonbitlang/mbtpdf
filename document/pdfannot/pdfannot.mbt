@@ -84,7 +84,7 @@ fn int_array_of_numbers(
   pdf : @pdf.Pdf,
   values : Array[PdfObject],
 ) -> Array[Int] raise {
-  let out = Array::new(capacity=values.length())
+  let out = Array(capacity=values.length())
   for v in values {
     out.push(toint(pdf.getnum(v)))
   }
@@ -168,7 +168,7 @@ fn read_annotation(pdf : @pdf.Pdf, annot : PdfObject) -> Annotation raise {
         Some(PdfArray(dash)) => int_array_of_numbers(pdf, dash)
         _ => []
       }
-      { width, vradius: 0.0, hradius: 0.0, style, dasharray }
+      { width, vradius: 0.0, hradius: 0.0, style, dasharray, }
     }
     None =>
       match pdf.lookup_direct("/Border", annot) {
@@ -262,7 +262,7 @@ pub fn PdfAnnot::annotations_of_page(
           None => ()
         }
       }
-      let out = Array::new(capacity=annotations.length())
+      let out = Array(capacity=annotations.length())
       for annot in annotations {
         match (annot : PdfObject) {
           Indirect(i) =>
@@ -377,7 +377,7 @@ pub fn Border::new(
   style? : Style = NoStyle,
   dasharray? : Array[Int] = [],
 ) -> Border {
-  { width, vradius, hradius, style, dasharray }
+  { width, vradius, hradius, style, dasharray, }
 }
 
 ///|
@@ -471,3 +471,12 @@ pub fn PdfAnnot::transform_annotations(
     _ => ()
   }
 }
+
+// Explicit method promotion for derived/implemented traits.
+// (Previously implicit; see warning [0079] implicit_impl_as_method.)
+
+///|
+pub extend Border with Debug::{to_repr}
+
+///|
+pub extend Style with Debug::{to_repr}

@@ -1,6 +1,6 @@
 ///|
 fn lexemes_of_op(op : Op) -> Array[Lexeme] {
-  let out : Array[Lexeme] = Array::new()
+  let out : Array[Lexeme] = Array()
   fn push(lexeme : Lexeme) -> Unit {
     out.push(lexeme)
   }
@@ -313,7 +313,7 @@ fn lexemes_of_op(op : Op) -> Array[Lexeme] {
 
 ///|
 fn lexemes_of_ops(ops : Array[Op]) -> Array[Lexeme] {
-  let out : Array[Lexeme] = Array::new()
+  let out : Array[Lexeme] = Array()
   for op in ops {
     let lexemes = lexemes_of_op(op)
     for lexeme in lexemes {
@@ -325,7 +325,7 @@ fn lexemes_of_ops(ops : Array[Op]) -> Array[Lexeme] {
 
 ///|
 fn lexemelists_of_ops(ops : Array[Op]) -> Array[Array[Lexeme]] {
-  let out : Array[Array[Lexeme]] = Array::new(capacity=ops.length())
+  let out : Array[Array[Lexeme]] = Array(capacity=ops.length())
   for op in ops {
     out.push(lexemes_of_op(op))
   }
@@ -362,7 +362,7 @@ fn string_of_lexeme(lexeme : Lexeme) -> String raise {
         _ => []
       }
       let space = if filterspecial(filters) { "" } else { " " }
-      let sb = StringBuilder::new()
+      let sb = StringBuilder()
       sb.write_string("BI\n")
       sb.write_string(dict_body)
       sb.write_string(" ID")
@@ -376,7 +376,7 @@ fn string_of_lexeme(lexeme : Lexeme) -> String raise {
 
 ///|
 fn string_of_lexemes(lexemes : Array[Lexeme]) -> String raise {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   let mut last_char : Char? = None
   for lexeme in lexemes {
     let text = string_of_lexeme(lexeme)
@@ -439,7 +439,7 @@ pub fn Op::concat_bytess(ss : Array[Array[Byte]]) -> Array[Byte] {
 
 ///|
 fn stream_of_lexemes(oplists : Array[Array[Lexeme]]) -> Array[Byte] raise {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   let mut prev : String = ""
   for oplist in oplists {
     let text = string_of_lexemes(oplist)

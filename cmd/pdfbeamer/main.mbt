@@ -135,7 +135,7 @@ fn ops_code_block(
   y_top : Double,
   lines : Array[String],
 ) -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   let line_h = 15.0
   let w = SLIDE_W - 2.0 * MARGIN_X
   let h = line_h * lines.length().to_double() + 26.0
@@ -153,7 +153,7 @@ fn ops_code_block(
 
 ///|
 fn header_ops(section : String, title : String) -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   let accent = theme_accent()
   ops.append(
     ops_fill_rect(0.0, SLIDE_H - HEADER_H, SLIDE_W, HEADER_H, accent)[:],
@@ -173,7 +173,7 @@ fn footer_ops(
   total_pages : Int,
   progress0_1 : Double,
 ) -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   let bar = (0.12, 0.14, 0.18)
   ops.append(ops_fill_rect(0.0, 0.0, SLIDE_W, FOOTER_H, bar)[:])
   ops.append(
@@ -214,7 +214,7 @@ fn footer_ops(
 
 ///|
 fn notes_ops(note : String) -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   let x = MARGIN_X
   let w = SLIDE_W - 2.0 * MARGIN_X
   let y = FOOTER_H + 10.0
@@ -245,7 +245,7 @@ fn slide_ops(
   page_index_1 : Int,
   total_pages : Int,
 ) -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(0.0, 0.0, SLIDE_W, SLIDE_H, theme_bg())[:])
   ops.append(header_ops(section, title)[:])
   let progress = page_index_1.to_double() / total_pages.to_double()
@@ -267,7 +267,7 @@ fn bullet_slide_body(
   bullets : Array[String],
   shown : Int,
 ) -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   let line_h = 26.0
   let mut i = 0
   for b in bullets {
@@ -284,7 +284,7 @@ fn bullet_slide_body(
 
 ///|
 fn title_slide_body(title : String, subtitle : String) -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_text(MARGIN_X, 340.0, "/F0", 46.0, title, theme_ink())[:])
   ops.append(ops_text(MARGIN_X, 300.0, "/F1", 20.0, subtitle, theme_muted())[:])
   ops.append(
@@ -315,7 +315,7 @@ fn title_slide_body(title : String, subtitle : String) -> Array[Op] {
 
 ///|
 fn section_slide_body(section : String) -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_text(MARGIN_X, 320.0, "/F0", 40.0, section, theme_ink())[:])
   ops.append(
     ops_text(
@@ -334,7 +334,7 @@ fn section_slide_body(section : String) -> Array[Op] {
 fn toc_slide_body(
   entries : Array[(String, Int)],
 ) -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_text(MARGIN_X, 420.0, "/F0", 30.0, "Outline", theme_ink())[:])
   ops.append(
     ops_text(
@@ -347,7 +347,7 @@ fn toc_slide_body(
     )[:],
   )
   let mut y = 340.0
-  let rects : Array[(Int, (Double, Double, Double, Double))] = Array::new()
+  let rects : Array[(Int, (Double, Double, Double, Double))] = Array()
   for entry in entries {
     let (name, page_i) = entry
     ops.append(ops_text(MARGIN_X, y, "/F1", 22.0, name, theme_accent())[:])
@@ -499,7 +499,7 @@ fn add_bookmarks(
   section_starts : Array[(String, Int)],
 ) -> @pdf.Pdf raise {
   let refs = pdf.page_reference_numbers()
-  let marks : Array[@pdfmarks.Bookmark] = Array::new()
+  let marks : Array[@pdfmarks.Bookmark] = Array()
   marks.push({
     level: 0,
     text: "Slides",
@@ -560,9 +560,9 @@ fn build_deck() -> (
   Array[(Int, (Double, Double, Double, Double))],
 ) raise {
   // Section start indices are 1-based slide indices (for TOC/bookmarks).
-  let section_starts : Array[(String, Int)] = Array::new()
-  let toc_entries : Array[(String, Int)] = Array::new()
-  let slides : Array[SlideDef] = Array::new()
+  let section_starts : Array[(String, Int)] = Array()
+  let toc_entries : Array[(String, Int)] = Array()
+  let slides : Array[SlideDef] = Array()
   fn push_slide(
     slides : Array[SlideDef],
     section : String,
@@ -570,7 +570,7 @@ fn build_deck() -> (
     note : String?,
     body : SlideBody,
   ) -> Unit {
-    slides.push({ section, title, note, body })
+    slides.push({ section, title, note, body, })
   }
 
   fn begin_section(
@@ -684,7 +684,7 @@ fn build_deck() -> (
     Thanks,
   )
   let total = slides.length()
-  let pages : Array[@pdfpage.Page] = Array::new(capacity=total)
+  let pages : Array[@pdfpage.Page] = Array(capacity=total)
   let mut toc_links : Array[(Int, (Double, Double, Double, Double))] = []
   for i in 0..<total {
     let slide = slides[i]
@@ -693,7 +693,7 @@ fn build_deck() -> (
       SectionDivider(name) => section_slide_body(name)
       Bullets(bs, shown) => bullet_slide_body(MARGIN_X, 420.0, bs, shown)
       PipelineDiagram => {
-        let ops : Array[Op] = Array::new()
+        let ops : Array[Op] = Array()
         ops.append(
           ops_text(
             MARGIN_X,
@@ -737,7 +737,7 @@ fn build_deck() -> (
         ops
       }
       CodeSnippet => {
-        let ops : Array[Op] = Array::new()
+        let ops : Array[Op] = Array()
         ops.append(
           ops_text(
             MARGIN_X,
@@ -761,7 +761,7 @@ fn build_deck() -> (
       Takeaways(items) =>
         bullet_slide_body(MARGIN_X, 420.0, items, items.length())
       Thanks => {
-        let ops : Array[Op] = Array::new()
+        let ops : Array[Op] = Array()
         ops.append(
           ops_text(MARGIN_X, 340.0, "/F0", 44.0, "Thanks!", theme_ink())[:],
         )

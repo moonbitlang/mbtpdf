@@ -23,7 +23,7 @@ fn decode_lzw(
     if code < 0 || code >= prefix_code.length() {
       return []
     }
-    let reversed : Array[Int] = Array::new()
+    let reversed : Array[Int] = Array()
     let mut c = code
     let mut steps = 0
     while c > 255 {
@@ -38,7 +38,7 @@ fn decode_lzw(
       c = prefix_code[c]
     }
     reversed.push(c)
-    let out : Array[Int] = Array::new(capacity=reversed.length())
+    let out : Array[Int] = Array(capacity=reversed.length())
     for i in 0..<reversed.length() {
       out.push(reversed[reversed.length() - 1 - i])
     }
@@ -79,7 +79,7 @@ fn decode_lzw(
     bit_buffer = 0
     endflush = 4
     reset_table()
-    let output : Array[Byte] = Array::new()
+    let output : Array[Byte] = Array()
     strip_clear_codes()
     if old_code == 257 {
       return @pdfio.mkbytes(0)

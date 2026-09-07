@@ -23,4 +23,3 @@ pub fn PdfTree::read_number_tree(Self, @pdf.PdfObject) -> Array[(String, @pdf.Pd
 // Type aliases
 
 // Traits
-

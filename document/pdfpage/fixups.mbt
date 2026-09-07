@@ -21,7 +21,7 @@ fn rewrite_first_kid(
   new_num : Int,
   kids : Array[PdfObject],
 ) -> Array[PdfObject] {
-  let out = Array::new(capacity=kids.length())
+  let out = Array(capacity=kids.length())
   let mut rewritten = false
   for kid in kids {
     match kid {
@@ -76,7 +76,7 @@ fn page_tree_nodes_not_pages_inner(
   } else {
     match pdf.lookup_direct("/Kids", pages_node) {
       Some(PdfArray(elts)) => {
-        let out = Array::new()
+        let out = Array()
         out.push(node_number)
         for elt in elts {
           match elt {
@@ -171,7 +171,7 @@ fn page_reference_numbers_unordered_inner(
 
 ///|
 fn page_reference_numbers_unordered(pdf : @pdf.Pdf) -> Array[Int] raise {
-  let acc : Ref[Array[Int]] = { val: [] }
+  let acc : Ref[Array[Int]] = { val: [], }
   let root = pdf.lookup_obj(pdf.root)
   let pages_node = match pdf.lookup_direct("/Pages", root) {
     Some(p) => p
@@ -277,9 +277,9 @@ pub fn PdfPageDoc::fixup_duplicate_annots(self : PdfPageDoc) -> Unit raise {
     }
   })
   let seen : Map[Int, Unit] = Map([])
-  let to_copy : Array[(Int, Int)] = Array::new()
+  let to_copy : Array[(Int, Int)] = Array()
   let new_annots = existing_annots.map(annots => {
-    let out = Array::new(capacity=annots.length())
+    let out = Array(capacity=annots.length())
     for i in annots {
       if seen.get(i) is None {
         out.push(i)

@@ -35,4 +35,3 @@ pub fn PdfGlyphList::reverse_glyph_hashes(Self) -> Map[Array[Int], String] raise
 // Type aliases
 
 // Traits
-

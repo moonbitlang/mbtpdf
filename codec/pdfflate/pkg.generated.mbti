@@ -19,4 +19,3 @@ pub fn PdfFlate::uncompress(Self, header? : Bool, (Array[Byte]) -> Int, (Array[B
 // Type aliases
 
 // Traits
-

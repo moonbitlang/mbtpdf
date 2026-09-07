@@ -193,7 +193,7 @@ pub fn Date::to_pdf_string(self : Date) -> String raise BadDate {
 ///|
 /// Build a date by parsing a PDF date string.
 pub fn Date::of_pdf_string(s : String) -> Date raise BadDate {
-  let chars = Array::new(capacity=s.length())
+  let chars = Array(capacity=s.length())
   for ch in s {
     chars.push(ch)
   }
@@ -242,3 +242,9 @@ pub fn Date::of_pdf_string(s : String) -> Date raise BadDate {
   date.check()
   date
 }
+
+// Explicit method promotion for derived/implemented traits.
+// (Previously implicit; see warning [0079] implicit_impl_as_method.)
+
+///|
+pub extend Date with Debug::{to_repr}

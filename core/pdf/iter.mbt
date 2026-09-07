@@ -15,7 +15,7 @@ fn recurse_dict(
   preserve_order? : Bool = false,
 ) -> PdfObject {
   let _ = preserve_order
-  let out = Array::new(capacity=elts.length())
+  let out = Array(capacity=elts.length())
   for entry in elts {
     out.push((entry.0, f(entry.1)))
   }
@@ -84,7 +84,7 @@ pub fn Pdf::objselect(
   f : (PdfObject) -> Bool raise?,
 ) -> Array[Int] raise? {
   // Upper bound: all objects could match.
-  let out = Array::new(capacity=self.objects.objects.length())
+  let out = Array(capacity=self.objects.objects.length())
   self.objiter((num, obj) => if f(obj) { out.push(num) })
   out
 }
@@ -106,7 +106,7 @@ fn Pdf::nullify_deleted_page_references(self : Pdf) -> Unit raise {
   }
 
   // Upper bound: all objects could be /Page dictionaries.
-  let page_object_numbers = Array::new(capacity=self.objects.objects.length())
+  let page_object_numbers = Array(capacity=self.objects.objects.length())
   self.objiter((objnum, obj) => {
     match obj {
       Dictionary(_) =>

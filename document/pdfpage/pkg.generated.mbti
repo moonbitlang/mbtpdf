@@ -66,8 +66,8 @@ pub(all) enum Rotation {
 } derive(@debug.Debug)
 pub fn Rotation::from_int(Int) -> Self raise
 pub fn Rotation::to_int(Self) -> Int
+pub fn Rotation::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 
 // Traits
-

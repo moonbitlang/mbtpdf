@@ -20,6 +20,7 @@ pub(all) enum LabelStyle {
   LowercaseLetters
   NoLabelPrefixOnly
 } derive(@debug.Debug)
+pub fn LabelStyle::to_repr(Self) -> @debug.Repr
 pub fn LabelStyle::to_string(Self) -> String
 
 pub(all) struct PageLabel {
@@ -30,6 +31,7 @@ pub(all) struct PageLabel {
 } derive(@debug.Debug)
 pub fn PageLabel::read_all(@pdf.Pdf) -> Array[Self] raise
 pub fn PageLabel::remove_all(@pdf.Pdf) -> Unit raise
+pub fn PageLabel::to_repr(Self) -> @debug.Repr
 pub fn PageLabel::to_string(Self) -> String
 pub fn PageLabel::write_all(Array[Self], @pdf.Pdf) -> Unit raise
 
@@ -47,4 +49,3 @@ pub fn PdfPageLabels::pagelabeltext_of_pagenumber(Self, Int, Array[PageLabel]) -
 // Type aliases
 
 // Traits
-

@@ -10,7 +10,7 @@ priv struct LsbBitWriter {
 
 ///|
 fn LsbBitWriter::new() -> LsbBitWriter {
-  { out: Array::new(), cur: 0, bit_pos: 0 }
+  { out: Array(), cur: 0, bit_pos: 0, }
 }
 
 ///|
@@ -58,7 +58,7 @@ fn run_uncompress(
       n
     }
   }
-  let out : Array[Byte] = Array::new()
+  let out : Array[Byte] = Array()
   let output = (buf : Array[Byte], length : Int) => {
     for i in 0..<length {
       out.push(buf[i])
@@ -84,7 +84,7 @@ fn run_compress(data : Array[Byte], header : Bool) -> Array[Byte] {
       n
     }
   }
-  let out : Array[Byte] = Array::new()
+  let out : Array[Byte] = Array()
   let output = (buf : Array[Byte], length : Int) => {
     for i in 0..<length {
       out.push(buf[i])

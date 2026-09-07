@@ -41,4 +41,3 @@ pub using @pdfcrypt {type Permission}
 pub using @pdf {type Stream}
 
 // Traits
-

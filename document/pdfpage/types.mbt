@@ -33,7 +33,7 @@ pub fn Page::Page(
   rotate~ : Rotation,
   rest~ : PdfObject,
 ) -> Page {
-  { content, mediabox, resources, rotate, rest }
+  { content, mediabox, resources, rotate, rest, }
 }
 
 ///|
@@ -87,3 +87,9 @@ pub fn Rotation::from_int(i : Int) -> Rotation raise {
     _ => raise @pdf.PdfError::Msg("Bad /Rotate")
   }
 }
+
+// Explicit method promotion for derived/implemented traits.
+// (Previously implicit; see warning [0079] implicit_impl_as_method.)
+
+///|
+pub extend Rotation with Debug::{to_repr}

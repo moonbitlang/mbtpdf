@@ -24,5 +24,5 @@ pub fn PdfMerger::new(
   pdfs : Array[@pdf.Pdf],
   ranges : Array[Array[Int]],
 ) -> PdfMerger {
-  { names, pdfs, ranges }
+  { names, pdfs, ranges, }
 }

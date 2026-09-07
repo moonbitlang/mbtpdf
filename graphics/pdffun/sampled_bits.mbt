@@ -4,7 +4,7 @@ fn read_samples(
   count : Int,
   bits_per_sample : Int,
 ) -> Array[Int] {
-  let out = Array::new(capacity=count)
+  let out = Array(capacity=count)
   let bit_pos = Ref(0)
   for _ in 0..<count {
     out.push(read_bits(data, bit_pos, bits_per_sample))

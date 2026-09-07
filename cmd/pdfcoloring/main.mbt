@@ -94,7 +94,7 @@ fn ops_poly_path(
   match points {
     [] => []
     [(x0, y0), .. rest] => {
-      let ops : Array[Op] = Array::new(capacity=points.length() + 2)
+      let ops : Array[Op] = Array(capacity=points.length() + 2)
       ops.push(Opm(x0, y0))
       for p in rest {
         let (x, y) = p
@@ -136,7 +136,7 @@ fn circle_points(
   r : Double,
   n : Int,
 ) -> Array[(Double, Double)] {
-  let out = Array::new(capacity=n)
+  let out = Array(capacity=n)
   let two_pi = 8.0 * @math.atan(1.0)
   for i in 0..<n {
     let t = two_pi * (i.to_double() / n.to_double())
@@ -249,7 +249,7 @@ fn add_link(
 
 ///|
 fn add_bookmarks(pdf : @pdf.Pdf, refs : Array[Int]) -> @pdf.Pdf raise {
-  let marks : Array[@pdfmarks.Bookmark] = Array::new()
+  let marks : Array[@pdfmarks.Bookmark] = Array()
   let titles : Array[String] = [
     "Cover", "Cupcake", "Rocket", "Hidden Objects", "The End",
   ]
@@ -275,7 +275,7 @@ fn ops_button(
   label : String,
   accent : (Double, Double, Double),
 ) -> (Array[Op], (Double, Double, Double, Double)) {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0))[:])
   ops.append(ops_stroke_rect(x, y, ww, hh, accent, 2.0)[:])
   ops.append(ops_fill_rect(x, y + hh - 6.0, ww, 6.0, accent)[:])
@@ -296,7 +296,7 @@ fn ops_home_badge() -> Array[Op] {
   let ww = x1 - x0
   let hh = y1 - y0
   let accent = (0.18, 0.48, 0.86)
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(x0, y0, ww, hh, (1.0, 1.0, 1.0))[:])
   ops.append(ops_stroke_rect(x0, y0, ww, hh, accent, 2.0)[:])
   ops.append(ops_fill_rect(x0, y0 + hh - 6.0, ww, 6.0, accent)[:])
@@ -308,7 +308,7 @@ fn ops_home_badge() -> Array[Op] {
 
 ///|
 fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.98, 0.98, 0.99))[:])
   ops.append(ops_fill_rect(0.0, h() - 120.0, w(), 120.0, (0.18, 0.48, 0.86))[:])
   ops.append(
@@ -348,7 +348,7 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
 
 ///|
 fn cupcake_ops() -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
   ops.append(
     ops_text(72.0, h() - 80.0, "/F0", 40.0, "Cupcake", (0.12, 0.14, 0.18))[:],
@@ -419,7 +419,7 @@ fn cupcake_ops() -> Array[Op] {
 
 ///|
 fn rocket_ops() -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
   ops.append(
     ops_text(72.0, h() - 80.0, "/F0", 40.0, "Rocket", (0.12, 0.14, 0.18))[:],
@@ -530,7 +530,7 @@ fn rocket_ops() -> Array[Op] {
 
 ///|
 fn hidden_objects_ops() -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
   ops.append(
     ops_text(
@@ -680,7 +680,7 @@ fn hidden_objects_ops() -> Array[Op] {
 
 ///|
 fn end_ops() -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.06, 0.07, 0.1))[:])
   ops.append(
     ops_text(72.0, h() - 110.0, "/F0", 54.0, "Nice work!", (0.95, 0.96, 0.98))[:],

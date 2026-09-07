@@ -32,6 +32,7 @@ pub(all) struct Border {
   dasharray : Array[Int]
 } derive(@debug.Debug)
 pub fn Border::new(Double, vradius? : Double, hradius? : Double, style? : Style, dasharray? : Array[Int]) -> Self
+pub fn Border::to_repr(Self) -> @debug.Repr
 
 pub struct PdfAnnot {
   pdf : @pdf.Pdf
@@ -49,6 +50,7 @@ pub(all) enum Style {
   Inset
   UnderlineStyle
 } derive(@debug.Debug)
+pub fn Style::to_repr(Self) -> @debug.Repr
 
 pub(all) enum Subtype {
   Text
@@ -82,4 +84,3 @@ pub(all) enum Subtype {
 // Type aliases
 
 // Traits
-

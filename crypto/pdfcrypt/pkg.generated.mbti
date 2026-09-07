@@ -20,6 +20,7 @@ pub(all) enum EncryptionMethod {
   AES256bitISO(Bool)
   AlreadyEncrypted
 } derive(@debug.Debug)
+pub fn EncryptionMethod::to_repr(Self) -> @debug.Repr
 
 pub struct PdfCrypt {
   unit : Unit
@@ -48,8 +49,10 @@ pub(all) enum Permission {
   NoAssemble
   NoHqPrint
 } derive(Eq, @debug.Debug)
+pub fn Permission::equal(Self, Self) -> Bool
+pub fn Permission::not_equal(Self, Self) -> Bool
+pub fn Permission::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 
 // Traits
-

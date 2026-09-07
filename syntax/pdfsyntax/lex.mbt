@@ -13,7 +13,7 @@ fn hex_value(c : Char) -> Int? {
 ///|
 /// Lex a name.
 pub fn lex_name(input : @pdfio.Input) -> Token raise {
-  let bytes : Array[Byte] = Array::new()
+  let bytes : Array[Byte] = Array()
   let _ = (input.input_byte)()
   bytes.push('/'.to_int().to_byte())
   let mut done = false
@@ -105,7 +105,7 @@ pub fn lex_number(input : @pdfio.Input) -> Token raise {
 ///|
 /// Lex a string.
 pub fn lex_string(input : @pdfio.Input) -> Token raise {
-  let bytes : Array[Byte] = Array::new()
+  let bytes : Array[Byte] = Array()
   let mut paren = 1
   let first = (input.input_byte)()
   if first != '(' {
@@ -147,7 +147,7 @@ pub fn lex_string(input : @pdfio.Input) -> Token raise {
           }
           '\n' => ()
           digit if digit >= '0' && digit <= '7' => {
-            let digits : Array[Char] = Array::new()
+            let digits : Array[Char] = Array()
             digits.push(digit)
             let b2 = (input.input_byte)()
             if b2 != @pdfio.no_more {
@@ -187,7 +187,7 @@ pub fn lex_string(input : @pdfio.Input) -> Token raise {
 /// Lex a hex string.
 pub fn lex_hexstring(input : @pdfio.Input) -> Token raise {
   let _ = (input.input_byte)()
-  let bytes : Array[Byte] = Array::new()
+  let bytes : Array[Byte] = Array()
   let mut pending : Int? = None
   let mut done = false
   while !done {
@@ -374,7 +374,12 @@ pub fn lex_stream_data(
       (input.seek_in)(original_pos)
       lex_malformed_stream_data(input)
     } else {
-      let toget : @pdf.ToGet = { input, position: pos, length, crypt: NoChange }
+      let toget : @pdf.ToGet = {
+        input,
+        position: pos,
+        length,
+        crypt: NoChange,
+      }
       LexStream(ToGet(toget))
     }
   }
@@ -382,7 +387,7 @@ pub fn lex_stream_data(
 
 ///|
 fn reverse_tokens(tokens : Array[Token]) -> Array[Token] {
-  let out = Array::new(capacity=tokens.length())
+  let out = Array(capacity=tokens.length())
   for t in tokens[:].rev_iter() {
     out.push(t)
   }
@@ -391,7 +396,7 @@ fn reverse_tokens(tokens : Array[Token]) -> Array[Token] {
 
 ///|
 fn take_dict_lexemes(previous_lexemes : Array[Token]) -> Array[Token] {
-  let collected = Array::new()
+  let collected = Array()
   for t in previous_lexemes[:].rev_iter() {
     if t is LexObj {
       break
@@ -546,9 +551,9 @@ pub fn lex_dictionary(
   minus_one : Bool,
   input : @pdfio.Input,
 ) -> Array[Token] raise {
-  let tokens = Array::new()
-  let dict_level : Ref[Int] = { val: 0 }
-  let array_level : Ref[Int] = { val: 0 }
+  let tokens = Array()
+  let dict_level : Ref[Int] = { val: 0, }
+  let array_level : Ref[Int] = { val: 0, }
   let mut done = false
   while !done {
     let t = lex_next(dict_level, array_level, false, input, tokens, false, _ => {

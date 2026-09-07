@@ -84,4 +84,3 @@ pub fn TextExtractor::new(@pdffont.Font) -> Self
 // Type aliases
 
 // Traits
-

@@ -115,7 +115,7 @@ fn PdfTree::read_tree_strings(
     sorted.sort_by((a, b) => compare_string(key_string(a.0), key_string(b.0)))
   }
   let deduped = remove_duplicates(sorted, isnum)
-  let out = Array::new()
+  let out = Array()
   for pair in deduped {
     let key = pair.0
     let value = pair.1
@@ -177,7 +177,7 @@ fn remove_duplicates(
   match items {
     [] => []
     [first, .. rest] => {
-      let out = Array::new(capacity=items.length())
+      let out = Array(capacity=items.length())
       let mut prev = first
       for current in rest {
         let same = if isnum {
@@ -202,7 +202,7 @@ fn remove_duplicates(
 fn pairs_of_array(
   arr : Array[@pdf.PdfObject],
 ) -> Array[(@pdf.PdfObject, @pdf.PdfObject)] {
-  let out = Array::new(capacity=arr.length() / 2)
+  let out = Array(capacity=arr.length() / 2)
   for i = 0; i + 1 < arr.length(); i = i + 2 {
     out.push((arr[i], arr[i + 1]))
   }
@@ -215,7 +215,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
   for list in lists {
     total = total + list.length()
   }
-  let out = Array::new(capacity=total)
+  let out = Array(capacity=total)
   for list in lists {
     out.append(list[:])
   }
@@ -224,7 +224,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
 
 ///|
 fn[T] concat_arrays(a : Array[T], b : Array[T]) -> Array[T] {
-  let out = Array::new(capacity=a.length() + b.length())
+  let out = Array(capacity=a.length() + b.length())
   out.append(a[:])
   out.append(b[:])
   out
@@ -248,7 +248,7 @@ fn build_nt_tree(items : Array[(String, @pdf.PdfObject)]) -> Nt {
       Leaf(first.0, items, last.0)
     [first, .., last] => {
       let groups = split_into(items, maxsize)
-      let subtrees = Array::new()
+      let subtrees = Array()
       for group in groups {
         subtrees.push(build_nt_tree(group))
       }
@@ -280,14 +280,12 @@ fn split_into(
     // Avoid an infinite loop on invalid input; callers always pass a positive size.
     return [items]
   }
-  let groups = Array::new(
-    capacity=(items.length() + group_size - 1) / group_size,
-  )
+  let groups = Array(capacity=(items.length() + group_size - 1) / group_size)
   let mut index = 0
   while index < items.length() {
     let remaining = items.length() - index
     let cap = if group_size < remaining { group_size } else { remaining }
-    let group = Array::new(capacity=cap)
+    let group = Array(capacity=cap)
     let mut i = 0
     while i < group_size && index < items.length() {
       group.push(items[index])
@@ -308,7 +306,7 @@ fn PdfTree::name_tree_of_nt(
 ) -> @pdf.PdfObject {
   match node {
     Leaf(llimit, items, rlimit) => {
-      let array_items = Array::new(capacity=items.length() * 2)
+      let array_items = Array(capacity=items.length() * 2)
       for pair in items {
         let key_obj = if isnum {
           PdfObject::Integer(parse_int(pair.0))
@@ -328,7 +326,7 @@ fn PdfTree::name_tree_of_nt(
       } else {
         PdfArray([PdfString(llimit), PdfString(rlimit)])
       }
-      let dict_entries = Array::new(capacity=2)
+      let dict_entries = Array(capacity=2)
       dict_entries.push(entry)
       if !isroot {
         dict_entries.push(("/Limits", limits))
@@ -336,7 +334,7 @@ fn PdfTree::name_tree_of_nt(
       Dictionary(dict_entries)
     }
     Branch(llimit, kids, rlimit) => {
-      let kid_refs = Array::new(capacity=kids.length())
+      let kid_refs = Array(capacity=kids.length())
       for child in kids {
         let child_obj = self.name_tree_of_nt(isnum, false, child)
         match child_obj {

@@ -90,7 +90,7 @@ fn read_malformed_pdf_objects(
     }
     match parsed {
       Some(obj) => {
-        objects.set(objnum, ({ val: Parsed(obj) }, gen))
+        objects.set(objnum, ({ val: Parsed(obj), }, gen))
         if objnum > max_obj {
           max_obj = objnum
         }
@@ -132,7 +132,7 @@ fn trailer_boundary_ok(input : @pdfio.Input, pos : Int, len : Int) -> Bool {
 fn read_malformed_trailerdicts(
   input : @pdfio.Input,
 ) -> Array[@pdf.PdfObject] raise {
-  let dicts = Array::new()
+  let dicts = Array()
   let target = "trailer"
   let len = target.length()
   let mut pos = 0

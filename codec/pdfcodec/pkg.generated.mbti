@@ -24,6 +24,7 @@ pub(all) enum Encoding {
   CCITT(Int, Int)
   CCITTG4(Int, Int)
 } derive(@debug.Debug)
+pub fn Encoding::to_repr(Self) -> @debug.Repr
 
 pub struct PdfCodec {
   flate_level : Int
@@ -46,6 +47,7 @@ pub(all) enum Predictor {
   PNGPaeth
   PNGOptimum
 } derive(@debug.Debug)
+pub fn Predictor::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 
@@ -54,4 +56,3 @@ pub trait PdfFilterNameDecode {
   fn decode_stage(Self, PdfCodec, @pdf.Pdf, @pdf.PdfObject?, Array[Byte], String?) -> Array[Byte] raise CodecError
 }
 pub impl PdfFilterNameDecode for @pdf.PdfName
-

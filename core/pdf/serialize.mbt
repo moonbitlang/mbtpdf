@@ -91,7 +91,7 @@ fn expand_scientific(value : String) -> String {
       let mantissa = slice_range(body, 0, idx)
       let exp_str = slice_from(body, idx + 1)
       let exp = parse_signed_int(exp_str)
-      let digits = Array::new()
+      let digits = Array()
       let mut int_len = 0
       let mut saw_dot = false
       for ch in mantissa {
@@ -108,7 +108,7 @@ fn expand_scientific(value : String) -> String {
         sign + "0"
       } else {
         let new_pos = int_len + exp
-        let sb = StringBuilder::new()
+        let sb = StringBuilder()
         sb.write_string(sign)
         if new_pos <= 0 {
           sb.write_string("0.")
@@ -219,7 +219,7 @@ fn make_pdf_name(name : String) -> String {
   if !needs_processing_name(bytes) {
     return normalized
   }
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   sb.write_char('/')
   for i in 1..<bytes.length() {
     let b = bytes[i].to_int()
@@ -236,7 +236,7 @@ fn make_pdf_name(name : String) -> String {
 
 ///|
 fn make_pdf_string(value : String) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   sb.write_char('(')
   for ch in value {
     match ch {
@@ -316,7 +316,7 @@ fn write_pdf_object(
 ///|
 /// Convert a PDF object to its string representation.
 pub fn PdfObject::to_string(self : PdfObject) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   write_pdf_object(self, false, false, sb)
   sb.to_string()
 }
@@ -324,7 +324,7 @@ pub fn PdfObject::to_string(self : PdfObject) -> String {
 ///|
 /// Convert a PDF object to string including stream data.
 pub fn PdfObject::to_string_including_data(self : PdfObject) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   write_pdf_object(self, true, true, sb)
   sb.to_string()
 }

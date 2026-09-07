@@ -48,7 +48,7 @@ fn page_count(pdf : @pdf.Pdf) -> Int raise {
 
 ///|
 fn full_range(count : Int) -> Array[Int] {
-  let out = Array::new(capacity=count)
+  let out = Array(capacity=count)
   for i in 1..<=count {
     out.push(i)
   }
@@ -222,7 +222,7 @@ fn make_bulk_named_dest_entries(
     Some(objnum) => objnum
     None => fail("missing page 1")
   }
-  let entries = Array::new(capacity=count)
+  let entries = Array(capacity=count)
   for i in 0..<count {
     let name = prefix + i.to_string()
     let dest = @pdfdest.Destination::Fit(PageObject(page_obj))
@@ -236,7 +236,7 @@ fn make_bulk_url_entries(
   prefix : String,
   count : Int,
 ) -> Array[(String, @pdf.PdfObject)] {
-  let entries = Array::new(capacity=count)
+  let entries = Array(capacity=count)
   for i in 0..<count {
     let name = prefix + i.to_string()
     let uri = "https://example.com/" + prefix + i.to_string()
@@ -314,7 +314,7 @@ fn read_ocg_names(pdf : @pdf.Pdf) -> Array[String] raise {
     Some(PdfArray(arr)) => arr
     _ => fail("missing /OCGs array")
   }
-  let names = Array::new(capacity=ocgs.length())
+  let names = Array(capacity=ocgs.length())
   for ocg in ocgs {
     match (pdf.direct(ocg) : @pdf.PdfObject) {
       Dictionary(entries) => {
@@ -342,7 +342,7 @@ fn read_ocg_config_names(pdf : @pdf.Pdf) -> Array[String] raise {
     Some(PdfArray(arr)) => arr
     _ => fail("missing /Configs array")
   }
-  let names = Array::new(capacity=configs.length())
+  let names = Array(capacity=configs.length())
   for config in configs {
     let config = pdf.direct(config)
     match (pdf.lookup_direct("/Name", config) : @pdf.PdfObject?) {
@@ -685,9 +685,9 @@ async test "e2e merge stress repeated" {
   let count = page_count(base)
   assert_true(count > 0)
   let copies = 8
-  let names = Array::new(capacity=copies)
-  let pdfs = Array::new(capacity=copies)
-  let ranges = Array::new(capacity=copies)
+  let names = Array(capacity=copies)
+  let pdfs = Array(capacity=copies)
+  let ranges = Array(capacity=copies)
   for i in 0..<copies {
     names.push("stress_" + i.to_string())
     pdfs.push(read_pdf(MERGE_LEFT_PATH))
@@ -1694,9 +1694,9 @@ async test "e2e merge mixed feature pipeline" {
 ///|
 async test "e2e merge multi-copy mixed stress" {
   let copies = 4
-  let names = Array::new(capacity=copies)
-  let pdfs = Array::new(capacity=copies)
-  let ranges = Array::new(capacity=copies)
+  let names = Array(capacity=copies)
+  let pdfs = Array(capacity=copies)
+  let ranges = Array(capacity=copies)
   let mut i = 0
   while i < copies {
     let base = @pdfpage.PdfPageDoc::minimum_valid()
@@ -1778,12 +1778,12 @@ async test "e2e merge varied page counts stress" {
   assert_true(base_count >= 3)
   let ranges = [[1], [1, base_count], [base_count / 2 + 1]]
   let names = ["varied_one", "varied_two", "varied_three"]
-  let pdfs = Array::new(capacity=ranges.length())
+  let pdfs = Array(capacity=ranges.length())
   for i in 0..<ranges.length() {
     let subset = @pdfpage.PdfPageDoc::new(base).pdf_of_pages(ranges[i])
     pdfs.push(subset)
   }
-  let merge_ranges = Array::new(capacity=pdfs.length())
+  let merge_ranges = Array(capacity=pdfs.length())
   for pdf in pdfs {
     merge_ranges.push(full_range(page_count(pdf)))
   }

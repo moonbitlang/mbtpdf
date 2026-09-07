@@ -38,7 +38,7 @@ pub async fn run(args : Array[String], quiet? : Bool = false) -> Unit {
       fail("File is encrypted.")
     }
     let pages = @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree()
-    let rebuilt = Array::new()
+    let rebuilt = Array()
     for page in pages {
       rebuilt.push(rebuild_page(pdf, page))
     }

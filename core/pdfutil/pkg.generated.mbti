@@ -37,4 +37,3 @@ pub fn[K : Hash + Eq, V] PdfUtil::null_hash(Self) -> Map[K, V]
 pub type Printer = (String) -> Unit
 
 // Traits
-

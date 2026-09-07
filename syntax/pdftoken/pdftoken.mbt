@@ -24,3 +24,9 @@ pub(all) enum Token {
   StopLexing
   LexNone
 } derive(Debug)
+
+// Explicit method promotion for derived/implemented traits.
+// (Previously implicit; see warning [0079] implicit_impl_as_method.)
+
+///|
+pub extend Token with Debug::{to_repr}

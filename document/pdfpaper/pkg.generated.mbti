@@ -46,10 +46,10 @@ pub fn Paper::height(Self) -> Double
 pub fn Paper::landscape(Self) -> Self
 pub fn Paper::new(unit~ : @pdfunits.LengthUnit, width~ : Double, height~ : Double) -> Self
 pub fn Paper::rectangle(Self) -> @pdf.PdfObject
+pub fn Paper::to_repr(Self) -> @debug.Repr
 pub fn Paper::unit(Self) -> @pdfunits.LengthUnit
 pub fn Paper::width(Self) -> Double
 
 // Type aliases
 
 // Traits
-

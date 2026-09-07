@@ -2,7 +2,7 @@
 fn catalog_items_from_original_documents(
   pdfs : Array[@pdf.Pdf],
 ) -> Array[(String, PdfObject)] raise {
-  let out : Array[(String, PdfObject)] = Array::new()
+  let out : Array[(String, PdfObject)] = Array()
   for pdf in pdfs {
     match pdf.catalog_of_pdf() {
       Dictionary(entries) =>
@@ -24,7 +24,7 @@ fn merge_entries(
   name : String,
   dicts : Array[PdfObject],
 ) -> Array[PdfObject] {
-  let out = Array::new()
+  let out = Array()
   for dict in dicts {
     match pdf.lookup_direct(name, dict) {
       Some(PdfArray(arr)) => out.append(arr[:])
@@ -40,7 +40,7 @@ fn merge_default_dictionaries(
   dicts : Array[PdfObject],
 ) -> Array[(String, PdfObject)] {
   fn merge_empty_is_none(name : String) -> Array[(String, PdfObject)] {
-    let arrays = Array::new(capacity=dicts.length())
+    let arrays = Array(capacity=dicts.length())
     for dict in dicts {
       match pdf.lookup_direct(name, dict) {
         Some(PdfArray(arr)) => arrays.push(arr)
@@ -61,7 +61,7 @@ fn merge_default_dictionaries(
   let keys : Array[String] = [
     "/Locked", "/ListMode", "/AS", "/Intent", "/BaseState", "/Creator", "/Name",
   ]
-  let simple_copies = Array::new(capacity=keys.length())
+  let simple_copies = Array(capacity=keys.length())
   for key in keys {
     let mut found = None
     for dict in dicts {
@@ -78,7 +78,7 @@ fn merge_default_dictionaries(
       None => ()
     }
   }
-  let out = Array::new()
+  let out = Array()
   out.append(merged_on[:])
   out.append(merged_off[:])
   out.append(merged_order[:])
@@ -92,7 +92,7 @@ fn merge_optional_content_groups(
   pdf : @pdf.Pdf,
   pdfs : Array[@pdf.Pdf],
 ) -> Int? raise {
-  let ocp_dicts = Array::new(capacity=pdfs.length())
+  let ocp_dicts = Array(capacity=pdfs.length())
   for src in pdfs {
     match src.lookup_direct("/OCProperties", src.catalog_of_pdf()) {
       Some(obj) => ocp_dicts.push(obj)
@@ -104,7 +104,7 @@ fn merge_optional_content_groups(
   }
   let merged_ocg_arrays = merge_entries(pdf, "/OCGs", ocp_dicts)
   let merged_config_arrays = merge_entries(pdf, "/Configs", ocp_dicts)
-  let default_dicts = Array::new(capacity=ocp_dicts.length())
+  let default_dicts = Array(capacity=ocp_dicts.length())
   for dict in ocp_dicts {
     match pdf.lookup_direct("/D", dict) {
       Some(obj) => default_dicts.push(obj)
@@ -112,7 +112,7 @@ fn merge_optional_content_groups(
     }
   }
   let merged_default_dictionary = merge_default_dictionaries(pdf, default_dicts)
-  let entries = Array::new(capacity=3)
+  let entries = Array(capacity=3)
   entries.push(("/OCGs", PdfObject::PdfArray(merged_ocg_arrays)))
   entries.push(("/D", Dictionary(merged_default_dictionary)))
   if merged_config_arrays.length() > 0 {
@@ -124,7 +124,7 @@ fn merge_optional_content_groups(
 
 ///|
 fn merge_acroforms(pdf : @pdf.Pdf, pdfs : Array[@pdf.Pdf]) -> Int? raise {
-  let form_dicts = Array::new()
+  let form_dicts = Array()
   for src in pdfs {
     match src.lookup_direct("/AcroForm", src.catalog_of_pdf()) {
       Some(obj) => form_dicts.push(obj)
@@ -134,7 +134,7 @@ fn merge_acroforms(pdf : @pdf.Pdf, pdfs : Array[@pdf.Pdf]) -> Int? raise {
   if form_dicts.length() == 0 {
     return None
   }
-  let merged_field_arrays = Array::new()
+  let merged_field_arrays = Array()
   for dict in form_dicts {
     match pdf.lookup_direct("/Fields", dict) {
       Some(PdfArray(arr)) => merged_field_arrays.append(arr[:])

@@ -28,7 +28,7 @@ fn clampvals(
   if domain.length() % 2 == 1 {
     raise Msg("Domain wrong")
   }
-  let out = Array::new(capacity=values.length())
+  let out = Array(capacity=values.length())
   for i in 0..<values.length() {
     let d = i * 2
     if d + 1 >= domain.length() {

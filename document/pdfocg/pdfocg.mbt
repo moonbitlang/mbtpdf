@@ -197,7 +197,7 @@ fn read_individual_ocg(pdf : @pdf.Pdf, ocg : @pdf.PdfObject) -> Ocg raise {
     None => None
     Some(usage) => read_ocg_usage(pdf, usage)
   }
-  { ocg_name, ocg_intent, ocg_usage }
+  { ocg_name, ocg_intent, ocg_usage, }
 }
 
 ///|
@@ -211,7 +211,7 @@ pub fn OcgProperties::read(pdf : @pdf.Pdf) -> OcgProperties? raise {
         Some(ocproperties) => {
           let ocgs = match pdf.lookup_direct("/OCGs", ocproperties) {
             Some(PdfArray(indirects)) => {
-              let out = Array::new()
+              let out = Array()
               for entry in indirects {
                 let num = match entry {
                   Indirect(n) => n
@@ -233,7 +233,7 @@ pub fn OcgProperties::read(pdf : @pdf.Pdf) -> OcgProperties? raise {
               configs.map(config => read_config(pdf, config))
             _ => []
           }
-          Some({ ocgs, ocg_default_config, ocg_configs })
+          Some({ ocgs, ocg_default_config, ocg_configs, })
         }
       }
   }
@@ -263,7 +263,7 @@ fn print_ocg(pair : (Int, Ocg)) -> Unit {
   let ocg = pair.1
   @pdfutil.PdfUtil::new().flprint("OCG \{num}\n")
   @pdfutil.PdfUtil::new().flprint("Name \{ocg.ocg_name}\n")
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   sb.write_string("Intent(s)")
   for intent in ocg.ocg_intent {
     sb..write_char(' ')..write_string(intent)
@@ -305,3 +305,30 @@ pub fn PdfOcg::print_document(self : PdfOcg) -> Unit raise {
     }
   }
 }
+
+// Explicit method promotion for derived/implemented traits.
+// (Previously implicit; see warning [0079] implicit_impl_as_method.)
+
+///|
+pub extend Ocg with Debug::{to_repr}
+
+///|
+pub extend OcgAppDict with Debug::{to_repr}
+
+///|
+pub extend OcgConfig with Debug::{to_repr}
+
+///|
+pub extend OcgListMode with Debug::{to_repr}
+
+///|
+pub extend OcgOrderTree with Debug::{to_repr}
+
+///|
+pub extend OcgProperties with Debug::{to_repr}
+
+///|
+pub extend OcgState with Debug::{to_repr}
+
+///|
+pub extend OcgUsage with Debug::{to_repr}

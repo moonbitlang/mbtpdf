@@ -28,4 +28,3 @@ pub fn PdfAfmData::zapf_dingbats_afm(Self) -> Array[Byte]
 // Type aliases
 
 // Traits
-

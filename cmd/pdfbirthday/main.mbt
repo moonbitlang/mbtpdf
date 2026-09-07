@@ -94,7 +94,7 @@ fn ops_poly_path(
   match points {
     [] => []
     [(x0, y0), .. rest] => {
-      let ops : Array[Op] = Array::new(capacity=points.length() + 2)
+      let ops : Array[Op] = Array(capacity=points.length() + 2)
       ops.push(Opm(x0, y0))
       for p in rest {
         let (x, y) = p
@@ -136,7 +136,7 @@ fn circle_points(
   r : Double,
   n : Int,
 ) -> Array[(Double, Double)] {
-  let out = Array::new(capacity=n)
+  let out = Array(capacity=n)
   let two_pi = 8.0 * @math.atan(1.0)
   for i in 0..<n {
     let t = two_pi * (i.to_double() / n.to_double())
@@ -152,7 +152,7 @@ fn ops_balloon(
   r : Double,
   rgb : (Double, Double, Double),
 ) -> Array[Op] {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_polygon(circle_points(cx, cy, r, 40), rgb)[:])
   ops.append(
     ops_stroke_polyline(
@@ -192,7 +192,7 @@ fn ops_button(
   label : String,
   accent : (Double, Double, Double),
 ) -> (Array[Op], (Double, Double, Double, Double)) {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0))[:])
   ops.append(ops_stroke_rect(x, y, ww, hh, accent, 2.0)[:])
   ops.append(ops_fill_rect(x, y + hh - 6.0, ww, 6.0, accent)[:])
@@ -330,7 +330,7 @@ fn add_bookmarks(pdf : @pdf.Pdf, refs : Array[Int]) -> @pdf.Pdf raise {
 
 ///|
 fn cover_ops(name : String) -> (Array[Op], (Double, Double, Double, Double)) {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   let accent = (0.92, 0.33, 0.36)
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.98, 0.98, 0.99))[:])
   ops.append(ops_fill_rect(0.0, h() - 110.0, w(), 110.0, (0.18, 0.48, 0.86))[:])
@@ -363,7 +363,7 @@ fn cover_ops(name : String) -> (Array[Op], (Double, Double, Double, Double)) {
 
 ///|
 fn inside_ops(name : String) -> (Array[Op], (Double, Double, Double, Double)) {
-  let ops : Array[Op] = Array::new()
+  let ops : Array[Op] = Array()
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
   ops.append(ops_fill_rect(0.0, 0.0, w(), 64.0, (0.12, 0.14, 0.18))[:])
   ops.append(

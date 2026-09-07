@@ -21,7 +21,7 @@ fn merge_bookmarks(
           }
         _ => []
       }
-      let out = Array::new(capacity=oldstyle.length() + newstyle.length())
+      let out = Array(capacity=oldstyle.length() + newstyle.length())
       out.append(oldstyle[:])
       out.append(newstyle[:])
       out
@@ -185,7 +185,7 @@ fn merge_bookmarks(
       }
     }
 
-    let bookmarks = Array::new()
+    let bookmarks = Array()
     let mut offset = 0
     for i in 0..<pdfs.length() {
       let range = ranges[i]

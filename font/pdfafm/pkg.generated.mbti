@@ -19,4 +19,3 @@ pub fn PdfAfm::read(Self, @pdfio.Input) -> (Array[(String, String)], Array[(Int,
 // Type aliases
 
 // Traits
-

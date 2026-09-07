@@ -65,7 +65,7 @@ pub fn bset_unsafe(bytes : Array[Byte], index : Int, value : Int) -> Unit {
 ///|
 /// Make bytes from a string by taking the low 8 bits of each character.
 pub fn bytes_of_string(s : String) -> Array[Byte] {
-  let out = Array::new(capacity=s.length())
+  let out = Array(capacity=s.length())
   for ch in s {
     out.push(ch.to_int().to_byte())
   }
@@ -81,7 +81,7 @@ pub fn bytes_of_caml_bytes(bytes : Bytes) -> Array[Byte] {
 ///|
 /// Make bytes from an array of integers (each 0..255).
 pub fn bytes_of_list(values : Array[Int]) -> Array[Byte] {
-  let out = Array::new(capacity=values.length())
+  let out = Array(capacity=values.length())
   for v in values {
     out.push(v.to_byte())
   }
@@ -91,7 +91,7 @@ pub fn bytes_of_list(values : Array[Int]) -> Array[Byte] {
 ///|
 /// Make bytes from a character array.
 pub fn bytes_of_charlist(values : Array[Char]) -> Array[Byte] {
-  let out = Array::new(capacity=values.length())
+  let out = Array(capacity=values.length())
   for v in values {
     out.push(v.to_int().to_byte())
   }
@@ -105,7 +105,7 @@ pub fn bytes_of_arraylist(values : Array[Array[Int]]) -> Array[Byte] {
   for v in values {
     total = total + v.length()
   }
-  let out = Array::new(capacity=total)
+  let out = Array(capacity=total)
   for v in values {
     for x in v {
       out.push(x.to_byte())
@@ -147,7 +147,7 @@ pub fn string_of_int_array(values : Array[Int]) -> String {
 ///|
 /// Make a string by mapping each byte to a single character.
 pub fn string_of_bytes(bytes : Array[Byte]) -> String {
-  let chars = Array::new(capacity=bytes.length())
+  let chars = Array(capacity=bytes.length())
   for b in bytes {
     chars.push(b.to_char())
   }
@@ -215,7 +215,7 @@ pub fn Output::of_write_at(
   let mut pos = 0
   let mut highest_written = -1
   let single : Array[Byte] = mkbytes(1)
-  let buffer : Ref[Array[Byte]] = { val: mkbytes(4096) }
+  let buffer : Ref[Array[Byte]] = { val: mkbytes(4096), }
   let output_bytes = (bytes : Bytes) => {
     for b in bytes {
       if pos > buffer.val.length() - 1 {
@@ -261,7 +261,7 @@ pub fn Output::of_write_at(
 ///|
 /// Build an input-output, with an initial buffer size.
 pub fn Output::of_bytes(size : Int) -> (Output, Ref[Array[Byte]]) {
-  let data : Ref[Array[Byte]] = { val: mkbytes(size) }
+  let data : Ref[Array[Byte]] = { val: mkbytes(size), }
   (output_of_bytes(data), data)
 }
 
@@ -328,7 +328,7 @@ pub fn Input::read_char_back(self : Input) -> Char? {
 ///|
 /// Read a line from an input (newline not included).
 pub fn Input::read_line(self : Input) -> String raise {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   fn read_more(
     sb : StringBuilder,
     saw_any : Bool,
@@ -350,7 +350,7 @@ pub fn Input::read_line(self : Input) -> String raise {
 ///|
 /// Read all lines from an input.
 pub fn Input::read_lines(self : Input) -> Array[String] raise {
-  let lines = Array::new()
+  let lines = Array()
   fn read_all(lines : Array[String], input : Input) -> Array[String] raise {
     match input.peek_char() {
       None => lines
@@ -453,7 +453,7 @@ pub struct BitstreamWrite {
 ///|
 /// Build a bitstream from an input.
 pub fn Bitstream::of_input(input : Input) -> Bitstream {
-  { input, curr_byte: 0, bit: 0, bits_read: 0 }
+  { input, curr_byte: 0, bit: 0, bits_read: 0, }
 }
 
 ///|
@@ -515,7 +515,7 @@ pub fn Bitstream::align(self : Bitstream) -> Unit {
 ///|
 /// Make a new write bitstream.
 pub fn BitstreamWrite::new() -> BitstreamWrite {
-  { bytes: Array::new(), bit: 0 }
+  { bytes: Array(), bit: 0, }
 }
 
 ///|
@@ -645,3 +645,12 @@ pub fn debug_next_n_chars(count : Int, input : Input) -> Unit {
     rewind_count = rewind_count + 1
   }
 }
+
+// Explicit method promotion for derived/implemented traits.
+// (Previously implicit; see warning [0079] implicit_impl_as_method.)
+
+///|
+pub extend BitstreamPosition with Debug::{to_repr}
+
+///|
+pub extend BitstreamWrite with Debug::{to_repr}

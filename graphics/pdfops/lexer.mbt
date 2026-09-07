@@ -140,7 +140,7 @@ fn lex_stream(
   resources : @pdf.PdfObject,
   input : @pdfio.Input,
 ) -> Array[Lexeme] raise {
-  let lexemes : Array[Lexeme] = Array::new()
+  let lexemes : Array[Lexeme] = Array()
   try {
     while true {
       let lexeme = lex_next(pdf, resources, input)
@@ -169,5 +169,5 @@ pub fn Op::parse_single_stream(
 ) -> Array[Op] raise {
   let input = @pdfio.Input::of_bytes(stream)
   let lexemes = lex_stream(pdf, resources, input)
-  parse_lexemes({ val: 0 }, lexemes)
+  parse_lexemes({ val: 0, }, lexemes)
 }

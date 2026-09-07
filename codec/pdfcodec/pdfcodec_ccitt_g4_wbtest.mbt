@@ -14,7 +14,7 @@ fn bytes_from_runs(start_white : Bool, runs : Array[Int]) -> Array[Byte] {
 
 ///|
 fn build_runs() -> Array[Int] {
-  let runs = Array::new()
+  let runs = Array()
   for i = 1; i <= 63; i = i + 1 {
     runs.push(i)
   }

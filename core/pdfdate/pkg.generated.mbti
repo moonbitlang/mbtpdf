@@ -23,8 +23,8 @@ pub struct Date {
 } derive(@debug.Debug)
 pub fn Date::of_pdf_string(String) -> Self raise BadDate
 pub fn Date::to_pdf_string(Self) -> String raise BadDate
+pub fn Date::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 
 // Traits
-
