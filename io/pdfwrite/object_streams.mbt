@@ -5,10 +5,10 @@ fn clear_object_stream_ids(ids : Map[Int, Int]) -> Unit {
 
 ///|
 fn split_into_groups(items : Array[Int], group_size : Int) -> Array[Array[Int]] {
-  let groups = Array()
+  let groups = []
   let mut index = 0
   while index < items.length() {
-    let group = Array()
+    let group = []
     let mut i = 0
     while i < group_size && index < items.length() {
       group.push(items[index])
@@ -48,7 +48,7 @@ fn generate_object_stream_hints(
       _ => ()
     }
   }
-  let candidates = Array()
+  let candidates = []
   for pair in entries {
     let objnum = pair.0
     if pdf.objects.object_stream_ids.get(objnum) is Some(_) {
@@ -102,7 +102,7 @@ fn build_object_stream_groups(pdf : @pdf.Pdf) -> Array[(Int, Array[Int])] {
     let list = match groups.get(stream_id) {
       Some(existing) => existing
       None => {
-        let created = Array()
+        let created = []
         groups.set(stream_id, created)
         created
       }
@@ -133,8 +133,8 @@ fn bake_object_streams(
     if objs.length() == 0 {
       continue
     }
-    let object_strings = Array()
-    let offsets = Array()
+    let object_strings = []
+    let offsets = []
     let mut offset = 0
     let mut index = 0
     for objnum in objs {

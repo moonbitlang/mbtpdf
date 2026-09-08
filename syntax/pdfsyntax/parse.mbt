@@ -12,7 +12,7 @@ type Token = @pdftoken.Token
 
 ///|
 fn parse_R(tokens : Array[Token]) -> Array[ParseItem] {
-  let out = Array(capacity=tokens.length())
+  let out = Array::new(capacity=tokens.length())
   let mut i = 0
   while i < tokens.length() {
     if i + 2 < tokens.length() {
@@ -46,7 +46,7 @@ fn parse_dictionary(
   start : Int,
 ) -> (ParseItem, Int) raise {
   let remaining = items.length() - start
-  let entries = Array(capacity=remaining / 2)
+  let entries = Array::new(capacity=remaining / 2)
   let mut i = start + 1
   while i < items.length() {
     match items[i] {
@@ -68,7 +68,7 @@ fn parse_dictionary(
 ///|
 fn parse_array(items : Array[ParseItem], start : Int) -> (ParseItem, Int) raise {
   let remaining = items.length() - start
-  let values = Array(capacity=remaining)
+  let values = Array::new(capacity=remaining)
   let mut i = start + 1
   while i < items.length() {
     match items[i] {
@@ -100,7 +100,7 @@ fn parse_value(items : Array[ParseItem], start : Int) -> (ParseItem, Int) raise 
 
 ///|
 fn parse_to_tree(items : Array[ParseItem]) -> Array[ParseItem] raise {
-  let out = Array(capacity=items.length())
+  let out = Array::new(capacity=items.length())
   let mut i = 0
   while i < items.length() {
     match items[i] {

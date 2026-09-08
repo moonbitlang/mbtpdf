@@ -70,7 +70,7 @@ fn concat_ops(
   a : Array[TransformOp],
   b : Array[TransformOp],
 ) -> Array[TransformOp] {
-  let out = Array(capacity=a.length() + b.length())
+  let out = Array::new(capacity=a.length() + b.length())
   for item in a {
     out.push(item)
   }
@@ -82,7 +82,7 @@ fn concat_ops(
 
 ///|
 fn tail_ops(tr : Array[TransformOp]) -> Array[TransformOp] {
-  let out = Array(capacity=if tr.length() > 0 { tr.length() - 1 } else { 0 })
+  let out = Array::new(capacity=if tr.length() > 0 { tr.length() - 1 } else { 0 })
   let mut i = 1
   while i < tr.length() {
     out.push(tr[i])

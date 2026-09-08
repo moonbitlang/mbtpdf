@@ -13,7 +13,7 @@ pub fn PdfAfm::new() -> PdfAfm {
 
 ///|
 fn split_whitespace(line : String) -> Array[String] {
-  let out = Array()
+  let out = []
   let mut current = StringBuilder()
   for ch in line {
     if ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' {
@@ -87,7 +87,7 @@ fn extract_section(
   start_prefix : String,
   end_prefix : String,
 ) -> Array[String] {
-  let out = Array()
+  let out = []
   let mut collecting = false
   for line in lines {
     if line.has_prefix(start_prefix) {
@@ -135,7 +135,7 @@ fn get_tables(
     lines, "StartCharMetrics", "EndCharMetrics",
   )
   let kern_lines = extract_section(lines, "StartKernPairs", "EndKernPairs")
-  let header_lines = Array(capacity=lines.length())
+  let header_lines = Array::new(capacity=lines.length())
   for line in lines {
     if line.has_prefix("C ") {
       break
@@ -144,7 +144,7 @@ fn get_tables(
       header_lines.push(line)
     }
   }
-  let headers = Array(capacity=header_lines.length())
+  let headers = Array::new(capacity=header_lines.length())
   for line in header_lines {
     headers.push(split_header(line))
   }
@@ -169,14 +169,14 @@ fn get_tables(
       Some(read_kern_line(line))
     }
   })
-  let ws = Array(capacity=charmetrics.length())
+  let ws = Array::new(capacity=charmetrics.length())
   for entry in charmetrics {
     let (c, w) = entry.1
     if c > -1 {
       ws.push((c, w))
     }
   }
-  let ks = Array(capacity=kerns.length())
+  let ks = Array::new(capacity=kerns.length())
   for entry in kerns {
     let (n, n2, kern) = entry
     let p = lookup_charnum(charmetrics_hash, n)

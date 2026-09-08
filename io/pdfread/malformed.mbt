@@ -132,7 +132,7 @@ fn trailer_boundary_ok(input : @pdfio.Input, pos : Int, len : Int) -> Bool {
 fn read_malformed_trailerdicts(
   input : @pdfio.Input,
 ) -> Array[@pdf.PdfObject] raise {
-  let dicts = Array()
+  let dicts = []
   let target = "trailer"
   let len = target.length()
   let mut pos = 0

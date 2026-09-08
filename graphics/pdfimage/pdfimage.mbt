@@ -72,7 +72,7 @@ fn decode(fs : Array[Double], bpc : Int, image : Array[Byte]) -> Unit raise {
       (dmin + numerator / Double::from_int(max_val)).to_int()
     }
   }
-  let pairs = Array(capacity=fs.length() / 2)
+  let pairs = Array::new(capacity=fs.length() / 2)
   for i in 0..<(fs.length() / 2) {
     pairs.push((fs[i * 2], fs[i * 2 + 1]))
   }
@@ -93,7 +93,7 @@ fn decode(fs : Array[Double], bpc : Int, image : Array[Byte]) -> Unit raise {
 
 ///|
 fn real_array(values : Array[Double]) -> Array[PdfObject] {
-  let out = Array(capacity=values.length())
+  let out = Array::new(capacity=values.length())
   for v in values {
     out.push(PdfObject::Real(v))
   }
@@ -102,7 +102,7 @@ fn real_array(values : Array[Double]) -> Array[PdfObject] {
 
 ///|
 fn repeat_decode_pairs(count : Int) -> Array[PdfObject] {
-  let out = Array(capacity=count * 2)
+  let out = Array::new(capacity=count * 2)
   for _ in 0..<count {
     out.push(PdfObject::Real(0.0))
     out.push(Real(1.0))
@@ -150,7 +150,7 @@ fn decode_defaults(
                 ]),
               )
             Lab(_, _, range) => {
-              let values = Array(capacity=range.length() + 2)
+              let values = Array::new(capacity=range.length() + 2)
               values.push(PdfObject::Real(0.0))
               values.push(Real(1.0))
               values.append(real_array(range))

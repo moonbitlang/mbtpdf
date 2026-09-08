@@ -270,7 +270,7 @@ fn inflate_dynamic(
   }
   let code_length_huff = build_huffman(code_lengths)
   let total = hlit + hdist
-  let lengths = Array(capacity=total)
+  let lengths = Array::new(capacity=total)
   let mut prev = 0
   while lengths.length() < total {
     let sym = decode_symbol(reader, code_length_huff)
@@ -310,11 +310,11 @@ fn inflate_dynamic(
       raise Error("uncompress", "invalid code length symbol")
     }
   }
-  let lit_lengths = Array(capacity=hlit)
+  let lit_lengths = Array::new(capacity=hlit)
   for i in 0..<hlit {
     lit_lengths.push(lengths[i])
   }
-  let dist_lengths = Array(capacity=hdist)
+  let dist_lengths = Array::new(capacity=hdist)
   for i in 0..<hdist {
     dist_lengths.push(lengths[hlit + i])
   }
@@ -357,7 +357,7 @@ fn inflate_dynamic(
 
 ///|
 fn read_all_input(input : (Array[Byte]) -> Int) -> Array[Byte] {
-  let out = Array()
+  let out = []
   let buf = @pdfio.mkbytes(4096)
   fn read_more(
     out : Array[Byte],
@@ -493,7 +493,7 @@ pub fn PdfFlate::uncompress(
   let data = read_all_input(input)
   let start = if header { zlib_start_offset(data) } else { 0 }
   let reader = { data, byte_pos: start, bit_pos: 0, }
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   fn read_blocks(
     reader : BitReader,
     out : Array[Byte],

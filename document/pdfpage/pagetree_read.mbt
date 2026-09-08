@@ -50,7 +50,7 @@ fn find_pages(
             Some(Integer(r)) => Rotation::from_int(r)
             _ => rotate
           }
-          let out = Array()
+          let out = []
           for kid in kids {
             let kid_obj = match kid {
               Indirect(k) => {
@@ -85,7 +85,7 @@ fn find_pages(
             Some(Integer(r)) => Rotation::from_int(r)
             _ => rotate
           }
-          let out = Array()
+          let out = []
           for kid in kids {
             let kid_obj = match kid {
               Indirect(k) => {

@@ -30,7 +30,7 @@ fn pagetree_with_objnumbers(
 
 ///|
 fn buildnode(kids : ArrayView[Int], parent : Int, count : Int) -> PdfObject {
-  let kid_refs = Array()
+  let kid_refs = []
   for kid in kids {
     kid_refs.push(PdfObject::Indirect(kid))
   }
@@ -70,7 +70,7 @@ fn objects_of_ptree_objnumbers(pdf : @pdf.Pdf, node : PtreeObjnumbers) -> Unit {
         (objnum_leaf, buildnode(objnumbers, parent, countof(node))),
       )
     OBr(objnumbers, left, right, parent, objnum_branch) => {
-      let kids = Array()
+      let kids = []
       kids.push(objnumfrom(left))
       kids.append(objnumbers[:])
       kids.push(objnumfrom(right))
@@ -94,7 +94,7 @@ fn pdf_of_pages_build_pagetree(
     OBr(_, left, right, parent, _) => {
       objects_of_ptree_objnumbers(pdf, left)
       objects_of_ptree_objnumbers(pdf, right)
-      let kids = Array()
+      let kids = []
       kids.push(objnumfrom(left))
       kids.append(objnumbers[:])
       kids.push(objnumfrom(right))
@@ -163,7 +163,7 @@ pub fn PdfPageDoc::pdf_of_pages(
     let marks = @pdfmarks.PdfMarks::new(basepdf).read_bookmarks(
       preserve_actions=true,
     )
-    let kept : Array[@pdfmarks.Bookmark] = Array(capacity=marks.length())
+    let kept : Array[@pdfmarks.Bookmark] = Array::new(capacity=marks.length())
     for mark in marks {
       index = index + 1
       let page_num = PdfPageDoc::new(basepdf).pagenumber_of_target(
@@ -178,7 +178,7 @@ pub fn PdfPageDoc::pdf_of_pages(
         kept.push(mark)
       }
     }
-    let prefix_rev : Array[@pdfmarks.Bookmark] = Array()
+    let prefix_rev : Array[@pdfmarks.Bookmark] = []
     if first_index != -1 {
       let mut level = first_level - 1
       for n in first_index>=..0 {
@@ -210,7 +210,7 @@ pub fn PdfPageDoc::pdf_of_pages(
     Dictionary(d) => d
     _ => []
   }
-  let objnumbers : Array[Int] = Array(capacity=range.length())
+  let objnumbers : Array[Int] = Array::new(capacity=range.length())
   for page in range {
     objnumbers.push(select_page_ref(page_numbers, page))
   }

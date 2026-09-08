@@ -140,7 +140,7 @@ fn lex_stream(
   resources : @pdf.PdfObject,
   input : @pdfio.Input,
 ) -> Array[Lexeme] raise {
-  let lexemes : Array[Lexeme] = Array()
+  let lexemes : Array[Lexeme] = []
   try {
     while true {
       let lexeme = lex_next(pdf, resources, input)

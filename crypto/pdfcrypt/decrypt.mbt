@@ -125,7 +125,7 @@ fn decrypt_stream(
             }
             let dict_out : @pdf.PdfObject = match (dict : @pdf.PdfObject) {
               Dictionary(entries) => {
-                let out = Array(capacity=entries.length())
+                let out = Array::new(capacity=entries.length())
                 for entry in entries {
                   out.push((entry.0, decrypt_obj(entry.1)))
                 }
@@ -190,7 +190,7 @@ fn decrypt(
       if already_decrypted(pdf, obj) {
         objval
       } else {
-        let out = Array(capacity=values.length())
+        let out = Array::new(capacity=values.length())
         for value in values {
           out.push(decrypt_obj(value))
         }
@@ -200,7 +200,7 @@ fn decrypt(
       if already_decrypted(pdf, obj) {
         objval
       } else {
-        let out = Array(capacity=values.length())
+        let out = Array::new(capacity=values.length())
         for entry in values {
           out.push((entry.0, decrypt_obj(entry.1)))
         }

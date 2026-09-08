@@ -124,7 +124,7 @@ fn ops_poly_path(
   match points {
     [] => []
     [(x0, y0), .. rest] => {
-      let ops : Array[@pdfops.Op] = Array(capacity=points.length() + 2)
+      let ops : Array[@pdfops.Op] = Array::new(capacity=points.length() + 2)
       ops.push(Opm(x0, y0))
       for point in rest {
         let (x, y) = point
@@ -166,7 +166,7 @@ fn circle_points(
   r : Double,
   n : Int,
 ) -> Array[(Double, Double)] {
-  let out = Array(capacity=n)
+  let out = Array::new(capacity=n)
   let two_pi = 2.0 * pi()
   for i in 0..<n {
     let t = two_pi * (i.to_double() / n.to_double())
@@ -180,7 +180,7 @@ fn cover_ops() -> Array[@pdfops.Op] {
   let w = 595.0
   let h = 842.0
   let stripes = 28
-  let ops : Array[@pdfops.Op] = Array()
+  let ops : Array[@pdfops.Op] = []
   for i in 0..<stripes {
     let t = i.to_double() / (stripes - 1).to_double()
     let rgb = hsv_to_rgb(210.0 - 120.0 * t, 0.75, 0.95)
@@ -239,7 +239,7 @@ fn spiro_point(t : Double) -> (Double, Double) {
 
 ///|
 fn spiro_ops() -> Array[@pdfops.Op] {
-  let ops : Array[@pdfops.Op] = Array()
+  let ops : Array[@pdfops.Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.98, 0.98, 0.985))[:])
   ops.append(
     ops_text(
@@ -282,7 +282,7 @@ fn spiro_ops() -> Array[@pdfops.Op] {
 
 ///|
 fn layers_ops() -> Array[@pdfops.Op] {
-  let ops : Array[@pdfops.Op] = Array()
+  let ops : Array[@pdfops.Op] = []
 
   // "Day" layer
   ops.push(OpBDC("/OC", Name(PdfName(b"/DAY"))))
@@ -360,7 +360,7 @@ fn layers_ops() -> Array[@pdfops.Op] {
 
 ///|
 fn map_ops() -> Array[@pdfops.Op] {
-  let ops : Array[@pdfops.Op] = Array()
+  let ops : Array[@pdfops.Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.99, 0.985, 0.97))[:])
   ops.append(
     ops_text(54.0, 800.0, "/F0", 26.0, "Clickable Map", (0.12, 0.14, 0.18))[:],
@@ -400,7 +400,7 @@ fn map_ops() -> Array[@pdfops.Op] {
 
 ///|
 fn comic_ops() -> Array[@pdfops.Op] {
-  let ops : Array[@pdfops.Op] = Array()
+  let ops : Array[@pdfops.Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (1.0, 1.0, 1.0))[:])
   ops.append(
     ops_text(54.0, 800.0, "/F0", 24.0, "Tiny PDF Comic", (0.12, 0.14, 0.18))[:],
@@ -447,7 +447,7 @@ fn comic_ops() -> Array[@pdfops.Op] {
   )
 
   // Panel 2: a simple "burst"
-  let burst = Array(capacity=16)
+  let burst = Array::new(capacity=16)
   for i in 0..<16 {
     let t = 2.0 * pi() * (i.to_double() / 16.0)
     let r = if i % 2 == 0 { 70.0 } else { 35.0 }
@@ -474,7 +474,7 @@ fn comic_ops() -> Array[@pdfops.Op] {
 
 ///|
 fn stickers_ops() -> Array[@pdfops.Op] {
-  let ops : Array[@pdfops.Op] = Array()
+  let ops : Array[@pdfops.Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.97, 0.98, 0.99))[:])
   ops.append(
     ops_text(54.0, 800.0, "/F0", 24.0, "Vector Stickers", (0.12, 0.14, 0.18))[:],
@@ -508,7 +508,7 @@ fn stickers_ops() -> Array[@pdfops.Op] {
   }
 
   // Star sticker
-  let star = Array(capacity=10)
+  let star = Array::new(capacity=10)
   for i in 0..<10 {
     let t = 2.0 * pi() * (i.to_double() / 10.0) - pi() / 2.0
     let r = if i % 2 == 0 { 46.0 } else { 20.0 }
@@ -545,7 +545,7 @@ fn stickers_ops() -> Array[@pdfops.Op] {
 
 ///|
 fn credits_ops() -> Array[@pdfops.Op] {
-  let ops : Array[@pdfops.Op] = Array()
+  let ops : Array[@pdfops.Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.06, 0.07, 0.1))[:])
   ops.append(
     ops_text(54.0, 790.0, "/F0", 26.0, "Credits / Links", (0.95, 0.96, 0.98))[:],
@@ -659,7 +659,7 @@ fn add_bookmarks(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
   if refs.length() == 0 {
     return pdf
   }
-  let marks : Array[@pdfmarks.Bookmark] = Array()
+  let marks : Array[@pdfmarks.Bookmark] = []
   let entries : Array[(String, Int)] = [
     ("Cover", 0),
     ("Procedural Spirograph", 1),

@@ -6893,7 +6893,7 @@ pub fn PdfTextUtil::codepoints_of_shift_jis(
   _self : PdfTextUtil,
   bytes : Array[Int],
 ) -> Array[Int] {
-  let out = Array()
+  let out = []
   let mut i = 0
   while i < bytes.length() {
     let b = bytes[i]

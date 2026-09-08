@@ -85,7 +85,7 @@ pub fn PdfTextUtil::parse_charset(
   s : String,
 ) -> Array[String] {
   let input = @pdfio.Input::of_string(s)
-  let out = Array()
+  let out = []
   while true {
     try {
       input.dropwhite()
@@ -161,7 +161,7 @@ pub fn PdfText::read_fontdescriptor(
 
 ///|
 fn repeat_double(value : Double, count : Int) -> Array[Double] {
-  let out = Array(capacity=if count > 0 { count } else { 0 })
+  let out = Array::new(capacity=if count > 0 { count } else { 0 })
   for _ in 0..<count {
     out.push(value)
   }
@@ -220,7 +220,7 @@ pub fn PdfText::read_metrics(
         }
       })
       let after = repeat_double(missingwidth, 255 - lastchar)
-      let metrics = Array(
+      let metrics = Array::new(
         capacity=before.length() + given.length() + after.length(),
       )
       metrics.append(before)
@@ -239,13 +239,13 @@ pub fn PdfText::pairs_of_differences(
   match differences {
     PdfArray(elts) => {
       let direct = elts.map(obj => self.pdf.direct(obj))
-      let out = Array()
+      let out = []
       let mut i = 0
       while i < direct.length() {
         match direct[i] {
           Integer(n) => {
             i = i + 1
-            let names : Array[String] = Array()
+            let names : Array[String] = []
             while i < direct.length() {
               match direct[i] {
                 Name(name) => {
@@ -502,7 +502,7 @@ pub fn PdfTextUtil::read_cid_widths(
   _self : PdfTextUtil,
   elts : Array[@pdf.PdfObject],
 ) -> Array[(Int, Double)] raise {
-  let out = Array(capacity=elts.length())
+  let out = Array::new(capacity=elts.length())
   let mut i = 0
   while i < elts.length() {
     match elts[i] {

@@ -34,7 +34,7 @@ fn remove_image_xobjects(
     Dictionary(_) =>
       match pdf.lookup_direct("/XObject", resources) {
         Some(Dictionary(xobjects)) => {
-          let out = Array(capacity=xobjects.length())
+          let out = Array::new(capacity=xobjects.length())
           for entry in xobjects {
             if !isimage(pdf, entry.1) {
               out.push(entry)
@@ -75,7 +75,7 @@ fn remove_images_stream(
   resources : @pdf.PdfObject,
   ops : Array[@pdfops.Op],
 ) -> Array[@pdfops.Op] raise {
-  let out = Array(capacity=ops.length())
+  let out = Array::new(capacity=ops.length())
   for op in ops {
     match (op : @pdfops.Op) {
       OpDo(name) =>
@@ -115,7 +115,7 @@ fn remove_images_page(
 ///|
 fn remove_images(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
   let pages = @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree()
-  let pages_out = Array(capacity=pages.length())
+  let pages_out = Array::new(capacity=pages.length())
   for page in pages {
     pages_out.push(remove_images_page(pdf, page))
   }

@@ -132,7 +132,7 @@ fn ops_crosshatch(
   rgb : (Double, Double, Double),
   width : Double,
 ) -> Array[Op] {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   let mut i = 0.0
   while i <= w + h {
     let x0 = x + i
@@ -291,7 +291,7 @@ priv struct Maze {
 
 ///|
 fn Maze::new(w : Int, h : Int) -> Maze {
-  let cells = Array(capacity=w * h)
+  let cells = Array::new(capacity=w * h)
   for _ in 0..<(w * h) {
     cells.push(Cell::empty())
   }
@@ -310,7 +310,7 @@ fn in_bounds(w : Int, h : Int, x : Int, y : Int) -> Bool {
 
 ///|
 fn Maze::neighbors(self : Maze, x : Int, y : Int) -> Array[(Dir, Int, Int)] {
-  let out = Array(capacity=4)
+  let out = Array::new(capacity=4)
   let dirs : Array[Dir] = [N, E, S, W]
   for d in dirs {
     let (dx, dy) = dir_delta(d)
@@ -327,7 +327,7 @@ fn Maze::neighbors(self : Maze, x : Int, y : Int) -> Array[(Dir, Int, Int)] {
 fn Maze::carved(self : Maze, seed : UInt) -> Maze {
   let maze = self
   let rng = Rng::new(seed)
-  let visited = Array(capacity=maze.w * maze.h)
+  let visited = Array::new(capacity=maze.w * maze.h)
   for _ in 0..<(maze.w * maze.h) {
     visited.push(false)
   }
@@ -336,7 +336,7 @@ fn Maze::carved(self : Maze, seed : UInt) -> Maze {
   while stack.length() > 0 {
     let (cx, cy) = stack[stack.length() - 1]
     let neighbors = maze.neighbors(cx, cy)
-    let candidates : Array[(Dir, Int, Int)] = Array()
+    let candidates : Array[(Dir, Int, Int)] = []
     for entry in neighbors {
       let (_, nx, ny) = entry
       if !visited[idx(maze.w, nx, ny)] {
@@ -370,13 +370,13 @@ fn Maze::bfs_parents(
   start : (Int, Int),
 ) -> (Array[Int], Array[Int]) {
   let n = self.w * self.h
-  let dist = Array(capacity=n)
-  let parent = Array(capacity=n)
+  let dist = Array::new(capacity=n)
+  let parent = Array::new(capacity=n)
   for _ in 0..<n {
     dist.push(-1)
     parent.push(-1)
   }
-  let q = Array()
+  let q = []
   let (sx, sy) = start
   let s = idx(self.w, sx, sy)
   dist[s] = 0
@@ -426,7 +426,7 @@ fn farthest(dist : Array[Int]) -> Int {
 
 ///|
 fn build_path(parent : Array[Int], start_i : Int, goal_i : Int) -> Array[Int] {
-  let out = Array()
+  let out = []
   let mut cur = goal_i
   while cur != -1 {
     out.push(cur)
@@ -544,7 +544,7 @@ fn page_of_ops(ops : Array[Op]) -> @pdfpage.Page raise {
 
 ///|
 fn cover_ops(seed : UInt) -> Array[Op] {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.06, 0.07, 0.1))[:])
   for i in 0..<20 {
     let t = i.to_double() / 19.0
@@ -621,7 +621,7 @@ fn room_ops(
   cell : Cell,
   next_hint? : Dir? = None,
 ) -> Array[Op] {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.985, 0.985, 0.99))[:])
   let title = if is_exit {
     "Room " + room_idx_1.to_string() + " • EXIT"
@@ -803,7 +803,7 @@ fn draw_map_ops(
   exit_i : Int,
   path : Array[Int],
 ) -> Array[Op] {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.99, 0.985, 0.97))[:])
   ops.append(
     ops_text(
@@ -945,7 +945,7 @@ fn add_bookmarks(
   room_refs : Array[Int],
   map_ref : Int,
 ) -> @pdf.Pdf raise {
-  let marks : Array[@pdfmarks.Bookmark] = Array()
+  let marks : Array[@pdfmarks.Bookmark] = []
   if room_refs.length() > 0 {
     marks.push({
       level: 0,
@@ -1083,7 +1083,7 @@ pub async fn run(
     }
 
     // Pages: cover + rooms (w*h) + map.
-    let pages : Array[@pdfpage.Page] = Array()
+    let pages : Array[@pdfpage.Page] = []
     pages.push(page_of_ops(cover_ops(seed)))
     for y in 0..<maze.h {
       for x in 0..<maze.w {
@@ -1157,7 +1157,7 @@ pub async fn run(
         let i = idx(maze.w, x, y) // 0..(w*h-1)
         let page_i = 1 + i
         let cell = maze.cell(x, y)
-        let nbs : Array[(Dir, Int)] = Array()
+        let nbs : Array[(Dir, Int)] = []
         let dirs : Array[Dir] = [N, E, S, W]
         for d in dirs {
           if !cell.is_open(d) {

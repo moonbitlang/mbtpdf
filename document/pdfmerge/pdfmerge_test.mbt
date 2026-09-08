@@ -84,7 +84,7 @@ fn lookup_entry(
 
 ///|
 fn collect_dest_strings(pdf : @pdf.Pdf) -> Array[String] {
-  let out = Array()
+  let out = []
   pdf.objiter((_, obj) => {
     match (obj : @pdf.PdfObject) {
       Dictionary(entries) => {

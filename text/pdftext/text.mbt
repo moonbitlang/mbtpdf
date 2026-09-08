@@ -36,7 +36,7 @@ fn flatten_int_arrays(arrays : Array[Array[Int]]) -> Array[Int] {
   for arr in arrays {
     total = total + arr.length()
   }
-  let out = Array(capacity=total)
+  let out = Array::new(capacity=total)
   for arr in arrays {
     out.append(arr[:])
   }
@@ -45,7 +45,7 @@ fn flatten_int_arrays(arrays : Array[Array[Int]]) -> Array[Int] {
 
 ///|
 fn tounicode_length_list(map : Map[String, String]) -> Array[Int] {
-  let lengths = Array(capacity=map.length())
+  let lengths = Array::new(capacity=map.length())
   for key, _ in map {
     let len = @pdfio.bytes_of_string(key).length()
     if !lengths.contains(len) {
@@ -100,7 +100,7 @@ pub fn PdfTextUtil::utf16be_of_codepoints(
   codepoints : Array[Int],
 ) -> String raise {
   // Each codepoint expands to <= 4 bytes, plus BOM.
-  let bytes = Array(capacity=2 + codepoints.length() * 4)
+  let bytes = Array::new(capacity=2 + codepoints.length() * 4)
   bytes.push(0xfe)
   bytes.push(0xff)
   for cp in codepoints {
@@ -111,7 +111,7 @@ pub fn PdfTextUtil::utf16be_of_codepoints(
 
 ///|
 fn codepoints_of_utf16be_inner(bytes : Array[Int]) -> Array[Int] raise {
-  let out = Array(capacity=bytes.length() / 2)
+  let out = Array::new(capacity=bytes.length() / 2)
   let len = bytes.length()
   let mut i = 0
   while i < len {
@@ -255,7 +255,7 @@ pub fn TextExtractor::glyphnames_and_codepoints_of_text(
   match self.tounicode {
     Some(map) => {
       let bytes = @pdfio.int_array_of_bytes(@pdfio.bytes_of_string(text))
-      let out = Array()
+      let out = []
       let mut i = 0
       while i < bytes.length() {
         let mut matched = false
@@ -291,7 +291,7 @@ pub fn TextExtractor::glyphnames_and_codepoints_of_text(
             if odd(bytes.length()) {
               raise @pdf.PdfError::Msg("Bad Text")
             }
-            let out = Array()
+            let out = []
             let mut i = 0
             while i < bytes.length() {
               let code = (bytes[i] << 8) | bytes[i + 1]
@@ -300,7 +300,7 @@ pub fn TextExtractor::glyphnames_and_codepoints_of_text(
             }
             out
           } else {
-            let out = Array(capacity=text.length())
+            let out = Array::new(capacity=text.length())
             for c in text {
               out.push((self.convert)(c.to_int()))
             }
@@ -316,7 +316,7 @@ pub fn TextExtractor::codepoints_of_text(
   text : String,
 ) -> Array[Int] raise {
   let pairs = self.glyphnames_and_codepoints_of_text(text)
-  let out = Array()
+  let out = []
   for pair in pairs {
     out.append(pair.1)
   }
@@ -512,7 +512,7 @@ pub fn PdfTextUtil::utf8_of_pdfdocstring(
 
 ///|
 fn codepoints_of_utf8_inner(values : Array[Int]) -> Array[Int] raise {
-  let out = Array()
+  let out = []
   let mut i = 0
   while i < values.length() {
     let c = values[i]
@@ -575,7 +575,7 @@ pub fn PdfTextUtil::pdfdocstring_of_codepoints(
   codepoints : Array[Int],
 ) -> String raise {
   let reverse_glyph_hashes = @pdfglyphlist.PdfGlyphList::new().reverse_glyph_hashes()
-  let encoded = Array()
+  let encoded = []
   for c in codepoints {
     match reverse_glyph_hashes.get([c]) {
       Some(name) =>

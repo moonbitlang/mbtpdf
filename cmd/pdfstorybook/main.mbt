@@ -108,7 +108,7 @@ fn ops_button(
   label : String,
   accent : (Double, Double, Double),
 ) -> (Array[Op], (Double, Double, Double, Double)) {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   ops.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0))[:])
   ops.append(ops_stroke_rect(x, y, ww, hh, accent, 2.0)[:])
   ops.append(ops_fill_rect(x, y + hh - 6.0, ww, 6.0, accent)[:])
@@ -120,7 +120,7 @@ fn ops_button(
 
 ///|
 fn ops_robot(cx : Double, cy : Double, s : Double) -> Array[Op] {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   let body_w = 140.0 * s
   let body_h = 160.0 * s
   let head_w = 160.0 * s
@@ -358,7 +358,7 @@ fn add_link(
 
 ///|
 fn add_bookmarks(pdf : @pdf.Pdf, refs : Array[Int]) -> @pdf.Pdf raise {
-  let marks : Array[@pdfmarks.Bookmark] = Array()
+  let marks : Array[@pdfmarks.Bookmark] = []
   let entries : Array[(String, Int)] = [
     ("Cover", 0),
     ("Map", 1),
@@ -387,7 +387,7 @@ fn add_bookmarks(pdf : @pdf.Pdf, refs : Array[Int]) -> @pdf.Pdf raise {
 
 ///|
 fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.97, 0.98, 0.99))[:])
   ops.append(ops_fill_rect(0.0, h() - 120.0, w(), 120.0, (0.18, 0.48, 0.86))[:])
   ops.append(
@@ -435,7 +435,7 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
 
 ///|
 fn map_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.99, 0.985, 0.97))[:])
   ops.append(
     ops_text(72.0, h() - 70.0, "/F0", 36.0, "Map", (0.12, 0.14, 0.18))[:],
@@ -458,7 +458,7 @@ fn map_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
     ("Museum", 6, 72.0, 70.0, (0.7, 0.45, 0.9)),
     ("The End", 7, 372.0, 70.0, (0.92, 0.75, 0.2)),
   ]
-  let links : Array[(Int, (Double, Double, Double, Double))] = Array()
+  let links : Array[(Int, (Double, Double, Double, Double))] = []
   for c in cards {
     let (title, page_i, x, y, accent) = c
     let (btn_ops, rect) = ops_button(x, y, 260.0, 88.0, title, accent)
@@ -488,7 +488,7 @@ fn scene_ops(
   body : Array[String],
   choices : Array[(String, Int)],
 ) -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.985, 0.985, 0.99))[:])
   ops.append(ops_fill_rect(0.0, h() - 84.0, w(), 84.0, accent)[:])
   ops.append(ops_text(72.0, h() - 52.0, "/F0", 30.0, title, (1.0, 1.0, 1.0))[:])
@@ -501,7 +501,7 @@ fn scene_ops(
     ops.append(ops_text(72.0, y, "/F1", 18.0, line, (0.12, 0.14, 0.18))[:])
     y = y - 28.0
   }
-  let links : Array[(Int, (Double, Double, Double, Double))] = Array()
+  let links : Array[(Int, (Double, Double, Double, Double))] = []
   let mut by = 70.0
   for ch in choices {
     let (label, target) = ch

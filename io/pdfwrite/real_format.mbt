@@ -82,7 +82,7 @@ fn expand_scientific(value : String) -> String {
       let mantissa = slice_range(body, 0, idx)
       let exp_str = slice_from(body, idx + 1)
       let exp = parse_signed_int(exp_str)
-      let digits = Array()
+      let digits = []
       let mut int_len = 0
       let mut saw_dot = false
       for ch in mantissa {

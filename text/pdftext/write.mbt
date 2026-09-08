@@ -45,7 +45,7 @@ pub fn PdfText::write_encoding(
     }
     FillUndefinedWithStandard(inner) => self.write_encoding(inner)
     CustomEncoding(base, diffs) => {
-      let diff_array = Array()
+      let diff_array = []
       for diff in diffs {
         diff_array.push(PdfObject::Integer(diff.1))
         diff_array.push(Name(@pdf.PdfName::of_string(diff.0)))

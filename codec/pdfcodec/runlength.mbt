@@ -1,8 +1,8 @@
 ///|
 fn encode_runlength(stream : Array[Byte]) -> Array[Byte] {
   let size = @pdfio.bytes_size(stream)
-  let output : Array[Int] = Array(capacity=size + size / 128 + 2)
-  let mut literal : Array[Byte] = Array(capacity=128)
+  let output : Array[Int] = Array::new(capacity=size + size / 128 + 2)
+  let mut literal : Array[Byte] = Array::new(capacity=128)
   fn flush_literal() -> Unit {
     if literal.length() == 0 {
       return
@@ -11,7 +11,7 @@ fn encode_runlength(stream : Array[Byte]) -> Array[Byte] {
     for b in literal {
       output.push(b.to_int())
     }
-    literal = Array(capacity=128)
+    literal = Array::new(capacity=128)
   }
 
   let mut index = 0
@@ -50,7 +50,7 @@ fn encode_runlength(stream : Array[Byte]) -> Array[Byte] {
 
 ///|
 fn decode_runlength(input : @pdfio.Input) -> Array[Byte] {
-  let output : Array[Byte] = Array()
+  let output : Array[Byte] = []
   let mut eod = false
   while !eod {
     let len = (input.input_byte)()

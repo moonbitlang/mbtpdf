@@ -193,7 +193,7 @@ pub fn Date::to_pdf_string(self : Date) -> String raise BadDate {
 ///|
 /// Build a date by parsing a PDF date string.
 pub fn Date::of_pdf_string(s : String) -> Date raise BadDate {
-  let chars = Array(capacity=s.length())
+  let chars = Array::new(capacity=s.length())
   for ch in s {
     chars.push(ch)
   }

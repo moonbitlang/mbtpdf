@@ -10,7 +10,7 @@ pub fn lex_object_at(
 ) -> Array[Token] raise {
   let dict_level : Ref[Int] = { val: 0, }
   let array_level : Ref[Int] = { val: 0, }
-  let tokens = Array()
+  let tokens = []
   let mut done = false
   while !done {
     let t = lex_next(
@@ -154,7 +154,7 @@ fn expand_scientific(value : String) -> String {
       let mantissa = slice_range(body, 0, idx)
       let exp_str = slice_from(body, idx + 1)
       let exp = parse_signed_int(exp_str)
-      let digits = Array()
+      let digits = []
       let mut int_len = 0
       let mut saw_dot = false
       for ch in mantissa {

@@ -145,9 +145,9 @@ fn Pdf::transform_quadpoint_single(
 
 ///|
 fn[T] split_into(values : Array[T], size : Int) -> Array[Array[T]] {
-  let out = Array(capacity=(values.length() + size - 1) / size)
+  let out = Array::new(capacity=(values.length() + size - 1) / size)
   for i = 0; i < values.length(); i = i + size {
-    let part = Array(capacity=size)
+    let part = Array::new(capacity=size)
     for j in 0..<size {
       if i + j < values.length() {
         part.push(values[i + j])
@@ -167,7 +167,7 @@ pub fn Pdf::transform_quadpoints(
 ) -> PdfObject raise {
   match qp {
     PdfArray(qps) => {
-      let out = Array(capacity=qps.length())
+      let out = Array::new(capacity=qps.length())
       for chunk in split_into(qps, 8) {
         out.append(self.transform_quadpoint_single(transform, chunk))
       }

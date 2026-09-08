@@ -36,7 +36,7 @@ fn is_prefix(prefix : String, name : String) -> Bool {
 
 ///|
 fn names_used(pdf : @pdf.Pdf) -> Array[String] {
-  let names : Array[String] = Array()
+  let names : Array[String] = []
   fn unslash(x : String) -> String {
     if x == "" {
       ""
@@ -306,7 +306,7 @@ fn merge_content_streams(pdf : @pdf.Pdf) -> Unit raise {
                         @pdfcodec.PdfCodec::new().decode_pdfstream(pdf, stream)
                         stream.getstream()
                       }
-                      let rawstreams : Array[Array[Byte]] = Array()
+                      let rawstreams : Array[Array[Byte]] = []
                       for stream in direct_streams {
                         match stream {
                           Stream(r) =>

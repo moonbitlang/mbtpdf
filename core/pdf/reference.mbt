@@ -15,7 +15,7 @@ fn refset_mem(n : Int, rs : Map[Int, Bool]) -> Bool {
 
 ///|
 fn refset_elts(rs : Map[Int, Bool]) -> Array[Int] {
-  let out = Array(capacity=rs.length())
+  let out = Array::new(capacity=rs.length())
   for key in rs.keys() {
     out.push(key)
   }
@@ -158,7 +158,7 @@ fn Pdf::page_reference_numbers_inner(
   } else {
     match self.lookup_direct("/Kids", pages_node) {
       Some(PdfArray(elts)) => {
-        let out = Array(capacity=elts.length())
+        let out = Array::new(capacity=elts.length())
         for elt in elts {
           match elt {
             Indirect(i) =>

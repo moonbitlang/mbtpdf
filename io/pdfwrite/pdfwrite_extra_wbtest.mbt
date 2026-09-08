@@ -114,7 +114,7 @@ test "pdf_to_output generates object streams with indirect lengths" {
   pdf.objects.object_stream_ids.set(marked_obj, stream_num)
   pdf.objects.object_stream_ids.set(stream_num, stream_num)
   let payload = "A".repeat(1000)
-  let payload_ids = Array()
+  let payload_ids = []
   for _ in 0..<=30 {
     let objnum = pdf.addobj(PdfString(payload))
     payload_ids.push(objnum)
@@ -125,8 +125,8 @@ test "pdf_to_output generates object streams with indirect lengths" {
   let objs_in_stream = payload_ids.copy()
   objs_in_stream.push(marked_obj)
   objs_in_stream.sort_by((a, b) => a - b)
-  let object_strings = Array()
-  let offsets = Array()
+  let object_strings = []
+  let offsets = []
   let mut offset = 0
   for objnum in objs_in_stream {
     let obj = pdf.lookup_obj(objnum)
