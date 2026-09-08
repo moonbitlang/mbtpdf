@@ -1,6 +1,6 @@
 ///|
 fn new_dests(pdf : @pdf.Pdf, pdfs : Array[@pdf.Pdf]) -> Int? raise {
-  let dests = Array(capacity=pdfs.length())
+  let dests = Array::new(capacity=pdfs.length())
   for src in pdfs {
     let catalog = src.catalog_of_pdf()
     match src.lookup_direct("/Dests", catalog) {
@@ -29,8 +29,8 @@ fn merge_pdfs_renumber(
   for i in 0..<names.length() {
     table.set(names[i], pdfs[i])
   }
-  let unique_names = Array(capacity=table.length())
-  let unique_pdfs = Array(capacity=table.length())
+  let unique_names = Array::new(capacity=table.length())
+  let unique_pdfs = Array::new(capacity=table.length())
   for name, pdf in table {
     unique_names.push(name)
     unique_pdfs.push(pdf)
@@ -40,7 +40,7 @@ fn merge_pdfs_renumber(
   for i, name in unique_names {
     mapping.set(name, renumbered[i])
   }
-  let out = Array(capacity=names.length())
+  let out = Array::new(capacity=names.length())
   for name in names {
     match mapping.get(name) {
       Some(pdf) => out.push(pdf)
@@ -56,9 +56,9 @@ fn merge_namedicts(pdf : @pdf.Pdf, pdfs : Array[@pdf.Pdf]) -> Int raise {
     "/Dests", "/AP", "/JavaScript", "/Pages", "/Templates", "/IDS", "/URLS", "/EmbeddedFiles",
     "/AlternatePresentations", "/Renditions",
   ]
-  let trees = Array(capacity=names.length())
+  let trees = Array::new(capacity=names.length())
   for name in names {
-    let trees_for_name = Array(capacity=pdfs.length())
+    let trees_for_name = Array::new(capacity=pdfs.length())
     for src in pdfs {
       let catalog = src.catalog_of_pdf()
       match src.lookup_direct("/Names", catalog) {
@@ -74,7 +74,7 @@ fn merge_namedicts(pdf : @pdf.Pdf, pdfs : Array[@pdf.Pdf]) -> Int raise {
       trees.push((name, trees_for_name))
     }
   }
-  let new_entries = Array(capacity=trees.length())
+  let new_entries = Array::new(capacity=trees.length())
   let tree_ctx = @pdftree.PdfTree::new(pdf)
   for pair in trees {
     let merged = tree_ctx.merge_name_trees_no_clash(pair.1)

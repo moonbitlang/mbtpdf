@@ -51,7 +51,7 @@ test "lex_dictionary minus_one accepts preconsumed marker" {
   input.nudge()
   input.nudge()
   let tokens = @pdfsyntax.lex_dictionary(true, input)
-  let full : Array[Token] = Array(capacity=tokens.length() + 1)
+  let full : Array[Token] = Array::new(capacity=tokens.length() + 1)
   full.push(LexLeftDict)
   for t in tokens {
     full.push(t)

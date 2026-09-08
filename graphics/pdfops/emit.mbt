@@ -1,6 +1,6 @@
 ///|
 fn lexemes_of_op(op : Op) -> Array[Lexeme] {
-  let out : Array[Lexeme] = Array()
+  let out : Array[Lexeme] = []
   fn push(lexeme : Lexeme) -> Unit {
     out.push(lexeme)
   }
@@ -313,7 +313,7 @@ fn lexemes_of_op(op : Op) -> Array[Lexeme] {
 
 ///|
 fn lexemes_of_ops(ops : Array[Op]) -> Array[Lexeme] {
-  let out : Array[Lexeme] = Array()
+  let out : Array[Lexeme] = []
   for op in ops {
     let lexemes = lexemes_of_op(op)
     for lexeme in lexemes {
@@ -325,7 +325,7 @@ fn lexemes_of_ops(ops : Array[Op]) -> Array[Lexeme] {
 
 ///|
 fn lexemelists_of_ops(ops : Array[Op]) -> Array[Array[Lexeme]] {
-  let out : Array[Array[Lexeme]] = Array(capacity=ops.length())
+  let out : Array[Array[Lexeme]] = Array::new(capacity=ops.length())
   for op in ops {
     out.push(lexemes_of_op(op))
   }

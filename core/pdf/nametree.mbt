@@ -18,7 +18,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
   for list in lists {
     total = total + list.length()
   }
-  let out = Array(capacity=total)
+  let out = Array::new(capacity=total)
   for list in lists {
     out.append(list[:])
   }
@@ -124,7 +124,7 @@ pub fn Pdf::contents_of_nametree(
 ) -> Array[(PdfObject, PdfObject)] raise {
   match self.lookup_direct_orelse("/Names", "/Nums", tree) {
     Some(PdfArray(names)) => {
-      let out = Array(capacity=names.length() / 2)
+      let out = Array::new(capacity=names.length() / 2)
       for i = 0; i + 1 < names.length(); i = i + 2 {
         out.push((names[i], names[i + 1]))
       }

@@ -323,7 +323,7 @@ fn cutshort(data : Array[Byte]) -> Array[Byte] {
 ///|
 fn get_blocks(data : Array[Byte]) -> Array[Array[Int]] {
   let l = @pdfio.bytes_size(data)
-  let blocks = Array()
+  let blocks = []
   let full = if l < 16 { 0 } else { l / 16 }
   let mut b = 0
   while b < full {
@@ -484,7 +484,7 @@ pub fn PdfCryptPrimitives::aes_encrypt_data(
     None => mkiv()
   }
   let mut prev = iv
-  let outblocks = Array()
+  let outblocks = []
   let blocks = get_blocks(data)
   for block in blocks {
     let xored = Array::make(16, 0)
@@ -497,7 +497,7 @@ pub fn PdfCryptPrimitives::aes_encrypt_data(
     outblocks.push(cipher)
     prev = cipher
   }
-  let all = Array()
+  let all = []
   all.push(iv)
   all.append(outblocks[:])
   bytes_of_blocks(all)

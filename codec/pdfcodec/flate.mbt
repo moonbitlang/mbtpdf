@@ -16,7 +16,7 @@ pub fn PdfCodec::decode_flate(
       n
     }
   }
-  let out : Array[Byte] = Array()
+  let out : Array[Byte] = []
   let output = (buf : Array[Byte], length : Int) => out.append(buf[:length])
   try {
     @pdfflate.PdfFlate::new().uncompress(header=true, input, output)
@@ -57,7 +57,7 @@ pub fn PdfCodec::encode_pdfstream(
       None => Name(encoding_pdf_name)
       Some(Name(name)) => PdfArray([Name(encoding_pdf_name), Name(name)])
       Some(PdfArray(filters)) => {
-        let updated = Array(capacity=filters.length() + 1)
+        let updated = Array::new(capacity=filters.length() + 1)
         updated.push(@pdf.PdfObject::Name(encoding_pdf_name))
         for f in filters {
           updated.push(f)

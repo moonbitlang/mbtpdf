@@ -211,7 +211,7 @@ pub fn OcgProperties::read(pdf : @pdf.Pdf) -> OcgProperties? raise {
         Some(ocproperties) => {
           let ocgs = match pdf.lookup_direct("/OCGs", ocproperties) {
             Some(PdfArray(indirects)) => {
-              let out = Array()
+              let out = []
               for entry in indirects {
                 let num = match entry {
                   Indirect(n) => n

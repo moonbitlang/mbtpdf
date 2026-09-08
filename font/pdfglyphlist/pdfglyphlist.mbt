@@ -3641,7 +3641,7 @@ fn parse_glyphlist_line(line : String) -> (String, Array[Int])? {
     Some(pos) => {
       let name = line[0:pos].to_owned()
       let rest = line[pos + 1:]
-      let codes = Array()
+      let codes = []
       for token_view in rest.to_owned().split(" ") {
         let token = token_view.to_owned().trim().to_owned()
         if token.length() == 0 {
@@ -3660,7 +3660,7 @@ fn parse_glyphlist_line(line : String) -> (String, Array[Int])? {
 ///|
 fn parse_glyphlist(input : @pdfio.Input) -> Array[(String, Array[Int])] raise {
   let lines = input.read_lines()
-  let out = Array(capacity=lines.length())
+  let out = Array::new(capacity=lines.length())
   for line in lines {
     match parse_glyphlist_line(line) {
       Some(pair) => out.push(pair)
@@ -3713,7 +3713,7 @@ fn revglyph_hashtable_of_dictionary(
 
 ///|
 let glyph_hashes_memo : () -> Map[String, Array[Int]] raise = @pdfutil.PdfUtil::new().memoize(fn() raise {
-    let combined = Array()
+    let combined = []
     combined.append(PdfGlyphList::new().glyphmap())
     combined.append(dingbatmap_arr)
     combined.append(truetypemap_arr)

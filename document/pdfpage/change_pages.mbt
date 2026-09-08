@@ -325,7 +325,7 @@ pub fn PdfPageDoc::change_pages(
           []
         }
       Some(cs) => {
-        let out = Array(capacity=cs.length())
+        let out = Array::new(capacity=cs.length())
         for pair in cs {
           let (x, y) = pair
           let old_ref = select_page_ref_change(old_page_numbers, x)

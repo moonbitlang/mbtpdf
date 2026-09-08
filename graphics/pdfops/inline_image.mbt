@@ -105,7 +105,7 @@ fn lex_inline_image(
   @pdfe.debug("lex_inline_image at \{(input.pos_in)()}\n")
   try {
     let lexemes = @pdfsyntax.lex_dictionary(true, input)
-    let tokens : Array[Token] = Array(capacity=lexemes.length() + 2)
+    let tokens : Array[Token] = Array::new(capacity=lexemes.length() + 2)
     tokens.push(LexLeftDict)
     for token in lexemes {
       match token {

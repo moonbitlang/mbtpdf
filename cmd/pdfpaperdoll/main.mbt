@@ -94,7 +94,7 @@ fn ops_poly_path(
   match points {
     [] => []
     [(x0, y0), .. rest] => {
-      let ops : Array[Op] = Array(capacity=points.length() + 2)
+      let ops : Array[Op] = Array::new(capacity=points.length() + 2)
       ops.push(Opm(x0, y0))
       for p in rest {
         let (x, y) = p
@@ -136,7 +136,7 @@ fn circle_points(
   r : Double,
   n : Int,
 ) -> Array[(Double, Double)] {
-  let out = Array(capacity=n)
+  let out = Array::new(capacity=n)
   let two_pi = 8.0 * @math.atan(1.0)
   for i in 0..<n {
     let t = two_pi * (i.to_double() / n.to_double())
@@ -291,7 +291,7 @@ fn add_bookmarks(pdf : @pdf.Pdf, refs : Array[Int]) -> @pdf.Pdf raise {
   let titles : Array[String] = [
     "Cover", "Mix and Match", "Dress (poster)", "Space Suit (poster)", "Hero (poster)",
   ]
-  let marks : Array[@pdfmarks.Bookmark] = Array()
+  let marks : Array[@pdfmarks.Bookmark] = []
   for i in 0..<titles.length() {
     marks.push({
       level: 0,
@@ -314,7 +314,7 @@ fn ops_button(
   label : String,
   accent : (Double, Double, Double),
 ) -> (Array[Op], (Double, Double, Double, Double)) {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   ops.append(ops_fill_rect(x, y, ww, hh, (1.0, 1.0, 1.0))[:])
   ops.append(ops_stroke_rect(x, y, ww, hh, accent, 2.0)[:])
   ops.append(ops_fill_rect(x, y + hh - 7.0, ww, 7.0, accent)[:])
@@ -335,7 +335,7 @@ fn ops_home_badge() -> Array[Op] {
   let ww = x1 - x0
   let hh = y1 - y0
   let accent = (0.18, 0.48, 0.86)
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   ops.append(ops_fill_rect(x0, y0, ww, hh, (1.0, 1.0, 1.0))[:])
   ops.append(ops_stroke_rect(x0, y0, ww, hh, accent, 2.0)[:])
   ops.append(ops_fill_rect(x0, y0 + hh - 6.0, ww, 6.0, accent)[:])
@@ -352,7 +352,7 @@ fn doll_origin() -> (Double, Double) {
 
 ///|
 fn ops_doll_outline() -> Array[Op] {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   let (cx, base_y) = doll_origin()
 
   // Head
@@ -412,7 +412,7 @@ fn ops_doll_outline() -> Array[Op] {
 
 ///|
 fn ops_cut_border() -> Array[Op] {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   ops.append(
     ops_stroke_rect(44.0, 44.0, w() - 88.0, h() - 88.0, (0.78, 0.8, 0.84), 2.0)[:],
   )
@@ -431,7 +431,7 @@ fn ops_cut_border() -> Array[Op] {
 
 ///|
 fn ops_outfits_layers() -> Array[Op] {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   let (cx, base_y) = doll_origin()
 
   // Dress layer
@@ -588,7 +588,7 @@ fn ops_outfits_layers() -> Array[Op] {
 
 ///|
 fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.98, 0.98, 0.99))[:])
   ops.append(ops_fill_rect(0.0, h() - 130.0, w(), 130.0, (0.52, 0.4, 0.86))[:])
   ops.append(
@@ -628,7 +628,7 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
 
 ///|
 fn mixmatch_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
   ops.append(
     ops_text(54.0, h() - 78.0, "/F0", 40.0, "Mix & Match", (0.12, 0.14, 0.18))[:],
@@ -649,7 +649,7 @@ fn mixmatch_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
   ops.append(ops_outfits_layers()[:])
 
   // Poster links
-  let rects : Array[(Double, Double, Double, Double)] = Array()
+  let rects : Array[(Double, Double, Double, Double)] = []
   let (b1, r1) = ops_button(
     54.0,
     520.0,
@@ -685,7 +685,7 @@ fn mixmatch_ops() -> (Array[Op], Array[(Double, Double, Double, Double)]) {
 
 ///|
 fn ops_dress_plain() -> Array[Op] {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   let (cx, base_y) = doll_origin()
   let skirt : Array[(Double, Double)] = [
     (cx - 94.0, base_y + 250.0),
@@ -713,7 +713,7 @@ fn ops_dress_plain() -> Array[Op] {
 
 ///|
 fn ops_space_plain() -> Array[Op] {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   let (cx, base_y) = doll_origin()
   ops.append(
     ops_fill_rect(cx - 78.0, base_y + 250.0, 156.0, 230.0, (0.92, 0.95, 0.98))[:],
@@ -739,7 +739,7 @@ fn ops_space_plain() -> Array[Op] {
 
 ///|
 fn ops_hero_plain() -> Array[Op] {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   let (cx, base_y) = doll_origin()
   let cape : Array[(Double, Double)] = [
     (cx - 70.0, base_y + 420.0),
@@ -769,7 +769,7 @@ fn ops_hero_plain() -> Array[Op] {
 
 ///|
 fn ops_hat_plain() -> Array[Op] {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   let (cx, base_y) = doll_origin()
   let hat : Array[(Double, Double)] = [
     (cx - 82.0, base_y + 550.0),
@@ -786,7 +786,7 @@ fn ops_hat_plain() -> Array[Op] {
 
 ///|
 fn ops_sparkles_plain() -> Array[Op] {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   let (cx, base_y) = doll_origin()
   let spark : Array[(Double, Double)] = [
     (cx - 120.0, base_y + 520.0),
@@ -818,7 +818,7 @@ fn poster_ops(
   kind : Int,
   bg : (Double, Double, Double),
 ) -> Array[Op] {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (1.0, 1.0, 1.0))[:])
   ops.append(ops_fill_rect(0.0, h() - 130.0, w(), 130.0, bg)[:])
   ops.append(ops_text(54.0, h() - 78.0, "/F0", 44.0, title, (1.0, 1.0, 1.0))[:])

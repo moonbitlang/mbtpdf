@@ -94,7 +94,7 @@ fn get_section(chars : ArrayView[Char], start : Int) -> (Section, Int)? {
 
 ///|
 fn get_sections(chars : ArrayView[Char]) -> Array[Section] {
-  let sections = Array()
+  let sections = []
   let mut pos = 0
   while true {
     match get_section(chars, pos) {
@@ -130,7 +130,7 @@ fn read_hex_bytes(
     raise @pdf.PdfError::Msg("Unknown number in /ToUnicode")
   }
   i = i + 1
-  let hex_chars = Array()
+  let hex_chars = []
   while i < chars.length() && chars[i] != '>' {
     if !is_hex_digit(chars[i]) {
       raise @pdf.PdfError::Msg("Bad hex value")
@@ -144,7 +144,7 @@ fn read_hex_bytes(
   if hex_chars.length() == 0 || hex_chars.length() % 2 != 0 {
     raise @pdf.PdfError::Msg("Bad hex value")
   }
-  let bytes = Array()
+  let bytes = []
   for j = 0; j < hex_chars.length(); j = j + 2 {
     let hex_str = String::from_array(hex_chars[j:j + 2].to_owned())
     let value = @string.parse_int(hex_str, base=16)
@@ -223,7 +223,7 @@ fn code_int_of_string(code : String) -> Int {
 
 ///|
 fn code_string_of_int(value : Int, length : Int) -> String {
-  let bytes = Array(capacity=length)
+  let bytes = Array::new(capacity=length)
   let mut v = value
   for _ in 0..<length {
     bytes.push(v & 0xff)
@@ -245,7 +245,7 @@ fn increment_code(code : String, delta : Int) -> String {
 fn pairs_of_section(section : Section) -> Array[(String, String)] {
   match section {
     BfChar(numbers) => {
-      let results = Array()
+      let results = []
       let mut pos = 0
       while true {
         match read_code_opt(numbers, pos) {
@@ -263,7 +263,7 @@ fn pairs_of_section(section : Section) -> Array[(String, String)] {
       results
     }
     BfRange(numbers) => {
-      let results = Array()
+      let results = []
       let mut pos = 0
       fn find_dest_marker(
         chars : ArrayView[Char],
@@ -365,7 +365,7 @@ fn extract_specifics(data : Array[Byte]) -> Int? {
   while i + wmode_token.length() <= chars.length() {
     if match_at(chars, i, wmode_token) {
       let mut j = i + wmode_token.length()
-      let digits = Array()
+      let digits = []
       while j < chars.length() && chars[j].is_ascii_digit() {
         digits.push(chars[j])
         j = j + 1
@@ -402,7 +402,7 @@ pub fn CMap::parse(pdf : @pdf.Pdf, cmap : @pdf.PdfObject) -> CMap raise {
                 !is_whitespace(c)
               })
               let sections = get_sections(chars)
-              let pairs = Array()
+              let pairs = []
               for section in sections {
                 pairs.append(pairs_of_section(section))
               }

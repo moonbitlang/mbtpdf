@@ -1,6 +1,6 @@
 ///|
 fn split_lexemes(lexemes : Array[Lexeme], start : Int) -> (Array[Lexeme], Int) {
-  let section : Array[Lexeme] = Array()
+  let section : Array[Lexeme] = []
   let mut i = start
   let len = lexemes.length()
   while i < len {
@@ -63,7 +63,7 @@ fn reals_of_lexemes(
   lexemes : ArrayView[Lexeme],
   errtext : String,
 ) -> Array[Double] {
-  let out : Array[Double] = Array()
+  let out : Array[Double] = []
   for lexeme in lexemes {
     match lexeme_real(lexeme) {
       Some(value) => out.push(value)
@@ -99,7 +99,7 @@ fn parse_dash_op(section : Array[Lexeme]) -> Op raise {
       if left_index < 0 {
         raise @pdf.PdfError::Msg("malformed 'd' op")
       }
-      let values : Array[Double] = Array()
+      let values : Array[Double] = []
       for idx in (left_index + 1)..<(section.length() - 3) {
         match lexeme_real(section[idx]) {
           Some(value) => values.push(value)
@@ -131,7 +131,7 @@ fn parse_tj_op(section : Array[Lexeme]) -> Op raise {
       if left_index < 0 {
         raise @pdf.PdfError::Msg("malformed TJ op")
       }
-      let elements : Array[@pdf.PdfObject] = Array()
+      let elements : Array[@pdf.PdfObject] = []
       for idx in (left_index + 1)..<(section.length() - 2) {
         match section[idx] {
           Obj(LexReal(value)) => elements.push(Real(value))

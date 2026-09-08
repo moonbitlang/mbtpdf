@@ -6,7 +6,7 @@ fn merge_rect() -> @pdf.PdfObject {
 ///|
 fn make_pdf_pages(count : Int) -> @pdf.Pdf raise {
   let rect = merge_rect()
-  let pages = Array(capacity=count)
+  let pages = Array::new(capacity=count)
   for _ in 0..<count {
     pages.push(@pdfpage.Page::custom(rect))
   }

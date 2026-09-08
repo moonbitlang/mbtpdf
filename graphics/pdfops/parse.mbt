@@ -3,7 +3,7 @@ fn parse_lexemes(
   compatibility : Ref[Int],
   lexemes : Array[Lexeme],
 ) -> Array[Op] raise {
-  let ops : Array[Op] = Array()
+  let ops : Array[Op] = []
   let mut index = 0
   while index < lexemes.length() {
     let (op, next_index) = parse_operator(compatibility, lexemes, index)
@@ -29,7 +29,7 @@ pub fn Op::parse_operators(
   resources : @pdf.PdfObject,
   streams : Array[@pdf.PdfObject],
 ) -> Array[Op] raise {
-  let rawstreams : Array[Array[Byte]] = Array()
+  let rawstreams : Array[Array[Byte]] = []
   for stream in streams {
     let direct = pdf.direct(stream)
     let r = match direct {

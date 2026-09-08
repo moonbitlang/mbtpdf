@@ -7,7 +7,7 @@ fn merge_pdfs(pdfs : Array[@pdf.Pdf]) -> @pdf.Pdf raise {
       max_minor = pdf.minor
     }
   }
-  let pages = Array()
+  let pages = []
   for pdf in renumbered {
     let pagelist = @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree()
     pages.append(pagelist[:])
@@ -46,7 +46,7 @@ pub async fn run(args : Array[String], quiet? : Bool = false) -> Unit {
     return
   }
   let out_name = args[argc - 1]
-  let in_names = Array()
+  let in_names = []
   for i, name in args {
     if i == 0 || i == argc - 1 {
       continue
@@ -54,7 +54,7 @@ pub async fn run(args : Array[String], quiet? : Bool = false) -> Unit {
     in_names.push(name)
   }
   try {
-    let pdfs = Array()
+    let pdfs = []
     for name in in_names {
       pdfs.push(@pdfreadfs.PdfReadFs::new().pdf_of_file(None, None, name))
     }

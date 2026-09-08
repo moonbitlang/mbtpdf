@@ -195,7 +195,7 @@ pub fn Pdf::replace_chain(
           }
           Dictionary(entries) => {
             let mut found = false
-            let out = Array(capacity=entries.length() + 1)
+            let out = Array::new(capacity=entries.length() + 1)
             for entry in entries {
               let (k, v) = entry
               if k == key {

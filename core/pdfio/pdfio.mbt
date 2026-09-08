@@ -65,7 +65,7 @@ pub fn bset_unsafe(bytes : Array[Byte], index : Int, value : Int) -> Unit {
 ///|
 /// Make bytes from a string by taking the low 8 bits of each character.
 pub fn bytes_of_string(s : String) -> Array[Byte] {
-  let out = Array(capacity=s.length())
+  let out = Array::new(capacity=s.length())
   for ch in s {
     out.push(ch.to_int().to_byte())
   }
@@ -81,7 +81,7 @@ pub fn bytes_of_caml_bytes(bytes : Bytes) -> Array[Byte] {
 ///|
 /// Make bytes from an array of integers (each 0..255).
 pub fn bytes_of_list(values : Array[Int]) -> Array[Byte] {
-  let out = Array(capacity=values.length())
+  let out = Array::new(capacity=values.length())
   for v in values {
     out.push(v.to_byte())
   }
@@ -91,7 +91,7 @@ pub fn bytes_of_list(values : Array[Int]) -> Array[Byte] {
 ///|
 /// Make bytes from a character array.
 pub fn bytes_of_charlist(values : Array[Char]) -> Array[Byte] {
-  let out = Array(capacity=values.length())
+  let out = Array::new(capacity=values.length())
   for v in values {
     out.push(v.to_int().to_byte())
   }
@@ -105,7 +105,7 @@ pub fn bytes_of_arraylist(values : Array[Array[Int]]) -> Array[Byte] {
   for v in values {
     total = total + v.length()
   }
-  let out = Array(capacity=total)
+  let out = Array::new(capacity=total)
   for v in values {
     for x in v {
       out.push(x.to_byte())
@@ -147,7 +147,7 @@ pub fn string_of_int_array(values : Array[Int]) -> String {
 ///|
 /// Make a string by mapping each byte to a single character.
 pub fn string_of_bytes(bytes : Array[Byte]) -> String {
-  let chars = Array(capacity=bytes.length())
+  let chars = Array::new(capacity=bytes.length())
   for b in bytes {
     chars.push(b.to_char())
   }
@@ -350,7 +350,7 @@ pub fn Input::read_line(self : Input) -> String raise {
 ///|
 /// Read all lines from an input.
 pub fn Input::read_lines(self : Input) -> Array[String] raise {
-  let lines = Array()
+  let lines = []
   fn read_all(lines : Array[String], input : Input) -> Array[String] raise {
     match input.peek_char() {
       None => lines
@@ -515,7 +515,7 @@ pub fn Bitstream::align(self : Bitstream) -> Unit {
 ///|
 /// Make a new write bitstream.
 pub fn BitstreamWrite::new() -> BitstreamWrite {
-  { bytes: Array(), bit: 0, }
+  { bytes: [], bit: 0, }
 }
 
 ///|

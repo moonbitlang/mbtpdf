@@ -155,7 +155,7 @@ pub fn PdfRead::is_linearized(self : PdfRead, input : @pdfio.Input) -> Bool {
 /// Read a PDF header.
 fn read_header(ctx : PdfRead, input : @pdfio.Input) -> (Int, Int) raise {
   fn get8chars(input : @pdfio.Input) -> Array[Char] {
-    let out = Array(capacity=8)
+    let out = Array::new(capacity=8)
     let mut ok = true
     let mut i = 0
     while ok && i < 8 {
@@ -168,7 +168,7 @@ fn read_header(ctx : PdfRead, input : @pdfio.Input) -> (Int, Int) raise {
     if ok {
       out
     } else {
-      Array()
+      []
     }
   }
 
@@ -189,7 +189,7 @@ fn read_header(ctx : PdfRead, input : @pdfio.Input) -> (Int, Int) raise {
         if !(major_char is ('0'..='9')) {
           return (2, 0)
         }
-        let minor_digits = Array()
+        let minor_digits = []
         if minor_char is ('0'..='9') {
           minor_digits.push(minor_char)
         }

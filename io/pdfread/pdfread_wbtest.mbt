@@ -17,7 +17,7 @@ test "@pdfsyntax.lex_next returns LexNone for unknown uppercase" {
   let input = @pdfio.Input::of_string("T")
   let dict_level : Ref[Int] = { val: 0, }
   let array_level : Ref[Int] = { val: 0, }
-  let previous = Array()
+  let previous = []
   let token = @pdfsyntax.lex_next(
     dict_level,
     array_level,
@@ -38,7 +38,7 @@ test "@pdfsyntax.lex_next recovers from lex errors" {
   let input = @pdfio.Input::of_string("(")
   let dict_level : Ref[Int] = { val: 0, }
   let array_level : Ref[Int] = { val: 0, }
-  let previous = Array()
+  let previous = []
   let token = @pdfe.with_logger(_ => (), fn() {
     @pdfsyntax.lex_next(dict_level, array_level, false, input, previous, true, _ => {
       []

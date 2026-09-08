@@ -23,7 +23,7 @@ fn ilist(start : Int, finish : Int) -> Array[Int] {
   if finish < start {
     return []
   }
-  let out = Array(capacity=finish - start + 1)
+  let out = Array::new(capacity=finish - start + 1)
   for i in start..<=finish {
     out.push(i)
   }
@@ -36,7 +36,7 @@ fn setminus(full : Array[Int], remove : Array[Int]) -> Array[Int] {
   for v in remove {
     remove_set.set(v, ())
   }
-  let out = Array(capacity=full.length())
+  let out = Array::new(capacity=full.length())
   for v in full {
     if remove_set.get(v) is None {
       out.push(v)
@@ -57,7 +57,7 @@ fn set_of_ints(values : Array[Int]) -> Map[Int, Unit] {
 ///|
 fn dedup_ints(values : Array[Int]) -> Array[Int] {
   let set = set_of_ints(values)
-  let out = Array(capacity=set.length())
+  let out = Array::new(capacity=set.length())
   for key, _ in set {
     out.push(key)
   }
@@ -72,7 +72,7 @@ fn dedup_pairs(
   for pair in values {
     set.set(pair.0, pair.1)
   }
-  let out = Array(capacity=set.length())
+  let out = Array::new(capacity=set.length())
   for key, value in set {
     out.push((key, value))
   }
@@ -85,7 +85,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
   for list in lists {
     total = total + list.length()
   }
-  let out = Array(capacity=total)
+  let out = Array::new(capacity=total)
   for list in lists {
     out.append(list[:])
   }
@@ -102,7 +102,7 @@ pub fn PdfStructTree::trim_structure_tree(
   let objnums = pdf.page_reference_numbers()
   let total_pages = objnums.length()
   let pages_to_remove = setminus(ilist(1, total_pages), range)
-  let page_objnums_to_remove = Array(capacity=pages_to_remove.length())
+  let page_objnums_to_remove = Array::new(capacity=pages_to_remove.length())
   for pnum in pages_to_remove {
     if pnum >= 1 && pnum <= objnums.length() {
       page_objnums_to_remove.push(objnums[pnum - 1])
@@ -147,7 +147,7 @@ pub fn PdfStructTree::trim_structure_tree(
   }
 
   fn process(objs : Array[@pdf.PdfObject]) -> Array[@pdf.PdfObject]? {
-    let out = Array()
+    let out = []
     let mut changed = false
     for obj in objs {
       if survives(obj) {
@@ -250,7 +250,7 @@ pub fn PdfStructTrees::renumber_parent_trees(
   ) -> @pdf.PdfObject {
     match obj {
       Dictionary(entries) => {
-        let out = Array(capacity=entries.length())
+        let out = Array::new(capacity=entries.length())
         for entry in entries {
           let key = entry.0
           let value = entry.1
@@ -286,10 +286,10 @@ pub fn PdfStructTrees::renumber_parent_trees(
     let pdfn = i + 1
     pdf.objselfmap(obj => rewrite(pdfn, mapping, obj))
   }
-  let renumbered = Array(capacity=parent_trees.length())
+  let renumbered = Array::new(capacity=parent_trees.length())
   for i, tree in parent_trees {
     let pdfn = i + 1
-    let out = Array(capacity=tree.length())
+    let out = Array::new(capacity=tree.length())
     for pair in tree {
       let key = @string.parse_int(pair.0)
       match mapping.get((pdfn, key)) {
@@ -378,7 +378,7 @@ pub fn PdfStructTree::merge_structure_trees(
     struct_roots : Array[@pdf.PdfObject],
     name : String,
   ) -> Array[@pdf.PdfObject] {
-    let out = Array()
+    let out = []
     for root in struct_roots {
       match pdf.lookup_direct(name, root) {
         Some(obj) => out.push(obj)
@@ -403,7 +403,7 @@ pub fn PdfStructTree::merge_structure_trees(
   }
 
   fn merge_arrays(arrays : Array[@pdf.PdfObject]) -> @pdf.PdfObject {
-    let out = Array()
+    let out = []
     for arr in arrays {
       match arr {
         PdfArray(items) => out.append(items[:])
@@ -420,8 +420,8 @@ pub fn PdfStructTree::merge_structure_trees(
     }
   }
 
-  let struct_tree_roots = Array()
-  let struct_tree_objnums = Array()
+  let struct_tree_roots = []
+  let struct_tree_objnums = []
   for pdf_in in pdfs {
     let catalog = pdf_in.catalog_of_pdf()
     match pdf_in.lookup_direct("/StructTreeRoot", catalog) {
@@ -469,7 +469,7 @@ pub fn PdfStructTree::merge_structure_trees(
       }
     }),
   )
-  let updated_ks = Array(capacity=existing_ks.length())
+  let updated_ks = Array::new(capacity=existing_ks.length())
   for item in existing_ks {
     match item {
       Indirect(i) => {
@@ -497,7 +497,7 @@ pub fn PdfStructTree::merge_structure_trees(
     }
   }
 
-  let standard_entries = Array()
+  let standard_entries = []
   standard_entries.push(
     ("/Type", @pdf.PdfObject::Name(PdfName(b"/StructTreeRoot"))),
   )
@@ -515,7 +515,7 @@ pub fn PdfStructTree::merge_structure_trees(
     )
     let merged_namespaces = match merged_namespaces {
       PdfArray(items) => {
-        let out = Array(capacity=items.length() + 1)
+        let out = Array::new(capacity=items.length() + 1)
         out.push(@pdf.PdfObject::Indirect(namespace_objnum))
         out.append(items[:])
         @pdf.PdfObject::PdfArray(out)
@@ -530,14 +530,14 @@ pub fn PdfStructTree::merge_structure_trees(
         ("/K", merged_k),
       ]),
     )
-    let new_entries = Array()
+    let new_entries = []
     new_entries.append(standard_entries[:])
     new_entries.append(optional("/Namespaces", merged_namespaces)[:])
     new_entries.push(("/K", Indirect(top_level_objnum)))
     pdf.addobj_given_num((struct_tree_objnum, Dictionary(new_entries)))
     Some(struct_tree_objnum)
   } else {
-    let new_entries = Array()
+    let new_entries = []
     new_entries.append(standard_entries[:])
     new_entries.append(optional("/Namespaces", merged_namespaces)[:])
     new_entries.append(optional("/K", merged_k)[:])

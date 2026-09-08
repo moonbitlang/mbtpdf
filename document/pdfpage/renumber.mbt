@@ -27,7 +27,7 @@ fn make_changes(
   }
 
   let pagenums = Array::makei(pages.length(), i => i + 1)
-  let entries : Array[(String, Int, String, String)] = Array()
+  let entries : Array[(String, Int, String, String)] = []
   for name in resource_keys {
     for i, page in pages {
       entries.append(entries_of_page(name, pagenums[i], page)[:])
@@ -175,7 +175,7 @@ pub fn PdfPageDoc::renumber_pages(
     updated
   }
 
-  let out : Array[Page] = Array(capacity=pages.length())
+  let out : Array[Page] = Array::new(capacity=pages.length())
   for i, page in pages {
     let seqnum = i + 1
     out.push({

@@ -30,7 +30,7 @@ fn encode_png_filter(
   bytes_per_pixel : Int,
   filter : Int,
 ) -> Array[Int] {
-  let out = Array(capacity=current.length())
+  let out = Array::new(capacity=current.length())
   for i in 0..<current.length() {
     let left = if i < bytes_per_pixel {
       0

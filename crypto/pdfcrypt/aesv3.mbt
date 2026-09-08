@@ -48,7 +48,7 @@ fn shamix(password : String, udata : String?, s : String) -> String raise {
   }
   while !fin {
     round = round + 1
-    let parts = Array()
+    let parts = []
     parts.push(pw_bytes)
     parts.push(k_bytes)
     match u_bytes {

@@ -23,7 +23,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
   for list in lists {
     total = total + list.length()
   }
-  let out = Array(capacity=total)
+  let out = Array::new(capacity=total)
   for list in lists {
     out.append(list[:])
   }
@@ -35,7 +35,7 @@ fn ilist(start : Int, finish : Int) -> Array[Int] {
   if finish < start {
     return []
   }
-  let out = Array(capacity=finish - start + 1)
+  let out = Array::new(capacity=finish - start + 1)
   for i in start..<=finish {
     out.push(i)
   }
@@ -80,7 +80,7 @@ fn[A, B] combine(left : Array[A], right : Array[B]) -> Array[(A, B)] raise {
   if left.length() != right.length() {
     raise @pdf.PdfError::Msg("combine: length mismatch")
   }
-  let out = Array(capacity=left.length())
+  let out = Array::new(capacity=left.length())
   for i in 0..<left.length() {
     out.push((left[i], right[i]))
   }
@@ -89,10 +89,10 @@ fn[A, B] combine(left : Array[A], right : Array[B]) -> Array[(A, B)] raise {
 
 ///|
 fn[T] collate(items : Array[T], cmp : (T, T) -> Int) -> Array[Array[T]] {
-  let out = Array()
+  let out = []
   let mut i = 0
   while i < items.length() {
-    let group = Array()
+    let group = []
     group.push(items[i])
     let mut j = i + 1
     while j < items.length() && cmp(items[i], items[j]) == 0 {
@@ -108,7 +108,7 @@ fn[T] collate(items : Array[T], cmp : (T, T) -> Int) -> Array[Array[T]] {
 ///|
 fn setify_strings(values : Array[String]) -> Array[String] {
   let seen = Map([], capacity=values.length())
-  let out = Array()
+  let out = []
   for value in values {
     if seen.get(value) is None {
       seen.set(value, ())

@@ -38,7 +38,7 @@ pub fn Input::getuntil(
   eof_is_delimiter : Bool,
   pred : (Char) -> Bool,
 ) -> Array[Char] raise {
-  let out = Array()
+  let out = []
   let mut done = false
   while !done {
     let b = (self.input_byte)()
