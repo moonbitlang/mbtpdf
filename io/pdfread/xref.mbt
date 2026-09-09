@@ -246,9 +246,7 @@ fn read_xref_stream(
   let dict_level : Ref[Int] = { val: 0, }
   let array_level : Ref[Int] = { val: 0, }
   let xrefstream_objectnumber = match
-    @pdfsyntax.lex_next(dict_level, array_level, false, input, [], true, _ => {
-      []
-    }) {
+    @pdfsyntax.lex_next(dict_level, array_level, false, input, [], true, _ => []) {
     LexInt(i) => i
     _ => {
       (ctx.logger)("couldn't lex object number\n")
