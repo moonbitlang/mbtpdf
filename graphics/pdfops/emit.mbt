@@ -325,7 +325,7 @@ fn lexemes_of_ops(ops : Array[Op]) -> Array[Lexeme] {
 
 ///|
 fn lexemelists_of_ops(ops : Array[Op]) -> Array[Array[Lexeme]] {
-  let out : Array[Array[Lexeme]] = Array::new(capacity=ops.length())
+  let out : Array[Array[Lexeme]] = Array(capacity=ops.length())
   for op in ops {
     out.push(lexemes_of_op(op))
   }

@@ -21,7 +21,7 @@ fn rewrite_first_kid(
   new_num : Int,
   kids : Array[PdfObject],
 ) -> Array[PdfObject] {
-  let out = Array::new(capacity=kids.length())
+  let out = Array(capacity=kids.length())
   let mut rewritten = false
   for kid in kids {
     match kid {
@@ -279,7 +279,7 @@ pub fn PdfPageDoc::fixup_duplicate_annots(self : PdfPageDoc) -> Unit raise {
   let seen : Map[Int, Unit] = Map([])
   let to_copy : Array[(Int, Int)] = []
   let new_annots = existing_annots.map(annots => {
-    let out = Array::new(capacity=annots.length())
+    let out = Array(capacity=annots.length())
     for i in annots {
       if seen.get(i) is None {
         out.push(i)

@@ -163,7 +163,7 @@ pub fn PdfPageDoc::pdf_of_pages(
     let marks = @pdfmarks.PdfMarks::new(basepdf).read_bookmarks(
       preserve_actions=true,
     )
-    let kept : Array[@pdfmarks.Bookmark] = Array::new(capacity=marks.length())
+    let kept : Array[@pdfmarks.Bookmark] = Array(capacity=marks.length())
     for mark in marks {
       index = index + 1
       let page_num = PdfPageDoc::new(basepdf).pagenumber_of_target(
@@ -210,7 +210,7 @@ pub fn PdfPageDoc::pdf_of_pages(
     Dictionary(d) => d
     _ => []
   }
-  let objnumbers : Array[Int] = Array::new(capacity=range.length())
+  let objnumbers : Array[Int] = Array(capacity=range.length())
   for page in range {
     objnumbers.push(select_page_ref(page_numbers, page))
   }

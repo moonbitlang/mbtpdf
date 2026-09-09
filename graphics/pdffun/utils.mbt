@@ -5,7 +5,7 @@ fn pairs_of_list_eval(
   if values.length() % 2 == 1 {
     raise Msg("Bad list length")
   }
-  let out = Array::new(capacity=values.length() / 2)
+  let out = Array(capacity=values.length() / 2)
   for i = 0; i + 1 < values.length(); i = i + 2 {
     out.push((values[i], values[i + 1]))
   }
@@ -16,8 +16,8 @@ fn pairs_of_list_eval(
 fn split_pairs(
   values : Array[(Double, Double)],
 ) -> (Array[Double], Array[Double]) {
-  let left = Array::new(capacity=values.length())
-  let right = Array::new(capacity=values.length())
+  let left = Array(capacity=values.length())
+  let right = Array(capacity=values.length())
   for pair in values {
     left.push(pair.0)
     right.push(pair.1)
@@ -41,7 +41,7 @@ fn min(a : Int, b : Int) -> Int {
 
 ///|
 fn interleave_lists(a : Array[Double], b : Array[Double]) -> Array[Double] {
-  let out = Array::new(capacity=a.length() + b.length())
+  let out = Array(capacity=a.length() + b.length())
   let len = min(a.length(), b.length())
   for i in 0..<len {
     out.push(a[i])
@@ -62,7 +62,7 @@ fn product(values : Array[Int]) -> Int {
 ///|
 fn[A, B, C] map2(a : Array[A], b : Array[B], f : (A, B) -> C) -> Array[C] {
   let len = min(a.length(), b.length())
-  let out = Array::new(capacity=len)
+  let out = Array(capacity=len)
   for i in 0..<len {
     out.push(f(a[i], b[i]))
   }
@@ -77,7 +77,7 @@ fn[A, B, C, D] map3(
   f : (A, B, C) -> D,
 ) -> Array[D] {
   let len = min(min(a.length(), b.length()), c.length())
-  let out = Array::new(capacity=len)
+  let out = Array(capacity=len)
   for i in 0..<len {
     out.push(f(a[i], b[i], c[i]))
   }
@@ -97,7 +97,7 @@ fn[A, B, C, D, E, F] map5(
     min(min(a.length(), b.length()), c.length()),
     min(d.length(), e.length()),
   )
-  let out = Array::new(capacity=len)
+  let out = Array(capacity=len)
   for i in 0..<len {
     out.push(f(a[i], b[i], c[i], d[i], e[i]))
   }
@@ -110,7 +110,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
   for list in lists {
     total = total + list.length()
   }
-  let out = Array::new(capacity=total)
+  let out = Array(capacity=total)
   for list in lists {
     out.append(list[:])
   }
@@ -153,7 +153,7 @@ fn eval_function_sampled(
     if inputs.length() != s.size.length() {
       raise BadFunctionEvaluation::Msg("Incompatible /Size with inputs")
     }
-    let multipliers = Array::new(capacity=inputs.length())
+    let multipliers = Array(capacity=inputs.length())
     multipliers.push(1)
     let mut multiplier = 1
     for idx in 1..<inputs.length() {
@@ -165,7 +165,7 @@ fn eval_function_sampled(
       pos = pos + inputs[i] * multipliers[i]
     }
     pos = pos * vals_to_read
-    let out = Array::new(capacity=vals_to_read)
+    let out = Array(capacity=vals_to_read)
     for j in 0..<vals_to_read {
       out.push(s.samples[pos + j])
     }
@@ -175,7 +175,7 @@ fn eval_function_sampled(
   let floors = clamped_encoded.map(value => value.floor().to_int())
   let ceiling_results = read_table(ceilings)
   let floor_results = read_table(floors)
-  let outputs = Array::new(capacity=ceiling_results.length())
+  let outputs = Array(capacity=ceiling_results.length())
   for i in 0..<ceiling_results.length() {
     let value = ceiling_results[i].to_double() / 2.0 +
       floor_results[i].to_double() / 2.0
@@ -194,7 +194,7 @@ fn eval_function_sampled(
 
 ///|
 fn[T] concat_arrays(a : Array[T], b : Array[T]) -> Array[T] {
-  let out = Array::new(capacity=a.length() + b.length())
+  let out = Array(capacity=a.length() + b.length())
   out.append(a[:])
   out.append(b[:])
   out

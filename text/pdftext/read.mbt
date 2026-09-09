@@ -161,7 +161,7 @@ pub fn PdfText::read_fontdescriptor(
 
 ///|
 fn repeat_double(value : Double, count : Int) -> Array[Double] {
-  let out = Array::new(capacity=if count > 0 { count } else { 0 })
+  let out = Array(capacity=if count > 0 { count } else { 0 })
   for _ in 0..<count {
     out.push(value)
   }
@@ -220,7 +220,7 @@ pub fn PdfText::read_metrics(
         }
       })
       let after = repeat_double(missingwidth, 255 - lastchar)
-      let metrics = Array::new(
+      let metrics = Array(
         capacity=before.length() + given.length() + after.length(),
       )
       metrics.append(before)
@@ -502,7 +502,7 @@ pub fn PdfTextUtil::read_cid_widths(
   _self : PdfTextUtil,
   elts : Array[@pdf.PdfObject],
 ) -> Array[(Int, Double)] raise {
-  let out = Array::new(capacity=elts.length())
+  let out = Array(capacity=elts.length())
   let mut i = 0
   while i < elts.length() {
     match elts[i] {

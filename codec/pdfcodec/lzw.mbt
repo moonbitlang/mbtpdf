@@ -38,7 +38,7 @@ fn decode_lzw(
       c = prefix_code[c]
     }
     reversed.push(c)
-    let out : Array[Int] = Array::new(capacity=reversed.length())
+    let out : Array[Int] = Array(capacity=reversed.length())
     for i in 0..<reversed.length() {
       out.push(reversed[reversed.length() - 1 - i])
     }

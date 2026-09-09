@@ -99,7 +99,7 @@ pub fn Pdf::renumber(
 ///|
 /// Renumber a list of PDFs so their object numbers are mutually exclusive.
 pub fn renumber_pdfs(pdfs : Array[Pdf]) -> Array[Pdf] {
-  let out = Array::new(capacity=pdfs.length())
+  let out = Array(capacity=pdfs.length())
   let mut base = 1
   for pdf in pdfs {
     let keys = pdf.objnumbers()

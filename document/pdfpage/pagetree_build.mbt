@@ -140,7 +140,7 @@ fn objects_of_ptree(
       ]
       node_entries.append(parent_entry[:])
       let node = PdfObject::Dictionary(node_entries)
-      let result = Array::new(capacity=1 + page_objects.length())
+      let result = Array(capacity=1 + page_objects.length())
       result.push((this, node))
       result.append(page_objects[:])
       result

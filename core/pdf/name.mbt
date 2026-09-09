@@ -17,7 +17,7 @@ fn ensure_leading_slash(bytes : Bytes) -> Bytes {
     // Be tolerant of internal construction mistakes, but do not silently drop
     // information. Keep behavior aligned with the old `make_pdf_name` path.
     @pdfe.warn("warning: bad name (missing leading '/'): |\{bytes}|")
-    let out = Array::new(capacity=bytes.length() + 1)
+    let out = Array(capacity=bytes.length() + 1)
     out.push('/'.to_int().to_byte())
     out.append(bytes.to_array())
     Bytes::from_array(out[:])

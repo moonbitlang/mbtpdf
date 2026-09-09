@@ -175,7 +175,7 @@ pub fn PdfPageDoc::renumber_pages(
     updated
   }
 
-  let out : Array[Page] = Array::new(capacity=pages.length())
+  let out : Array[Page] = Array(capacity=pages.length())
   for i, page in pages {
     let seqnum = i + 1
     out.push({

@@ -96,7 +96,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
   for list in lists {
     total = total + list.length()
   }
-  let out = Array::new(capacity=total)
+  let out = Array(capacity=total)
   for list in lists {
     out.append(list[:])
   }
@@ -371,7 +371,7 @@ fn make_outline_ntree(
       )
       let tree = make_outline_ntree(source, pdf, lower)
       let current = Br(fresh(source, pdf), node, tree, head.isopen)
-      let out = Array::new(capacity=1 + remaining.length())
+      let out = Array(capacity=1 + remaining.length())
       out.push(current)
       out.append(make_outline_ntree(source, pdf, remaining)[:])
       out

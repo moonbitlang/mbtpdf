@@ -124,7 +124,7 @@ fn ops_poly_path(
   match points {
     [] => []
     [(x0, y0), .. rest] => {
-      let ops : Array[@pdfops.Op] = Array::new(capacity=points.length() + 2)
+      let ops : Array[@pdfops.Op] = Array(capacity=points.length() + 2)
       ops.push(Opm(x0, y0))
       for point in rest {
         let (x, y) = point
@@ -166,7 +166,7 @@ fn circle_points(
   r : Double,
   n : Int,
 ) -> Array[(Double, Double)] {
-  let out = Array::new(capacity=n)
+  let out = Array(capacity=n)
   let two_pi = 2.0 * pi()
   for i in 0..<n {
     let t = two_pi * (i.to_double() / n.to_double())
@@ -447,7 +447,7 @@ fn comic_ops() -> Array[@pdfops.Op] {
   )
 
   // Panel 2: a simple "burst"
-  let burst = Array::new(capacity=16)
+  let burst = Array(capacity=16)
   for i in 0..<16 {
     let t = 2.0 * pi() * (i.to_double() / 16.0)
     let r = if i % 2 == 0 { 70.0 } else { 35.0 }
@@ -508,7 +508,7 @@ fn stickers_ops() -> Array[@pdfops.Op] {
   }
 
   // Star sticker
-  let star = Array::new(capacity=10)
+  let star = Array(capacity=10)
   for i in 0..<10 {
     let t = 2.0 * pi() * (i.to_double() / 10.0) - pi() / 2.0
     let r = if i % 2 == 0 { 46.0 } else { 20.0 }

@@ -94,7 +94,7 @@ fn ops_poly_path(
   match points {
     [] => []
     [(x0, y0), .. rest] => {
-      let ops : Array[Op] = Array::new(capacity=points.length() + 2)
+      let ops : Array[Op] = Array(capacity=points.length() + 2)
       ops.push(Opm(x0, y0))
       for p in rest {
         let (x, y) = p
@@ -136,7 +136,7 @@ fn circle_points(
   r : Double,
   n : Int,
 ) -> Array[(Double, Double)] {
-  let out = Array::new(capacity=n)
+  let out = Array(capacity=n)
   let two_pi = 8.0 * @math.atan(1.0)
   for i in 0..<n {
     let t = two_pi * (i.to_double() / n.to_double())

@@ -23,7 +23,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
   for list in lists {
     total = total + list.length()
   }
-  let out = Array::new(capacity=total)
+  let out = Array(capacity=total)
   for list in lists {
     out.append(list[:])
   }
@@ -35,7 +35,7 @@ fn ilist(start : Int, finish : Int) -> Array[Int] {
   if finish < start {
     return []
   }
-  let out = Array::new(capacity=finish - start + 1)
+  let out = Array(capacity=finish - start + 1)
   for i in start..<=finish {
     out.push(i)
   }
@@ -80,7 +80,7 @@ fn[A, B] combine(left : Array[A], right : Array[B]) -> Array[(A, B)] raise {
   if left.length() != right.length() {
     raise @pdf.PdfError::Msg("combine: length mismatch")
   }
-  let out = Array::new(capacity=left.length())
+  let out = Array(capacity=left.length())
   for i in 0..<left.length() {
     out.push((left[i], right[i]))
   }

@@ -639,7 +639,7 @@ fn build_pdf_objects(
           partial_pdf,
           indexes~,
         )
-        let out = Array::new(capacity=parsed.length())
+        let out = Array(capacity=parsed.length())
         for pair in parsed {
           out.push(
             (pair.0, (Ref(@pdf.ObjectData::ParsedAlreadyDecrypted(pair.1)), 0)),

@@ -291,7 +291,7 @@ priv struct Maze {
 
 ///|
 fn Maze::new(w : Int, h : Int) -> Maze {
-  let cells = Array::new(capacity=w * h)
+  let cells = Array(capacity=w * h)
   for _ in 0..<(w * h) {
     cells.push(Cell::empty())
   }
@@ -310,7 +310,7 @@ fn in_bounds(w : Int, h : Int, x : Int, y : Int) -> Bool {
 
 ///|
 fn Maze::neighbors(self : Maze, x : Int, y : Int) -> Array[(Dir, Int, Int)] {
-  let out = Array::new(capacity=4)
+  let out = Array(capacity=4)
   let dirs : Array[Dir] = [N, E, S, W]
   for d in dirs {
     let (dx, dy) = dir_delta(d)
@@ -327,7 +327,7 @@ fn Maze::neighbors(self : Maze, x : Int, y : Int) -> Array[(Dir, Int, Int)] {
 fn Maze::carved(self : Maze, seed : UInt) -> Maze {
   let maze = self
   let rng = Rng::new(seed)
-  let visited = Array::new(capacity=maze.w * maze.h)
+  let visited = Array(capacity=maze.w * maze.h)
   for _ in 0..<(maze.w * maze.h) {
     visited.push(false)
   }
@@ -370,8 +370,8 @@ fn Maze::bfs_parents(
   start : (Int, Int),
 ) -> (Array[Int], Array[Int]) {
   let n = self.w * self.h
-  let dist = Array::new(capacity=n)
-  let parent = Array::new(capacity=n)
+  let dist = Array(capacity=n)
+  let parent = Array(capacity=n)
   for _ in 0..<n {
     dist.push(-1)
     parent.push(-1)

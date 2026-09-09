@@ -223,7 +223,7 @@ fn code_int_of_string(code : String) -> Int {
 
 ///|
 fn code_string_of_int(value : Int, length : Int) -> String {
-  let bytes = Array::new(capacity=length)
+  let bytes = Array(capacity=length)
   let mut v = value
   for _ in 0..<length {
     bytes.push(v & 0xff)

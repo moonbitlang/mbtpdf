@@ -21,7 +21,7 @@ fn merge_bookmarks(
           }
         _ => []
       }
-      let out = Array::new(capacity=oldstyle.length() + newstyle.length())
+      let out = Array(capacity=oldstyle.length() + newstyle.length())
       out.append(oldstyle[:])
       out.append(newstyle[:])
       out

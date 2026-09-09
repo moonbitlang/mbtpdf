@@ -684,7 +684,7 @@ fn build_deck() -> (
     Thanks,
   )
   let total = slides.length()
-  let pages : Array[@pdfpage.Page] = Array::new(capacity=total)
+  let pages : Array[@pdfpage.Page] = Array(capacity=total)
   let mut toc_links : Array[(Int, (Double, Double, Double, Double))] = []
   for i in 0..<total {
     let slide = slides[i]

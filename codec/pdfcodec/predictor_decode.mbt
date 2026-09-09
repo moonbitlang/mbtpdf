@@ -64,7 +64,7 @@ fn decode_png_predictor(
   let mut pos = 0
   let prev_decoded = Array::make(scanline_width, 0)
   // Output is always <= input length (predictor bytes are dropped).
-  let output : Array[Byte] = Array::new(capacity=stream.length())
+  let output : Array[Byte] = Array(capacity=stream.length())
   while pos < stream.length() {
     let predictor = stream[pos].to_int()
     pos = pos + 1
