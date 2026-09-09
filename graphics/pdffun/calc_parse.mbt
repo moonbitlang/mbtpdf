@@ -221,7 +221,7 @@ fn calc_parse_program(toks : Array[CalcTok]) -> Array[CalcNode] raise {
 
 ///|
 fn calc_compile(nodes : Array[CalcNode]) -> Array[Calculator] raise {
-  let out = Array::new(capacity=nodes.length())
+  let out = Array(capacity=nodes.length())
   let mut i = 0
   while i < nodes.length() {
     if i + 2 < nodes.length() {

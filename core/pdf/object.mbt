@@ -93,7 +93,7 @@ pub fn PdfObject::replace_entry(
     Null => Dictionary([(key, value)])
     Dictionary(entries) => {
       let mut replaced = false
-      let out = Array::new(capacity=entries.length())
+      let out = Array(capacity=entries.length())
       for entry in entries {
         let (k, v) = entry
         if k == key {
@@ -128,7 +128,7 @@ pub fn PdfObject::add_entry(
     Null => Dictionary([(key, value)])
     Dictionary(entries) => {
       let mut replaced = false
-      let out = Array::new(capacity=entries.length() + 1)
+      let out = Array(capacity=entries.length() + 1)
       for entry in entries {
         let (k, v) = entry
         if k == key {
@@ -188,7 +188,7 @@ pub fn PdfObject::lookup_immediate_all(
   key : String,
 ) -> Array[PdfObject] {
   fn collect(entries : Array[(String, PdfObject)]) -> Array[PdfObject] {
-    let out = Array::new(capacity=entries.length())
+    let out = Array(capacity=entries.length())
     for entry in entries {
       let (k, v) = entry
       if k == key {

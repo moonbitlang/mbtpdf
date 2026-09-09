@@ -3660,7 +3660,7 @@ fn parse_glyphlist_line(line : String) -> (String, Array[Int])? {
 ///|
 fn parse_glyphlist(input : @pdfio.Input) -> Array[(String, Array[Int])] raise {
   let lines = input.read_lines()
-  let out = Array::new(capacity=lines.length())
+  let out = Array(capacity=lines.length())
   for line in lines {
     match parse_glyphlist_line(line) {
       Some(pair) => out.push(pair)

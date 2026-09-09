@@ -25,7 +25,7 @@ fn apply_namechanges_to_destination_nametree(
     if values.length() % 2 == 1 {
       return None
     }
-    let out = Array::new(capacity=values.length() / 2)
+    let out = Array(capacity=values.length() / 2)
     for i = 0; i + 1 < values.length(); i = i + 2 {
       out.push((values[i], values[i + 1]))
     }
@@ -49,7 +49,7 @@ fn apply_namechanges_to_destination_nametree(
                 _ => pair
               }
             })
-            let rebuilt = Array::new(capacity=values.length())
+            let rebuilt = Array(capacity=values.length())
             for pair in updated_pairs {
               rebuilt.push(pair.0)
               rebuilt.push(pair.1)
@@ -132,7 +132,7 @@ fn apply_namechanges_at_destination_callsites(
   fn f(obj : PdfObject) -> PdfObject {
     match obj {
       Dictionary(entries) => {
-        let updated = Array::new(capacity=entries.length())
+        let updated = Array(capacity=entries.length())
         for entry in entries {
           updated.push((entry.0, f(entry.1)))
         }
@@ -210,7 +210,7 @@ fn merge_pdfs_rename_name_trees(
   while !worked(renamed) {
     num = num + 1
     let indexes = ilist(num, num + renamed.length() - 1)
-    let updated = Array::new(capacity=renamed.length())
+    let updated = Array(capacity=renamed.length())
     for entry in combine(indexes, renamed) {
       let (index, pair) = entry
       let suffix = "-f" + index.to_string()

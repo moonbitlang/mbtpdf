@@ -270,7 +270,7 @@ fn inflate_dynamic(
   }
   let code_length_huff = build_huffman(code_lengths)
   let total = hlit + hdist
-  let lengths = Array::new(capacity=total)
+  let lengths = Array(capacity=total)
   let mut prev = 0
   while lengths.length() < total {
     let sym = decode_symbol(reader, code_length_huff)
@@ -310,11 +310,11 @@ fn inflate_dynamic(
       raise Error("uncompress", "invalid code length symbol")
     }
   }
-  let lit_lengths = Array::new(capacity=hlit)
+  let lit_lengths = Array(capacity=hlit)
   for i in 0..<hlit {
     lit_lengths.push(lengths[i])
   }
-  let dist_lengths = Array::new(capacity=hdist)
+  let dist_lengths = Array(capacity=hdist)
   for i in 0..<hdist {
     dist_lengths.push(lengths[hlit + i])
   }

@@ -348,7 +348,7 @@ fn eval_function_calculator(
         }
         let slice = stack[start:].to_owned()
         stack.truncate(start)
-        let mut rotated = Array::new(capacity=slice.length())
+        let mut rotated = Array(capacity=slice.length())
         if j > 0 {
           for k in 0..<slice.length() {
             rotated.push(slice[(k + j) % slice.length()])
@@ -374,7 +374,7 @@ fn eval_function_calculator(
   for op in ops {
     eval(op, stack)
   }
-  let out = Array::new(capacity=stack.length())
+  let out = Array(capacity=stack.length())
   for i in (stack.length() - 1)>=..0 {
     match stack[i] {
       Float(x) => out.push(x)

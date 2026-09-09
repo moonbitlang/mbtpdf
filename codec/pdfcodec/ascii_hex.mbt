@@ -32,7 +32,7 @@ fn encode_asciihex(stream : Array[Byte]) -> Array[Byte] {
     b'D', b'E', b'F',
   ]
   let size = @pdfio.bytes_size(stream)
-  let out = Array::new(capacity=size * 2 + 1)
+  let out = Array(capacity=size * 2 + 1)
   for i in 0..<size {
     let value = stream[i].to_int()
     out.push(hex[value >> 4])

@@ -84,7 +84,7 @@ fn int_array_of_numbers(
   pdf : @pdf.Pdf,
   values : Array[PdfObject],
 ) -> Array[Int] raise {
-  let out = Array::new(capacity=values.length())
+  let out = Array(capacity=values.length())
   for v in values {
     out.push(toint(pdf.getnum(v)))
   }
@@ -262,7 +262,7 @@ pub fn PdfAnnot::annotations_of_page(
           None => ()
         }
       }
-      let out = Array::new(capacity=annotations.length())
+      let out = Array(capacity=annotations.length())
       for annot in annotations {
         match (annot : PdfObject) {
           Indirect(i) =>

@@ -1,6 +1,6 @@
 ///|
 fn append_bits(prefix : Array[Int], suffix : Array[Int]) -> Array[Int] {
-  let out = Array::new(capacity=prefix.length() + suffix.length())
+  let out = Array(capacity=prefix.length() + suffix.length())
   for bit in prefix {
     out.push(bit)
   }
@@ -638,7 +638,7 @@ fn ccittg4_transitions(
   input : @pdfio.Bitstream,
   columns : Int,
 ) -> Array[Int] raise {
-  let transitions = Array::new(capacity=columns + 2)
+  let transitions = Array(capacity=columns + 2)
   transitions.push(0)
   let mut prev_white = true
   for pos = 0; pos < columns; pos = pos + 1 {
@@ -748,7 +748,7 @@ fn encode_ccittg4_pure(
   let output = @pdfio.BitstreamWrite::new()
   try {
     let mut rows_left = rows
-    let mut reference = Array::new(capacity=2)
+    let mut reference = Array(capacity=2)
     reference.push(0)
     reference.push(columns)
     while rows_left > 0 {

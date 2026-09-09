@@ -121,7 +121,7 @@ fn circle_points(
   r : Double,
   n : Int,
 ) -> Array[(Double, Double)] {
-  let out = Array::new(capacity=n)
+  let out = Array(capacity=n)
   let two_pi = 8.0 * @math.atan(1.0)
   for i in 0..<n {
     let t = two_pi * (i.to_double() / n.to_double())

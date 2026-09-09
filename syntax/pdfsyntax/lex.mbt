@@ -387,7 +387,7 @@ pub fn lex_stream_data(
 
 ///|
 fn reverse_tokens(tokens : Array[Token]) -> Array[Token] {
-  let out = Array::new(capacity=tokens.length())
+  let out = Array(capacity=tokens.length())
   for t in tokens[:].rev_iter() {
     out.push(t)
   }

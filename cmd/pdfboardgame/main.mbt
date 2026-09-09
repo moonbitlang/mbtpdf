@@ -112,7 +112,7 @@ fn circle_points(
   r : Double,
   n : Int,
 ) -> Array[(Double, Double)] {
-  let out = Array::new(capacity=n)
+  let out = Array(capacity=n)
   let two_pi = 8.0 * @math.atan(1.0)
   for i in 0..<n {
     let t = two_pi * (i.to_double() / n.to_double())
@@ -129,7 +129,7 @@ fn ops_poly_path(
   match points {
     [] => []
     [(x0, y0), .. rest] => {
-      let ops : Array[Op] = Array::new(capacity=points.length() + 2)
+      let ops : Array[Op] = Array(capacity=points.length() + 2)
       ops.push(Opm(x0, y0))
       for p in rest {
         let (x, y) = p
@@ -856,7 +856,7 @@ pub async fn run(
     let (board, board_links) = board_ops()
     let rules = rules_ops()
     let clue = clue_cards_ops()
-    let room_pages : Array[@pdfpage.Page] = Array::new(capacity=ROWS * COLS)
+    let room_pages : Array[@pdfpage.Page] = Array(capacity=ROWS * COLS)
     let room_links : Array[Array[(Int, (Double, Double, Double, Double))]] = []
     for i in 1..<=(ROWS * COLS) {
       let (ops, links) = room_ops(i)
