@@ -1,18 +1,18 @@
 ///|
-fn calc_fun(ops : Array[Calculator]) -> PdfFunction {
+fn calc_fun(ops : Array[@pdffun.Calculator]) -> @pdffun.PdfFunction {
   { func: Calculator(ops), domain: [0.0, 1.0], range: None, }
 }
 
 ///|
 fn eval_calc_inputs(
-  ops : Array[Calculator],
+  ops : Array[@pdffun.Calculator],
   inputs : Array[Double],
-) -> Array[Double] raise BadFunctionEvaluation {
+) -> Array[Double] raise @pdffun.BadFunctionEvaluation {
   calc_fun(ops).eval(inputs)
 }
 
 ///|
-fn assert_calc_err(ops : Array[Calculator]) -> Unit raise {
+fn assert_calc_err(ops : Array[@pdffun.Calculator]) -> Unit raise {
   let res : Result[Array[Double], Error] = try
     calc_fun(ops).eval([0.0]) |> Ok
   catch {
@@ -35,7 +35,7 @@ test "parse_function sampled order" {
   ])
   let data = @pdfio.bytes_of_list([0x80])
   let stream : @pdf.PdfObject = Stream(Ref((dict, Got(data))))
-  let parsed = PdfFunction::parse(pdf, stream)
+  let parsed = @pdffun.PdfFunction::parse(pdf, stream)
   match parsed.func {
     Sampled(s) => assert_eq(s.order, 3)
     _ => fail("expected sampled function")
@@ -50,7 +50,7 @@ test "parse_function defaults c0 c1" {
     ("/Domain", PdfArray([Real(0.0), Real(1.0)])),
     ("/N", Real(1.0)),
   ])
-  let parsed = PdfFunction::parse(pdf, dict)
+  let parsed = @pdffun.PdfFunction::parse(pdf, dict)
   match parsed.func {
     Interpolation(i) => {
       assert_eq(i.c0.length(), 1)
@@ -73,7 +73,7 @@ test "parse_function calculator supports nested procedures" {
   ])
   let data = @pdfio.bytes_of_string(program)
   let stream : @pdf.PdfObject = Stream(Ref((dict, Got(data))))
-  let parsed = PdfFunction::parse(pdf, stream)
+  let parsed = @pdffun.PdfFunction::parse(pdf, stream)
   match parsed.func {
     Calculator(ops) =>
       match ops {
@@ -94,8 +94,8 @@ test "parse_function rejects bad bits per sample" {
     ("/Size", PdfArray([Integer(1)])),
     ("/BitsPerSample", Name(PdfName(b"/Bad"))),
   ])
-  let res : Result[PdfFunction, Error] = try
-    PdfFunction::parse(pdf, dict) |> Ok
+  let res : Result[@pdffun.PdfFunction, Error] = try
+    @pdffun.PdfFunction::parse(pdf, dict) |> Ok
   catch {
     e => Err(e)
   }
@@ -104,7 +104,7 @@ test "parse_function rejects bad bits per sample" {
 
 ///|
 test "calculator bool output errors" {
-  let ops = [Calculator::Float(1.0), Float(1.0), Eq]
+  let ops = [@pdffun.Calculator::Float(1.0), Float(1.0), Eq]
   let res : Result[Array[Double], Error] = try
     calc_fun(ops).eval([0.0]) |> Ok
   catch {
@@ -116,7 +116,7 @@ test "calculator bool output errors" {
 ///|
 test "calculator compares bools" {
   let ops = [
-    Calculator::Pop,
+    @pdffun.Calculator::Pop,
     Bool(true),
     Bool(true),
     Ge,
@@ -130,7 +130,7 @@ test "calculator compares bools" {
 ///|
 test "calculator conversions and rounding" {
   let ops = [
-    Calculator::Pop,
+    @pdffun.Calculator::Pop,
     Int(2),
     Cvi,
     Cvr,
@@ -148,7 +148,7 @@ test "calculator conversions and rounding" {
 
 ///|
 test "calculator mul and sub mixed types" {
-  let ops = [Calculator::Pop, Float(2.0), Int(3), Mul, Int(1), Sub]
+  let ops = [@pdffun.Calculator::Pop, Float(2.0), Int(3), Mul, Int(1), Sub]
   let out = eval_calc_inputs(ops, [0.0])
   assert_eq(out.length(), 1)
   assert_eq(out[0], 5.0)
@@ -157,7 +157,7 @@ test "calculator mul and sub mixed types" {
 ///|
 test "calculator mul and sub float int" {
   let ops = [
-    Calculator::Pop,
+    @pdffun.Calculator::Pop,
     Int(4),
     Float(1.5),
     Mul,
@@ -172,7 +172,7 @@ test "calculator mul and sub float int" {
 
 ///|
 test "calculator bitshift with negative values" {
-  let ops = [Calculator::Pop, Int(1), Int(-4), Bitshift]
+  let ops = [@pdffun.Calculator::Pop, Int(1), Int(-4), Bitshift]
   let out = eval_calc_inputs(ops, [0.0])
   assert_eq(out.length(), 1)
 }
@@ -180,7 +180,7 @@ test "calculator bitshift with negative values" {
 ///|
 test "calculator roll handles negative and zero shift" {
   let ops_negative = [
-    Calculator::Pop,
+    @pdffun.Calculator::Pop,
     Int(10),
     Int(20),
     Int(30),
@@ -190,14 +190,22 @@ test "calculator roll handles negative and zero shift" {
   ]
   let out = eval_calc_inputs(ops_negative, [0.0])
   assert_eq(out.length(), 3)
-  let ops_zero = [Calculator::Pop, Int(1), Int(2), Int(3), Int(3), Int(0), Roll]
+  let ops_zero = [
+    @pdffun.Calculator::Pop,
+    Int(1),
+    Int(2),
+    Int(3),
+    Int(3),
+    Int(0),
+    Roll,
+  ]
   let out_zero = eval_calc_inputs(ops_zero, [0.0])
   assert_eq(out_zero.length(), 3)
 }
 
 ///|
 test "calculator type errors" {
-  let cases : Array[Array[Calculator]] = [
+  let cases : Array[Array[@pdffun.Calculator]] = [
     [Pop, Bool(true), Abs],
     [Pop, Bool(true), Int(1), Add],
     [Pop, Bool(true), Ceiling],
@@ -224,12 +232,12 @@ test "calculator type errors" {
 
 ///|
 test "stitching bad arity and NaN input" {
-  let f1 : PdfFunction = {
+  let f1 : @pdffun.PdfFunction = {
     func: Interpolation({ c0: [0.0], c1: [1.0], n: 1.0, }),
     domain: [0.0, 1.0],
     range: Some([0.0, 1.0]),
   }
-  let fun : PdfFunction = {
+  let fun : @pdffun.PdfFunction = {
     func: Stitching({ functions: [f1], bounds: [], stitch_encode: [0.0, 1.0], }),
     domain: [0.0, 1.0],
     range: Some([0.0, 1.0]),
@@ -250,7 +258,7 @@ test "stitching bad arity and NaN input" {
 
 ///|
 test "pdfobject_of_function handles zero bps" {
-  let fun : PdfFunction = {
+  let fun : @pdffun.PdfFunction = {
     func: Sampled({
       size: [1],
       order: 1,

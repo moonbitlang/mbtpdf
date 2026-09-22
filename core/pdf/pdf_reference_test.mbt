@@ -1,7 +1,7 @@
 ///|
 test "objects_referenced skips entries" {
-  let pdf = Pdf::empty()
-  let obj = PdfObject::Dictionary([
+  let pdf = @pdf.Pdf::empty()
+  let obj = @pdf.PdfObject::Dictionary([
     ("/Skip", Indirect(1)),
     ("/Keep", Integer(2)),
   ])
@@ -11,8 +11,8 @@ test "objects_referenced skips entries" {
 
 ///|
 test "objects_referenced no_follow_contains non-name" {
-  let pdf = Pdf::empty()
-  let obj = PdfObject::Dictionary([
+  let pdf = @pdf.Pdf::empty()
+  let obj = @pdf.PdfObject::Dictionary([
     ("/Other", Integer(3)),
     ("/Kid", Indirect(2)),
   ])
@@ -28,8 +28,8 @@ test "objects_referenced no_follow_contains non-name" {
 
 ///|
 test "objects_referenced no_follow_contains name match" {
-  let pdf = Pdf::empty()
-  let dict = PdfObject::Dictionary([
+  let pdf = @pdf.Pdf::empty()
+  let dict = @pdf.PdfObject::Dictionary([
     ("/Other", Name(PdfName(b"/Other"))),
     ("/Type", Name(PdfName(b"/Page"))),
     ("/Kid", Indirect(2)),
@@ -46,8 +46,8 @@ test "objects_referenced no_follow_contains name match" {
 
 ///|
 test "objects_referenced no_follow_contains scans non-name entries" {
-  let pdf = Pdf::empty()
-  let dict = PdfObject::Dictionary([
+  let pdf = @pdf.Pdf::empty()
+  let dict = @pdf.PdfObject::Dictionary([
     // Duplicate key: first non-Name should be skipped by predicate.
     ("/Type", Integer(1)),
     ("/Type", Name(PdfName(b"/Page"))),
@@ -65,7 +65,7 @@ test "objects_referenced no_follow_contains scans non-name entries" {
 
 ///|
 test "objects_referenced indirect and stream targets" {
-  let pdf = Pdf::empty()
+  let pdf = @pdf.Pdf::empty()
   pdf.addobj_given_num((5, Integer(99)))
   let stream = make_stream(
     Dictionary([("/Ref", Indirect(5))]),

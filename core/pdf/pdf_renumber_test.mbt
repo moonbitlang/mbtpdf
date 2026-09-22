@@ -1,6 +1,6 @@
 ///|
 test "renumber_object_parsed handles indirect and stream" {
-  let pdf = Pdf::empty()
+  let pdf = @pdf.Pdf::empty()
   let changes : Map[Int, Int] = Map([])
   match pdf.renumber_object_parsed(changes, Indirect(5)) {
     Indirect(5) => ()

@@ -1,21 +1,21 @@
 ///|
 test "serialization escapes extra cases" {
-  let minimal = PdfObject::Name(PdfName(b"/"))
+  let minimal = @pdf.PdfObject::Name(PdfName(b"/"))
   assert_eq(minimal.to_string(), "/")
-  let delimiter = PdfObject::Name(PdfName(b"/A(B"))
+  let delimiter = @pdf.PdfObject::Name(PdfName(b"/A(B"))
   assert_true(delimiter.to_string().contains("#28"))
-  let delimiter2 = PdfObject::Name(PdfName(b"/A)B"))
+  let delimiter2 = @pdf.PdfObject::Name(PdfName(b"/A)B"))
   assert_true(delimiter2.to_string().contains("#29"))
-  let delimiter3 = PdfObject::Name(PdfName(b"/A<B"))
+  let delimiter3 = @pdf.PdfObject::Name(PdfName(b"/A<B"))
   assert_true(delimiter3.to_string().contains("#3C"))
-  let control = PdfObject::Name(PdfName::of_string("/\u0013"))
+  let control = @pdf.PdfObject::Name(@pdf.PdfName::of_string("/\u0013"))
   assert_true(control.to_string().contains("#13"))
-  let multibyte = PdfObject::Name(PdfName::of_string("/\u0094"))
+  let multibyte = @pdf.PdfObject::Name(@pdf.PdfName::of_string("/\u0094"))
   let multibyte_rendered = multibyte.to_string()
   assert_true(multibyte_rendered.contains("#94"))
-  let yen = PdfObject::Name(PdfName::of_string("/\u00A5"))
+  let yen = @pdf.PdfObject::Name(@pdf.PdfName::of_string("/\u00A5"))
   assert_true(yen.to_string().contains("#A5"))
-  let escaped = PdfObject::PdfString("\t\u000C")
+  let escaped = @pdf.PdfObject::PdfString("\t\u000C")
   let rendered = escaped.to_string()
   assert_true(rendered.contains("\\t"))
   assert_true(rendered.contains("\\f"))
@@ -24,11 +24,11 @@ test "serialization escapes extra cases" {
 ///|
 test "serialization includes stream data when requested" {
   let bytes = @pdfio.bytes_of_string("abc")
-  let dict : PdfObject = Dictionary([
+  let dict : @pdf.PdfObject = Dictionary([
     ("/Length", Integer(@pdfio.bytes_size(bytes))),
   ])
-  let stream_ref = Ref((dict, Stream::Got(bytes)))
-  let obj = PdfObject::Stream(stream_ref)
+  let stream_ref = Ref((dict, @pdf.Stream::Got(bytes)))
+  let obj = @pdf.PdfObject::Stream(stream_ref)
   let rendered = obj.to_string_including_data()
   assert_true(rendered.contains("stream"))
   assert_true(rendered.contains("abc"))
@@ -38,7 +38,7 @@ test "serialization includes stream data when requested" {
 ///|
 test "bigarray_of_stream rejects non-stream objects" {
   let res : Result[Array[Byte], Error] = try
-    PdfObject::Integer(0).bigarray_of_stream() |> Ok
+    @pdf.PdfObject::Integer(0).bigarray_of_stream() |> Ok
   catch {
     e => Err(e)
   }
@@ -47,10 +47,10 @@ test "bigarray_of_stream rejects non-stream objects" {
 
 ///|
 test "lookup_chain treats malformed array key as dictionary key" {
-  let pdf = Pdf::empty()
-  let start : PdfObject = Dictionary([("/[", Integer(7))])
+  let pdf = @pdf.Pdf::empty()
+  let start : @pdf.PdfObject = Dictionary([("/[", Integer(7))])
   let out = pdf.lookup_chain(start, ["/["])
-  match (out : PdfObject?) {
+  match (out : @pdf.PdfObject?) {
     Some(Integer(7)) => ()
     _ => fail("expected dictionary lookup for /[")
   }

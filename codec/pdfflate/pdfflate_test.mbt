@@ -1,5 +1,5 @@
 ///|
-let ctx : @pdfflate.PdfFlate = PdfFlate::new()
+let ctx : @pdfflate.PdfFlate = @pdfflate.PdfFlate::new()
 
 ///|
 priv struct LsbBitWriter {
@@ -43,7 +43,7 @@ fn LsbBitWriter::finish(self : LsbBitWriter) -> Array[Byte] {
 fn run_uncompress(
   data : Array[Byte],
   header : Bool,
-) -> Array[Byte] raise FlateError {
+) -> Array[Byte] raise @pdfflate.FlateError {
   let mut pos = 0
   let input = (buf : Array[Byte]) => {
     let remaining = data.length() - pos
@@ -100,7 +100,7 @@ fn[T] assert_flate_error(
   expected : String,
 ) -> Unit raise {
   match result {
-    Err(FlateError::Error(_stage, msg)) => assert_eq(msg, expected)
+    Err(@pdfflate.FlateError::Error(_stage, msg)) => assert_eq(msg, expected)
     Ok(_) => fail("expected flate error")
     Err(_) => fail("unexpected error")
   }

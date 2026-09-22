@@ -10,7 +10,6 @@ import {
   "bobzhang/mbtpdf/io/pdfwritefs",
   "moonbitlang/async",
   "moonbitlang/core/env",
-  "moonbitlang/core/math",
   "moonbitlang/core/string",
 }
 

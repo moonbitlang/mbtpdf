@@ -127,14 +127,14 @@ fn read_dest_names(pdf : @pdf.Pdf) -> Array[String] raise {
 test "merge_pdfs combines pages" {
   let pdf1 = @pdfpage.PdfPageDoc::minimum_valid()
   let pdf2 = @pdfpage.PdfPageDoc::minimum_valid()
-  let merged = PdfMerger::new(["one", "two"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
+  let merged = @pdfmerge.PdfMerger::new(["one", "two"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
     false,
     false,
     process_struct_trees=false,
     add_toplevel_document=false,
   )
   assert_eq(@pdfpage.PdfPageDoc::new(merged).pages_of_pagetree_quick(), 2)
-  PdfMergeDoc::new(merged).remove_duplicate_fonts()
+  @pdfmerge.PdfMergeDoc::new(merged).remove_duplicate_fonts()
 }
 
 ///|
@@ -142,7 +142,7 @@ test "merge_pdfs rejects out of range" {
   let pdf = @pdfpage.PdfPageDoc::minimum_valid()
   assert_is_err(
     try
-      PdfMerger::new(["one"], [pdf], [[2]]).merge_pdfs(
+      @pdfmerge.PdfMerger::new(["one"], [pdf], [[2]]).merge_pdfs(
         false,
         false,
         process_struct_trees=false,
@@ -159,7 +159,7 @@ test "merge_pdfs rejects out of range" {
 test "merge_pdfs retain numbering toggles path" {
   let pdf1 = @pdfpage.PdfPageDoc::minimum_valid()
   let pdf2 = @pdfpage.PdfPageDoc::minimum_valid()
-  let merged = PdfMerger::new(["one", "two"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
+  let merged = @pdfmerge.PdfMerger::new(["one", "two"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
     true,
     false,
     process_struct_trees=false,
@@ -179,7 +179,7 @@ test "remove_duplicate_fonts merges identical streams" {
   ignore(pdf.addobj(stream1))
   ignore(pdf.addobj(stream2))
   let before = count_streams(pdf)
-  PdfMergeDoc::new(pdf).remove_duplicate_fonts()
+  @pdfmerge.PdfMergeDoc::new(pdf).remove_duplicate_fonts()
   let after = count_streams(pdf)
   assert_eq(before, 2)
   assert_eq(after, 1)
@@ -203,7 +203,7 @@ test "remove_duplicate_fonts keeps distinct streams" {
   ignore(pdf.addobj(stream3))
   ignore(pdf.addobj(stream4))
   ignore(pdf.addobj(stream5))
-  PdfMergeDoc::new(pdf).remove_duplicate_fonts()
+  @pdfmerge.PdfMergeDoc::new(pdf).remove_duplicate_fonts()
   assert_eq(count_streams(pdf), 4)
 }
 
@@ -213,7 +213,7 @@ test "remove_duplicate_fonts keeps distinct streams" {
 test "merge_pdfs processes structure trees" {
   let pdf1 = @pdfpage.PdfPageDoc::minimum_valid()
   let pdf2 = @pdfpage.PdfPageDoc::minimum_valid()
-  let merged = PdfMerger::new(["one", "two"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
+  let merged = @pdfmerge.PdfMerger::new(["one", "two"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
     false,
     false,
     process_struct_trees=true,
@@ -227,7 +227,7 @@ test "merge_pdfs rejects length mismatch" {
   let pdf1 = @pdfpage.PdfPageDoc::minimum_valid()
   let pdf2 = @pdfpage.PdfPageDoc::minimum_valid()
   let result : Result[@pdf.Pdf, Error] = try
-    PdfMerger::new(["one"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
+    @pdfmerge.PdfMerger::new(["one"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
       false,
       false,
       process_struct_trees=false,
@@ -248,7 +248,7 @@ test "merge_pdfs renames destination names and callsites" {
   add_dest_name_tree(pdf2, "dest")
   add_dest_callsites(pdf1, "dest")
   add_dest_callsites(pdf2, "dest")
-  let merged = PdfMerger::new(["one", "two"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
+  let merged = @pdfmerge.PdfMerger::new(["one", "two"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
     false,
     false,
     process_struct_trees=false,
@@ -271,7 +271,7 @@ test "merge_pdfs rewrites destination callsites using global rename table" {
   add_dest_callsites(pdf1, "shared")
   add_dest_name_tree_with_non_indirect_kid(pdf2, "shared")
   let merged = @pdfe.with_logger(_ => (), fn() {
-    PdfMerger::new(["one", "two"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
+    @pdfmerge.PdfMerger::new(["one", "two"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
       false,
       false,
       process_struct_trees=false,
@@ -330,7 +330,7 @@ test "merge_pdfs merges dests ocg and acroform" {
     "/AcroForm",
     Dictionary([("/Fields", PdfArray([Null])), ("/SigFlags", Integer(1))]),
   )
-  let merged = PdfMerger::new(["one", "two"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
+  let merged = @pdfmerge.PdfMerger::new(["one", "two"], [pdf1, pdf2], [[1], [1]]).merge_pdfs(
     false,
     false,
     process_struct_trees=false,
