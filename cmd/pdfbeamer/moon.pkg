@@ -8,7 +8,6 @@ import {
   "bobzhang/mbtpdf/document/pdfpaper",
   "bobzhang/mbtpdf/graphics/pdfops",
   "bobzhang/mbtpdf/io/pdfwritefs",
-  "bobzhang/mbtpdf/core/pdfunits",
   "moonbitlang/async",
   "moonbitlang/core/env",
 }

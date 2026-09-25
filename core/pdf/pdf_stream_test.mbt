@@ -1,12 +1,12 @@
 ///|
 test "streams and transforms" {
-  let pdf = Pdf::empty()
+  let pdf = @pdf.Pdf::empty()
   pdf.addobj_given_num((1, Integer(7)))
   let input = @pdfio.Input::of_string("abcd", source="stream")
-  let t = ToGet::new(input, 0, 4)
-  let dict = PdfObject::Dictionary([("/Length", Integer(0))])
-  let stream_ref = Ref((dict, Stream::ToGet(t)))
-  let stream_obj = PdfObject::Stream(stream_ref)
+  let t = @pdf.ToGet::new(input, 0, 4)
+  let dict = @pdf.PdfObject::Dictionary([("/Length", Integer(0))])
+  let stream_ref = Ref((dict, @pdf.Stream::ToGet(t)))
+  let stream_obj = @pdf.PdfObject::Stream(stream_ref)
   stream_obj.getstream()
   match stream_ref.val {
     (Dictionary(entries), Got(bytes)) => {
@@ -21,12 +21,12 @@ test "streams and transforms" {
   let bytes = stream_obj.bigarray_of_stream()
   assert_eq(@pdfio.bytes_size(bytes), 4)
   assert_is_err(
-    try PdfObject::Integer(1).getstream() |> Ok catch {
+    try @pdf.PdfObject::Integer(1).getstream() |> Ok catch {
       e => Err(e)
     },
   )
   assert_is_err(
-    try PdfObject::Integer(1).bigarray_of_stream() |> Ok catch {
+    try @pdf.PdfObject::Integer(1).bigarray_of_stream() |> Ok catch {
       e => Err(e)
     },
   )
@@ -54,7 +54,7 @@ test "streams and transforms" {
       e => Err(e)
     },
   )
-  let dict_matrix = PdfObject::Dictionary([
+  let dict_matrix = @pdf.PdfObject::Dictionary([
     (
       "/Matrix",
       PdfArray([
@@ -93,11 +93,11 @@ test "streams and transforms" {
       e => Err(e)
     },
   )
-  match make_matrix(@pdftransform.TransformMatrix::identity()) {
+  match @pdf.make_matrix(@pdftransform.TransformMatrix::identity()) {
     PdfArray(values) => assert_eq(values.length(), 6)
     _ => fail("expected matrix array")
   }
-  let rect = PdfObject::PdfArray([
+  let rect = @pdf.PdfObject::PdfArray([
     Integer(0),
     Integer(0),
     Integer(2),
@@ -121,7 +121,7 @@ test "streams and transforms" {
     }
     _ => fail("expected transformed rect")
   }
-  let qp = PdfObject::PdfArray([
+  let qp = @pdf.PdfObject::PdfArray([
     Real(0.0),
     Real(0.0),
     Real(1.0),
@@ -144,7 +144,7 @@ test "streams and transforms" {
     PdfArray(values) => assert_eq(values.length(), 16)
     _ => fail("expected quadpoints")
   }
-  let qp_mixed = PdfObject::PdfArray([
+  let qp_mixed = @pdf.PdfObject::PdfArray([
     Real(0.0),
     Real(1.0),
     Real(2.0),
@@ -165,7 +165,7 @@ test "streams and transforms" {
       PdfArray(values) => assert_eq(values.length(), 10)
       _ => fail("expected quadpoints")
     }
-    let qp_bad = PdfObject::PdfArray([Real(0.0), Real(1.0)])
+    let qp_bad = @pdf.PdfObject::PdfArray([Real(0.0), Real(1.0)])
     match
       pdf.transform_quadpoints(
         @pdftransform.TransformMatrix::identity(),
@@ -189,7 +189,7 @@ test "streams and transforms" {
 ///|
 test "getstream error cases" {
   let input = @pdfio.Input::of_string("abc", source="crypt")
-  let crypt = ToGetCrypt::ToDecrypt({
+  let crypt = @pdf.ToGetCrypt::ToDecrypt({
     crypt_type: AESV2,
     file_encryption_key: None,
     obj: 1,
@@ -198,18 +198,22 @@ test "getstream error cases" {
     keylength: 40,
     r: 5,
   })
-  let toget_crypt = ToGet::new(input, 0, 3, crypt~)
-  let crypt_ref = Ref((PdfObject::Dictionary([]), Stream::ToGet(toget_crypt)))
-  let crypt_stream = PdfObject::Stream(crypt_ref)
+  let toget_crypt = @pdf.ToGet::new(input, 0, 3, crypt~)
+  let crypt_ref = Ref(
+    (@pdf.PdfObject::Dictionary([]), @pdf.Stream::ToGet(toget_crypt)),
+  )
+  let crypt_stream = @pdf.PdfObject::Stream(crypt_ref)
   assert_is_err(
     try crypt_stream.getstream() |> Ok catch {
       e => Err(e)
     },
   )
   let plain = @pdfio.Input::of_string("abc", source="plain")
-  let toget_plain = ToGet::new(plain, 0, 3)
-  let plain_ref = Ref((PdfObject::Integer(9), Stream::ToGet(toget_plain)))
-  let plain_stream = PdfObject::Stream(plain_ref)
+  let toget_plain = @pdf.ToGet::new(plain, 0, 3)
+  let plain_ref = Ref(
+    (@pdf.PdfObject::Integer(9), @pdf.Stream::ToGet(toget_plain)),
+  )
+  let plain_stream = @pdf.PdfObject::Stream(plain_ref)
   plain_stream.getstream()
   match plain_ref.val {
     (Integer(9), Got(bytes)) => assert_eq(@pdfio.bytes_size(bytes), 3)
@@ -219,7 +223,7 @@ test "getstream error cases" {
 
 ///|
 test "lookup_immediate_all preserves duplicate dictionary keys" {
-  let dict = PdfObject::Dictionary([
+  let dict = @pdf.PdfObject::Dictionary([
     ("/A", Integer(1)),
     ("/A", Integer(2)),
     ("/B", Integer(3)),

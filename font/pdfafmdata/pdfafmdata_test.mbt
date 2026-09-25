@@ -6,7 +6,7 @@ fn assert_deflated(data : Array[Byte]) -> Unit raise {
 
 ///|
 test "afm data blocks are present" {
-  let ctx = PdfAfmData::new()
+  let ctx = @pdfafmdata.PdfAfmData::new()
   assert_deflated(ctx.courier_afm())
   assert_deflated(ctx.courier_bold_afm())
   assert_deflated(ctx.courier_bold_oblique_afm())

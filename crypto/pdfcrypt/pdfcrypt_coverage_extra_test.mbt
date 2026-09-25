@@ -101,7 +101,7 @@ test "decrypt_pdf AESV3 errors when /OE missing" {
   let enc_num = encrypt_objnum(enc)
   let enc_dict = enc.lookup_obj(enc_num).remove_entry("/OE")
   enc.addobj_given_num((enc_num, enc_dict))
-  let res : Result[(@pdf.Pdf?, Array[Permission]), Error] = try
+  let res : Result[(@pdf.Pdf?, Array[@pdfcrypt.Permission]), Error] = try
     @pdfcrypt.PdfCrypt::new().decrypt_pdf("user", enc) |> Ok
   catch {
     e => Err(e)
@@ -122,7 +122,7 @@ test "decrypt_pdf AESV3 errors when /Perms and /P mismatch" {
   let enc_num = encrypt_objnum(enc)
   let enc_dict = enc.lookup_obj(enc_num).replace_entry("/P", Integer(123456))
   enc.addobj_given_num((enc_num, enc_dict))
-  let res : Result[(@pdf.Pdf?, Array[Permission]), Error] = try
+  let res : Result[(@pdf.Pdf?, Array[@pdfcrypt.Permission]), Error] = try
     @pdfcrypt.PdfCrypt::new().decrypt_pdf("user", enc) |> Ok
   catch {
     e => Err(e)

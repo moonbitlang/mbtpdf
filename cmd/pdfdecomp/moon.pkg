@@ -1,5 +1,4 @@
 import {
-  "bobzhang/mbtpdf/core/pdf",
   "bobzhang/mbtpdf/io/pdfreadfs",
   "bobzhang/mbtpdf/codec/pdfcodec",
   "bobzhang/mbtpdf/io/pdfwritefs",

@@ -25,8 +25,26 @@ async fn assert_fixture(path : String) -> Unit {
 
 ///|
 async fn ensure_dir(path : String) -> Unit {
-  if !@fs.exists(path) {
-    @fs.mkdir(path, permission=0o755, recursive=true)
+  if @fs.exists(path) {
+    guard @fs.kind(path) == Directory else {
+      fail("expected a directory: " + path)
+    }
+    return
+  }
+  // Create parents separately: recursive mkdir can also race on a parent.
+  if path.rev_find("/") is Some(index) && index > 0 {
+    ensure_dir(path[:index].to_owned())
+  }
+  @fs.mkdir(path, permission=0o755) catch {
+    error => {
+      // Another test may have created the directory after our existence check.
+      let is_directory = try @fs.kind(path) == Directory catch {
+        _ => false
+      }
+      if !is_directory {
+        raise error
+      }
+    }
   }
 }
 
@@ -2122,4 +2140,33 @@ async test "e2e page ops roundtrip" {
   let _ : Result[Unit, Error] = try @fs.remove(out_path) |> Ok catch {
     e => Err(e)
   }
+}
+
+///|
+async test "ensure_dir tolerates concurrent creation" {
+  let root = @fs.tmpdir(prefix="mbtpdf-mkdir-")
+  defer @fs.rmdir(root, recursive=true)
+  let path = root + "/nested/output"
+  @async.with_task_group(group => {
+    for _ in 0..<32 {
+      group.spawn_bg(() => ensure_dir(path))
+    }
+  })
+  assert_true(@fs.kind(path) == Directory)
+  ensure_dir(path)
+}
+
+///|
+async test "ensure_dir rejects an existing file" {
+  let root = @fs.tmpdir(prefix="mbtpdf-mkdir-file-")
+  defer @fs.rmdir(root, recursive=true)
+  let path = root + "/file"
+  @fs.write_file(path, "not a directory", create_mode=CreateNew)
+  let rejected = try {
+    ensure_dir(path)
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(rejected)
 }

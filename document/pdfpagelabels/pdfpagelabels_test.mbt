@@ -1,10 +1,10 @@
 ///|
-let ctx : @pdfpagelabels.PdfPageLabels = PdfPageLabels::new()
+let ctx : @pdfpagelabels.PdfPageLabels = @pdfpagelabels.PdfPageLabels::new()
 
 ///|
 test "pagelabeltext roman" {
   let labels = [
-    PageLabel::{
+    @pdfpagelabels.PageLabel::{
       labelstyle: LowercaseRoman,
       labelprefix: None,
       startpage: 1,
@@ -18,7 +18,7 @@ test "pagelabeltext roman" {
 ///|
 test "pagelabel_of_pagenumber" {
   let labels = [
-    PageLabel::{
+    @pdfpagelabels.PageLabel::{
       labelstyle: DecimalArabic,
       labelprefix: None,
       startpage: 1,
@@ -88,7 +88,7 @@ fn make_pdf_with_pages(count : Int) -> @pdf.Pdf raise {
 ///|
 test "coalesce labels" {
   let labels = [
-    PageLabel::{
+    @pdfpagelabels.PageLabel::{
       labelstyle: DecimalArabic,
       labelprefix: None,
       startpage: 1,
@@ -119,7 +119,7 @@ test "coalesce labels" {
 ///|
 test "complete labels" {
   let labels = [
-    PageLabel::{
+    @pdfpagelabels.PageLabel::{
       labelstyle: DecimalArabic,
       labelprefix: None,
       startpage: 3,
@@ -133,8 +133,11 @@ test "complete labels" {
 
 ///|
 test "string_of_labelstyle and pagelabel string" {
-  assert_eq(LabelStyle::UppercaseLetters.to_string(), "UppercaseLetters")
-  let label = PageLabel::{
+  assert_eq(
+    @pdfpagelabels.LabelStyle::UppercaseLetters.to_string(),
+    "UppercaseLetters",
+  )
+  let label = @pdfpagelabels.PageLabel::{
     labelstyle: LowercaseRoman,
     labelprefix: Some("P"),
     startpage: 2,
@@ -148,7 +151,7 @@ test "string_of_labelstyle and pagelabel string" {
 ///|
 test "pagelabeltext with prefix and letters" {
   let labels = [
-    PageLabel::{
+    @pdfpagelabels.PageLabel::{
       labelstyle: UppercaseLetters,
       labelprefix: Some("Sec-"),
       startpage: 1,
@@ -162,7 +165,7 @@ test "pagelabeltext with prefix and letters" {
 ///|
 test "add_label inserts replica" {
   let labels = [
-    PageLabel::{
+    @pdfpagelabels.PageLabel::{
       labelstyle: DecimalArabic,
       labelprefix: None,
       startpage: 1,
@@ -191,7 +194,7 @@ test "merge_pagelabels combines ranges" {
   let pdf1 = make_pdf_with_pages(2)
   let pdf2 = make_pdf_with_pages(1)
   let labels1 = [
-    PageLabel::{
+    @pdfpagelabels.PageLabel::{
       labelstyle: DecimalArabic,
       labelprefix: Some("A"),
       startpage: 1,
@@ -199,7 +202,7 @@ test "merge_pagelabels combines ranges" {
     },
   ]
   let labels2 = [
-    PageLabel::{
+    @pdfpagelabels.PageLabel::{
       labelstyle: DecimalArabic,
       labelprefix: Some("B"),
       startpage: 1,
@@ -226,7 +229,7 @@ test "merge_pagelabels combines ranges" {
 test "write/read pagelabels roundtrip" {
   let pdf = make_pdf_with_pages(3)
   let labels = [
-    PageLabel::{
+    @pdfpagelabels.PageLabel::{
       labelstyle: DecimalArabic,
       labelprefix: Some("A"),
       startpage: 1,
@@ -253,12 +256,30 @@ test "write/read pagelabels roundtrip" {
 
 ///|
 test "string_of_labelstyle covers all styles" {
-  assert_eq(LabelStyle::DecimalArabic.to_string(), "DecimalArabic")
-  assert_eq(LabelStyle::UppercaseRoman.to_string(), "UppercaseRoman")
-  assert_eq(LabelStyle::LowercaseRoman.to_string(), "LowercaseRoman")
-  assert_eq(LabelStyle::UppercaseLetters.to_string(), "UppercaseLetters")
-  assert_eq(LabelStyle::LowercaseLetters.to_string(), "LowercaseLetters")
-  assert_eq(LabelStyle::NoLabelPrefixOnly.to_string(), "NoLabelPrefixOnly")
+  assert_eq(
+    @pdfpagelabels.LabelStyle::DecimalArabic.to_string(),
+    "DecimalArabic",
+  )
+  assert_eq(
+    @pdfpagelabels.LabelStyle::UppercaseRoman.to_string(),
+    "UppercaseRoman",
+  )
+  assert_eq(
+    @pdfpagelabels.LabelStyle::LowercaseRoman.to_string(),
+    "LowercaseRoman",
+  )
+  assert_eq(
+    @pdfpagelabels.LabelStyle::UppercaseLetters.to_string(),
+    "UppercaseLetters",
+  )
+  assert_eq(
+    @pdfpagelabels.LabelStyle::LowercaseLetters.to_string(),
+    "LowercaseLetters",
+  )
+  assert_eq(
+    @pdfpagelabels.LabelStyle::NoLabelPrefixOnly.to_string(),
+    "NoLabelPrefixOnly",
+  )
 }
 
 ///|
@@ -322,14 +343,14 @@ test "read handles label styles and bad startpage" {
 
 ///|
 test "pagelabeltext and pagelabel_of_pagenumber error on missing labels" {
-  let labels : Array[PageLabel] = []
+  let labels : Array[@pdfpagelabels.PageLabel] = []
   let text_res : Result[String, Error] = try
     ctx.pagelabeltext_of_pagenumber(1, labels) |> Ok
   catch {
     e => Err(e)
   }
   assert_true(text_res is Err(_))
-  let label_res : Result[PageLabel, Error] = try
+  let label_res : Result[@pdfpagelabels.PageLabel, Error] = try
     ctx.pagelabel_of_pagenumber(1, labels) |> Ok
   catch {
     e => Err(e)
@@ -340,7 +361,7 @@ test "pagelabeltext and pagelabel_of_pagenumber error on missing labels" {
 ///|
 test "pagelabeltext handles empty roman and letter values" {
   let labels = [
-    PageLabel::{
+    @pdfpagelabels.PageLabel::{
       labelstyle: UppercaseRoman,
       labelprefix: Some("R-"),
       startpage: 5,
@@ -349,7 +370,7 @@ test "pagelabeltext handles empty roman and letter values" {
   ]
   assert_eq(ctx.pagelabeltext_of_pagenumber(1, labels), "R-")
   let letter_labels = [
-    PageLabel::{
+    @pdfpagelabels.PageLabel::{
       labelstyle: LowercaseLetters,
       labelprefix: Some("L-"),
       startpage: 4,
@@ -362,7 +383,7 @@ test "pagelabeltext handles empty roman and letter values" {
 ///|
 test "pagelabeltext supports NoLabelPrefixOnly" {
   let labels = [
-    PageLabel::{
+    @pdfpagelabels.PageLabel::{
       labelstyle: NoLabelPrefixOnly,
       labelprefix: Some("P-"),
       startpage: 1,
@@ -375,7 +396,7 @@ test "pagelabeltext supports NoLabelPrefixOnly" {
 ///|
 test "coalesce covers all labelstyle equality branches" {
   let labels = [
-    PageLabel::{
+    @pdfpagelabels.PageLabel::{
       labelstyle: DecimalArabic,
       labelprefix: None,
       startpage: 1,
@@ -463,7 +484,7 @@ test "coalesce covers all labelstyle equality branches" {
 ///|
 test "add_label replica branches" {
   let base = [
-    PageLabel::{
+    @pdfpagelabels.PageLabel::{
       labelstyle: DecimalArabic,
       labelprefix: None,
       startpage: 1,
@@ -531,7 +552,7 @@ test "add_label replica branches" {
 ///|
 test "coalesce handles single label" {
   let labels = [
-    PageLabel::{
+    @pdfpagelabels.PageLabel::{
       labelstyle: DecimalArabic,
       labelprefix: None,
       startpage: 1,
@@ -546,7 +567,7 @@ test "coalesce handles single label" {
 test "write handles all labelstyle variants" {
   let pdf = make_pdf_with_pages(4)
   let labels = [
-    PageLabel::{
+    @pdfpagelabels.PageLabel::{
       labelstyle: NoLabelPrefixOnly,
       labelprefix: None,
       startpage: 1,
@@ -594,7 +615,7 @@ test "write handles all labelstyle variants" {
 
 ///|
 test "pagelabel to_string prints None prefix" {
-  let label = PageLabel::{
+  let label = @pdfpagelabels.PageLabel::{
     labelstyle: DecimalArabic,
     labelprefix: None,
     startpage: 1,

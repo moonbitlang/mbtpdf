@@ -1,5 +1,5 @@
 ///|
-let ctx : @pdfcodec.PdfCodec = PdfCodec::new()
+let ctx : @pdfcodec.PdfCodec = @pdfcodec.PdfCodec::new()
 
 ///|
 test "encode/decode flate stream" {
@@ -47,7 +47,7 @@ test "encode/decode flate stream" {
 
 ///|
 fn roundtrip_encoding(
-  encoding : Encoding,
+  encoding : @pdfcodec.Encoding,
   original : Array[Byte],
 ) -> Array[Byte] raise {
   let pdf = @pdf.Pdf::empty()

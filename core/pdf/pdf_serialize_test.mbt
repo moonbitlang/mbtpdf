@@ -11,8 +11,8 @@ test "PdfName compare, bytes, and show" {
 
 ///|
 test "pdfobjmap_find fails on missing key" {
-  let res : Result[(Ref[ObjectData], Int), Error] = try
-    pdfobjmap_find(1, pdfobjmap_empty()) |> Ok
+  let res : Result[(Ref[@pdf.ObjectData], Int), Error] = try
+    @pdf.pdfobjmap_find(1, @pdf.pdfobjmap_empty()) |> Ok
   catch {
     e => Err(e)
   }
@@ -24,17 +24,17 @@ test "pdfobjmap_find fails on missing key" {
 
 ///|
 test "lookup_immediate_all works on stream dictionaries" {
-  let dict = PdfObject::Dictionary([("/A", Integer(1)), ("/A", Integer(2))])
-  let stream_ref = Ref((dict, Stream::Got(@pdfio.bytes_of_string("x"))))
-  let stream_obj = PdfObject::Stream(stream_ref)
+  let dict = @pdf.PdfObject::Dictionary([("/A", Integer(1)), ("/A", Integer(2))])
+  let stream_ref = Ref((dict, @pdf.Stream::Got(@pdfio.bytes_of_string("x"))))
+  let stream_obj = @pdf.PdfObject::Stream(stream_ref)
   let values = stream_obj.lookup_immediate_all("/A")
   assert_eq(values.length(), 2)
   assert_eq(stream_obj.lookup_immediate_all("/Missing").length(), 0)
-  assert_eq(PdfObject::Integer(1).lookup_immediate_all("/A").length(), 0)
+  assert_eq(@pdf.PdfObject::Integer(1).lookup_immediate_all("/A").length(), 0)
   let stream_ref_bad = Ref(
-    (PdfObject::Integer(0), Stream::Got(@pdfio.mkbytes(0))),
+    (@pdf.PdfObject::Integer(0), @pdf.Stream::Got(@pdfio.mkbytes(0))),
   )
-  let stream_bad = PdfObject::Stream(stream_ref_bad)
+  let stream_bad = @pdf.PdfObject::Stream(stream_ref_bad)
   assert_eq(stream_bad.lookup_immediate_all("/A").length(), 0)
 }
 
@@ -42,8 +42,8 @@ test "lookup_immediate_all works on stream dictionaries" {
 test "PdfObject::to_string escapes strings and normalizes names" {
   let messages : Array[String] = []
   let rendered = @pdfe.with_logger(fn(msg) { messages.push(msg) }, fn() {
-    let obj = PdfObject::Dictionary([
-      ("Type", Name(PdfName::of_string("NoSlash"))),
+    let obj = @pdf.PdfObject::Dictionary([
+      ("Type", Name(@pdf.PdfName::of_string("NoSlash"))),
       ("/Needs Escape", PdfString("a(b)\\c\n")),
     ])
     obj.to_string()
@@ -61,7 +61,7 @@ test "PdfObject::to_string escapes strings and normalizes names" {
 ///|
 test "to_string_including_data warns when stream cannot be got" {
   let input = @pdfio.Input::of_string("abc", source="crypt")
-  let crypt = ToGetCrypt::ToDecrypt({
+  let crypt = @pdf.ToGetCrypt::ToDecrypt({
     crypt_type: AESV2,
     file_encryption_key: None,
     obj: 1,
@@ -70,11 +70,14 @@ test "to_string_including_data warns when stream cannot be got" {
     keylength: 40,
     r: 5,
   })
-  let toget = ToGet::new(input, 0, 3, crypt~)
+  let toget = @pdf.ToGet::new(input, 0, 3, crypt~)
   let stream_ref = Ref(
-    (PdfObject::Dictionary([("/Length", Integer(3))]), Stream::ToGet(toget)),
+    (
+      @pdf.PdfObject::Dictionary([("/Length", Integer(3))]),
+      @pdf.Stream::ToGet(toget),
+    ),
   )
-  let stream_obj = PdfObject::Stream(stream_ref)
+  let stream_obj = @pdf.PdfObject::Stream(stream_ref)
   let messages : Array[String] = []
   let rendered = @pdfe.with_logger(fn(msg) { messages.push(msg) }, fn() {
     stream_obj.to_string_including_data()
@@ -103,7 +106,7 @@ test "real formatting expands scientific notation when present" {
     }
     let raw = v.to_string()
     if raw.contains("e") || raw.contains("E") {
-      let rendered = PdfObject::Real(v).to_string()
+      let rendered = @pdf.PdfObject::Real(v).to_string()
       assert_false(rendered.contains("e") || rendered.contains("E"))
       exercised = true
       break
