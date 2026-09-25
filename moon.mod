@@ -1,6 +1,6 @@
 name = "bobzhang/mbtpdf"
 
-version = "0.1.1"
+version = "0.1.3"
 
 import {
   "moonbitlang/async@0.20.1",
