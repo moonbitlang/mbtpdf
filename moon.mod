@@ -8,7 +8,7 @@ import {
 
 readme = "README.mbt.md"
 
-repository = ""
+repository = "https://github.com/moonbitlang/mbtpdf"
 
 license = "Apache-2.0"
 
