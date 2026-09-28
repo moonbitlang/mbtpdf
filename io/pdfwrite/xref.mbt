@@ -142,7 +142,12 @@ pub fn PdfWrite::pdf_to_output_with_options(
   pdf : @pdf.Pdf,
   output : @pdfio.Output,
 ) -> Unit raise {
-  let mut pdf = pdf
+  // Writing must not change the caller's document. The steps below mutate the
+  // PDF they work on: object streams remove the objects they absorb,
+  // encryption rewrites strings/streams in place (stream data shares its
+  // `Ref` with the caller) and adds /Encrypt to the trailer, and
+  // `build_new_id` changes /ID. Work on a private copy.
+  let mut pdf = pdf.deep_copy()
   let preserve_objstm = options.preserve_objstm
   let generate_objstm = options.generate_objstm
   let compress_objstm = options.compress_objstm

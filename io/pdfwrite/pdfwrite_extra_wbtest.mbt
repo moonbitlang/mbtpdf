@@ -227,10 +227,15 @@ test "pdf_to_output drops invalid object stream ids and writes toget" {
     pdf,
     output,
   )
-  assert_true(pdf.objects.object_stream_ids.get(9999) is None)
-  assert_true(pdf.objects.object_stream_ids.get(stream_num) is None)
   let bytes = output.extract_bytes(buffer)
   assert_true(bytes.length() > 0)
+  // pdf_to_output works on a private copy: the caller's document is left as
+  // it was ...
+  assert_true(pdf.objects.object_stream_ids.get(9999) is Some(_))
+  // ... while the grouping step it runs drops the invalid ids.
+  let _ = build_object_stream_groups(pdf)
+  assert_true(pdf.objects.object_stream_ids.get(9999) is None)
+  assert_true(pdf.objects.object_stream_ids.get(stream_num) is None)
 }
 
 ///|
