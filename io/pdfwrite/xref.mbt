@@ -111,6 +111,74 @@ fn build_xref_stream(
 }
 
 ///|
+/// Copy containers and stream `Ref`s of `obj`, sharing stream byte buffers
+/// (no writer step modifies a buffer in place; they only replace them).
+fn copy_object_structure(obj : PdfObject) -> PdfObject {
+  match obj {
+    PdfArray(values) => PdfArray(values.map(copy_object_structure))
+    Dictionary(entries) =>
+      Dictionary(entries.map(e => (e.0, copy_object_structure(e.1))))
+    Stream(r) => {
+      let (dict, data) = r.val
+      Stream(Ref((copy_object_structure(dict), data)))
+    }
+    _ => obj
+  }
+}
+
+///|
+/// A version of `pdf` that the writer may mutate without affecting the
+/// caller's document.
+///
+/// The writer mutates the `Pdf` it works on: `build_new_id` replaces the
+/// trailer, object streams remove the objects they absorb from the object
+/// table (and rewrite the object-stream ids), and encryption / recryption
+/// replace every string and stream `Ref` in place (stream `Ref`s are shared
+/// with the caller).
+///
+/// The object table, object-stream ids and trailer are therefore always
+/// copied; that is cheap (one entry per object). Only when `copy_objects`
+/// (encryption) are the objects themselves copied, and even then stream byte
+/// buffers are shared, so a write never duplicates the stream payload.
+/// Object cells are shared otherwise: the only thing written through them is
+/// the parse cache of lazily read objects, which does not change their value.
+fn private_copy(pdf : @pdf.Pdf, copy_objects : Bool) -> @pdf.Pdf {
+  let objects : @pdf.PdfObjMap = Map([], capacity=pdf.objects.objects.length())
+  for objnum, entry in pdf.objects.objects {
+    let (cell, gen) = entry
+    let cell = if copy_objects {
+      match cell.val {
+        Parsed(obj) => Ref(@pdf.ObjectData::Parsed(copy_object_structure(obj)))
+        ParsedAlreadyDecrypted(obj) =>
+          Ref(ParsedAlreadyDecrypted(copy_object_structure(obj)))
+        // Parsed on demand into the copy's own cell.
+        ToParse | ToParseFromObjectStream(_, _, _, _) => Ref(cell.val)
+      }
+    } else {
+      cell
+    }
+    objects.set(objnum, (cell, gen))
+  }
+  let object_stream_ids : Map[Int, Int] = Map(
+    [],
+    capacity=pdf.objects.object_stream_ids.length(),
+  )
+  for objnum, stream_id in pdf.objects.object_stream_ids {
+    object_stream_ids.set(objnum, stream_id)
+  }
+  {
+    ..pdf,
+    objects: {
+      max_obj_num: pdf.objects.max_obj_num,
+      parse: pdf.objects.parse,
+      objects,
+      object_stream_ids,
+    },
+    trailerdict: copy_object_structure(pdf.trailerdict),
+  }
+}
+
+///|
 /// Write a PDF to an output.
 pub fn PdfWrite::pdf_to_output(
   self : PdfWrite,
@@ -142,18 +210,14 @@ pub fn PdfWrite::pdf_to_output_with_options(
   pdf : @pdf.Pdf,
   output : @pdfio.Output,
 ) -> Unit raise {
-  // Writing must not change the caller's document. The steps below mutate the
-  // PDF they work on: object streams remove the objects they absorb,
-  // encryption rewrites strings/streams in place (stream data shares its
-  // `Ref` with the caller) and adds /Encrypt to the trailer, and
-  // `build_new_id` changes /ID. Work on a private copy.
-  let mut pdf = pdf.deep_copy()
   let preserve_objstm = options.preserve_objstm
   let generate_objstm = options.generate_objstm
   let compress_objstm = options.compress_objstm
   let recrypt = options.recrypt
   let encryption = options.encryption
   let build_new_id = options.build_new_id
+  // Writing must not change the caller's document; see `private_copy`.
+  let mut pdf = private_copy(pdf, recrypt is Some(_) || encryption is Some(_))
   if build_new_id {
     pdf.change_id("")
   }
