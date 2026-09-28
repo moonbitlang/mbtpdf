@@ -12,21 +12,37 @@ fn decode_predictor(
   let bpc = _bpc
   let columns = _columns
   let stream = _stream
-  // /Colors and /Columns come from untrusted /DecodeParms: negative (or
-  // overflowing) values would produce negative scanline widths and abort on
-  // `Array::make` / out-of-bounds indexing. (Zero is harmless: it yields empty
-  // scanlines.)
-  if colors < 0 ||
-    columns < 0 ||
-    colors.to_int64() * bpc.to_int64() * columns.to_int64() > 2147483640L {
+  // /Colors, /BitsPerComponent and /Columns come from untrusted
+  // /DecodeParms. Validate them before any arithmetic can overflow: a
+  // negative or wrapped-around width aborts in `Array::make` or indexes out
+  // of bounds, and a huge one allocates per-row buffers far larger than the
+  // data. A scanline (or a single pixel) wider than the whole decoded data is
+  // inconsistent, so it is rejected. Zero keeps its existing meaning (empty
+  // scanlines), and there is nothing to un-predict in empty data.
+  if colors < 0 || bpc < 0 || columns < 0 {
     raise CouldntDecodeStream(
-      "predictor: invalid /Colors \{colors} or /Columns \{columns}",
+      "predictor: invalid /Colors \{colors}, /BitsPerComponent \{bpc} or /Columns \{columns}",
     )
   }
+  if stream.length() == 0 {
+    return []
+  }
+  let max_bits = stream.length().to_int64() * 8L
+  // Both factors are < 2^31, so this cannot overflow Int64.
+  let pixel_bits = colors.to_int64() * bpc.to_int64()
+  if pixel_bits > max_bits ||
+    (pixel_bits > 0L && columns.to_int64() > max_bits / pixel_bits) {
+    raise CouldntDecodeStream(
+      "predictor: scanline of \{columns} x \{colors} x \{bpc} bits exceeds the data",
+    )
+  }
+  // Both are now <= stream.length(), so they fit in an Int.
+  let scanline_width = ((pixel_bits * columns.to_int64() + 7L) / 8L).to_int()
+  let bytes_per_pixel = ((pixel_bits + 7L) / 8L).to_int()
   if pred == 2 {
-    decode_tiff_predictor(colors, bpc, columns, stream)
+    decode_tiff_predictor(colors, bpc, scanline_width, stream)
   } else {
-    decode_png_predictor(colors, bpc, columns, stream)
+    decode_png_predictor(bpc, scanline_width, bytes_per_pixel, stream)
   }
 }
 
@@ -34,13 +50,12 @@ fn decode_predictor(
 fn decode_tiff_predictor(
   colors : Int,
   bpc : Int,
-  columns : Int,
+  scanline_width : Int,
   stream : Array[Byte],
 ) -> Array[Byte] raise CodecError {
   if bpc != 8 {
     raise DecodeNotSupported("TIFF predictor only supports 8bpc")
   }
-  let scanline_width = (colors * bpc * columns + 7) / 8
   let out = stream.copy()
   let lines = if scanline_width == 0 {
     0
@@ -62,16 +77,14 @@ fn decode_tiff_predictor(
 
 ///|
 fn decode_png_predictor(
-  colors : Int,
   bpc : Int,
-  columns : Int,
+  scanline_width : Int,
+  bytes_per_pixel : Int,
   stream : Array[Byte],
 ) -> Array[Byte] raise CodecError {
   if bpc != 8 {
     raise DecodeNotSupported("PNG predictor only supports 8bpc")
   }
-  let scanline_width = (colors * bpc * columns + 7) / 8
-  let bytes_per_pixel = (bpc * colors + 7) / 8
   let mut pos = 0
   let prev_decoded = Array::make(scanline_width, 0)
   // Output is always <= input length (predictor bytes are dropped).

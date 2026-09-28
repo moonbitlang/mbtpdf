@@ -739,12 +739,19 @@ let filter_names : Array[String] = [
 
 ///|
 fn gen_parms(filter : String, rs : @quickcheck.RandomState) -> @pdf.PdfObject? {
-  // mostly sane widths, but regularly zero / negative
+  // mostly sane widths, but regularly zero / negative, and extreme values
+  // whose products overflow Int and Int64
   let small = () => {
     @pdf.PdfObject::Integer(
       @quickcheck.frequency([
-        (2, @quickcheck.int_range(1, 65)),
-        (1, @quickcheck.elements([-3, -1, 0])),
+        (4, @quickcheck.int_range(1, 65)),
+        (2, @quickcheck.elements([-3, -1, 0])),
+        (
+          1,
+          @quickcheck.elements([
+            65536, 268435456, 1073741825, 1342177280, 2147483647, -2147483648,
+          ]),
+        ),
       ]).run(8, rs),
     )
   }
@@ -766,7 +773,11 @@ fn gen_parms(filter : String, rs : @quickcheck.RandomState) -> @pdf.PdfObject? {
               ("/Colors", small()),
               (
                 "/BitsPerComponent",
-                Integer(@quickcheck.elements([8, 8, 1, 16]).run(8, rs)),
+                Integer(
+                  @quickcheck.elements([8, 8, 8, 1, 16, 0, -8, 2147483647]).run(
+                    8, rs,
+                  ),
+                ),
               ),
               ("/Columns", small()),
               (
@@ -1000,4 +1011,55 @@ test "regression: LZWDecode honours /Predictor" {
       #|Some([0x01, 0x02, 0x03, 0x04])
     ),
   )
+}
+
+///|
+fn predictor_dict(
+  filter : String,
+  colors : Int,
+  bpc : Int,
+  columns : Int,
+) -> @pdf.PdfObject {
+  Dictionary([
+    ("/Filter", Name(@pdf.PdfName::of_string(filter))),
+    (
+      "/DecodeParms",
+      Dictionary([
+        ("/Predictor", Integer(12)),
+        ("/Colors", Integer(colors)),
+        ("/BitsPerComponent", Integer(bpc)),
+        ("/Columns", Integer(columns)),
+      ]),
+    ),
+  ])
+}
+
+///|
+test "regression: predictor dimensions whose product overflows (Flate and LZW)" {
+  // /Colors 1073741825 /BitsPerComponent 8 /Columns 1342177280 wraps the
+  // Int64 product negative; it used to pass the overflow guard and abort in
+  // Array::make with scanline_width -268435455, even for an empty payload.
+  let cases = [
+    (1073741825, 8, 1342177280),
+    (1, 8, 2147483647),
+    (2147483647, 2147483647, 2147483647),
+    (268435456, 8, 1),
+  ]
+  for filter in ["/FlateDecode", "/LZWDecode"] {
+    let enc = if filter == "/FlateDecode" {
+      @pdfcodec.Encoding::Flate
+    } else {
+      LZW(1)
+    }
+    let data = encode_bytes(enc, Array::makei(64, i => i.to_byte()))
+    let empty = encode_bytes(enc, [])
+    for c in cases {
+      let (colors, bpc, columns) = c
+      let dict = predictor_dict(filter, colors, bpc, columns)
+      // a scanline wider than the data is rejected ...
+      inspect(qc_codec.decode_from_bytes(data, dict) is None, content="true")
+      // ... and empty data decodes to empty data
+      debug_inspect(qc_codec.decode_from_bytes(empty, dict), content="Some([])")
+    }
+  }
 }
