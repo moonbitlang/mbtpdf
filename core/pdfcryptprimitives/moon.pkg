@@ -2,3 +2,7 @@ import {
   "bobzhang/mbtpdf/core/pdfio",
   "moonbitlang/core/random",
 }
+
+import {
+  "moonbitlang/core/quickcheck",
+} for "test"

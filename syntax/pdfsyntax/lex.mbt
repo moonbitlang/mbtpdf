@@ -297,7 +297,9 @@ fn find_endstream(input : @pdfio.Input) -> Int {
       match_chunk("\rendstream", input) {
       done = true
       found_pos = pos
-    } else if pos == input.in_channel_length {
+    } else if pos >= input.in_channel_length {
+      // `>=`: after reading past EOF the position can exceed the length, and
+      // `nudge` would then never reach it (infinite loop on truncated files).
       done = true
       found_pos = pos
     } else {
@@ -356,6 +358,13 @@ pub fn lex_stream_data(
   let original_pos = (input.pos_in)()
   skip_stream_beginning(input)
   let pos = (input.pos_in)()
+  // /Length is untrusted: a negative length, or one running past the end of
+  // the input, cannot be right (and would abort in `mkbytes` or allocate an
+  // arbitrarily large buffer). Fall back to scanning for `endstream`.
+  if length < 0 || length > input.in_channel_length - pos {
+    (input.seek_in)(original_pos)
+    return lex_malformed_stream_data(input)
+  }
   if read_data {
     let bytes = @pdfio.mkbytes(length)
     if length > 0 {

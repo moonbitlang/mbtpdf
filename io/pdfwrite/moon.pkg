@@ -8,6 +8,8 @@ import {
 
 import {
   "bobzhang/mbtpdf/io/pdfread",
+  "moonbitlang/core/debug",
+  "moonbitlang/core/quickcheck",
 } for "test"
 
 import {

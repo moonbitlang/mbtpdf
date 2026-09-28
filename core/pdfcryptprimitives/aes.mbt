@@ -394,7 +394,10 @@ pub fn PdfCryptPrimitives::aes_decrypt_data(
   remove_padding? : Bool = true,
 ) -> Array[Byte] {
   let (key_schedule, nr) = expand_key(key, nk)
-  let len = @pdfio.bytes_size(data)
+  // Ciphertext comes from untrusted input: ignore a trailing partial block
+  // rather than reading past the end of `data`.
+  let size = @pdfio.bytes_size(data)
+  let len = if size <= 16 { size } else { size - (size - 16) % 16 }
   if len <= 16 {
     @pdfio.mkbytes(0)
   } else {
@@ -440,7 +443,9 @@ pub fn PdfCryptPrimitives::aes_decrypt_data_ecb(
   remove_padding? : Bool = true,
 ) -> Array[Byte] {
   let (key_schedule, nr) = expand_key(key, nk)
-  let size = @pdfio.bytes_size(data)
+  // Ignore a trailing partial block (untrusted input) instead of reading past
+  // the end of `data`.
+  let size = @pdfio.bytes_size(data) / 16 * 16
   if size == 0 {
     @pdfio.mkbytes(0)
   } else {
