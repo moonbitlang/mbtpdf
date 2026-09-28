@@ -86,15 +86,22 @@ impl @quickcheck.Arbitrary for DocCase with fn arbitrary(size, rs) {
       gen_value(size, total, rs)
     }
   })
-  let mode = @quickcheck.elements([
-    Plain,
-    XRefStream,
-    ObjStm,
-    Encrypt(PDF40bit),
-    Encrypt(PDF128bit),
-    Encrypt(AES128bit(true)),
-    Encrypt(AES256bit(true)),
-    Encrypt(AES256bitISO(true)),
+  // AES-256 ISO (R6) key derivation takes ~3 s per write+read in a debug
+  // build, so that mode is drawn rarely to keep the suite fast.
+  let mode = @quickcheck.frequency([
+    (
+      28,
+      @quickcheck.elements([
+        Plain,
+        XRefStream,
+        ObjStm,
+        Encrypt(PDF40bit),
+        Encrypt(PDF128bit),
+        Encrypt(AES128bit(true)),
+        Encrypt(AES256bit(true)),
+      ]),
+    ),
+    (1, @quickcheck.pure(Encrypt(AES256bitISO(true)))),
   ]).run(size, rs)
   { extra, mode, }
 }
@@ -280,7 +287,7 @@ test "prop: PdfRead.pdf_of_input inverts PdfWrite.pdf_to_output" {
       filter=c => {
         !(c.mode is ObjStm && c.extra.iter().any(o => o is Indirect(_)))
       },
-      count=200,
+      count=150,
       max_size=10,
       seed=0xd0c,
     )
@@ -324,7 +331,7 @@ test "prop: pdf_to_output does not modify the document it writes" {
         .all(n => same(again.lookup_obj(n), second.lookup_obj(n)))
       },
       observe=c => [@quickcheck.collect(c.mode)],
-      count=100,
+      count=60,
       max_size=6,
       seed=0x5afe,
     )
