@@ -803,6 +803,11 @@ fn decode_ccittfax(
   if k > 0 {
     raise DecodeNotSupported("CCITTFax k > 0")
   }
+  // `/Columns` comes from the (untrusted) /DecodeParms. A non-positive width
+  // would make `Array::make` abort, and 0 would never advance the decoder.
+  if columns <= 0 {
+    raise CouldntDecodeStream("CCITTFax: invalid /Columns \{columns}")
+  }
   let (whiteval, blackval) = if bone { (0, 1) } else { (1, 0) }
   let output = @pdfio.BitstreamWrite::new()
   let bitstream = @pdfio.Bitstream::of_input(input)
