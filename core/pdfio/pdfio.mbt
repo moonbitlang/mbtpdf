@@ -176,7 +176,13 @@ pub fn Input::of_bytes(
   let mut offset = 0
   let len = bytes.length()
   let input_int = () => {
-    let result = if pos > len - 1 { no_more } else { bget_unsafe(bytes, pos) }
+    // `pos` can be negative after `seek_in` to an untrusted offset (e.g. a
+    // negative /Prev); never do the unchecked read outside the buffer.
+    let result = if pos < 0 || pos >= len {
+      no_more
+    } else {
+      bget_unsafe(bytes, pos)
+    }
     pos = pos + 1
     result
   }
