@@ -786,10 +786,17 @@ fn read_ccitt_mode(input : @pdfio.Bitstream) -> CcittMode raise {
 }
 
 ///|
-/// Upper bound on CCITTFax `/Columns` (1M pixels per row).
+/// Upper bound on CCITTFax `/Columns`: 1,048,576 pixels per row.
 let ccitt_max_columns : Int = 1 << 20
 
 ///|
+/// Decode CCITTFaxDecode data (Group 3 1-D with `k == 0`, Group 4 with
+/// `k < 0`; `k > 0` is not supported).
+///
+/// `columns` must be in 1..=1,048,576 (`ccitt_max_columns`); other values
+/// raise `CouldntDecodeStream`. The PDF default is 1728. The cap exists
+/// because every row costs `columns` work and memory however little input
+/// encodes it, so an untrusted `/Columns` could otherwise exhaust memory.
 fn decode_ccittfax(
   k : Int,
   eol : Bool,

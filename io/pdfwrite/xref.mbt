@@ -127,8 +127,8 @@ fn copy_object_structure(obj : PdfObject) -> PdfObject {
 }
 
 ///|
-/// A version of `pdf` that the writer may mutate without affecting the
-/// caller's document.
+/// A version of `pdf` that the writer may mutate without the caller's
+/// document being encrypted or losing objects.
 ///
 /// The writer mutates the `Pdf` it works on: `build_new_id` replaces the
 /// trailer, object streams remove the objects they absorb from the object
@@ -140,8 +140,13 @@ fn copy_object_structure(obj : PdfObject) -> PdfObject {
 /// copied; that is cheap (one entry per object). Only when `copy_objects`
 /// (encryption) are the objects themselves copied, and even then stream byte
 /// buffers are shared, so a write never duplicates the stream payload.
-/// Object cells are shared otherwise: the only thing written through them is
-/// the parse cache of lazily read objects, which does not change their value.
+///
+/// This is not full isolation. Without encryption, object cells and stream
+/// `Ref`s are shared with the caller, so what writing does through them is
+/// visible there: lazily read objects get parsed and cached, and
+/// `getstream()` materializes deferred (`ToGet`) stream data and replaces the
+/// stream's `/Length` with the byte count (an indirect `/Length` becomes an
+/// integer). The decoded content of the caller's objects is unchanged.
 fn private_copy(pdf : @pdf.Pdf, copy_objects : Bool) -> @pdf.Pdf {
   let objects : @pdf.PdfObjMap = Map([], capacity=pdf.objects.objects.length())
   for objnum, entry in pdf.objects.objects {
@@ -180,6 +185,10 @@ fn private_copy(pdf : @pdf.Pdf, copy_objects : Bool) -> @pdf.Pdf {
 
 ///|
 /// Write a PDF to an output.
+///
+/// The caller's `pdf` is never encrypted and object streams do not remove
+/// objects from it, but deferred streams may be read into memory and their
+/// `/Length` normalized to the actual byte count.
 pub fn PdfWrite::pdf_to_output(
   self : PdfWrite,
   preserve_objstm? : Bool = false,
@@ -204,6 +213,8 @@ pub fn PdfWrite::pdf_to_output(
 
 ///|
 /// Write a PDF to an output using an options record.
+///
+/// Leaves `pdf` as described for `pdf_to_output`.
 pub fn PdfWrite::pdf_to_output_with_options(
   self : PdfWrite,
   options : PdfWriteOptions,
@@ -216,7 +227,9 @@ pub fn PdfWrite::pdf_to_output_with_options(
   let recrypt = options.recrypt
   let encryption = options.encryption
   let build_new_id = options.build_new_id
-  // Writing must not change the caller's document; see `private_copy`.
+  // Keep the caller's objects unencrypted and its object table intact; see
+  // `private_copy` for what a write can still change (stream
+  // materialization, `/Length`).
   let mut pdf = private_copy(pdf, recrypt is Some(_) || encryption is Some(_))
   if build_new_id {
     pdf.change_id("")

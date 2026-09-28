@@ -102,6 +102,17 @@ name" logic:
 Unsupported filters raise `CodecError::DecodeNotSupported` so callers can
 decide whether to stop or keep decoding.
 
+## Limitations
+
+- CCITTFaxDecode supports `/K` 0 (Group 3 1-D) and negative `/K` (Group 4);
+  positive `/K` raises `DecodeNotSupported`. `/Columns` must be between 1 and
+  1,048,576 (the default is 1728); wider images raise `CouldntDecodeStream`,
+  because every row costs `/Columns` work and memory regardless of how little
+  input encodes it.
+- Predictors (`/Predictor` in `/DecodeParms` of FlateDecode and LZWDecode)
+  support only 8 bits per component. A pixel or scanline wider than the
+  decoded data is rejected with `CouldntDecodeStream`.
+
 ## Error Handling
 
 ```mbt nocheck

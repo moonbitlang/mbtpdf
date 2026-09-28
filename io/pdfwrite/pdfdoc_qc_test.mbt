@@ -306,6 +306,10 @@ fn snapshot(pdf : @pdf.Pdf) -> String {
 }
 
 ///|
+/// The documents here hold only in-memory (`Got`) streams with direct
+/// `/Length`, so writing must leave them exactly as they were. (Deferred
+/// streams may be materialized and their `/Length` normalized; see
+/// `private_copy`.)
 test "prop: pdf_to_output does not modify the document it writes" {
   @pdfe.with_silenced_logs(() => {
     @quickcheck.check(
@@ -362,7 +366,10 @@ impl @quickcheck.Shrink for LazyCase with fn shrink(self) {
 test "prop: writing a lazily read document leaves it unchanged" {
   // Lazily read documents hold unparsed objects (ToParse), objects inside
   // object streams (ToParseFromObjectStream) and deferred stream data (ToGet)
-  // that the writer materializes; none of that may leak back.
+  // that the writer materializes. The writer may cache parses and
+  // materialize streams in the caller's cells (and normalize `/Length`,
+  // which `same` ignores), but must not encrypt or drop anything: the lazy
+  // document must keep its content.
   @pdfe.with_silenced_logs(() => {
     @quickcheck.check(
       (c : LazyCase) => {
