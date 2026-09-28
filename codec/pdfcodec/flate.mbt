@@ -279,8 +279,8 @@ pub impl PdfFilterNameDecode for @pdf.PdfName with fn decode_stage(
   data : Array[Byte],
   jbig2dec : String?,
 ) -> Array[Byte] raise CodecError {
-  if filter_name is PdfName(b"/FlateDecode" | b"/Fl") {
-    let mut decoded = ctx.decode_flate(data)
+  // Both FlateDecode and LZWDecode accept /Predictor (PDF 32000-1, 7.4.4.4).
+  fn apply_predictor(decoded : Array[Byte]) -> Array[Byte] raise CodecError {
     match parms {
       Some(Dictionary(_)) => {
         let predictor = get_int_param(pdf, parms, "/Predictor", 1)
@@ -288,12 +288,17 @@ pub impl PdfFilterNameDecode for @pdf.PdfName with fn decode_stage(
           let colors = get_int_param(pdf, parms, "/Colors", 1)
           let bpc = get_int_param(pdf, parms, "/BitsPerComponent", 8)
           let columns = get_int_param(pdf, parms, "/Columns", 1)
-          decoded = decode_predictor(predictor, colors, bpc, columns, decoded)
+          decode_predictor(predictor, colors, bpc, columns, decoded)
+        } else {
+          decoded
         }
       }
-      _ => ()
+      _ => decoded
     }
-    decoded
+  }
+
+  if filter_name is PdfName(b"/FlateDecode" | b"/Fl") {
+    apply_predictor(ctx.decode_flate(data))
   } else if filter_name is PdfName(b"/ASCIIHexDecode" | b"/AHx") {
     decode_asciihex(@pdfio.Input::of_bytes(data, source="asciihex"))
   } else if filter_name is PdfName(b"/ASCII85Decode" | b"/A85") {
@@ -302,7 +307,9 @@ pub impl PdfFilterNameDecode for @pdf.PdfName with fn decode_stage(
     decode_runlength(@pdfio.Input::of_bytes(data, source="runlength"))
   } else if filter_name is PdfName(b"/LZWDecode" | b"/LZW") {
     let early = get_int_param(pdf, parms, "/EarlyChange", 1)
-    decode_lzw(early, @pdfio.Input::of_bytes(data, source="lzw"))
+    apply_predictor(
+      decode_lzw(early, @pdfio.Input::of_bytes(data, source="lzw")),
+    )
   } else if filter_name is PdfName(b"/Crypt") {
     data
   } else if filter_name is PdfName(b"/JBIG2Decode") {
