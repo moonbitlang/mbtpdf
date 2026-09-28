@@ -12,6 +12,17 @@ fn decode_predictor(
   let bpc = _bpc
   let columns = _columns
   let stream = _stream
+  // /Colors and /Columns come from untrusted /DecodeParms: negative (or
+  // overflowing) values would produce negative scanline widths and abort on
+  // `Array::make` / out-of-bounds indexing. (Zero is harmless: it yields empty
+  // scanlines.)
+  if colors < 0 ||
+    columns < 0 ||
+    colors.to_int64() * bpc.to_int64() * columns.to_int64() > 2147483640L {
+    raise CouldntDecodeStream(
+      "predictor: invalid /Colors \{colors} or /Columns \{columns}",
+    )
+  }
   if pred == 2 {
     decode_tiff_predictor(colors, bpc, columns, stream)
   } else {
