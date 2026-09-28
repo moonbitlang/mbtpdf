@@ -339,6 +339,74 @@ test "prop: pdf_to_output does not modify the document it writes" {
 }
 
 ///|
+/// A document written in an unencrypted layout, then read back lazily and
+/// written again in `target` mode.
+priv struct LazyCase {
+  doc : DocCase
+  source : Mode
+} derive(Debug)
+
+///|
+impl @quickcheck.Arbitrary for LazyCase with fn arbitrary(size, rs) {
+  let doc : DocCase = @quickcheck.Arbitrary::arbitrary(size, rs)
+  let source = @quickcheck.elements([Plain, XRefStream, ObjStm]).run(size, rs)
+  { doc, source, }
+}
+
+///|
+impl @quickcheck.Shrink for LazyCase with fn shrink(self) {
+  @quickcheck.Shrink::shrink(self.doc).map(doc => { ..self, doc, })
+}
+
+///|
+test "prop: writing a lazily read document leaves it unchanged" {
+  // Lazily read documents hold unparsed objects (ToParse), objects inside
+  // object streams (ToParseFromObjectStream) and deferred stream data (ToGet)
+  // that the writer materializes; none of that may leak back.
+  @pdfe.with_silenced_logs(() => {
+    @quickcheck.check(
+      (c : LazyCase) => {
+        let bytes = write_doc(base_pdf(c.doc.extra), c.source)
+        let lazy_pdf = @pdfread.PdfRead::new(logger=_ => ()).pdf_of_input_lazy(
+          None,
+          None,
+          @pdfio.Input::of_bytes(bytes),
+        )
+        let written = write_doc(lazy_pdf, c.doc.mode)
+        // Only now look at the lazy document: it must still read as the source.
+        let eager = read_doc(bytes, c.source)
+        let unchanged = eager
+          .objnumbers()
+          .iter()
+          .all(n => same(eager.lookup_obj(n), lazy_pdf.lookup_obj(n))) &&
+          same(eager.trailerdict, lazy_pdf.trailerdict)
+        // and what was written is the same document
+        let back = read_doc(written, c.doc.mode)
+        unchanged &&
+        c.doc.extra
+        .iter()
+        .mapi((i, o) => (i, o))
+        .all(p => same(p.1, back.lookup_obj(5 + p.0)))
+      },
+      // see the round-trip property for why bare references are excluded
+      filter=c => {
+        !((c.source is ObjStm || c.doc.mode is ObjStm) &&
+        c.doc.extra.iter().any(o => o is Indirect(_)))
+      },
+      observe=c => {
+        [
+          @quickcheck.collect(c.source),
+          @quickcheck.label(@debug.to_string(c.doc.mode)),
+        ]
+      },
+      count=60,
+      max_size=6,
+      seed=0x1a2e,
+    )
+  })
+}
+
+///|
 test "regression: writing with object streams or encryption keeps the input intact" {
   // generate_objstm used to remove the absorbed objects from the caller's
   // Pdf; encryption used to encrypt its streams (and, with xref streams, all
@@ -505,6 +573,37 @@ fn read_everything(bytes : Array[Byte], lazy_read : Bool) -> Int {
 }
 
 ///|
+/// The file a corruption case starts from. Unencrypted output is
+/// deterministic; encrypted output is not (random IVs/keys), so those use
+/// fixed fixtures to keep failures reproducible from the QuickCheck seed.
+fn corruption_source(mode : Mode) -> Array[Byte] raise {
+  match mode {
+    Encrypt(PDF128bit) => hex_fixture(fixture_pdf128)
+    Encrypt(AES128bit(true)) => hex_fixture(fixture_aes128)
+    Encrypt(AES256bit(true)) => hex_fixture(fixture_aes256)
+    Encrypt(_) => fail("no fixture for this encryption method")
+    _ => write_doc(corrupt_seed_doc, mode)
+  }
+}
+
+///|
+test "corruption fixtures are the documented, readable documents" {
+  @pdfe.with_silenced_logs(() => {
+    for
+      mode in [
+        Encrypt(PDF128bit),
+        Encrypt(AES128bit(true)),
+        Encrypt(AES256bit(true)),
+      ] {
+      let back = read_doc(corruption_source(mode), mode)
+      for n in corrupt_seed_doc.objnumbers() {
+        assert_true(same(corrupt_seed_doc.lookup_obj(n), back.lookup_obj(n)))
+      }
+    }
+  })
+}
+
+///|
 test "prop: PdfRead never aborts or hangs on corrupted files" {
   let originals : Map[String, Array[Byte]] = Map([])
   @pdfe.with_silenced_logs(() => {
@@ -514,7 +613,7 @@ test "prop: PdfRead never aborts or hangs on corrupted files" {
         let original = match originals.get(key) {
           Some(b) => b
           None => {
-            let b = write_doc(corrupt_seed_doc, c.mode)
+            let b = corruption_source(c.mode)
             originals[key] = b
             b
           }
