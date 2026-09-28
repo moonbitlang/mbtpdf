@@ -5,3 +5,7 @@ import {
 import {
   "moonbitlang/async",
 } for "wbtest"
+
+import {
+  "moonbitlang/core/quickcheck",
+} for "test"

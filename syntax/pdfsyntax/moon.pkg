@@ -5,3 +5,8 @@ import {
   "bobzhang/mbtpdf/core/pdfe",
   "moonbitlang/core/string",
 }
+
+import {
+  "bobzhang/mbtpdf/io/pdfwrite",
+  "moonbitlang/core/quickcheck",
+} for "test"

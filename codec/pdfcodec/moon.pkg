@@ -3,3 +3,7 @@ import {
   "bobzhang/mbtpdf/core/pdf",
   "bobzhang/mbtpdf/core/pdfio",
 }
+
+import {
+  "moonbitlang/core/quickcheck",
+} for "test"
