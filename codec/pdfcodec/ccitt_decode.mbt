@@ -786,6 +786,10 @@ fn read_ccitt_mode(input : @pdfio.Bitstream) -> CcittMode raise {
 }
 
 ///|
+/// Upper bound on CCITTFax `/Columns` (1M pixels per row).
+let ccitt_max_columns : Int = 1 << 20
+
+///|
 fn decode_ccittfax(
   k : Int,
   eol : Bool,
@@ -805,7 +809,9 @@ fn decode_ccittfax(
   }
   // `/Columns` comes from the (untrusted) /DecodeParms. A non-positive width
   // would make `Array::make` abort, and 0 would never advance the decoder.
-  if columns <= 0 {
+  // Every row costs `columns` work and memory however little input encodes
+  // it, so also refuse widths no fax image has (the default is 1728).
+  if columns <= 0 || columns > ccitt_max_columns {
     raise CouldntDecodeStream("CCITTFax: invalid /Columns \{columns}")
   }
   let (whiteval, blackval) = if bone { (0, 1) } else { (1, 0) }
@@ -827,8 +833,12 @@ fn decode_ccittfax(
     if length < 0 {
       raise Failure::Failure("Bad CCITT stream")
     }
-    let end = column + length
-    let bounded_end = if end > columns { columns } else { end }
+    // `column + length` could overflow for a large run length.
+    let bounded_end = if length >= columns - column {
+      columns
+    } else {
+      column + length
+    }
     for idx = column; idx < bounded_end; idx = idx + 1 {
       currline[idx] = value
     }

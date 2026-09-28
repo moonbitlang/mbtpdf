@@ -916,6 +916,32 @@ test "regression: CCITTFaxDecode rejects non-positive /Columns" {
     qc_codec.decode_from_bytes(data, ccitt_dict(-1)) is None,
     content="true",
   )
+  // An absurd width used to allocate two rows of that many Ints and scan
+  // them per code; with this input (found by the robustness property) a run
+  // then overflowed `column + length` (2147483645 + 1154) into a negative
+  // index and aborted.
+  let g4 : Array[Int] = [
+    120, 156, 193, 190, 178, 215, 127, 208, 95, 252, 235, 176, 188, 177, 31, 125,
+    38, 91, 24, 120, 247, 201, 205, 161, 144, 184, 196, 55, 150, 57, 196, 206, 250,
+    49, 241, 141, 60, 68, 86, 101, 46, 169, 33, 194, 222, 162,
+  ]
+  let dict : @pdf.PdfObject = Dictionary([
+    ("/Filter", Name(@pdf.PdfName::of_string("/CCITTFaxDecode"))),
+    (
+      "/DecodeParms",
+      Dictionary([
+        ("/K", Integer(-1)),
+        ("/Columns", Integer(2147483647)),
+        ("/Rows", Integer(9)),
+        ("/EndOfLine", Boolean(true)),
+        ("/BlackIs1", Boolean(true)),
+      ]),
+    ),
+  ])
+  inspect(
+    qc_codec.decode_from_bytes(g4.map(b => b.to_byte()), dict) is None,
+    content="true",
+  )
 }
 
 ///|
