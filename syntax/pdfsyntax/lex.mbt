@@ -297,7 +297,9 @@ fn find_endstream(input : @pdfio.Input) -> Int {
       match_chunk("\rendstream", input) {
       done = true
       found_pos = pos
-    } else if pos == input.in_channel_length {
+    } else if pos >= input.in_channel_length {
+      // `>=`: after reading past EOF the position can exceed the length, and
+      // `nudge` would then never reach it (infinite loop on truncated files).
       done = true
       found_pos = pos
     } else {
