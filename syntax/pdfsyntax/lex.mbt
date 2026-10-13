@@ -1,9 +1,9 @@
 ///|
-fn hex_value(c : Char) -> Int? {
+fn hex_value(c : Char) -> Int32? {
   match c {
-    '0'..='9' => Some(c.to_int() - '0')
-    'a'..='f' => Some(10 + c.to_int() - 'a')
-    'A'..='F' => Some(10 + c.to_int() - 'A')
+    '0'..<='9' => Some(c.to_int() - '0')
+    'a'..<='f' => Some(10 + c.to_int() - 'a')
+    'A'..<='F' => Some(10 + c.to_int() - 'A')
     _ => None
   }
 }
@@ -189,7 +189,7 @@ pub fn lex_string(input : @pdfio.Input) -> Token raise {
 pub fn lex_hexstring(input : @pdfio.Input) -> Token raise {
   let _ = (input.input_byte)()
   let bytes : Array[Byte] = []
-  let mut pending : Int? = None
+  let mut pending : Int32? = None
   let mut done = false
   while !done {
     let b = (input.input_byte)()
@@ -277,7 +277,7 @@ fn skip_stream_beginning(input : @pdfio.Input) -> Unit raise {
 }
 
 ///|
-fn find_endstream(input : @pdfio.Input) -> Int {
+fn find_endstream(input : @pdfio.Input) -> Int32 {
   fn match_chunk(s : String, input : @pdfio.Input) -> Bool {
     let pos = (input.pos_in)()
     let ok = try input.read_chunk(s.length()) == s catch {
@@ -352,7 +352,7 @@ fn lex_malformed_stream_data(input : @pdfio.Input) -> Token raise {
 ///|
 pub fn lex_stream_data(
   input : @pdfio.Input,
-  length : Int,
+  length : Int32,
   read_data : Bool,
 ) -> Token raise {
   let original_pos = (input.pos_in)()
@@ -420,7 +420,7 @@ fn take_dict_lexemes(previous_lexemes : Array[Token]) -> Array[Token] {
 pub fn lex_stream(
   input : @pdfio.Input,
   previous_lexemes : Array[Token],
-  lexobj : (Int) -> Array[Token] raise,
+  lexobj : (Int32) -> Array[Token] raise,
   read_stream_data : Bool,
 ) -> Token raise {
   fn fail_stream() -> Token raise {
@@ -433,7 +433,7 @@ pub fn lex_stream(
   match (parsed : PdfObject) {
     Dictionary(_) => {
       let pos = (input.pos_in)()
-      fn findlength(value : PdfObject) -> Int? raise {
+      fn findlength(value : PdfObject) -> Int32? raise {
         match value {
           Integer(l) => Some(l)
           Indirect(k) => {
@@ -462,13 +462,13 @@ pub fn lex_stream(
 
 ///|
 pub fn lex_next(
-  dict_level : Ref[Int],
-  array_level : Ref[Int],
+  dict_level : Ref[Int32],
+  array_level : Ref[Int32],
   end_on_stream : Bool,
   input : @pdfio.Input,
   previous_lexemes : Array[Token],
   read_stream_data : Bool,
-  lexobj : (Int) -> Array[Token] raise,
+  lexobj : (Int32) -> Array[Token] raise,
 ) -> Token {
   try {
     input.dropwhite()
@@ -562,8 +562,8 @@ pub fn lex_dictionary(
   input : @pdfio.Input,
 ) -> Array[Token] raise {
   let tokens = []
-  let dict_level : Ref[Int] = { val: 0, }
-  let array_level : Ref[Int] = { val: 0, }
+  let dict_level : Ref[Int32] = { val: 0, }
+  let array_level : Ref[Int32] = { val: 0, }
   let mut done = false
   while !done {
     let t = lex_next(dict_level, array_level, false, input, tokens, false, _ => {

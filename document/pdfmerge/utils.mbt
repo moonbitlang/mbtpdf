@@ -1,6 +1,6 @@
 ///|
 /// Compare two byte arrays lexicographically.
-fn compare_bytes(left : ArrayView[Byte], right : ArrayView[Byte]) -> Int {
+fn compare_bytes(left : ArrayView[Byte], right : ArrayView[Byte]) -> Int32 {
   // `Compare for Array[T]` is shortlex (length-first). For bytes we want the
   // traditional lexicographical order: compare element-by-element first, and
   // only compare lengths if all compared elements are equal.
@@ -31,7 +31,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
 }
 
 ///|
-fn ilist(start : Int, finish : Int) -> Array[Int] {
+fn ilist(start : Int32, finish : Int32) -> Array[Int32] {
   if finish < start {
     return []
   }
@@ -43,12 +43,12 @@ fn ilist(start : Int, finish : Int) -> Array[Int] {
 }
 
 ///|
-fn contains_int(values : Array[Int], value : Int) -> Bool {
+fn contains_int(values : Array[Int32], value : Int32) -> Bool {
   values[:].contains(value)
 }
 
 ///|
-fn[T] slice(values : Array[T], start : Int, count : Int) -> Array[T] raise {
+fn[T] slice(values : Array[T], start : Int32, count : Int32) -> Array[T] raise {
   if start < 0 || count < 0 || start + count > values.length() {
     raise @pdf.PdfError::Msg("slice: out of bounds")
   }
@@ -88,7 +88,7 @@ fn[A, B] combine(left : Array[A], right : Array[B]) -> Array[(A, B)] raise {
 }
 
 ///|
-fn[T] collate(items : Array[T], cmp : (T, T) -> Int) -> Array[Array[T]] {
+fn[T] collate(items : Array[T], cmp : (T, T) -> Int32) -> Array[Array[T]] {
   let out = []
   let mut i = 0
   while i < items.length() {

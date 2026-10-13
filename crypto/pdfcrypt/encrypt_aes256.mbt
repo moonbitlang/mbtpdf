@@ -4,7 +4,7 @@ fn encrypt_pdf_AES256_inner(
   encrypt_metadata : Bool,
   owner : String,
   user : String,
-  p : Int,
+  p : Int32,
   perms : String,
   oe : String,
   ue : String,

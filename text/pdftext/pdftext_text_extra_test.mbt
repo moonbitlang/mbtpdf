@@ -1,7 +1,7 @@
 ///|
 fn font_with_encoding_name(
   encoding_name : String,
-  subtype? : String = "/Type1",
+  subtype~ : String = "/Type1",
 ) -> @pdf.PdfObject {
   Dictionary([
     ("/Subtype", Name(@pdf.PdfName::of_string(subtype))),
@@ -141,7 +141,7 @@ test "text extractor handles missing glyph hashes" {
 test "charcode extractor uses tounicode bytes map" {
   let pdf = @pdf.Pdf::empty()
   let ctx = @pdftext.PdfText::new(pdf)
-  let tounicode : Map[Int, String] = Map([])
+  let tounicode : Map[Int32, String] = Map([])
   tounicode.set(33, @pdfio.string_of_int_array([0x00, 0x42]))
   let tounicode_ref = ctx.write_tounicode(tounicode)
   let charcode = ctx.charcode_extractor_of_font(
@@ -153,21 +153,21 @@ test "charcode extractor uses tounicode bytes map" {
 ///|
 test "codepoints_of_utf16be rejects invalid surrogate pairs" {
   let missing_low = @pdfio.string_of_int_array([0xd8, 0x00])
-  let missing_result : Result[Array[Int], Error] = try
+  let missing_result : Result[Array[Int32], Error] = try
     @pdftext.PdfTextUtil::new().codepoints_of_utf16be(missing_low) |> Ok
   catch {
     e => Err(e)
   }
   assert_true(missing_result is Err(_))
   let bad_low = @pdfio.string_of_int_array([0xd8, 0x00, 0x00, 0x41])
-  let bad_low_result : Result[Array[Int], Error] = try
+  let bad_low_result : Result[Array[Int32], Error] = try
     @pdftext.PdfTextUtil::new().codepoints_of_utf16be(bad_low) |> Ok
   catch {
     e => Err(e)
   }
   assert_true(bad_low_result is Err(_))
   let low_only = @pdfio.string_of_int_array([0xdc, 0x00, 0x00, 0x41])
-  let low_only_result : Result[Array[Int], Error] = try
+  let low_only_result : Result[Array[Int32], Error] = try
     @pdftext.PdfTextUtil::new().codepoints_of_utf16be(low_only) |> Ok
   catch {
     e => Err(e)
@@ -197,7 +197,7 @@ test "pdfdocstring_of_codepoints falls back for missing glyphs" {
 
 ///|
 test "pdfdocencoding rejects missing glyph mappings" {
-  let mut missing : Int? = None
+  let mut missing : Int32? = None
   let mut i = 0
   while i < 256 {
     if @pdfglyphlist.reverse_name_to_pdf_hashes.get(i) is None {
@@ -208,7 +208,7 @@ test "pdfdocencoding rejects missing glyph mappings" {
   }
   match missing {
     Some(code) => {
-      let res : Result[Int, Error] = try
+      let res : Result[Int32, Error] = try
         @pdftext.PdfTextUtil::new().codepoint_of_pdfdocencoding_character(code)
         |> Ok
       catch {
@@ -224,7 +224,7 @@ test "pdfdocencoding rejects missing glyph mappings" {
         Some(name) => @pdfglyphlist.reverse_name_to_pdf_hashes.set(code, name)
         None => @pdfglyphlist.reverse_name_to_pdf_hashes.remove(code)
       })
-      let res : Result[Int, Error] = try
+      let res : Result[Int32, Error] = try
         @pdftext.PdfTextUtil::new().codepoint_of_pdfdocencoding_character(code)
         |> Ok
       catch {

@@ -5,7 +5,7 @@ pub struct PdfWrite {
 }
 
 ///|
-pub fn PdfWrite::new(logger? : (String) -> Unit = @pdfe.logger.val) -> PdfWrite {
+pub fn PdfWrite::new(logger~ : (String) -> Unit = @pdfe.logger.val) -> PdfWrite {
   { logger, }
 }
 

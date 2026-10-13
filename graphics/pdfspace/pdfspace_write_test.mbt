@@ -28,7 +28,7 @@ test "write/read CalGray" {
 ///|
 test "write/read Indexed" {
   let pdf = @pdf.Pdf::empty()
-  let table : Map[Int, Array[Int]] = Map([])
+  let table : Map[Int32, Array[Int32]] = Map([])
   table.set(0, [0, 0, 0])
   table.set(1, [255, 255, 255])
   let space = @pdfspace.ColourSpace::Indexed(DeviceRGB, table)

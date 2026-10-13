@@ -17,8 +17,8 @@ Extracted image data.
 pub(all) enum Image {
   JPEG(Array[Byte], Array[Double]?)
   JPEG2000(Array[Byte], Array[Double]?)
-  JBIG2(Array[Byte], Array[Double]?, Int?)
-  Raw(Int, Int, PixelLayout, Array[Byte])
+  JBIG2(Array[Byte], Array[Double]?, Int32?)
+  Raw(Int32, Int32, PixelLayout, Array[Byte])
 }
 ```
 

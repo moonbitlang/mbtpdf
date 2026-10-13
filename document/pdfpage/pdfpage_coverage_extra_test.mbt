@@ -4,7 +4,7 @@ fn coverage_rect() -> @pdf.PdfObject {
 }
 
 ///|
-fn make_pdf_with_pages(count : Int) -> @pdf.Pdf raise {
+fn make_pdf_with_pages(count : Int32) -> @pdf.Pdf raise {
   let rect = coverage_rect()
   let pages : Array[@pdfpage.Page] = []
   for _ in 0..<count {
@@ -76,7 +76,7 @@ test "pages_of_pagetree treats stream /Contents as singleton array" {
 ///|
 test "pdf_of_pages builds branched page tree for large selections" {
   let pdf = make_pdf_with_pages(30)
-  let range : Array[Int] = []
+  let range : Array[Int32] = []
   for i in 1..<=30 {
     range.push(i)
   }

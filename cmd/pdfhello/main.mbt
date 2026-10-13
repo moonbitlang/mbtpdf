@@ -5,8 +5,8 @@
 /// - `out_file`: Output filename (defaults to "hello.pdf")
 /// - `quiet`: If true, suppress error messages on failure
 pub async fn run(
-  out_file? : String = "hello.pdf",
-  quiet? : Bool = false,
+  out_file~ : String = "hello.pdf",
+  quiet~ : Bool = false,
 ) -> Unit {
   try {
     // Define a Type1 font using the built-in Times-Italic PostScript font.

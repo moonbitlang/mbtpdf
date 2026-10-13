@@ -542,7 +542,7 @@ test "get_image_24bpp default decode for Lab" {
 ///|
 test "from_raw errors on indexed palettes missing entries" {
   let data8 = @pdfio.bytes_of_list([0])
-  let table_empty : Map[Int, Array[Int]] = Map([])
+  let table_empty : Map[Int32, Array[Int32]] = Map([])
   let rgb_indexed : @pdfspace.ColourSpace = Indexed(DeviceRGB, table_empty)
   let res8 : Result[@pdfimage.Image, Error] = try
     @pdfimage.Image::from_raw(1, rgb_indexed, Some(Integer(8)), 1, 1, data8)
@@ -564,7 +564,7 @@ test "from_raw errors on indexed palettes missing entries" {
 ///|
 test "from_raw errors on CMYK indexed palettes missing entries" {
   let data4 = @pdfio.bytes_of_list([0x01])
-  let table_empty : Map[Int, Array[Int]] = Map([])
+  let table_empty : Map[Int32, Array[Int32]] = Map([])
   let cmyk_indexed : @pdfspace.ColourSpace = Indexed(DeviceCMYK, table_empty)
   let res : Result[@pdfimage.Image, Error] = try
     @pdfimage.Image::from_raw(1, cmyk_indexed, Some(Integer(4)), 2, 1, data4)
@@ -578,7 +578,7 @@ test "from_raw errors on CMYK indexed palettes missing entries" {
 ///|
 test "from_raw errors on 8bpp CMYK indexed palettes missing entries" {
   let data = @pdfio.bytes_of_list([0])
-  let table_empty : Map[Int, Array[Int]] = Map([])
+  let table_empty : Map[Int32, Array[Int32]] = Map([])
   let cmyk_indexed : @pdfspace.ColourSpace = Indexed(DeviceCMYK, table_empty)
   let res : Result[@pdfimage.Image, Error] = try
     @pdfimage.Image::from_raw(1, cmyk_indexed, Some(Integer(8)), 1, 1, data)
@@ -592,7 +592,7 @@ test "from_raw errors on 8bpp CMYK indexed palettes missing entries" {
 ///|
 test "from_raw 4bpp indexed palettes error on second nibble" {
   let data = @pdfio.bytes_of_list([0x01])
-  let rgb_table : Map[Int, Array[Int]] = Map([])
+  let rgb_table : Map[Int32, Array[Int32]] = Map([])
   rgb_table.set(0, [255, 0, 0])
   let rgb_indexed : @pdfspace.ColourSpace = Indexed(DeviceRGB, rgb_table)
   let rgb_res : Result[@pdfimage.Image, Error] = try
@@ -602,7 +602,7 @@ test "from_raw 4bpp indexed palettes error on second nibble" {
     e => Err(e)
   }
   assert_true(rgb_res is Err(_))
-  let cmyk_table : Map[Int, Array[Int]] = Map([])
+  let cmyk_table : Map[Int32, Array[Int32]] = Map([])
   cmyk_table.set(0, [0, 0, 0, 255])
   let cmyk_indexed : @pdfspace.ColourSpace = Indexed(DeviceCMYK, cmyk_table)
   let cmyk_res : Result[@pdfimage.Image, Error] = try
@@ -652,7 +652,7 @@ test "from_raw separation cmyk errors on bad tint transform" {
 ///|
 test "from_raw supports DeviceN RGB bases in indexed palettes" {
   let data = @pdfio.bytes_of_list([0])
-  let table : Map[Int, Array[Int]] = Map([])
+  let table : Map[Int32, Array[Int32]] = Map([])
   table.set(0, [255, 0, 0])
   let devn : @pdfspace.ColourSpace = DeviceN(
     ["C"],
@@ -670,7 +670,7 @@ test "from_raw supports DeviceN RGB bases in indexed palettes" {
 ///|
 test "from_raw supports DeviceN ICCBased alternates in indexed palettes" {
   let data = @pdfio.bytes_of_list([0])
-  let table : Map[Int, Array[Int]] = Map([])
+  let table : Map[Int32, Array[Int32]] = Map([])
   table.set(0, [255, 0, 0])
   let icc : @pdfspace.ICCBased = {
     icc_n: 3,
@@ -695,7 +695,7 @@ test "from_raw supports DeviceN ICCBased alternates in indexed palettes" {
 ///|
 test "from_raw supports ICCBased CMYK alternates in indexed palettes" {
   let data = @pdfio.bytes_of_list([0])
-  let table : Map[Int, Array[Int]] = Map([])
+  let table : Map[Int32, Array[Int32]] = Map([])
   table.set(0, [0, 0, 0, 255])
   let icc : @pdfspace.ICCBased = {
     icc_n: 4,
@@ -714,7 +714,7 @@ test "from_raw supports ICCBased CMYK alternates in indexed palettes" {
 ///|
 test "from_raw supports DeviceN ICCBased CMYK alternates in indexed palettes" {
   let data = @pdfio.bytes_of_list([0])
-  let table : Map[Int, Array[Int]] = Map([])
+  let table : Map[Int32, Array[Int32]] = Map([])
   table.set(0, [0, 0, 0, 255])
   let icc : @pdfspace.ICCBased = {
     icc_n: 4,
@@ -739,7 +739,7 @@ test "from_raw supports DeviceN ICCBased CMYK alternates in indexed palettes" {
 ///|
 test "from_raw DeviceN non-rgb/non-cmyk bases in indexed palettes return error" {
   let data = @pdfio.bytes_of_list([0])
-  let table_empty : Map[Int, Array[Int]] = Map([])
+  let table_empty : Map[Int32, Array[Int32]] = Map([])
   let devn : @pdfspace.ColourSpace = DeviceN(
     ["C"],
     DeviceGray,
@@ -1062,7 +1062,7 @@ test "get_image_24bpp clamps indexed Lab conversions" {
 ///|
 test "from_raw supports ICCBased RGB alternates in indexed palettes" {
   let data = @pdfio.bytes_of_list([0])
-  let table : Map[Int, Array[Int]] = Map([])
+  let table : Map[Int32, Array[Int32]] = Map([])
   table.set(0, [255, 0, 0])
   let icc : @pdfspace.ICCBased = {
     icc_n: 3,
@@ -1081,7 +1081,7 @@ test "from_raw supports ICCBased RGB alternates in indexed palettes" {
 ///|
 test "from_raw supports DeviceN CMYK bases in indexed palettes" {
   let data = @pdfio.bytes_of_list([0])
-  let table : Map[Int, Array[Int]] = Map([])
+  let table : Map[Int32, Array[Int32]] = Map([])
   table.set(0, [0, 0, 0, 255])
   let devn : @pdfspace.ColourSpace = DeviceN(
     ["C"],
@@ -1113,7 +1113,7 @@ test "from_raw rejects non-integer bpc and unknown indexed bases" {
     e => Err(e)
   }
   assert_true(bad_bpc is Err(_))
-  let table : Map[Int, Array[Int]] = Map([])
+  let table : Map[Int32, Array[Int32]] = Map([])
   table.set(0, [0])
   let bad_indexed : Result[@pdfimage.Image, Error] = try
     @pdfimage.Image::from_raw(
@@ -1405,8 +1405,8 @@ test "get_image_24bpp rejects missing width" {
 ///|
 fn make_indexed_colorspace(
   base : @pdf.PdfObject,
-  hival : Int,
-  table_bytes : Array[Int],
+  hival : Int32,
+  table_bytes : Array[Int32],
 ) -> @pdf.PdfObject {
   let table = @pdfio.string_of_bytes(@pdfio.bytes_of_list(table_bytes))
   PdfArray([Name(PdfName(b"/Indexed")), base, Integer(hival), PdfString(table)])

@@ -7,7 +7,7 @@
 /// from untrusted input).
 priv struct SeekCase {
   data : Array[Byte]
-  pos : Int
+  pos : Int32
 } derive(Debug)
 
 ///|

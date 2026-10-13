@@ -4,7 +4,7 @@ fn pdf_of_pages_rect() -> @pdf.PdfObject {
 }
 
 ///|
-fn pdf_of_pages_make_pdf(count : Int) -> @pdf.Pdf raise {
+fn pdf_of_pages_make_pdf(count : Int32) -> @pdf.Pdf raise {
   let rect = pdf_of_pages_rect()
   let pages = Array(capacity=count)
   for _ in 0..<count {
@@ -17,7 +17,7 @@ fn pdf_of_pages_make_pdf(count : Int) -> @pdf.Pdf raise {
 }
 
 ///|
-fn pdf_of_pages_with_bookmarks(count : Int) -> @pdf.Pdf raise {
+fn pdf_of_pages_with_bookmarks(count : Int32) -> @pdf.Pdf raise {
   let pdf = pdf_of_pages_make_pdf(count)
   let refs = pdf.page_reference_numbers()
   let marks : Array[@pdfmarks.Bookmark] = [

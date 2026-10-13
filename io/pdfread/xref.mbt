@@ -1,23 +1,23 @@
 ///|
 priv enum XRef {
-  Plain(Int, Int)
-  Stream(Int, Int)
+  Plain(Int32, Int32)
+  Stream(Int32, Int32)
 }
 
 ///|
 priv enum XRefLine {
   Invalid
-  Section(Int, Int) // second Int (length) is unused but required for parsing
-  Valid(Int, Int)
-  Free(Int, Int) // both Ints are unused but required for parsing
-  InObjectStream(Int, Int)
-  StreamFree(Int, Int) // constructed but not read in current implementation
+  Section(Int32, Int32) // second Int (length) is unused but required for parsing
+  Valid(Int32, Int32)
+  Free(Int32, Int32) // both Ints are unused but required for parsing
+  InObjectStream(Int32, Int32)
+  StreamFree(Int32, Int32) // constructed but not read in current implementation
   XRefNull // constructed but not read in current implementation
   Finished
 }
 
 ///|
-fn parse_digits(chars : StringView, start : Int, len : Int) -> Int? {
+fn parse_digits(chars : StringView, start : Int32, len : Int32) -> Int32? {
   if start < 0 || len < 0 || start + len > chars.length() {
     return None
   }
@@ -33,7 +33,7 @@ fn parse_digits(chars : StringView, start : Int, len : Int) -> Int? {
 }
 
 ///|
-fn count_leading_spaces(chars : StringView) -> Int {
+fn count_leading_spaces(chars : StringView) -> Int32 {
   let mut i = 0
   for ch in chars {
     if ch == ' ' {
@@ -58,7 +58,7 @@ fn split_fields(line : String) -> Array[String] {
 }
 
 ///|
-fn parse_uint_string(s : String) -> Int? {
+fn parse_uint_string(s : String) -> Int32? {
   let chars = s[:]
   if chars.length() == 0 {
     return None
@@ -142,7 +142,7 @@ fn read_xref_line(input : @pdfio.Input) -> XRefLine raise {
 }
 
 ///|
-fn read_xref(input : @pdfio.Input) -> Array[(Int, XRef)] raise {
+fn read_xref(input : @pdfio.Input) -> Array[(Int32, XRef)] raise {
   fn fail_read() -> Unit raise {
     let message = @pdf.input_pdferror(input, "Could not read x-ref table")
     raise @pdf.PdfError::Msg(message)
@@ -178,8 +178,8 @@ fn read_xref(input : @pdfio.Input) -> Array[(Int, XRef)] raise {
 /// local methods
 fn[A] Array::get_slice(
   self : Array[A],
-  start : Int,
-  finish : Int,
+  start : Int32,
+  finish : Int32,
 ) -> ArrayView[A]? {
   if start < 0 || finish > self.length() || start > finish {
     return None
@@ -203,11 +203,11 @@ test "Array:get_slice" {
 ///|
 fn read_xref_line_stream(
   input : @pdfio.Input,
-  w1 : Int,
-  w2 : Int,
-  w3 : Int,
+  w1 : Int32,
+  w2 : Int32,
+  w3 : Int32,
 ) -> XRefLine raise {
-  fn read_field(bytes : Int) -> Int raise {
+  fn read_field(bytes : Int32) -> Int32 raise {
     if bytes == 0 {
       return 0
     }
@@ -240,11 +240,11 @@ fn read_xref_line_stream(
 fn read_xref_stream(
   ctx : PdfRead,
   input : @pdfio.Input,
-) -> (Array[(Int, XRef)], Int, @pdf.PdfObject) raise {
+) -> (Array[(Int32, XRef)], Int32, @pdf.PdfObject) raise {
   let original_pos = (input.pos_in)()
   let err = @pdf.PdfError::Msg(@pdf.input_pdferror(input, "Bad xref stream"))
-  let dict_level : Ref[Int] = { val: 0, }
-  let array_level : Ref[Int] = { val: 0, }
+  let dict_level : Ref[Int32] = { val: 0, }
+  let array_level : Ref[Int32] = { val: 0, }
   let xrefstream_objectnumber = match
     @pdfsyntax.lex_next(dict_level, array_level, false, input, [], true, _ => []) {
     LexInt(i) => i
@@ -264,8 +264,8 @@ fn read_xref_stream(
     read_stream_data : Bool,
   ) -> Array[@pdftoken.Token] {
     let lexemes = []
-    let dict_level : Ref[Int] = { val: 0, }
-    let array_level : Ref[Int] = { val: 0, }
+    let dict_level : Ref[Int32] = { val: 0, }
+    let array_level : Ref[Int32] = { val: 0, }
     let mut done = false
     while !done {
       let t = @pdfsyntax.lex_next(
@@ -395,7 +395,7 @@ fn read_xref_stream(
 }
 
 ///|
-fn read_int_from_stream(input : @pdfio.Input) -> Int raise {
+fn read_int_from_stream(input : @pdfio.Input) -> Int32 raise {
   input.dropwhite()
   match @pdfsyntax.lex_number(input) {
     LexInt(i) => i
@@ -409,13 +409,13 @@ fn read_int_from_stream(input : @pdfio.Input) -> Int raise {
 ///|
 fn parse_object_stream(
   input : @pdfio.Input,
-  xrefs : Map[Int, XRef],
-  objstm : Int,
+  xrefs : Map[Int32, XRef],
+  objstm : Int32,
   user_password : String?,
   owner_password : String?,
   partial_pdf : @pdf.Pdf,
-  indexes? : Array[Int],
-) -> Array[(Int, @pdf.PdfObject)] raise {
+  indexes? : Array[Int32],
+) -> Array[(Int32, @pdf.PdfObject)] raise {
   let lexemes = lex_object_for_xref(input, xrefs, true, objstm)
   let (_, stmobj) = @pdfsyntax.parse(lexemes)
   let gen = match xrefs.get(objstm) {
@@ -517,20 +517,20 @@ fn parse_object_stream(
 fn build_pdf_objects(
   ctx : PdfRead,
   input : @pdfio.Input,
-  xref_entries : Array[(Int, XRef)],
+  xref_entries : Array[(Int32, XRef)],
   read_stream_data : Bool,
   trailerdict : @pdf.PdfObject,
   user_password : String?,
   owner_password : String?,
 ) -> @pdf.PdfObjects {
-  let xrefs : Map[Int, XRef] = Map([])
+  let xrefs : Map[Int32, XRef] = Map([])
   for pair in xref_entries {
     xrefs.set(pair.0, pair.1)
   }
   let objects : @pdf.PdfObjMap = Map([])
-  let object_stream_ids : Map[Int, Int] = Map([])
-  let stream_id_seen : Map[Int, Bool] = Map([])
-  let stream_groups : Map[Int, Array[(Int, Int)]] = Map([])
+  let object_stream_ids : Map[Int32, Int32] = Map([])
+  let stream_id_seen : Map[Int32, Bool] = Map([])
+  let stream_groups : Map[Int32, Array[(Int32, Int32)]] = Map([])
   let mut max_obj = 0
   let stream_ids = []
   for pair in xref_entries {
@@ -559,7 +559,7 @@ fn build_pdf_objects(
       }
     }
   }
-  fn parse_obj(num : Int) -> @pdf.PdfObject {
+  fn parse_obj(num : Int32) -> @pdf.PdfObject {
     try {
       let lexemes = lex_object_for_xref(input, xrefs, read_stream_data, num)
       let (_, obj) = @pdfsyntax.parse(lexemes)
@@ -606,7 +606,7 @@ fn build_pdf_objects(
       }
     }
   } else {
-    let themap : Map[Int, Array[Int]] = Map([])
+    let themap : Map[Int32, Array[Int32]] = Map([])
     for group in stream_groups {
       let entries = group.1
       for entry in entries {
@@ -624,9 +624,9 @@ fn build_pdf_objects(
       }
     }
     fn parse_stream(
-      stream_objnum : Int,
-      indexes : Array[Int],
-    ) -> Array[(Int, (Ref[@pdf.ObjectData], Int))] {
+      stream_objnum : Int32,
+      indexes : Array[Int32],
+    ) -> Array[(Int32, (Ref[@pdf.ObjectData], Int32))] {
       try {
         let parsed = parse_object_stream(
           input,

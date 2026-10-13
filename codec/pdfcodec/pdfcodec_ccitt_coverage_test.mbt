@@ -8,8 +8,8 @@ fn assert_bytes_eq(left : Array[Byte], right : Array[Byte]) -> Unit raise {
 
 ///|
 fn bitmap_bytes_from_row_runs(
-  rows : Array[Array[Int]],
-  start_bit : Int,
+  rows : Array[Array[Int32]],
+  start_bit : Int32,
 ) -> Array[Byte] {
   let output = @pdfio.BitstreamWrite::new()
   for row in rows {
@@ -28,9 +28,9 @@ fn bitmap_bytes_from_row_runs(
 ///|
 fn ccitt_roundtrip(
   encoding : @pdfcodec.Encoding,
-  k : Int,
-  columns : Int,
-  rows : Int,
+  k : Int32,
+  columns : Int32,
+  rows : Int32,
   raw : Array[Byte],
 ) -> Unit raise {
   let pdf = @pdf.Pdf::empty()
@@ -59,7 +59,7 @@ fn ccitt_roundtrip(
 ///|
 test "ccitt g3 roundtrip covers many terminating codes" {
   let columns = 65
-  let rows : Array[Array[Int]] = []
+  let rows : Array[Array[Int32]] = []
   for i in 1..<=64 {
     rows.push([i, columns - i])
   }
@@ -100,7 +100,7 @@ test "ccitt g4 roundtrip covers vertical modes" {
 ///|
 test "ccitt g3 roundtrip covers many makeup codes" {
   let columns = 2624
-  let rows : Array[Array[Int]] = []
+  let rows : Array[Array[Int32]] = []
   for i in 1..<=40 {
     let n = 64 * i
     rows.push([n, columns - n])
@@ -120,7 +120,7 @@ test "ccitt g4 roundtrip covers many makeup codes" {
 ///|
 test "ccitt g4 roundtrip covers varied run lengths (single-row)" {
   // Stable mix of short + long runs.
-  let runs : Array[Int] = []
+  let runs : Array[Int32] = []
   let mut columns = 0
   for i in 1..<=16 {
     runs.push(i)
@@ -137,7 +137,7 @@ test "ccitt g4 roundtrip covers varied run lengths (single-row)" {
 
 ///|
 test "ccitt g4 roundtrip covers 1..=64 run lengths starting black" {
-  let runs : Array[Int] = []
+  let runs : Array[Int32] = []
   let mut columns = 0
   for i in 1..<=64 {
     runs.push(i)

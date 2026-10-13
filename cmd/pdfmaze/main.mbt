@@ -170,17 +170,17 @@ fn ops_crosshatch(
 
 ///|
 priv struct Rng {
-  state : Ref[UInt]
+  state : Ref[UInt32]
 }
 
 ///|
-fn Rng::new(seed : UInt) -> Rng {
+fn Rng::new(seed : UInt32) -> Rng {
   let s = if seed == 0 { 0x9E3779B9U } else { seed }
   { state: { val: s, }, }
 }
 
 ///|
-fn Rng::next_u32(self : Rng) -> UInt {
+fn Rng::next_u32(self : Rng) -> UInt32 {
   let mut x = self.state.val
   x = x ^ (x << 13)
   x = x ^ (x >> 17)
@@ -190,7 +190,7 @@ fn Rng::next_u32(self : Rng) -> UInt {
 }
 
 ///|
-fn Rng::next_int(self : Rng, n : Int) -> Int {
+fn Rng::next_int(self : Rng, n : Int32) -> Int32 {
   if n <= 0 {
     return 0
   }
@@ -216,7 +216,7 @@ fn opposite(d : Dir) -> Dir {
 }
 
 ///|
-fn dir_delta(d : Dir) -> (Int, Int) {
+fn dir_delta(d : Dir) -> (Int32, Int32) {
   match d {
     N => (0, 1)
     S => (0, -1)
@@ -284,13 +284,13 @@ fn Cell::with_open(self : Cell, d : Dir, value : Bool) -> Cell {
 
 ///|
 priv struct Maze {
-  w : Int
-  h : Int
+  w : Int32
+  h : Int32
   cells : Array[Cell]
 }
 
 ///|
-fn Maze::new(w : Int, h : Int) -> Maze {
+fn Maze::new(w : Int32, h : Int32) -> Maze {
   let cells = Array(capacity=w * h)
   for _ in 0..<(w * h) {
     cells.push(Cell::empty())
@@ -299,17 +299,21 @@ fn Maze::new(w : Int, h : Int) -> Maze {
 }
 
 ///|
-fn idx(w : Int, x : Int, y : Int) -> Int {
+fn idx(w : Int32, x : Int32, y : Int32) -> Int32 {
   y * w + x
 }
 
 ///|
-fn in_bounds(w : Int, h : Int, x : Int, y : Int) -> Bool {
+fn in_bounds(w : Int32, h : Int32, x : Int32, y : Int32) -> Bool {
   x >= 0 && x < w && y >= 0 && y < h
 }
 
 ///|
-fn Maze::neighbors(self : Maze, x : Int, y : Int) -> Array[(Dir, Int, Int)] {
+fn Maze::neighbors(
+  self : Maze,
+  x : Int32,
+  y : Int32,
+) -> Array[(Dir, Int32, Int32)] {
   let out = Array(capacity=4)
   let dirs : Array[Dir] = [N, E, S, W]
   for d in dirs {
@@ -324,19 +328,19 @@ fn Maze::neighbors(self : Maze, x : Int, y : Int) -> Array[(Dir, Int, Int)] {
 }
 
 ///|
-fn Maze::carved(self : Maze, seed : UInt) -> Maze {
+fn Maze::carved(self : Maze, seed : UInt32) -> Maze {
   let maze = self
   let rng = Rng::new(seed)
   let visited = Array(capacity=maze.w * maze.h)
   for _ in 0..<(maze.w * maze.h) {
     visited.push(false)
   }
-  let stack : Array[(Int, Int)] = [(0, 0)]
+  let stack : Array[(Int32, Int32)] = [(0, 0)]
   visited[idx(maze.w, 0, 0)] = true
   while stack.length() > 0 {
     let (cx, cy) = stack[stack.length() - 1]
     let neighbors = maze.neighbors(cx, cy)
-    let candidates : Array[(Dir, Int, Int)] = []
+    let candidates : Array[(Dir, Int32, Int32)] = []
     for entry in neighbors {
       let (_, nx, ny) = entry
       if !visited[idx(maze.w, nx, ny)] {
@@ -360,15 +364,15 @@ fn Maze::carved(self : Maze, seed : UInt) -> Maze {
 }
 
 ///|
-fn Maze::cell(self : Maze, x : Int, y : Int) -> Cell {
+fn Maze::cell(self : Maze, x : Int32, y : Int32) -> Cell {
   self.cells[idx(self.w, x, y)]
 }
 
 ///|
 fn Maze::bfs_parents(
   self : Maze,
-  start : (Int, Int),
-) -> (Array[Int], Array[Int]) {
+  start : (Int32, Int32),
+) -> (Array[Int32], Array[Int32]) {
   let n = self.w * self.h
   let dist = Array(capacity=n)
   let parent = Array(capacity=n)
@@ -412,7 +416,7 @@ fn Maze::bfs_parents(
 }
 
 ///|
-fn farthest(dist : Array[Int]) -> Int {
+fn farthest(dist : Array[Int32]) -> Int32 {
   let mut best_i = 0
   let mut best_d = -1
   for i in 0..<dist.length() {
@@ -425,7 +429,11 @@ fn farthest(dist : Array[Int]) -> Int {
 }
 
 ///|
-fn build_path(parent : Array[Int], start_i : Int, goal_i : Int) -> Array[Int] {
+fn build_path(
+  parent : Array[Int32],
+  start_i : Int32,
+  goal_i : Int32,
+) -> Array[Int32] {
   let out = []
   let mut cur = goal_i
   while cur != -1 {
@@ -453,7 +461,7 @@ fn set_catalog_entry(
 }
 
 ///|
-fn add_layers(pdf : @pdf.Pdf) -> (Int, Int) raise {
+fn add_layers(pdf : @pdf.Pdf) -> (Int32, Int32) raise {
   let fog : PdfObject = Dictionary([
     ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("FOG")),
@@ -483,8 +491,8 @@ fn add_layers(pdf : @pdf.Pdf) -> (Int, Int) raise {
 ///|
 fn add_layer_properties_to_pages(
   pdf : @pdf.Pdf,
-  fog_num : Int,
-  sol_num : Int,
+  fog_num : Int32,
+  sol_num : Int32,
 ) -> @pdf.Pdf raise {
   let pages = @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree()
   for i in 0..<pages.length() {
@@ -506,7 +514,7 @@ fn add_layer_properties_to_pages(
 }
 
 ///|
-fn goto_action(refnum : Int) -> PdfObject {
+fn goto_action(refnum : Int32) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
   Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
@@ -543,7 +551,7 @@ fn page_of_ops(ops : Array[Op]) -> @pdfpage.Page raise {
 }
 
 ///|
-fn cover_ops(seed : UInt) -> Array[Op] {
+fn cover_ops(seed : UInt32) -> Array[Op] {
   let ops : Array[Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.06, 0.07, 0.1))[:])
   for i in 0..<20 {
@@ -611,15 +619,15 @@ fn cover_ops(seed : UInt) -> Array[Op] {
 
 ///|
 fn room_ops(
-  w : Int,
-  h : Int,
-  x : Int,
-  y : Int,
-  room_idx_1 : Int,
+  w : Int32,
+  h : Int32,
+  x : Int32,
+  y : Int32,
+  room_idx_1 : Int32,
   is_start : Bool,
   is_exit : Bool,
   cell : Cell,
-  next_hint? : Dir? = None,
+  next_hint~ : Dir? = None,
 ) -> Array[Op] {
   let ops : Array[Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.985, 0.985, 0.99))[:])
@@ -799,9 +807,9 @@ fn room_ops(
 ///|
 fn draw_map_ops(
   maze : Maze,
-  start_i : Int,
-  exit_i : Int,
-  path : Array[Int],
+  start_i : Int32,
+  exit_i : Int32,
+  path : Array[Int32],
 ) -> Array[Op] {
   let ops : Array[Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, 595.0, 842.0, (0.99, 0.985, 0.97))[:])
@@ -942,8 +950,8 @@ fn draw_map_ops(
 ///|
 fn add_bookmarks(
   pdf : @pdf.Pdf,
-  room_refs : Array[Int],
-  map_ref : Int,
+  room_refs : Array[Int32],
+  map_ref : Int32,
 ) -> @pdf.Pdf raise {
   let marks : Array[@pdfmarks.Bookmark] = []
   if room_refs.length() > 0 {
@@ -991,9 +999,9 @@ fn add_bookmarks(
 fn annotate_room_page(
   pdf : @pdf.Pdf,
   page : @pdfpage.Page,
-  map_ref : Int,
-  neighbors : Array[(Dir, Int)],
-  room_refs : Array[Int],
+  map_ref : Int32,
+  neighbors : Array[(Dir, Int32)],
+  room_refs : Array[Int32],
 ) -> @pdfpage.Page raise {
   let mut p = page
 
@@ -1044,7 +1052,7 @@ fn annotate_map_page(
   pdf : @pdf.Pdf,
   page : @pdfpage.Page,
   maze : Maze,
-  room_refs : Array[Int],
+  room_refs : Array[Int32],
 ) -> @pdfpage.Page raise {
   let mut p = page
   let gx = 54.0
@@ -1067,9 +1075,9 @@ fn annotate_map_page(
 
 ///|
 pub async fn run(
-  out_file? : String = "maze.pdf",
-  seed? : UInt = 20260131U,
-  quiet? : Bool = false,
+  out_file~ : String = "maze.pdf",
+  seed~ : UInt32 = 20260131U,
+  quiet~ : Bool = false,
 ) -> Unit {
   try {
     let maze = Maze::new(4, 4).carved(seed)
@@ -1157,7 +1165,7 @@ pub async fn run(
         let i = idx(maze.w, x, y) // 0..(w*h-1)
         let page_i = 1 + i
         let cell = maze.cell(x, y)
-        let nbs : Array[(Dir, Int)] = []
+        let nbs : Array[(Dir, Int32)] = []
         let dirs : Array[Dir] = [N, E, S, W]
         for d in dirs {
           if !cell.is_open(d) {

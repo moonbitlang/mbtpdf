@@ -31,7 +31,7 @@ test "pagelabel_of_pagenumber" {
 }
 
 ///|
-fn make_pdf_with_pages(count : Int) -> @pdf.Pdf raise {
+fn make_pdf_with_pages(count : Int32) -> @pdf.Pdf raise {
   let rect : @pdf.PdfObject = PdfArray([
     Real(0.0),
     Real(0.0),

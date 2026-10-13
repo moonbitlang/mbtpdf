@@ -5,10 +5,10 @@ type PdfObject = @pdf.PdfObject
 type Op = @pdfops.Op
 
 ///|
-const COLS : Int = 4
+const COLS : Int32 = 4
 
 ///|
-const ROWS : Int = 3
+const ROWS : Int32 = 3
 
 ///|
 fn font_type1(base_font : String) -> PdfObject {
@@ -110,7 +110,7 @@ fn circle_points(
   cx : Double,
   cy : Double,
   r : Double,
-  n : Int,
+  n : Int32,
 ) -> Array[(Double, Double)] {
   let out = Array(capacity=n)
   let two_pi = 8.0 * @math.atan(1.0)
@@ -124,7 +124,7 @@ fn circle_points(
 ///|
 fn ops_poly_path(
   points : Array[(Double, Double)],
-  close? : Bool = true,
+  close~ : Bool = true,
 ) -> Array[Op] {
   match points {
     [] => []
@@ -197,7 +197,7 @@ fn set_catalog_entry(
 }
 
 ///|
-fn add_layers(pdf : @pdf.Pdf) -> (Int, Int) raise {
+fn add_layers(pdf : @pdf.Pdf) -> (Int32, Int32) raise {
   let hints : PdfObject = Dictionary([
     ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("HINTS")),
@@ -226,8 +226,8 @@ fn add_layers(pdf : @pdf.Pdf) -> (Int, Int) raise {
 ///|
 fn add_layer_properties_to_pages(
   pdf : @pdf.Pdf,
-  hints_num : Int,
-  solution_num : Int,
+  hints_num : Int32,
+  solution_num : Int32,
 ) -> @pdf.Pdf raise {
   let pages = @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree()
   for i in 0..<pages.length() {
@@ -249,7 +249,7 @@ fn add_layer_properties_to_pages(
 }
 
 ///|
-fn goto_action(refnum : Int) -> PdfObject {
+fn goto_action(refnum : Int32) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
   Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
@@ -276,12 +276,12 @@ fn add_link(
 ///|
 fn add_bookmarks(
   pdf : @pdf.Pdf,
-  refs : Array[Int],
-  room_refs : Array[Int],
-  board_ref : Int,
-  rules_ref : Int,
-  clue_ref : Int,
-  solution_ref : Int,
+  refs : Array[Int32],
+  room_refs : Array[Int32],
+  board_ref : Int32,
+  rules_ref : Int32,
+  clue_ref : Int32,
+  solution_ref : Int32,
 ) -> @pdf.Pdf raise {
   let marks : Array[@pdfmarks.Bookmark] = []
   marks.push({
@@ -549,7 +549,7 @@ fn clue_cards_ops() -> Array[Op] {
 }
 
 ///|
-fn board_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
+fn board_ops() -> (Array[Op], Array[(Int32, (Double, Double, Double, Double))]) {
   let ops : Array[Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, page_w(), page_h(), (1.0, 1.0, 1.0))[:])
   ops.append(
@@ -595,7 +595,7 @@ fn board_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
       ops_line(grid_x, y, grid_x + grid_w, y, (0.85, 0.86, 0.88), 1.0)[:],
     )
   }
-  let links : Array[(Int, (Double, Double, Double, Double))] = []
+  let links : Array[(Int32, (Double, Double, Double, Double))] = []
   let mut room = 1
   for r in 0..<ROWS {
     for c in 0..<COLS {
@@ -650,7 +650,7 @@ fn board_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
 
   // Solution overlay: a red path
   ops.push(OpBDC("/OC", Name(PdfName(b"/SOLUTION"))))
-  let path_rooms : Array[Int] = [1, 2, 6, 10, 11, 12]
+  let path_rooms : Array[Int32] = [1, 2, 6, 10, 11, 12]
   for i in 0..<(path_rooms.length() - 1) {
     let a = path_rooms[i] - 1
     let b = path_rooms[i + 1] - 1
@@ -682,8 +682,8 @@ fn board_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
 
 ///|
 fn room_ops(
-  room_1 : Int,
-) -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
+  room_1 : Int32,
+) -> (Array[Op], Array[(Int32, (Double, Double, Double, Double))]) {
   let ops : Array[Op] = []
   let accent = if room_1 % 3 == 0 {
     (0.92, 0.33, 0.36)
@@ -786,7 +786,7 @@ fn room_ops(
     (0.12, 0.14, 0.18),
   )
   ops.append(btn[:])
-  let links : Array[(Int, (Double, Double, Double, Double))] = [(0, rect)]
+  let links : Array[(Int32, (Double, Double, Double, Double))] = [(0, rect)]
   (ops, links)
 }
 
@@ -841,8 +841,8 @@ fn solution_ops() -> (Array[Op], (Double, Double, Double, Double)) {
 
 ///|
 pub async fn run(
-  out_file? : String = "boardgame.pdf",
-  quiet? : Bool = false,
+  out_file~ : String = "boardgame.pdf",
+  quiet~ : Bool = false,
 ) -> Unit {
   try {
     // Page layout:
@@ -857,7 +857,7 @@ pub async fn run(
     let rules = rules_ops()
     let clue = clue_cards_ops()
     let room_pages : Array[@pdfpage.Page] = Array(capacity=ROWS * COLS)
-    let room_links : Array[Array[(Int, (Double, Double, Double, Double))]] = []
+    let room_links : Array[Array[(Int32, (Double, Double, Double, Double))]] = []
     for i in 1..<=(ROWS * COLS) {
       let (ops, links) = room_ops(i)
       room_pages.push(page_of_ops(ops))

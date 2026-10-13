@@ -29,7 +29,7 @@ fn trim_trailing_zeros(value : String) -> String {
 /// out of bounds. This used to wrap the slice in `try … catch`, but
 /// MoonBit's native backend aborts instead of raising on
 /// out-of-bounds indices, so the catch was dead code.
-fn slice_from(value : String, start : Int) -> String {
+fn slice_from(value : String, start : Int32) -> String {
   if start < 0 || start > value.length() {
     return ""
   }
@@ -40,7 +40,7 @@ fn slice_from(value : String, start : Int) -> String {
 /// Slice `value[start:end]` with an explicit bounds check. Returns ""
 /// if either end of the range is out of bounds. See `slice_from` for
 /// why we guard explicitly rather than relying on `try … catch`.
-fn slice_range(value : String, start : Int, end : Int) -> String {
+fn slice_range(value : String, start : Int32, end : Int32) -> String {
   let len = value.length()
   if start < 0 || start > len || end < start || end > len {
     return ""
@@ -49,7 +49,7 @@ fn slice_range(value : String, start : Int, end : Int) -> String {
 }
 
 ///|
-fn parse_signed_int(value : String) -> Int {
+fn parse_signed_int(value : String) -> Int32 {
   let chars = value[:]
   if chars.length() == 0 {
     return 0
@@ -153,7 +153,7 @@ fn format_real(value : Double) -> String {
 }
 
 ///|
-fn is_delimiter_byte(b : Int) -> Bool {
+fn is_delimiter_byte(b : Int32) -> Bool {
   match b {
     b if b == '(' => true
     b if b == ')' => true
@@ -170,7 +170,7 @@ fn is_delimiter_byte(b : Int) -> Bool {
 }
 
 ///|
-fn hex_digit(value : Int) -> Char {
+fn hex_digit(value : Int32) -> Char {
   match value {
     0 => '0'
     1 => '1'

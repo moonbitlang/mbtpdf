@@ -149,7 +149,7 @@ test "encode/decode LZW roundtrips medium input" {
 test "encode_pdfstream LZW clears dictionary when full" {
   let ctx = @pdfcodec.PdfCodec::new()
   let original = @pdfio.mkbytes(5000)
-  let mut s : UInt = 0x1234_5678
+  let mut s : UInt32 = 0x1234_5678
   for i in 0..<@pdfio.bytes_size(original) {
     s = s ^ (s << 13)
     s = s ^ (s >> 17)
@@ -173,7 +173,7 @@ test "encode_pdfstream LZW clears dictionary when full" {
   let bs = @pdfio.Bitstream::of_input(
     @pdfio.Input::of_bytes(encoded, source="lzw"),
   )
-  fn read_code(bits : Int) -> Int raise {
+  fn read_code(bits : Int32) -> Int32 raise {
     let mut value = 0
     for _ in 0..<bits {
       value = (value << 1) | bs.getbitint()

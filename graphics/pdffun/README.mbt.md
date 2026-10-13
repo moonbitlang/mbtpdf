@@ -50,12 +50,12 @@ Type 0 sampled function.
 ```moonbit nocheck
 ///|
 pub(all) struct Sampled {
-  size : Array[Int]
-  order : Int
+  size : Array[Int32]
+  order : Int32
   encode : Array[Double]
   decode : Array[Double]
-  bps : Int
-  samples : Array[Int]
+  bps : Int32
+  samples : Array[Int32]
 }
 ```
 
@@ -111,7 +111,7 @@ pub(all) enum Calculator {
   IfElse(Array[Calculator], Array[Calculator])
   Bool(Bool)
   Float(Double)
-  Int(Int)
+  Int(Int32)
   // Arithmetic: Abs, Add, Atan, Ceiling, Cos, Cvi, Cvr, Div, Exp, Floor, ...
   // Logic: And, Eq, Ge, Gt, Le, Lt, Ne, Not, Or, Xor
   // Stack: Copy, Exch, Pop, Dup, Index, Roll

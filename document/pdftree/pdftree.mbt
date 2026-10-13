@@ -137,7 +137,7 @@ fn PdfTree::read_tree_strings(
 }
 
 ///|
-fn key_int(obj : @pdf.PdfObject) -> Int {
+fn key_int(obj : @pdf.PdfObject) -> Int32 {
   match obj {
     Integer(i) => i
     _ => 0
@@ -153,7 +153,7 @@ fn key_string(obj : @pdf.PdfObject) -> String {
 }
 
 ///|
-fn parse_int(value : String) -> Int {
+fn parse_int(value : String) -> Int32 {
   try @string.parse_int(value) catch {
     _ => 0
   } noraise {
@@ -162,7 +162,7 @@ fn parse_int(value : String) -> Int {
 }
 
 ///|
-fn compare_string(a : String, b : String) -> Int {
+fn compare_string(a : String, b : String) -> Int32 {
   // IMPORTANT: `StringView::compare` uses *shortlex* order (length-first).
   // For name-tree keys we want traditional lexicographical comparison by UTF-16
   // code units (scan until the first difference, then compare lengths).
@@ -231,7 +231,7 @@ fn[T] concat_arrays(a : Array[T], b : Array[T]) -> Array[T] {
 }
 
 ///|
-let maxsize : Int = 10
+let maxsize : Int32 = 10
 
 ///|
 priv enum Nt {
@@ -274,7 +274,7 @@ fn clone_pairs(
 ///|
 fn split_into(
   items : Array[(String, @pdf.PdfObject)],
-  group_size : Int,
+  group_size : Int32,
 ) -> Array[Array[(String, @pdf.PdfObject)]] {
   if group_size <= 0 {
     // Avoid an infinite loop on invalid input; callers always pass a positive size.

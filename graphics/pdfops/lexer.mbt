@@ -99,8 +99,8 @@ fn lex_next(
     let chr_opt = next.to_char()
     match chr_opt {
       Some('/') => lex_name(input)
-      Some('+' | '-' | '.' | '0'..='9') => lex_number(input)
-      Some('A'..='Z' | 'a'..='z') => lex_keyword(pdf, resources, input)
+      Some('+' | '-' | '.' | '0'..<='9') => lex_number(input)
+      Some('A'..<='Z' | 'a'..<='z') => lex_keyword(pdf, resources, input)
       Some('\'') | Some('\"') => lex_keyword(pdf, resources, input)
       Some('(') => lex_string(input)
       Some('[') => {

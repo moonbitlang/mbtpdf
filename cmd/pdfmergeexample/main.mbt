@@ -37,7 +37,7 @@ async fn main {
 }
 
 ///|
-pub async fn run(args : Array[String], quiet? : Bool = false) -> Unit {
+pub async fn run(args : Array[String], quiet~ : Bool = false) -> Unit {
   let argc = args.length()
   if argc < 3 {
     if !quiet {

@@ -1,5 +1,5 @@
 ///|
-fn append_bits(prefix : Array[Int], suffix : Array[Int]) -> Array[Int] {
+fn append_bits(prefix : Array[Int32], suffix : Array[Int32]) -> Array[Int32] {
   let out = Array(capacity=prefix.length() + suffix.length())
   for bit in prefix {
     out.push(bit)
@@ -11,7 +11,7 @@ fn append_bits(prefix : Array[Int], suffix : Array[Int]) -> Array[Int] {
 }
 
 ///|
-fn write_white_code(n : Int) -> Array[Int] raise CodecError {
+fn write_white_code(n : Int32) -> Array[Int32] raise CodecError {
   if n == -1 {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
   } else if n == 0 {
@@ -258,7 +258,7 @@ fn write_white_code(n : Int) -> Array[Int] raise CodecError {
 }
 
 ///|
-fn write_black_code(n : Int) -> Array[Int] raise CodecError {
+fn write_black_code(n : Int32) -> Array[Int32] raise CodecError {
   if n == -1 {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
   } else if n == 0 {
@@ -565,14 +565,14 @@ fn write_black_code(n : Int) -> Array[Int] raise CodecError {
 }
 
 ///|
-fn write_bits(output : @pdfio.BitstreamWrite, bits : Array[Int]) -> Unit {
+fn write_bits(output : @pdfio.BitstreamWrite, bits : Array[Int32]) -> Unit {
   for bit in bits {
     output.putbit(bit)
   }
 }
 
 ///|
-fn read_run(maxcols : Int, input : @pdfio.Bitstream) -> (Bool, Int) raise {
+fn read_run(maxcols : Int32, input : @pdfio.Bitstream) -> (Bool, Int32) raise {
   let mut nbits = 1
   let iswhite = input.getbit()
   let mut finished = false
@@ -592,8 +592,8 @@ fn read_run(maxcols : Int, input : @pdfio.Bitstream) -> (Bool, Int) raise {
 ///|
 /// Encode data in CCITTDecode Group 3.
 fn encode_ccitt(
-  _columns : Int,
-  _rows : Int,
+  _columns : Int32,
+  _rows : Int32,
   _data : Array[Byte],
 ) -> Array[Byte] raise CodecError {
   let columns = _columns
@@ -636,8 +636,8 @@ fn encode_ccitt(
 ///|
 fn ccittg4_transitions(
   input : @pdfio.Bitstream,
-  columns : Int,
-) -> Array[Int] raise {
+  columns : Int32,
+) -> Array[Int32] raise {
   let transitions = Array(capacity=columns + 2)
   transitions.push(0)
   let mut prev_white = true
@@ -656,7 +656,7 @@ fn ccittg4_transitions(
 ///|
 fn write_ccittg4_vertical(
   output : @pdfio.BitstreamWrite,
-  diff : Int,
+  diff : Int32,
 ) -> Unit raise CodecError {
   match diff {
     0 => write_bits(output, [1])
@@ -672,9 +672,9 @@ fn write_ccittg4_vertical(
 
 ///|
 fn encode_ccittg4_line(
-  columns : Int,
-  coding : Array[Int],
-  reference : Array[Int],
+  columns : Int32,
+  coding : Array[Int32],
+  reference : Array[Int32],
   output : @pdfio.BitstreamWrite,
 ) -> Unit raise CodecError {
   let mut a0 = 0
@@ -740,8 +740,8 @@ fn encode_ccittg4_line(
 
 ///|
 fn encode_ccittg4_pure(
-  columns : Int,
-  rows : Int,
+  columns : Int32,
+  rows : Int32,
   data : Array[Byte],
 ) -> Array[Byte] raise CodecError {
   let input = @pdfio.Bitstream::of_input(@pdfio.Input::of_bytes(data))
@@ -772,8 +772,8 @@ fn encode_ccittg4_pure(
 ///|
 /// Encode data in CCITTDecode Group 4.
 fn encode_ccittg4(
-  _columns : Int,
-  _rows : Int,
+  _columns : Int32,
+  _rows : Int32,
   _data : Array[Byte],
   im? : String,
 ) -> Array[Byte] raise CodecError {

@@ -1,5 +1,5 @@
 ///|
-fn new_dests(pdf : @pdf.Pdf, pdfs : Array[@pdf.Pdf]) -> Int? raise {
+fn new_dests(pdf : @pdf.Pdf, pdfs : Array[@pdf.Pdf]) -> Int32? raise {
   let dests = Array(capacity=pdfs.length())
   for src in pdfs {
     let catalog = src.catalog_of_pdf()
@@ -51,7 +51,7 @@ fn merge_pdfs_renumber(
 }
 
 ///|
-fn merge_namedicts(pdf : @pdf.Pdf, pdfs : Array[@pdf.Pdf]) -> Int raise {
+fn merge_namedicts(pdf : @pdf.Pdf, pdfs : Array[@pdf.Pdf]) -> Int32 raise {
   let names : Array[String] = [
     "/Dests", "/AP", "/JavaScript", "/Pages", "/Templates", "/IDS", "/URLS", "/EmbeddedFiles",
     "/AlternatePresentations", "/Renditions",

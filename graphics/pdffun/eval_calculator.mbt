@@ -12,7 +12,7 @@ fn value_equal(a : Calculator, b : Calculator) -> Bool {
 fn value_compare(
   a : Calculator,
   b : Calculator,
-) -> Int raise BadFunctionEvaluation {
+) -> Int32 raise BadFunctionEvaluation {
   match (a, b) {
     (Bool(x), Bool(y)) => if x == y { 0 } else if x { 1 } else { -1 }
     (Float(x), Float(y)) => if x < y { -1 } else if x > y { 1 } else { 0 }
@@ -45,7 +45,7 @@ fn pop_float(stack : Array[Calculator]) -> Double raise BadFunctionEvaluation {
 }
 
 ///|
-fn pop_int(stack : Array[Calculator]) -> Int raise BadFunctionEvaluation {
+fn pop_int(stack : Array[Calculator]) -> Int32 raise BadFunctionEvaluation {
   match pop_value(stack) {
     Int(i) => i
     _ => raise Msg("Type error")
@@ -220,7 +220,7 @@ fn eval_function_calculator(
         let a = pop_value(stack)
         let b = pop_value(stack)
         match (a, b) {
-          (Int(x), Int(y)) => stack.push(Int(Int::land(x, y)))
+          (Int(x), Int(y)) => stack.push(Int(Int32::land(x, y)))
           (Bool(x), Bool(y)) => stack.push(Bool(x && y))
           _ => raise Msg("Type error")
         }
@@ -269,7 +269,7 @@ fn eval_function_calculator(
       }
       Not =>
         match pop_value(stack) {
-          Int(i) => stack.push(Int(Int::lnot(i)))
+          Int(i) => stack.push(Int(Int32::lnot(i)))
           Bool(b) => {
             let _ = pop_bool(stack)
             stack.push(Bool(!b))
@@ -280,7 +280,7 @@ fn eval_function_calculator(
         let a = pop_value(stack)
         let b = pop_value(stack)
         match (a, b) {
-          (Int(x), Int(y)) => stack.push(Int(Int::lor(x, y)))
+          (Int(x), Int(y)) => stack.push(Int(Int32::lor(x, y)))
           (Bool(x), Bool(y)) => stack.push(Bool(x || y))
           _ => raise Msg("Type error")
         }
@@ -289,7 +289,7 @@ fn eval_function_calculator(
         let a = pop_value(stack)
         let b = pop_value(stack)
         match (a, b) {
-          (Int(x), Int(y)) => stack.push(Int(Int::lxor(x, y)))
+          (Int(x), Int(y)) => stack.push(Int(Int32::lxor(x, y)))
           (Bool(x), Bool(y)) => stack.push(Bool((x || y) && !(x && y)))
           _ => raise Msg("Type error")
         }

@@ -65,7 +65,7 @@ pub fn PdfName::to_string_bytes(self : PdfName) -> String {
 /// Note: MoonBit's default `compare` for sequences/strings is *shortlex*
 /// (length-first, then element-wise). PDF name ordering (e.g. in name trees)
 /// needs byte-wise lexicographic order, so we implement it explicitly.
-pub fn PdfName::lexical_compare(self : PdfName, other : PdfName) -> Int {
+pub fn PdfName::lexical_compare(self : PdfName, other : PdfName) -> Int32 {
   let a = self.0
   let b = other.0
   let a_len = a.length()
@@ -82,7 +82,7 @@ pub fn PdfName::lexical_compare(self : PdfName, other : PdfName) -> Int {
 }
 
 ///|
-pub impl Compare for PdfName with fn compare(self : PdfName, other : PdfName) -> Int {
+pub impl Compare for PdfName with fn compare(self : PdfName, other : PdfName) -> Int32 {
   self.lexical_compare(other)
 }
 

@@ -28,9 +28,9 @@ A text extraction context tied to a specific font.
 ```moonbit nocheck
 ///|
 pub struct TextExtractor {
-  convert : (Int) -> (String, Array[Int])
+  convert : (Int32) -> (String, Array[Int32])
   tounicode : Map[String, String]?
-  tounicode_lengths : Array[Int]
+  tounicode_lengths : Array[Int32]
   font : @pdffont.Font
 }
 ```

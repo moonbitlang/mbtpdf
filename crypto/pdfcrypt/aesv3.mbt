@@ -1,5 +1,5 @@
 ///|
-fn bytes_slice(bytes : Array[Byte], start : Int, len : Int) -> Array[Byte] {
+fn bytes_slice(bytes : Array[Byte], start : Int32, len : Int32) -> Array[Byte] {
   let out = @pdfio.mkbytes(len)
   for i in 0..<len {
     out[i] = bytes[start + i]
@@ -25,7 +25,7 @@ fn bytes_concat(parts : Array[Array[Byte]]) -> Array[Byte] {
 }
 
 ///|
-fn mod3_bytes(bytes : Array[Byte]) -> Int {
+fn mod3_bytes(bytes : Array[Byte]) -> Int32 {
   let mut x = 0
   for i in 0..<16 {
     x = x + @pdfio.bget(bytes, i)
@@ -90,7 +90,7 @@ fn file_encryption_key_aesv3(
   o : String,
   oe : String,
   u : String,
-  digest? : Array[Int],
+  digest? : Array[Int32],
 ) -> Array[Byte] raise {
   let prims = @pdfcryptprimitives.PdfCryptPrimitives::new()
   if o.length() < 48 || u.length() < 48 {
@@ -204,7 +204,7 @@ fn authenticate_user_password_aesv3(
 }
 
 ///|
-fn p_of_perms(key : Array[Byte], perms : String) -> Int? raise {
+fn p_of_perms(key : Array[Byte], perms : String) -> Int32? raise {
   let prims = @pdfcryptprimitives.PdfCryptPrimitives::new()
   if perms.length() < 16 {
     raise @pdf.PdfError::Msg("Wrong length in /Perms")
@@ -231,12 +231,12 @@ fn p_of_perms(key : Array[Byte], perms : String) -> Int? raise {
 fn perms_of_p(
   iso : Bool,
   encrypt_metadata : Bool,
-  p : Int,
+  p : Int32,
   utf8pw : String,
   o : String,
   oe : String,
   u : String,
-  digest : Array[Int],
+  digest : Array[Int32],
 ) -> Array[Byte] raise {
   let prims = @pdfcryptprimitives.PdfCryptPrimitives::new()
   let extendedp = UInt64::lor(
@@ -246,7 +246,7 @@ fn perms_of_p(
   let b = Array::make(16, 0)
   for n in 0..<8 {
     let v = (extendedp >> (n * 8)).to_int()
-    b[n] = Int::land(v, 0xff)
+    b[n] = Int32::land(v, 0xff)
   }
   b[8] = if encrypt_metadata { 'T' } else { 'F' }
   b[9] = 'a'
@@ -295,7 +295,7 @@ fn make_oe(
   owner_validation_salt : String,
   owner_key_salt : String,
   u : String,
-) -> (String, String, Array[Int]) raise {
+) -> (String, String, Array[Int32]) raise {
   let prims = @pdfcryptprimitives.PdfCryptPrimitives::new()
   let hash = fn(s : String) -> String raise {
     if iso {

@@ -5,7 +5,7 @@ pub(all) enum Calculator {
   IfElse(Array[Calculator], Array[Calculator])
   Bool(Bool)
   Float(Double)
-  Int(Int)
+  Int(Int32)
   Abs
   Add
   Atan
@@ -49,12 +49,12 @@ pub(all) enum Calculator {
 ///|
 /// Sampled functions.
 pub(all) struct Sampled {
-  size : Array[Int]
-  order : Int
+  size : Array[Int32]
+  order : Int32
   encode : Array[Double]
   decode : Array[Double]
-  bps : Int
-  samples : Array[Int]
+  bps : Int32
+  samples : Array[Int32]
 } derive(Debug)
 
 ///|

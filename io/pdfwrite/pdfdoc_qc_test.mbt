@@ -3,12 +3,12 @@
 // reader robustness on corrupted files.
 
 ///|
-fn rnd(rs : @quickcheck.RandomState, n : Int) -> Int {
+fn rnd(rs : @quickcheck.RandomState, n : Int32) -> Int32 {
   rs.next_uint(limit=n.reinterpret_as_uint()).reinterpret_as_int()
 }
 
 ///|
-fn gen_bytestring(n : Int, rs : @quickcheck.RandomState) -> String {
+fn gen_bytestring(n : Int32, rs : @quickcheck.RandomState) -> String {
   let special = "()\\\r\n\t /#%<>[]\u{0}\u{ff}"
   let sb = StringBuilder()
   for _ in 0..<rnd(rs, n + 1) {
@@ -25,8 +25,8 @@ fn gen_bytestring(n : Int, rs : @quickcheck.RandomState) -> String {
 ///|
 /// Random direct object; `nobjs` bounds the object numbers references use.
 fn gen_value(
-  size : Int,
-  nobjs : Int,
+  size : Int32,
+  nobjs : Int32,
   rs : @quickcheck.RandomState,
 ) -> @pdf.PdfObject {
   let k = if size <= 0 { rnd(rs, 7) } else { rnd(rs, 9) }
@@ -455,7 +455,7 @@ test "regression: writing with object streams or encryption keeps the input inta
 ///|
 priv struct Corrupt {
   mode : Mode
-  edits : Array[(Int, Int, String)] // (kind, position seed, fragment)
+  edits : Array[(Int32, Int32, String)] // (kind, position seed, fragment)
 } derive(Debug)
 
 ///|
@@ -523,7 +523,7 @@ let corrupt_seed_doc : @pdf.Pdf = base_pdf([
 ///|
 fn apply_edits(
   bytes : Array[Byte],
-  edits : Array[(Int, Int, String)],
+  edits : Array[(Int32, Int32, String)],
 ) -> Array[Byte] {
   let out = bytes.copy()
   for e in edits {
@@ -554,7 +554,7 @@ fn apply_edits(
 }
 
 ///|
-fn read_everything(bytes : Array[Byte], lazy_read : Bool) -> Int {
+fn read_everything(bytes : Array[Byte], lazy_read : Bool) -> Int32 {
   let input = @pdfio.Input::of_bytes(bytes, source="corrupt")
   let reader = @pdfread.PdfRead::new(logger=_ => ())
   let pdf = try {

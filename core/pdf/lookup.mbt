@@ -1,6 +1,6 @@
 ///|
 /// Lookup an object in a document, parsing it if required.
-pub fn Pdf::lookup_obj(self : Pdf, objnum : Int) -> PdfObject {
+pub fn Pdf::lookup_obj(self : Pdf, objnum : Int32) -> PdfObject {
   match self.objects.objects.get(objnum) {
     None => Null
     Some((obj_ref, _gen)) =>
@@ -26,10 +26,10 @@ pub fn Pdf::lookup_obj(self : Pdf, objnum : Int) -> PdfObject {
 ///|
 fn Pdf::parse_delayed_object_stream(
   self : Pdf,
-  themap : Map[Int, Array[Int]],
-  objnum : Int,
-  streamobjnum : Int,
-  parser : (Int, Array[Int]) -> Array[(Int, (Ref[ObjectData], Int))],
+  themap : Map[Int32, Array[Int32]],
+  objnum : Int32,
+  streamobjnum : Int32,
+  parser : (Int32, Array[Int32]) -> Array[(Int32, (Ref[ObjectData], Int32))],
 ) -> PdfObject {
   let indexes = match themap.get(objnum) {
     Some(value) => value
@@ -95,7 +95,7 @@ pub fn Pdf::lookup_direct(
 
 ///|
 /// Parse array index keys of the form "/[<digits>]".
-fn array_index_from_key(key : String) -> Int? {
+fn array_index_from_key(key : String) -> Int32? {
   if !key.has_prefix("/[") {
     return None
   }
@@ -228,7 +228,11 @@ pub fn Pdf::replace_chain(
 
 ///|
 /// Return the object number of an indirect dictionary object, if it is indirect.
-pub fn Pdf::indirect_number(self : Pdf, key : String, dict : PdfObject) -> Int? {
+pub fn Pdf::indirect_number(
+  self : Pdf,
+  key : String,
+  dict : PdfObject,
+) -> Int32? {
   match self.direct(dict) {
     Dictionary(entries) =>
       match entries.search_by(pair => pair.0 == key) {

@@ -15,12 +15,12 @@ A single bookmark entry in the document outline.
 ```moonbit nocheck
 ///|
 pub(all) struct Bookmark {
-  level : Int
+  level : Int32
   text : String
   target : @pdfdest.Destination
   isopen : Bool
   colour : (Double, Double, Double)
-  flags : Int
+  flags : Int32
 }
 ```
 

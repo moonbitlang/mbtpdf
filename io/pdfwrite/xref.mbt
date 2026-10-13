@@ -1,5 +1,5 @@
 ///|
-fn pad_int(value : Int, width : Int) -> String {
+fn pad_int(value : Int32, width : Int32) -> String {
   let s = value.to_string()
   if s.length() >= width {
     s
@@ -19,7 +19,7 @@ fn write_header(pdf : @pdf.Pdf, output : @pdfio.Output) -> Unit {
 }
 
 ///|
-fn bytes_required(value : Int) -> Int {
+fn bytes_required(value : Int32) -> Int32 {
   if value <= 0 {
     return 1
   }
@@ -33,7 +33,7 @@ fn bytes_required(value : Int) -> Int {
 }
 
 ///|
-fn write_int_be(output : @pdfio.Output, value : Int, width : Int) -> Unit {
+fn write_int_be(output : @pdfio.Output, value : Int32, width : Int32) -> Unit {
   for pos in (width - 1)>=..0 {
     let shift = pos * 8
     let byte = (value >> shift) & 0xff
@@ -44,11 +44,11 @@ fn write_int_be(output : @pdfio.Output, value : Int, width : Int) -> Unit {
 ///|
 fn build_xref_stream(
   pdf : @pdf.Pdf,
-  size : Int,
-  offsets : Array[Int],
-  gens : Array[Int],
+  size : Int32,
+  offsets : Array[Int32],
+  gens : Array[Int32],
   used : Array[Bool],
-  object_stream_entries : Map[Int, (Int, Int)],
+  object_stream_entries : Map[Int32, (Int32, Int32)],
 ) -> @pdf.PdfObject raise {
   let mut max_type = 1
   let mut max_field2 = 0
@@ -164,7 +164,7 @@ fn private_copy(pdf : @pdf.Pdf, copy_objects : Bool) -> @pdf.Pdf {
     }
     objects.set(objnum, (cell, gen))
   }
-  let object_stream_ids : Map[Int, Int] = Map(
+  let object_stream_ids : Map[Int32, Int32] = Map(
     [],
     capacity=pdf.objects.object_stream_ids.length(),
   )
@@ -191,9 +191,9 @@ fn private_copy(pdf : @pdf.Pdf, copy_objects : Bool) -> @pdf.Pdf {
 /// `/Length` normalized to the actual byte count.
 pub fn PdfWrite::pdf_to_output(
   self : PdfWrite,
-  preserve_objstm? : Bool = false,
-  generate_objstm? : Bool = false,
-  compress_objstm? : Bool = false,
+  preserve_objstm~ : Bool = false,
+  generate_objstm~ : Bool = false,
+  compress_objstm~ : Bool = false,
   recrypt? : String,
   encryption : Encryption?,
   build_new_id : Bool,
@@ -249,7 +249,7 @@ pub fn PdfWrite::pdf_to_output_with_options(
   if encrypting {
     pdf.objects.object_stream_ids.remove(pdf.root)
   }
-  let mut object_stream_entries : Map[Int, (Int, Int)] = Map([])
+  let mut object_stream_entries : Map[Int32, (Int32, Int32)] = Map([])
   if preserve_objstm || generate_objstm {
     if generate_objstm {
       generate_object_stream_hints(pdf, preserve_objstm, encrypting)

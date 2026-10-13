@@ -3,7 +3,7 @@
 // and string escaping, number formatting and lexer robustness.
 
 ///|
-fn rand_int(rs : @quickcheck.RandomState, n : Int) -> Int {
+fn rand_int(rs : @quickcheck.RandomState, n : Int32) -> Int32 {
   rs.next_uint(limit=n.reinterpret_as_uint()).reinterpret_as_int()
 }
 
@@ -11,7 +11,7 @@ fn rand_int(rs : @quickcheck.RandomState, n : Int) -> Int {
 /// A byte string stored the way the library stores PDF strings/names: one
 /// UTF-16 code unit per byte (0..=255). Biased towards the bytes that need
 /// escaping.
-fn gen_byte_string(size : Int, rs : @quickcheck.RandomState) -> String {
+fn gen_byte_string(size : Int32, rs : @quickcheck.RandomState) -> String {
   let special = "()\\\r\n\t\u{8}\u{c} /#%<>[]{}\u{0}\u{7f}\u{80}\u{ff}"
   let n = rand_int(rs, size + 1)
   let sb = StringBuilder()
@@ -50,7 +50,7 @@ fn gen_real(rs : @quickcheck.RandomState) -> Double {
 }
 
 ///|
-fn gen_obj(size : Int, rs : @quickcheck.RandomState) -> @pdf.PdfObject {
+fn gen_obj(size : Int32, rs : @quickcheck.RandomState) -> @pdf.PdfObject {
   let atoms = 8
   let k = if size <= 0 { rand_int(rs, atoms) } else { rand_int(rs, atoms + 3) }
   match k {
@@ -121,7 +121,7 @@ fn obj_eq(a : @pdf.PdfObject, b : @pdf.PdfObject) -> Bool {
 }
 
 ///|
-fn depth(o : @pdf.PdfObject) -> Int {
+fn depth(o : @pdf.PdfObject) -> Int32 {
   match o {
     PdfArray(xs) =>
       1 + xs.fold(init=0, (m, x) => if depth(x) > m { depth(x) } else { m })
@@ -371,7 +371,7 @@ test "prop: literal strings accept every escape form" {
   // allowed, \ddd with 1-3 octal digits, or a named escape) and check the
   // lexer recovers the bytes; line continuations are inserted between bytes.
   @quickcheck.check(
-    (input : (Bytes, Array[UInt])) => {
+    (input : (Bytes, Array[UInt32])) => {
       let (bytes, choices) = input
       let sb = StringBuilder()
       sb.write_char('(')

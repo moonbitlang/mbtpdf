@@ -1,7 +1,7 @@
 ///|
 fn encode_runlength(stream : Array[Byte]) -> Array[Byte] {
   let size = @pdfio.bytes_size(stream)
-  let output : Array[Int] = Array(capacity=size + size / 128 + 2)
+  let output : Array[Int32] = Array(capacity=size + size / 128 + 2)
   let mut literal : Array[Byte] = Array(capacity=128)
   fn flush_literal() -> Unit {
     if literal.length() == 0 {

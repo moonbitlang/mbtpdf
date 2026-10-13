@@ -617,7 +617,7 @@ test "components handles indexed shorthand and errors" {
       Name(PdfName(b"/DeviceRGB")),
     ])
     assert_eq(@pdfops.Op::components(pdf, resources, indexed), 1)
-    let bad_first : Result[Int, Error] = try
+    let bad_first : Result[Int32, Error] = try
       @pdfops.Op::components(
         pdf,
         resources,

@@ -6,7 +6,7 @@ fn PdfText::find_indirect(
   self : PdfText,
   key : String,
   dict : @pdf.PdfObject,
-) -> Int? {
+) -> Int32? {
   let dict_obj = self.pdf.direct(dict)
   match dict_obj.lookup_immediate(key) {
     Some(Indirect(i)) => Some(i)
@@ -160,7 +160,7 @@ pub fn PdfText::read_fontdescriptor(
 }
 
 ///|
-fn repeat_double(value : Double, count : Int) -> Array[Double] {
+fn repeat_double(value : Double, count : Int32) -> Array[Double] {
   let out = Array(capacity=if count > 0 { count } else { 0 })
   for _ in 0..<count {
     out.push(value)
@@ -177,7 +177,7 @@ pub fn PdfText::read_metrics(
     key : String,
     missing_msg : String,
     bad_msg : String,
-  ) -> Int raise {
+  ) -> Int32 raise {
     match self.pdf.lookup_direct(key, font) {
       Some(Integer(i)) =>
         if i <= 255 && i >= 0 {
@@ -501,7 +501,7 @@ pub fn PdfText::read_cid_system_info(
 pub fn PdfTextUtil::read_cid_widths(
   _self : PdfTextUtil,
   elts : Array[@pdf.PdfObject],
-) -> Array[(Int, Double)] raise {
+) -> Array[(Int32, Double)] raise {
   let out = Array(capacity=elts.length())
   let mut i = 0
   while i < elts.length() {
@@ -618,7 +618,7 @@ pub fn PdfText::add_tounicode(
   font : @pdffont.Font,
   fontdict : @pdf.PdfObject,
 ) -> @pdffont.Font {
-  fn code_int_of_string(code : String) -> Int {
+  fn code_int_of_string(code : String) -> Int32 {
     let bytes = @pdfio.bytes_of_string(code)
     let mut value = 0
     for b in bytes {
@@ -743,7 +743,7 @@ pub fn PdfText::add_tounicode(
 pub fn PdfTextUtil::find_tounicode(
   _self : PdfTextUtil,
   font : @pdffont.Font,
-) -> Map[Int, String]? {
+) -> Map[Int32, String]? {
   match font {
     SimpleFont(simple) =>
       match simple.fontdescriptor {

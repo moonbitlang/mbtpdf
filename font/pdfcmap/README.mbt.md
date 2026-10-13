@@ -16,7 +16,7 @@ Parsed CMap data.
 ///|
 pub struct CMap {
   map : Array[(String, String)]
-  wmode : Int?
+  wmode : Int32?
 }
 ```
 

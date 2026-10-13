@@ -115,7 +115,7 @@ let fixture_aes256 : String = [
 
 ///|
 fn hex_fixture(hex : String) -> Array[Byte] {
-  let digit = (c : Int) => {
+  let digit = (c : Int32) => {
     if c <= '9'.to_int() {
       c - '0'.to_int()
     } else {

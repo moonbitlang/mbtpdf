@@ -11,7 +11,7 @@ pub(all) enum PdfObject {
   /// PDF boolean (`true` or `false`).
   Boolean(Bool)
   /// PDF integer number.
-  Integer(Int)
+  Integer(Int32)
   /// PDF real number.
   Real(Double)
   /// PDF string object (either literal `(...)` or hexadecimal `<...>`).
@@ -40,7 +40,7 @@ pub(all) enum PdfObject {
   /// mutable reference so code can "materialize" deferred bytes in-place.
   Stream(Ref[(PdfObject, Stream)])
   /// PDF indirect reference (`n 0 R`) to an object number.
-  Indirect(Int)
+  Indirect(Int32)
 } derive(Debug)
 
 ///|
@@ -53,7 +53,7 @@ pub trait ToPdfNumber {
 }
 
 ///|
-pub impl ToPdfNumber for Int with fn to_pdf_number(self : Int) -> PdfObject {
+pub impl ToPdfNumber for Int32 with fn to_pdf_number(self : Int32) -> PdfObject {
   Integer(self)
 }
 
@@ -213,7 +213,7 @@ pub fn PdfObject::lookup_immediate_all(
 
 ///|
 /// Find the indirect reference given by the value associated with a key.
-pub fn PdfObject::find_indirect(self : PdfObject, key : String) -> Int? raise {
+pub fn PdfObject::find_indirect(self : PdfObject, key : String) -> Int32? raise {
   match self {
     Dictionary(_) =>
       match self.lookup_immediate(key) {

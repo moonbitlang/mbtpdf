@@ -3,7 +3,7 @@
 /// Generated from Python shift_jis decoder.
 
 ///|
-let shift_jis_pairs : Array[(Int, Int)] = [
+let shift_jis_pairs : Array[(Int32, Int32)] = [
   (0x8140, 0x3000),
   (0x8141, 0x3001),
   (0x8142, 0x3002),
@@ -6886,13 +6886,13 @@ let shift_jis_pairs : Array[(Int, Int)] = [
 ]
 
 ///|
-let shift_jis_map : Map[Int, Int] = Map::from_array(shift_jis_pairs)
+let shift_jis_map : Map[Int32, Int32] = Map::from_array(shift_jis_pairs)
 
 ///|
 pub fn PdfTextUtil::codepoints_of_shift_jis(
   _self : PdfTextUtil,
-  bytes : Array[Int],
-) -> Array[Int] {
+  bytes : Array[Int32],
+) -> Array[Int32] {
   let out = []
   let mut i = 0
   while i < bytes.length() {

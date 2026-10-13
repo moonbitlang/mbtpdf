@@ -4,7 +4,7 @@ pub fn Page::prepend_operators(
   self : Page,
   pdf : @pdf.Pdf,
   ops : Array[@pdfops.Op],
-  fast? : Bool = false,
+  fast~ : Bool = false,
 ) -> Page raise {
   if fast {
     {
@@ -56,7 +56,7 @@ pub fn Page::postpend_operators(
   self : Page,
   pdf : @pdf.Pdf,
   ops : Array[@pdfops.Op],
-  fast? : Bool = false,
+  fast~ : Bool = false,
 ) -> Page raise {
   if fast {
     let wrapped : Array[@pdfops.Op] = []

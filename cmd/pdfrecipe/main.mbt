@@ -145,7 +145,7 @@ fn set_catalog_entry(
 }
 
 ///|
-fn add_swaps_layer(pdf : @pdf.Pdf) -> Int raise {
+fn add_swaps_layer(pdf : @pdf.Pdf) -> Int32 raise {
   let swaps : PdfObject = Dictionary([
     ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("SWAPS")),
@@ -169,7 +169,7 @@ fn add_swaps_layer(pdf : @pdf.Pdf) -> Int raise {
 ///|
 fn add_layer_properties_to_pages(
   pdf : @pdf.Pdf,
-  swaps_num : Int,
+  swaps_num : Int32,
 ) -> @pdf.Pdf raise {
   let pages = @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree()
   for i in 0..<pages.length() {
@@ -188,7 +188,7 @@ fn add_layer_properties_to_pages(
 }
 
 ///|
-fn goto_action(refnum : Int) -> PdfObject {
+fn goto_action(refnum : Int32) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
   Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
@@ -218,7 +218,7 @@ fn add_link(
 }
 
 ///|
-fn add_bookmarks(pdf : @pdf.Pdf, refs : Array[Int]) -> @pdf.Pdf raise {
+fn add_bookmarks(pdf : @pdf.Pdf, refs : Array[Int32]) -> @pdf.Pdf raise {
   let titles : Array[String] = [
     "Cover", "Mug Cake (front)", "Mug Cake (back)", "Fruit Parfait (front)", "Fruit Parfait (back)",
     "Energy Bites (front)", "Energy Bites (back)", "The End",
@@ -933,8 +933,8 @@ fn end_ops() -> Array[Op] {
 /// - Bookmarks for quick navigation
 /// - Optional `SWAPS` layer (default hidden) with substitutions
 pub async fn run(
-  out_file? : String = "recipes.pdf",
-  quiet? : Bool = false,
+  out_file~ : String = "recipes.pdf",
+  quiet~ : Bool = false,
 ) -> Unit {
   try {
     let (cover, cover_rects) = cover_ops()
@@ -992,8 +992,8 @@ pub async fn run(
       home : (Double, Double, Double, Double),
       flip : (Double, Double, Double, Double),
       video : (Double, Double, Double, Double),
-      home_ref : Int,
-      flip_ref : Int,
+      home_ref : Int32,
+      flip_ref : Int32,
       uri : PdfObject,
     ) -> @pdfpage.Page raise {
       let mut p = page

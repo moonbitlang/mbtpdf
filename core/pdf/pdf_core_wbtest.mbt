@@ -25,7 +25,7 @@ fn make_stream(dict : PdfObject, data : Array[Byte]) -> PdfObject {
 }
 
 ///|
-fn assert_integer(obj : PdfObject, expected : Int) -> Unit raise {
+fn assert_integer(obj : PdfObject, expected : Int32) -> Unit raise {
   match obj {
     Integer(value) => assert_eq(value, expected)
     _ => fail("expected integer")
@@ -33,7 +33,7 @@ fn assert_integer(obj : PdfObject, expected : Int) -> Unit raise {
 }
 
 ///|
-fn assert_some_integer(obj : PdfObject?, expected : Int) -> Unit raise {
+fn assert_some_integer(obj : PdfObject?, expected : Int32) -> Unit raise {
   match obj {
     Some(Integer(value)) => assert_eq(value, expected)
     Some(_) => fail("expected integer")
@@ -248,7 +248,7 @@ test "lookup and chains" {
     Null => ()
     _ => fail("expected null")
   }
-  let map_none : Map[Int, Array[Int]] = Map([])
+  let map_none : Map[Int32, Array[Int32]] = Map([])
   let ref_none = Ref(
     ObjectData::ToParseFromObjectStream(map_none, 5, 0, (_stream, _idx) => []),
   )
@@ -257,7 +257,7 @@ test "lookup and chains" {
     Null => ()
     _ => fail("expected null")
   }
-  let map_missing : Map[Int, Array[Int]] = Map([])
+  let map_missing : Map[Int32, Array[Int32]] = Map([])
   map_missing.set(12, [0])
   let ref_missing = Ref(
     ObjectData::ToParseFromObjectStream(map_missing, 6, 0, (_stream, _idx) => {
@@ -269,7 +269,7 @@ test "lookup and chains" {
     Null => ()
     _ => fail("expected null")
   }
-  let map_found : Map[Int, Array[Int]] = Map([])
+  let map_found : Map[Int32, Array[Int32]] = Map([])
   map_found.set(14, [0])
   let ref_found = Ref(
     ObjectData::ToParseFromObjectStream(map_found, 7, 0, (_stream, _idx) => {

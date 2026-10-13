@@ -1,5 +1,5 @@
 ///|
-fn freshname(source : () -> Int) -> String {
+fn freshname(source : () -> Int32) -> String {
   "/r" + source().to_string()
 }
 
@@ -12,13 +12,13 @@ let resource_keys : Array[String] = [
 fn make_changes(
   pdf : @pdf.Pdf,
   pages : Array[Page],
-) -> Map[(String, Int, String), String] {
+) -> Map[(String, Int32, String), String] {
   let src = source(0)
   fn entries_of_page(
     entry : String,
-    pageseq : Int,
+    pageseq : Int32,
     page : Page,
-  ) -> Array[(String, Int, String, String)] {
+  ) -> Array[(String, Int32, String, String)] {
     let entries = match pdf.lookup_direct(entry, page.resources) {
       Some(Dictionary(es)) => es
       _ => []
@@ -27,13 +27,13 @@ fn make_changes(
   }
 
   let pagenums = Array::makei(pages.length(), i => i + 1)
-  let entries : Array[(String, Int, String, String)] = []
+  let entries : Array[(String, Int32, String, String)] = []
   for name in resource_keys {
     for i, page in pages {
       entries.append(entries_of_page(name, pagenums[i], page)[:])
     }
   }
-  let table : Map[(String, Int, String), String] = Map(
+  let table : Map[(String, Int32, String), String] = Map(
     [],
     capacity=entries.length(),
   )
@@ -47,9 +47,9 @@ fn make_changes(
 ///|
 fn change_operator(
   pdf : @pdf.Pdf,
-  lookup : (String, Int, String) -> String raise,
-  lookup_option : (String, Int, String) -> String?,
-  seqnum : Int,
+  lookup : (String, Int32, String) -> String raise,
+  lookup_option : (String, Int32, String) -> String?,
+  seqnum : Int32,
   op : @pdfops.Op,
 ) -> @pdfops.Op raise {
   match op {
@@ -130,11 +130,15 @@ pub fn PdfPageDoc::renumber_pages(
     return []
   }
   let changes = make_changes(pdf, pages)
-  fn lookup_option(dictname : String, page : Int, oldkey : String) -> String? {
+  fn lookup_option(
+    dictname : String,
+    page : Int32,
+    oldkey : String,
+  ) -> String? {
     changes.get((dictname, page, oldkey))
   }
 
-  fn lookup(dictname : String, page : Int, oldkey : String) -> String raise {
+  fn lookup(dictname : String, page : Int32, oldkey : String) -> String raise {
     match changes.get((dictname, page, oldkey)) {
       Some(value) => value
       None => raise @pdf.PdfError::Msg("Pdfpage.renumber_pages: Bad key")
@@ -142,7 +146,7 @@ pub fn PdfPageDoc::renumber_pages(
   }
 
   fn change_content(
-    seqnum : Int,
+    seqnum : Int32,
     resources : @pdf.PdfObject,
     content : Array[@pdf.PdfObject],
   ) -> Array[@pdf.PdfObject] raise {
@@ -154,7 +158,7 @@ pub fn PdfPageDoc::renumber_pages(
   }
 
   fn change_resources(
-    seqnum : Int,
+    seqnum : Int32,
     resources : @pdf.PdfObject,
   ) -> @pdf.PdfObject raise {
     fn newdict(name : String) -> @pdf.PdfObject raise {

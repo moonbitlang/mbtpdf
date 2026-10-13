@@ -17,11 +17,11 @@ fn contains_perm(perms : Array[Permission], perm : Permission) -> Bool {
 }
 
 ///|
-fn p_of_banlist(toban : Array[Permission]) -> Int {
+fn p_of_banlist(toban : Array[Permission]) -> Int32 {
   let mut p = 0
-  let setbit = fn(n : Int, allow : Bool) -> Unit {
+  let setbit = fn(n : Int32, allow : Bool) -> Unit {
     if allow {
-      p = Int::lor(p, 1 << (n - 1))
+      p = Int32::lor(p, 1 << (n - 1))
     }
   }
   let notin = fn(perm : Permission) -> Bool { !contains_perm(toban, perm) }
@@ -45,10 +45,10 @@ fn p_of_banlist(toban : Array[Permission]) -> Int {
 
 ///|
 /// Parse a /P value, giving the permissions.
-pub fn PdfCrypt::banlist_of_p(_self : PdfCrypt, p : Int) -> Array[Permission] {
+pub fn PdfCrypt::banlist_of_p(_self : PdfCrypt, p : Int32) -> Array[Permission] {
   // Maximum of 8 permission flags.
   let out = Array(capacity=8)
-  let bitset = fn(n : Int) -> Bool { Int::land(p >> (n - 1), 1) == 0 }
+  let bitset = fn(n : Int32) -> Bool { Int32::land(p >> (n - 1), 1) == 0 }
   if bitset(3) {
     out.push(Permission::NoPrint)
   }

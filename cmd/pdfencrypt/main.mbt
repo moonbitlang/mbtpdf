@@ -4,7 +4,7 @@ async fn main {
 }
 
 ///|
-pub async fn run(args : Array[String], quiet? : Bool = false) -> Unit {
+pub async fn run(args : Array[String], quiet~ : Bool = false) -> Unit {
   if args.length() != 4 {
     if !quiet {
       println("Syntax: pdfencrypt <input> <output> <owner-password>")

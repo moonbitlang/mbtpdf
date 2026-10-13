@@ -278,25 +278,25 @@ test "cid helpers error on malformed inputs" {
   }
   assert_true(sysinfo is Err(_))
   let util = @pdftext.PdfTextUtil::new()
-  let bad1 : Result[Array[(Int, Double)], Error] = try
+  let bad1 : Result[Array[(Int32, Double)], Error] = try
     util.read_cid_widths([Integer(0), Integer(10)]) |> Ok
   catch {
     e => Err(e)
   }
   assert_true(bad1 is Err(_))
-  let bad2 : Result[Array[(Int, Double)], Error] = try
+  let bad2 : Result[Array[(Int32, Double)], Error] = try
     util.read_cid_widths([Integer(0), Integer(1), Name(PdfName(b"/Bad"))]) |> Ok
   catch {
     e => Err(e)
   }
   assert_true(bad2 is Err(_))
-  let bad3 : Result[Array[(Int, Double)], Error] = try
+  let bad3 : Result[Array[(Int32, Double)], Error] = try
     util.read_cid_widths([Integer(0), Name(PdfName(b"/Bad"))]) |> Ok
   catch {
     e => Err(e)
   }
   assert_true(bad3 is Err(_))
-  let bad4 : Result[Array[(Int, Double)], Error] = try
+  let bad4 : Result[Array[(Int32, Double)], Error] = try
     util.read_cid_widths([Name(PdfName(b"/Bad"))]) |> Ok
   catch {
     e => Err(e)
@@ -460,7 +460,7 @@ test "read_cid_system_info and widths reject malformed input" {
   }
   assert_true(info_res is Err(_))
   let missing_tail_arr : Array[@pdf.PdfObject] = [Integer(1)]
-  let missing_tail : Result[Array[(Int, Double)], Error] = try
+  let missing_tail : Result[Array[(Int32, Double)], Error] = try
     @pdftext.PdfTextUtil::new().read_cid_widths(missing_tail_arr) |> Ok
   catch {
     e => Err(e)
@@ -470,7 +470,7 @@ test "read_cid_system_info and widths reject malformed input" {
     Integer(1),
     PdfArray([Name(PdfName(b"/Bad"))]),
   ]
-  let bad_width : Result[Array[(Int, Double)], Error] = try
+  let bad_width : Result[Array[(Int32, Double)], Error] = try
     @pdftext.PdfTextUtil::new().read_cid_widths(bad_width_arr) |> Ok
   catch {
     e => Err(e)
@@ -481,14 +481,14 @@ test "read_cid_system_info and widths reject malformed input" {
     Integer(3),
     Integer(100),
   ]
-  let bad_range : Result[Array[(Int, Double)], Error] = try
+  let bad_range : Result[Array[(Int32, Double)], Error] = try
     @pdftext.PdfTextUtil::new().read_cid_widths(bad_range_arr) |> Ok
   catch {
     e => Err(e)
   }
   assert_true(bad_range is Err(_))
   let bad_head_arr : Array[@pdf.PdfObject] = [Name(PdfName(b"/Bad"))]
-  let bad_head : Result[Array[(Int, Double)], Error] = try
+  let bad_head : Result[Array[(Int32, Double)], Error] = try
     @pdftext.PdfTextUtil::new().read_cid_widths(bad_head_arr) |> Ok
   catch {
     e => Err(e)

@@ -1,5 +1,5 @@
 ///|
-let sha256_k : Array[UInt] = [
+let sha256_k : Array[UInt32] = [
   0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4,
   0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe,
   0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f,
@@ -37,34 +37,34 @@ let sha512_k : Array[UInt64] = [
 ]
 
 ///|
-let u32_mask : UInt = 0xffff_ffff
+let u32_mask : UInt32 = 0xffff_ffff
 
 ///|
-fn u32(x : UInt) -> UInt {
-  UInt::land(x, u32_mask)
+fn u32(x : UInt32) -> UInt32 {
+  UInt32::land(x, u32_mask)
 }
 
 ///|
-fn rotr32(x : UInt, n : Int) -> UInt {
-  u32(UInt::lor(x >> n, x << (32 - n)))
+fn rotr32(x : UInt32, n : Int32) -> UInt32 {
+  u32(UInt32::lor(x >> n, x << (32 - n)))
 }
 
 ///|
-fn rotr64(x : UInt64, n : Int) -> UInt64 {
+fn rotr64(x : UInt64, n : Int32) -> UInt64 {
   UInt64::lor(x >> n, x << (64 - n))
 }
 
 ///|
-fn be_u32(bytes : Array[Byte], offset : Int) -> UInt {
+fn be_u32(bytes : Array[Byte], offset : Int32) -> UInt32 {
   let b0 = @pdfio.bget(bytes, offset).reinterpret_as_uint()
   let b1 = @pdfio.bget(bytes, offset + 1).reinterpret_as_uint()
   let b2 = @pdfio.bget(bytes, offset + 2).reinterpret_as_uint()
   let b3 = @pdfio.bget(bytes, offset + 3).reinterpret_as_uint()
-  UInt::lor(UInt::lor(b0 << 24, b1 << 16), UInt::lor(b2 << 8, b3))
+  UInt32::lor(UInt32::lor(b0 << 24, b1 << 16), UInt32::lor(b2 << 8, b3))
 }
 
 ///|
-fn be_u64(bytes : Array[Byte], offset : Int) -> UInt64 {
+fn be_u64(bytes : Array[Byte], offset : Int32) -> UInt64 {
   let mut out : UInt64 = 0
   let mut i = 0
   while i < 8 {
@@ -92,7 +92,7 @@ fn sha256_pad(data : Array[Byte]) -> Array[Byte] {
   while j < 8 {
     let shift = (7 - j) * 8
     let v = (bit_len >> shift).to_int()
-    @pdfio.bset(out, total - 8 + j, Int::land(v, 0xff))
+    @pdfio.bset(out, total - 8 + j, Int32::land(v, 0xff))
     j = j + 1
   }
   out
@@ -115,7 +115,7 @@ fn sha512_pad(data : Array[Byte]) -> Array[Byte] {
   while j < 16 {
     let shift = (15 - j) * 8
     let value = if j < 8 { 0 } else { (bit_len >> shift).to_int() }
-    @pdfio.bset(out, total - 16 + j, Int::land(value, 0xff))
+    @pdfio.bset(out, total - 16 + j, Int32::land(value, 0xff))
     j = j + 1
   }
   out
@@ -124,17 +124,17 @@ fn sha512_pad(data : Array[Byte]) -> Array[Byte] {
 ///|
 fn sha256_bytes(data : Array[Byte]) -> Array[Byte] {
   let padded = sha256_pad(data)
-  let mut h0 : UInt = 0x6a09e667
-  let mut h1 : UInt = 0xbb67ae85
-  let mut h2 : UInt = 0x3c6ef372
-  let mut h3 : UInt = 0xa54ff53a
-  let mut h4 : UInt = 0x510e527f
-  let mut h5 : UInt = 0x9b05688c
-  let mut h6 : UInt = 0x1f83d9ab
-  let mut h7 : UInt = 0x5be0cd19
+  let mut h0 : UInt32 = 0x6a09e667
+  let mut h1 : UInt32 = 0xbb67ae85
+  let mut h2 : UInt32 = 0x3c6ef372
+  let mut h3 : UInt32 = 0xa54ff53a
+  let mut h4 : UInt32 = 0x510e527f
+  let mut h5 : UInt32 = 0x9b05688c
+  let mut h6 : UInt32 = 0x1f83d9ab
+  let mut h7 : UInt32 = 0x5be0cd19
   let mut offset = 0
   while offset < @pdfio.bytes_size(padded) {
-    let w : Array[UInt] = Array::make(64, 0)
+    let w : Array[UInt32] = Array::make(64, 0)
     let mut i = 0
     while i < 16 {
       w[i] = be_u32(padded, offset + i * 4)
@@ -142,18 +142,20 @@ fn sha256_bytes(data : Array[Byte]) -> Array[Byte] {
     }
     while i < 64 {
       let s0 = u32(
-        UInt::lxor(
-          UInt::lxor(rotr32(w[i - 15], 7), rotr32(w[i - 15], 18)),
+        UInt32::lxor(
+          UInt32::lxor(rotr32(w[i - 15], 7), rotr32(w[i - 15], 18)),
           w[i - 15] >> 3,
         ),
       )
       let s1 = u32(
-        UInt::lxor(
-          UInt::lxor(rotr32(w[i - 2], 17), rotr32(w[i - 2], 19)),
+        UInt32::lxor(
+          UInt32::lxor(rotr32(w[i - 2], 17), rotr32(w[i - 2], 19)),
           w[i - 2] >> 10,
         ),
       )
-      w[i] = u32(UInt::add(UInt::add(UInt::add(w[i - 16], s0), w[i - 7]), s1))
+      w[i] = u32(
+        UInt32::add(UInt32::add(UInt32::add(w[i - 16], s0), w[i - 7]), s1),
+      )
       i = i + 1
     }
     let mut a = h0
@@ -167,40 +169,45 @@ fn sha256_bytes(data : Array[Byte]) -> Array[Byte] {
     let mut t = 0
     while t < 64 {
       let s1 = u32(
-        UInt::lxor(UInt::lxor(rotr32(e, 6), rotr32(e, 11)), rotr32(e, 25)),
+        UInt32::lxor(UInt32::lxor(rotr32(e, 6), rotr32(e, 11)), rotr32(e, 25)),
       )
-      let ch = u32(UInt::lxor(UInt::land(e, f), UInt::land(UInt::lnot(e), g)))
+      let ch = u32(
+        UInt32::lxor(UInt32::land(e, f), UInt32::land(UInt32::lnot(e), g)),
+      )
       let temp1 = u32(
-        UInt::add(UInt::add(UInt::add(UInt::add(h, s1), ch), sha256_k[t]), w[t]),
-      )
-      let s0 = u32(
-        UInt::lxor(UInt::lxor(rotr32(a, 2), rotr32(a, 13)), rotr32(a, 22)),
-      )
-      let maj = u32(
-        UInt::lxor(
-          UInt::lxor(UInt::land(a, b), UInt::land(a, c)),
-          UInt::land(b, c),
+        UInt32::add(
+          UInt32::add(UInt32::add(UInt32::add(h, s1), ch), sha256_k[t]),
+          w[t],
         ),
       )
-      let temp2 = u32(UInt::add(s0, maj))
+      let s0 = u32(
+        UInt32::lxor(UInt32::lxor(rotr32(a, 2), rotr32(a, 13)), rotr32(a, 22)),
+      )
+      let maj = u32(
+        UInt32::lxor(
+          UInt32::lxor(UInt32::land(a, b), UInt32::land(a, c)),
+          UInt32::land(b, c),
+        ),
+      )
+      let temp2 = u32(UInt32::add(s0, maj))
       h = g
       g = f
       f = e
-      e = u32(UInt::add(d, temp1))
+      e = u32(UInt32::add(d, temp1))
       d = c
       c = b
       b = a
-      a = u32(UInt::add(temp1, temp2))
+      a = u32(UInt32::add(temp1, temp2))
       t = t + 1
     }
-    h0 = u32(UInt::add(h0, a))
-    h1 = u32(UInt::add(h1, b))
-    h2 = u32(UInt::add(h2, c))
-    h3 = u32(UInt::add(h3, d))
-    h4 = u32(UInt::add(h4, e))
-    h5 = u32(UInt::add(h5, f))
-    h6 = u32(UInt::add(h6, g))
-    h7 = u32(UInt::add(h7, h))
+    h0 = u32(UInt32::add(h0, a))
+    h1 = u32(UInt32::add(h1, b))
+    h2 = u32(UInt32::add(h2, c))
+    h3 = u32(UInt32::add(h3, d))
+    h4 = u32(UInt32::add(h4, e))
+    h5 = u32(UInt32::add(h5, f))
+    h6 = u32(UInt32::add(h6, g))
+    h7 = u32(UInt32::add(h7, h))
     offset = offset + 64
   }
   let out = @pdfio.mkbytes(32)
@@ -212,7 +219,7 @@ fn sha256_bytes(data : Array[Byte]) -> Array[Byte] {
     while i < 4 {
       let shift = (3 - i) * 8
       let v = (word >> shift).reinterpret_as_int()
-      @pdfio.bset(out, w * 4 + i, Int::land(v, 0xff))
+      @pdfio.bset(out, w * 4 + i, Int32::land(v, 0xff))
       i = i + 1
     }
     w = w + 1
@@ -224,7 +231,7 @@ fn sha256_bytes(data : Array[Byte]) -> Array[Byte] {
 fn sha512_bytes(
   data : Array[Byte],
   initial : Array[UInt64],
-  out_len : Int,
+  out_len : Int32,
 ) -> Array[Byte] {
   let padded = sha512_pad(data)
   let h = initial.copy()
@@ -308,7 +315,7 @@ fn sha512_bytes(
     while i < 8 && w * 8 + i < out_len {
       let shift = (7 - i) * 8
       let v = (word >> shift).to_int()
-      @pdfio.bset(out, w * 8 + i, Int::land(v, 0xff))
+      @pdfio.bset(out, w * 8 + i, Int32::land(v, 0xff))
       i = i + 1
     }
     w = w + 1

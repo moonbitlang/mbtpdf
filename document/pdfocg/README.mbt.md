@@ -56,12 +56,12 @@ pub(all) struct OcgConfig {
   ocgconfig_name : String?
   ocgconfig_creator : String?
   ocgconfig_basestate : OcgState
-  ocgconfig_on : Array[Int]?
-  ocgconfig_off : Array[Int]?
+  ocgconfig_on : Array[Int32]?
+  ocgconfig_off : Array[Int32]?
   ocgconfig_intent : Array[String]
   ocgconfig_listmode : OcgListMode
-  ocgconfig_rbgroups : Array[Array[Int]]
-  ocgconfig_locked : Array[Int]
+  ocgconfig_rbgroups : Array[Array[Int32]]
+  ocgconfig_locked : Array[Int32]
   // ...
 }
 ```
@@ -73,7 +73,7 @@ Complete OCG properties for a document.
 ```moonbit nocheck
 ///|
 pub(all) struct OcgProperties {
-  ocgs : Array[(Int, Ocg)]
+  ocgs : Array[(Int32, Ocg)]
   ocg_default_config : OcgConfig
   ocg_configs : Array[OcgConfig]
 }

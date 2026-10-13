@@ -2,7 +2,7 @@
 fn encrypt_pdf_AES_inner(
   owner : String,
   user : String,
-  p : Int,
+  p : Int32,
   user_pw : String,
   id : String,
   encrypt_metadata : Bool,

@@ -45,9 +45,9 @@ test "read rejects malformed kern lines" {
   let res : Result[
     (
       Array[(String, String)],
-      Array[(Int, Int)],
-      Array[(Int, Int, Int)],
-      Array[(String, Int)],
+      Array[(Int32, Int32)],
+      Array[(Int32, Int32, Int32)],
+      Array[(String, Int32)],
     ),
     Error,
   ] = try @pdfafm.PdfAfm::new().read(input) |> Ok catch {
@@ -98,9 +98,9 @@ test "read rejects malformed char metrics lines" {
   let res : Result[
     (
       Array[(String, String)],
-      Array[(Int, Int)],
-      Array[(Int, Int, Int)],
-      Array[(String, Int)],
+      Array[(Int32, Int32)],
+      Array[(Int32, Int32, Int32)],
+      Array[(String, Int32)],
     ),
     Error,
   ] = try @pdfafm.PdfAfm::new().read(input) |> Ok catch {

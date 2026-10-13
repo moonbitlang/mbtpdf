@@ -1,12 +1,12 @@
 ///|
 fn decode_lzw(
-  early : Int,
+  early : Int32,
   input : @pdfio.Input,
 ) -> Array[Byte] raise CodecError {
-  let prefix_code : Array[Int] = Array::make(8192, 0)
-  let append_character : Array[Int] = Array::make(8192, 0)
+  let prefix_code : Array[Int32] = Array::make(8192, 0)
+  let append_character : Array[Int32] = Array::make(8192, 0)
   let mut bit_count = 0
-  let mut bit_buffer : UInt = 0
+  let mut bit_buffer : UInt32 = 0
   let mut endflush = 4
   let mut code_length = 9
   let mut next_code = 258
@@ -19,11 +19,11 @@ fn decode_lzw(
     old_code = 256
   }
 
-  fn decode_string(code : Int) -> Array[Int] {
+  fn decode_string(code : Int32) -> Array[Int32] {
     if code < 0 || code >= prefix_code.length() {
       return []
     }
-    let reversed : Array[Int] = []
+    let reversed : Array[Int32] = []
     let mut c = code
     let mut steps = 0
     while c > 255 {
@@ -38,14 +38,14 @@ fn decode_lzw(
       c = prefix_code[c]
     }
     reversed.push(c)
-    let out : Array[Int] = Array(capacity=reversed.length())
+    let out : Array[Int32] = Array(capacity=reversed.length())
     for i in 0..<reversed.length() {
       out.push(reversed[reversed.length() - 1 - i])
     }
     out
   }
 
-  fn input_code() -> Int raise {
+  fn input_code() -> Int32 raise {
     while bit_count <= 24 {
       let streambyte = (input.input_byte)()
       let value = if streambyte == @pdfio.no_more {
@@ -62,7 +62,7 @@ fn decode_lzw(
       bit_count = bit_count + 8
     }
     let result = (bit_buffer >> (32 - code_length)).reinterpret_as_int()
-    let mask : UInt = 0xffff_ffff
+    let mask : UInt32 = 0xffff_ffff
     bit_buffer = (bit_buffer << code_length) & mask
     bit_count = bit_count - code_length
     result
@@ -144,12 +144,15 @@ fn decode_lzw(
 }
 
 ///|
-fn encode_lzw(early : Int, data : Array[Byte]) -> Array[Byte] raise CodecError {
+fn encode_lzw(
+  early : Int32,
+  data : Array[Byte],
+) -> Array[Byte] raise CodecError {
   let clear_code = 256
   let eod_code = 257
   let mut code_length = 9
   let mut next_code = 258
-  let mut dict : Map[Int, Int] = Map([], capacity=4096)
+  let mut dict : Map[Int32, Int32] = Map([], capacity=4096)
   let out = @pdfio.BitstreamWrite::new()
   fn reset_table() -> Unit {
     dict = Map([], capacity=4096)

@@ -16,7 +16,7 @@ pub fn PdfPageDoc::process_xobject(
   self : PdfPageDoc,
   f : (@pdf.Pdf, @pdf.PdfObject, Array[@pdf.PdfObject]) -> Array[@pdf.PdfObject],
   resources : @pdf.PdfObject,
-  objnum : Int,
+  objnum : Int32,
 ) -> Unit raise {
   let pdf = self.pdf
   let xobj = pdf.lookup_obj(objnum)

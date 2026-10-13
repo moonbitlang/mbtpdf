@@ -34,8 +34,8 @@ pub(all) enum Destination {
 ```mbt nocheck
 ///|
 pub(all) enum TargetPage {
-  OtherDocPageNumber(Int) // Page in external doc
-  PageObject(Int) // Object number in current doc
+  OtherDocPageNumber(Int32) // Page in external doc
+  PageObject(Int32) // Object number in current doc
 }
 ```
 

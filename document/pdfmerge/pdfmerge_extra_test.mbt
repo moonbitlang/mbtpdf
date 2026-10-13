@@ -4,7 +4,7 @@ fn merge_rect() -> @pdf.PdfObject {
 }
 
 ///|
-fn make_pdf_pages(count : Int) -> @pdf.Pdf raise {
+fn make_pdf_pages(count : Int32) -> @pdf.Pdf raise {
   let rect = merge_rect()
   let pages = Array(capacity=count)
   for _ in 0..<count {
@@ -29,13 +29,13 @@ fn add_names_dests(
 }
 
 ///|
-fn page_ref(pdf : @pdf.Pdf, index : Int) -> Int raise {
+fn page_ref(pdf : @pdf.Pdf, index : Int32) -> Int32 raise {
   let refs = pdf.page_reference_numbers()
   refs[index - 1]
 }
 
 ///|
-fn dest_dict_for_page(pdf : @pdf.Pdf, index : Int) -> @pdf.PdfObject raise {
+fn dest_dict_for_page(pdf : @pdf.Pdf, index : Int32) -> @pdf.PdfObject raise {
   let target = @pdfdest.TargetPage::PageObject(page_ref(pdf, index))
   let dest = @pdfdest.Destination::Fit(target)
   Dictionary([("/D", dest.to_pdf_object())])
@@ -47,7 +47,7 @@ fn dest_dict(dest : @pdfdest.Destination) -> @pdf.PdfObject {
 }
 
 ///|
-fn with_version(pdf : @pdf.Pdf, major : Int, minor : Int) -> @pdf.Pdf {
+fn with_version(pdf : @pdf.Pdf, major : Int32, minor : Int32) -> @pdf.Pdf {
   {
     major,
     minor,

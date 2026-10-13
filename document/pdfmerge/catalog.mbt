@@ -91,7 +91,7 @@ fn merge_default_dictionaries(
 fn merge_optional_content_groups(
   pdf : @pdf.Pdf,
   pdfs : Array[@pdf.Pdf],
-) -> Int? raise {
+) -> Int32? raise {
   let ocp_dicts = Array(capacity=pdfs.length())
   for src in pdfs {
     match src.lookup_direct("/OCProperties", src.catalog_of_pdf()) {
@@ -123,7 +123,7 @@ fn merge_optional_content_groups(
 }
 
 ///|
-fn merge_acroforms(pdf : @pdf.Pdf, pdfs : Array[@pdf.Pdf]) -> Int? raise {
+fn merge_acroforms(pdf : @pdf.Pdf, pdfs : Array[@pdf.Pdf]) -> Int32? raise {
   let form_dicts = []
   for src in pdfs {
     match src.lookup_direct("/AcroForm", src.catalog_of_pdf()) {
@@ -162,7 +162,7 @@ fn merge_acroforms(pdf : @pdf.Pdf, pdfs : Array[@pdf.Pdf]) -> Int? raise {
 }
 
 ///|
-fn max_version_number(pdfs : Array[@pdf.Pdf]) -> (Int, Int) raise {
+fn max_version_number(pdfs : Array[@pdf.Pdf]) -> (Int32, Int32) raise {
   match pdfs {
     [] => raise @pdf.PdfError::Msg("max_version_number: empty")
     [first, .. rest] => {

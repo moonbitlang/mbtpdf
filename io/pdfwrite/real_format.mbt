@@ -22,7 +22,7 @@ fn trim_trailing_zeros(value : String) -> String {
 }
 
 ///|
-fn slice_from(value : String, start : Int) -> String {
+fn slice_from(value : String, start : Int32) -> String {
   if start < 0 || start > value.length() {
     return ""
   }
@@ -30,7 +30,7 @@ fn slice_from(value : String, start : Int) -> String {
 }
 
 ///|
-fn slice_range(value : String, start : Int, end : Int) -> String {
+fn slice_range(value : String, start : Int32, end : Int32) -> String {
   let len = value.length()
   if start < 0 || start > len || end < start || end > len {
     return ""
@@ -39,7 +39,7 @@ fn slice_range(value : String, start : Int, end : Int) -> String {
 }
 
 ///|
-fn parse_signed_int(value : String) -> Int {
+fn parse_signed_int(value : String) -> Int32 {
   let chars = value[:]
   if chars.length() == 0 {
     return 0

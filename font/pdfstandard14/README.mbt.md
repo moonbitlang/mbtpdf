@@ -24,9 +24,9 @@ Font metrics tables from AFM (Adobe Font Metrics) data.
 ///|
 type AfmTables = (
   Map[String, String], // Header values
-  Map[Int, Int], // Character code to width
-  Map[(Int, Int), Int], // Kerning pairs (char1, char2) -> adjustment
-  Map[String, Int], // Glyph name to width
+  Map[Int32, Int32], // Character code to width
+  Map[(Int32, Int32), Int32], // Kerning pairs (char1, char2) -> adjustment
+  Map[String, Int32], // Glyph name to width
 )
 ```
 

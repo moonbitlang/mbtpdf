@@ -1,5 +1,5 @@
 ///|
-fn source(start : Int) -> () -> Int {
+fn source(start : Int32) -> () -> Int32 {
   let counter = Ref(start)
   fn() {
     counter.val = counter.val + 1
@@ -10,8 +10,8 @@ fn source(start : Int) -> () -> Int {
 ///|
 fn[T] array_slice(
   values : ArrayView[T],
-  start : Int,
-  len : Int,
+  start : Int32,
+  len : Int32,
 ) -> ArrayView[T] {
   values[start:start + len]
 }
@@ -19,13 +19,13 @@ fn[T] array_slice(
 ///|
 /// Page tree node.
 priv enum Ptree {
-  Lf(ArrayView[Page], Int, Int)
-  Br(ArrayView[Page], Ptree, Ptree, Int, Int)
+  Lf(ArrayView[Page], Int32, Int32)
+  Br(ArrayView[Page], Ptree, Ptree, Int32, Int32)
 }
 
 ///|
 fn[T] split3(
-  n : Int,
+  n : Int32,
   values : ArrayView[T],
 ) -> (ArrayView[T], ArrayView[T], ArrayView[T]) raise {
   let len = values.length()
@@ -41,9 +41,9 @@ fn[T] split3(
 
 ///|
 fn pagetree(
-  objnumsource : () -> Int,
+  objnumsource : () -> Int32,
   pages : ArrayView[Page],
-  parent : Int,
+  parent : Int32,
 ) -> Ptree raise {
   if pages.length() < 10 {
     Lf(pages, parent, objnumsource())
@@ -58,11 +58,11 @@ fn pagetree(
 
 ///|
 fn mkpage(
-  getobjnum : () -> Int,
-  parent : Int,
+  getobjnum : () -> Int32,
+  parent : Int32,
   page : Page,
-) -> (Int, PdfObject, Array[(Int, PdfObject)]) raise {
-  let extras : Array[(Int, PdfObject)] = []
+) -> (Int32, PdfObject, Array[(Int32, PdfObject)]) raise {
+  let extras : Array[(Int32, PdfObject)] = []
   let indirects : Array[PdfObject] = []
   for c in page.content {
     match c {
@@ -98,7 +98,7 @@ fn mkpage(
 }
 
 ///|
-fn count_ptree(tree : Ptree) -> Int {
+fn count_ptree(tree : Ptree) -> Int32 {
   match tree {
     Lf(pages, _, _) => pages.length()
     Br(pages, left, right, _, _) =>
@@ -107,7 +107,7 @@ fn count_ptree(tree : Ptree) -> Int {
 }
 
 ///|
-fn objnum_of_ptree(tree : Ptree) -> Int {
+fn objnum_of_ptree(tree : Ptree) -> Int32 {
   match tree {
     Lf(_, _, this) => this
     Br(_, _, _, _, this) => this
@@ -116,13 +116,13 @@ fn objnum_of_ptree(tree : Ptree) -> Int {
 
 ///|
 fn objects_of_ptree(
-  getobjnum : () -> Int,
-  extras : Ref[Array[(Int, PdfObject)]],
+  getobjnum : () -> Int32,
+  extras : Ref[Array[(Int32, PdfObject)]],
   tree : Ptree,
-) -> Array[(Int, PdfObject)] raise {
+) -> Array[(Int32, PdfObject)] raise {
   match tree {
     Lf(pages, parent, this) => {
-      let page_objects : Array[(Int, PdfObject)] = []
+      let page_objects : Array[(Int32, PdfObject)] = []
       for page in pages {
         let (objnum, obj, extra) = mkpage(getobjnum, this, page)
         extras.val.append(extra[:])
@@ -152,7 +152,7 @@ fn objects_of_ptree(
       let right_num = objnum_of_ptree(right)
       let count_left = count_ptree(left)
       let count_right = count_ptree(right)
-      let page_objects : Array[(Int, PdfObject)] = []
+      let page_objects : Array[(Int32, PdfObject)] = []
       for page in pages {
         let (objnum, obj, extra) = mkpage(getobjnum, this, page)
         extras.val.append(extra[:])
@@ -188,9 +188,9 @@ fn objects_of_ptree(
 pub fn PdfPageDoc::add_pagetree(
   self : PdfPageDoc,
   pages : Array[Page],
-) -> (@pdf.Pdf, Int) raise {
+) -> (@pdf.Pdf, Int32) raise {
   let pdf = self.pdf
-  let extras : Ref[Array[(Int, PdfObject)]] = { val: [], }
+  let extras : Ref[Array[(Int32, PdfObject)]] = { val: [], }
   let getobjnum = source(pdf.objects.max_obj_num)
   let ptree = pagetree(getobjnum, pages, 0)
   let objects = objects_of_ptree(getobjnum, extras, ptree)
@@ -214,7 +214,7 @@ pub fn PdfPageDoc::add_pagetree(
 /// Replace the root catalog with a new /Pages entry.
 pub fn PdfPageDoc::add_root(
   self : PdfPageDoc,
-  pageroot : Int,
+  pageroot : Int32,
   extras : Array[(String, PdfObject)],
 ) -> @pdf.Pdf raise {
   let pdf = self.pdf
@@ -246,9 +246,10 @@ pub fn PdfPageDoc::add_root(
 
 ///|
 test "split3 errors on invalid n" {
-  let res : Result[(ArrayView[Int], ArrayView[Int], ArrayView[Int]), Error] = try
-    split3(3, [1, 2, 3][:]) |> Ok
-  catch {
+  let res : Result[
+    (ArrayView[Int32], ArrayView[Int32], ArrayView[Int32]),
+    Error,
+  ] = try split3(3, [1, 2, 3][:]) |> Ok catch {
     e => Err(e)
   }
   assert_true(res is Err(_))

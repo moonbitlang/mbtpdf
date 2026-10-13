@@ -175,7 +175,7 @@ fn fix_stream(
   pdf : @pdf.Pdf,
   resources : @pdf.PdfObject,
   prefix : String,
-  fixed_streams : Map[Int, Unit],
+  fixed_streams : Map[Int32, Unit],
   obj : @pdf.PdfObject,
 ) -> Unit raise {
   match obj {
@@ -204,7 +204,7 @@ fn fix_stream(
 
 ///|
 fn add_prefix_impl(pdf : @pdf.Pdf, prefix : String) -> Unit raise {
-  let fixed_streams : Map[Int, Unit] = Map([])
+  let fixed_streams : Map[Int32, Unit] = Map([])
   pdf.objselfmap(fn(obj : @pdf.PdfObject) -> @pdf.PdfObject raise {
     match obj {
       Dictionary(dict) =>

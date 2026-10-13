@@ -7,7 +7,7 @@ fn[T] assert_is_err(res : Result[T, Error]) -> Unit raise {
 }
 
 ///|
-fn count_streams(pdf : @pdf.Pdf) -> Int {
+fn count_streams(pdf : @pdf.Pdf) -> Int32 {
   let mut count = 0
   pdf.objiter((_, obj) => {
     match (obj : @pdf.PdfObject) {

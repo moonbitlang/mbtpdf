@@ -22,7 +22,7 @@ pub fn PdfTextUtil::make_font(
 pub fn PdfText::write_encoding(
   self : PdfText,
   encoding : @pdffont.Encoding,
-) -> Int raise {
+) -> Int32 raise {
   fn encoding_name(enc : @pdffont.Encoding) -> String? {
     match enc {
       StandardEncoding => Some("/StandardEncoding")
@@ -102,19 +102,19 @@ let hex_digits_upper : Array[Char] = "0123456789ABCDEF".to_array()
 let hex_digits_lower : Array[Char] = "0123456789abcdef".to_array()
 
 ///|
-fn hex_byte(digits : Array[Char], value : Int) -> String {
+fn hex_byte(digits : Array[Char], value : Int32) -> String {
   let hi = value / 16
   let lo = value % 16
   String::from_array([digits[hi], digits[lo]])
 }
 
 ///|
-fn hex_byte_upper(value : Int) -> String {
+fn hex_byte_upper(value : Int32) -> String {
   hex_byte(hex_digits_upper, value)
 }
 
 ///|
-fn hex_byte_lower(value : Int) -> String {
+fn hex_byte_lower(value : Int32) -> String {
   hex_byte(hex_digits_lower, value)
 }
 
@@ -131,7 +131,7 @@ pub fn PdfTextUtil::hex(_self : PdfTextUtil, u : String) -> String {
 ///|
 pub fn PdfTextUtil::tounicode_map(
   self : PdfTextUtil,
-  start_code : Int,
+  start_code : Int32,
   us : Array[String],
 ) -> Array[Byte] {
   let sb = StringBuilder()
@@ -150,7 +150,10 @@ pub fn PdfTextUtil::tounicode_map(
 }
 
 ///|
-pub fn PdfText::write_tounicode(self : PdfText, u : Map[Int, String]) -> Int {
+pub fn PdfText::write_tounicode(
+  self : PdfText,
+  u : Map[Int32, String],
+) -> Int32 {
   let pairs = @pdfutil.PdfUtil::new().list_of_hashtbl(u)
   pairs.sort_by((a, b) => a.0 - b.0)
   let strings = pairs.map(pair => pair.1)
@@ -164,9 +167,9 @@ pub fn PdfText::write_tounicode(self : PdfText, u : Map[Int, String]) -> Int {
 ///|
 pub fn PdfText::write_font(
   self : PdfText,
-  objnum? : Int,
+  objnum? : Int32,
   font : @pdffont.Font,
-) -> Int raise {
+) -> Int32 raise {
   match font {
     SimpleFont(simple) =>
       match simple.fonttype {

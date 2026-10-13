@@ -1,5 +1,5 @@
 ///|
-fn funtype_of_function(fun : PdfFunction) -> Int {
+fn funtype_of_function(fun : PdfFunction) -> Int32 {
   match fun.func {
     Interpolation(_) => 2
     Stitching(_) => 3
@@ -9,7 +9,7 @@ fn funtype_of_function(fun : PdfFunction) -> Int {
 }
 
 ///|
-fn max_value_for_bits(bits : Int) -> Int {
+fn max_value_for_bits(bits : Int32) -> Int32 {
   let mut value = 0
   for _ in 0..<bits {
     value = (value << 1) | 1
@@ -20,9 +20,9 @@ fn max_value_for_bits(bits : Int) -> Int {
 ///|
 fn write_bits(
   data : Array[Byte],
-  bit_pos : Ref[Int],
-  bits : Int,
-  value : Int,
+  bit_pos : Ref[Int32],
+  bits : Int32,
+  value : Int32,
 ) -> Unit {
   if bits <= 0 {
     return
@@ -45,7 +45,7 @@ fn write_bits(
 }
 
 ///|
-fn sampled_bytes(samples : Array[Int], bits : Int) -> Array[Byte] {
+fn sampled_bytes(samples : Array[Int32], bits : Int32) -> Array[Byte] {
   if bits <= 0 {
     return @pdfio.mkbytes(0)
   }

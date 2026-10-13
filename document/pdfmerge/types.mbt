@@ -15,14 +15,14 @@ pub fn PdfMergeDoc::new(pdf : @pdf.Pdf) -> PdfMergeDoc {
 pub struct PdfMerger {
   names : Array[String]
   pdfs : Array[@pdf.Pdf]
-  ranges : Array[Array[Int]]
+  ranges : Array[Array[Int32]]
 }
 
 ///|
 pub fn PdfMerger::new(
   names : Array[String],
   pdfs : Array[@pdf.Pdf],
-  ranges : Array[Array[Int]],
+  ranges : Array[Array[Int32]],
 ) -> PdfMerger {
   { names, pdfs, ranges, }
 }

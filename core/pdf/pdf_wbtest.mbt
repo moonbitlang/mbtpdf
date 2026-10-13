@@ -1,6 +1,6 @@
 ///|
 test "check_object_contains_renumbering detects indirects" {
-  let changes : Map[Int, Int] = Map([])
+  let changes : Map[Int32, Int32] = Map([])
   changes.set(2, 99)
   assert_true(!check_object_contains_renumbering(changes, Integer(1)))
   assert_true(check_object_contains_renumbering(changes, Indirect(2)))

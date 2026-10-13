@@ -10,7 +10,7 @@ fn default_rect() -> @pdf.PdfObject {
 }
 
 ///|
-fn pdf_with_pages(count : Int, mediabox : @pdf.PdfObject) -> @pdf.Pdf raise {
+fn pdf_with_pages(count : Int32, mediabox : @pdf.PdfObject) -> @pdf.Pdf raise {
   let pdf = @pdf.Pdf::empty()
   let pages_root_num = pdf.addobj(
     Dictionary([

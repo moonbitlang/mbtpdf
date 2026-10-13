@@ -1,5 +1,5 @@
 ///|
-fn find_first_duplicate(values : Array[Int]) -> Int? {
+fn find_first_duplicate(values : Array[Int32]) -> Int32? {
   match values {
     [] | [_] => None
     [prev, .. rest] => {
@@ -17,8 +17,8 @@ fn find_first_duplicate(values : Array[Int]) -> Int? {
 
 ///|
 fn rewrite_first_kid(
-  old_num : Int,
-  new_num : Int,
+  old_num : Int32,
+  new_num : Int32,
   kids : Array[PdfObject],
 ) -> Array[PdfObject] {
   let out = Array(capacity=kids.length())
@@ -38,10 +38,10 @@ fn rewrite_first_kid(
 ///|
 fn rewrite_first_indirect(
   pdf : @pdf.Pdf,
-  objnum : Int,
+  objnum : Int32,
   obj : PdfObject,
-  old_num : Int,
-  new_num : Int,
+  old_num : Int32,
+  new_num : Int32,
 ) -> Bool raise {
   match pdf.lookup_direct("/Kids", obj) {
     Some(PdfArray(kids)) => {
@@ -69,8 +69,8 @@ fn rewrite_first_indirect(
 fn page_tree_nodes_not_pages_inner(
   pdf : @pdf.Pdf,
   pages_node : PdfObject,
-  node_number : Int,
-) -> Array[Int] {
+  node_number : Int32,
+) -> Array[Int32] {
   if pdf.lookup_direct("/Type", pages_node) is Some(Name(PdfName(b"/Page"))) {
     []
   } else {
@@ -95,7 +95,7 @@ fn page_tree_nodes_not_pages_inner(
 }
 
 ///|
-fn page_tree_nodes_not_pages(pdf : @pdf.Pdf) -> Array[Int] raise {
+fn page_tree_nodes_not_pages(pdf : @pdf.Pdf) -> Array[Int32] raise {
   let root = pdf.lookup_obj(pdf.root)
   let page_root_num = match root {
     Dictionary(d) =>
@@ -118,9 +118,9 @@ fn page_tree_nodes_not_pages(pdf : @pdf.Pdf) -> Array[Int] raise {
 
 ///|
 fn rewrite_page_tree_first(
-  nodes : Array[Int],
+  nodes : Array[Int32],
   pdf : @pdf.Pdf,
-  old_num : Int,
+  old_num : Int32,
 ) -> Unit raise {
   let new_num = pdf.addobj(pdf.lookup_obj(old_num))
   let mut rewritten = false
@@ -144,8 +144,8 @@ fn rewrite_page_tree_first(
 fn page_reference_numbers_unordered_inner(
   pdf : @pdf.Pdf,
   pages_node : PdfObject,
-  node_number : Int,
-  acc : Ref[Array[Int]],
+  node_number : Int32,
+  acc : Ref[Array[Int32]],
 ) -> Unit {
   if pdf.lookup_direct("/Type", pages_node) is Some(Name(PdfName(b"/Page"))) {
     acc.val.push(node_number)
@@ -170,8 +170,8 @@ fn page_reference_numbers_unordered_inner(
 }
 
 ///|
-fn page_reference_numbers_unordered(pdf : @pdf.Pdf) -> Array[Int] raise {
-  let acc : Ref[Array[Int]] = { val: [], }
+fn page_reference_numbers_unordered(pdf : @pdf.Pdf) -> Array[Int32] raise {
+  let acc : Ref[Array[Int32]] = { val: [], }
   let root = pdf.lookup_obj(pdf.root)
   let pages_node = match pdf.lookup_direct("/Pages", root) {
     Some(p) => p
@@ -183,7 +183,7 @@ fn page_reference_numbers_unordered(pdf : @pdf.Pdf) -> Array[Int] raise {
 
 ///|
 fn fixup_duplicate_pages_inner(
-  nodes : Array[Int],
+  nodes : Array[Int32],
   pdf : @pdf.Pdf,
 ) -> Unit raise {
   let refs = page_reference_numbers_unordered(pdf)
@@ -208,8 +208,8 @@ pub fn PdfPageDoc::fixup_duplicate_pages(self : PdfPageDoc) -> Unit raise {
 ///|
 fn fixup_parents_inner(
   pdf : @pdf.Pdf,
-  parent_objnum : Int,
-  objnum : Int,
+  parent_objnum : Int32,
+  objnum : Int32,
 ) -> Unit raise {
   let obj = pdf.lookup_obj(objnum)
   match pdf.indirect_number("/Parent", obj) {
@@ -246,7 +246,7 @@ pub fn PdfPageDoc::fixup_parents(self : PdfPageDoc) -> Unit raise {
 fn fixup_link(
   key : String,
   obj : PdfObject,
-  assoc : Map[Int, Int],
+  assoc : Map[Int32, Int32],
 ) -> PdfObject raise {
   match obj.lookup_immediate(key) {
     Some(Indirect(i)) =>
@@ -276,8 +276,8 @@ pub fn PdfPageDoc::fixup_duplicate_annots(self : PdfPageDoc) -> Unit raise {
       _ => []
     }
   })
-  let seen : Map[Int, Unit] = Map([])
-  let to_copy : Array[(Int, Int)] = []
+  let seen : Map[Int32, Unit] = Map([])
+  let to_copy : Array[(Int32, Int32)] = []
   let new_annots = existing_annots.map(annots => {
     let out = Array(capacity=annots.length())
     for i in annots {
@@ -301,7 +301,7 @@ pub fn PdfPageDoc::fixup_duplicate_annots(self : PdfPageDoc) -> Unit raise {
   for i in 0..<existing_annots.length() {
     let old_annots = existing_annots[i]
     let updated_annots = new_annots[i]
-    let assoc : Map[Int, Int] = Map([], capacity=old_annots.length())
+    let assoc : Map[Int32, Int32] = Map([], capacity=old_annots.length())
     for j in 0..<old_annots.length() {
       assoc.set(old_annots[j], updated_annots[j])
     }
@@ -362,7 +362,7 @@ pub fn PdfPageDoc::fixup_destinations(self : PdfPageDoc) -> Unit raise {
 ///|
 fn replace_inherit_entry(
   pdf : @pdf.Pdf,
-  objnum : Int,
+  objnum : Int32,
   entry : String,
 ) -> Unit raise {
   let obj = pdf.lookup_obj(objnum)
@@ -395,7 +395,7 @@ fn replace_inherit_entry(
 /// For all pages in objnumbers, ensure inheritable attributes are present.
 pub fn PdfPageDoc::replace_inherit(
   self : PdfPageDoc,
-  objnumbers : Array[Int],
+  objnumbers : Array[Int32],
 ) -> Unit raise {
   let pdf = self.pdf
   for objnum in objnumbers {
@@ -410,8 +410,8 @@ pub fn PdfPageDoc::replace_inherit(
 /// Get page object number for a 1-based page index.
 pub fn PdfPageDoc::page_object_number(
   self : PdfPageDoc,
-  destpage : Int,
-) -> Int? raise {
+  destpage : Int32,
+) -> Int32? raise {
   let pdf = self.pdf
   let refs = pdf.page_reference_numbers()
   if destpage < 1 {
@@ -424,7 +424,7 @@ pub fn PdfPageDoc::page_object_number(
 /// Build a Fit destination for a page number.
 pub fn PdfPageDoc::target_of_pagenumber(
   self : PdfPageDoc,
-  index : Int,
+  index : Int32,
 ) -> @pdfdest.Destination raise {
   match self.page_object_number(index) {
     None => NullDestination

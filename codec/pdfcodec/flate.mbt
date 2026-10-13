@@ -17,7 +17,7 @@ pub fn PdfCodec::decode_flate(
     }
   }
   let out : Array[Byte] = []
-  let output = (buf : Array[Byte], length : Int) => out.append(buf[:length])
+  let output = (buf : Array[Byte], length : Int32) => out.append(buf[:length])
   try {
     @pdfflate.PdfFlate::new().uncompress(header=true, input, output)
     out
@@ -34,9 +34,9 @@ pub fn PdfCodec::encode_pdfstream(
   encoding : Encoding,
   obj : @pdf.PdfObject,
   im? : String,
-  only_if_smaller? : Bool = false,
+  only_if_smaller~ : Bool = false,
   predictor? : Predictor,
-  predictor_columns? : Int,
+  predictor_columns? : Int32,
 ) -> Unit raise CodecError {
   let _ = im
   let predictor_columns = match predictor_columns {
@@ -352,7 +352,7 @@ pub fn PdfCodec::decode_from_bytes(
   let pdf = @pdf.Pdf::empty()
   let filter_opt = pdf.lookup_direct_orelse("/F", "/Filter", dict)
   let parms_opt = pdf.lookup_direct_orelse("/DP", "/DecodeParms", dict)
-  fn parms_at(index : Int) -> @pdf.PdfObject? {
+  fn parms_at(index : Int32) -> @pdf.PdfObject? {
     match parms_opt {
       Some(PdfArray(arr)) =>
         if index < arr.length() {

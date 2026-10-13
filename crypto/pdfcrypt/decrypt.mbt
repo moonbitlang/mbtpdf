@@ -1,5 +1,5 @@
 ///|
-fn already_decrypted(pdf : @pdf.Pdf, objnum : Int) -> Bool {
+fn already_decrypted(pdf : @pdf.Pdf, objnum : Int32) -> Bool {
   try {
     let entry = @pdf.pdfobjmap_find(objnum, pdf.objects.objects)
     match entry.0.val {
@@ -60,11 +60,11 @@ fn decrypt_stream(
   pdf : @pdf.Pdf,
   no_encrypt_metadata : Bool,
   encrypt : Bool,
-  obj : Int,
-  gen : Int,
-  key : Array[Int],
-  keylength : Int,
-  r : Int,
+  obj : Int32,
+  gen : Int32,
+  key : Array[Int32],
+  keylength : Int32,
+  r : Int32,
   file_encryption_key : String?,
   stream : @pdf.PdfObject,
 ) -> @pdf.PdfObject raise {
@@ -152,11 +152,11 @@ fn decrypt(
   pdf : @pdf.Pdf,
   no_encrypt_metadata : Bool,
   encrypt : Bool,
-  obj : Int,
-  gen : Int,
-  key : Array[Int],
-  keylength : Int,
-  r : Int,
+  obj : Int32,
+  gen : Int32,
+  key : Array[Int32],
+  keylength : Int32,
+  r : Int32,
   file_encryption_key : String?,
   objval : @pdf.PdfObject,
 ) -> @pdf.PdfObject raise {
@@ -217,12 +217,12 @@ fn process_cryption(
   pdf : @pdf.Pdf,
   crypt_type : @pdfcryptprimitives.Encryption,
   user_pw : String,
-  r : Int,
+  r : Int32,
   u : String,
   o : String,
-  p : Int,
+  p : Int32,
   id : String,
-  keylength : Int,
+  keylength : Int32,
   file_encryption_key : String?,
 ) -> @pdf.Pdf? raise {
   let mut encryption_object_number = -1
@@ -230,7 +230,7 @@ fn process_cryption(
     Some(Indirect(n)) => encryption_object_number = n
     _ => ()
   }
-  let do_encryption = fn(key : Array[Int]) -> @pdf.Pdf? raise {
+  let do_encryption = fn(key : Array[Int32]) -> @pdf.Pdf? raise {
     let entries = pdf.objects.objects.to_array()
     entries.sort_by((a, b) => a.0 - b.0)
     for entry in entries {
@@ -278,7 +278,7 @@ pub fn PdfCrypt::get_encryption_values(
   @pdfcryptprimitives.Encryption,
   String,
   String,
-  Int,
+  Int32,
   String,
   String?,
   String?,
@@ -550,8 +550,8 @@ pub fn PdfCrypt::decrypt_single_stream(
   user_pw : String?,
   owner_pw : String?,
   pdf : @pdf.Pdf,
-  obj : Int,
-  gen : Int,
+  obj : Int32,
+  gen : Int32,
   stream : @pdf.PdfObject,
 ) -> @pdf.PdfObject raise {
   match pdf.lookup_direct("/Encrypt", pdf.trailerdict) {
@@ -871,7 +871,7 @@ pub fn PdfCrypt::recrypt_pdf(
   self : PdfCrypt,
   pdf : @pdf.Pdf,
   pw : String,
-  renumber? : Bool = true,
+  renumber~ : Bool = true,
 ) -> @pdf.Pdf raise {
   let mut pdf = pdf
   if pdf.saved_encryption is None && self.is_encrypted(pdf) {
@@ -906,7 +906,7 @@ pub fn PdfCrypt::recrypt_pdf(
   }
   if renumber {
     let nums = pdf.objnumbers()
-    let changes : Map[Int, Int] = Map([], capacity=nums.length())
+    let changes : Map[Int32, Int32] = Map([], capacity=nums.length())
     let mut i = 1
     for n in nums {
       changes.set(n, i)

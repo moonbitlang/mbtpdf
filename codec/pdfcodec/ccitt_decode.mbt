@@ -1,5 +1,5 @@
 ///|
-fn read_white_code(input : @pdfio.Bitstream) -> Int raise {
+fn read_white_code(input : @pdfio.Bitstream) -> Int32 raise {
   let a = input.getbitint()
   let b = input.getbitint()
   let c = input.getbitint()
@@ -180,7 +180,7 @@ fn read_white_code(input : @pdfio.Bitstream) -> Int raise {
 }
 
 ///|
-fn read_black_code(input : @pdfio.Bitstream) -> Int raise {
+fn read_black_code(input : @pdfio.Bitstream) -> Int32 raise {
   let a = input.getbitint()
   let b = input.getbitint()
   match (a, b) {
@@ -719,7 +719,7 @@ fn read_black_code(input : @pdfio.Bitstream) -> Int raise {
 priv enum CcittMode {
   Pass
   Horizontal
-  Vertical(Int)
+  Vertical(Int32)
   Uncompressed
   EOFB
 }
@@ -787,7 +787,7 @@ fn read_ccitt_mode(input : @pdfio.Bitstream) -> CcittMode raise {
 
 ///|
 /// Upper bound on CCITTFax `/Columns`: 1,048,576 pixels per row.
-let ccitt_max_columns : Int = 1 << 20
+let ccitt_max_columns : Int32 = 1 << 20
 
 ///|
 /// Decode CCITTFaxDecode data (Group 3 1-D with `k == 0`, Group 4 with
@@ -798,14 +798,14 @@ let ccitt_max_columns : Int = 1 << 20
 /// because every row costs `columns` work and memory however little input
 /// encodes it, so an untrusted `/Columns` could otherwise exhaust memory.
 fn decode_ccittfax(
-  k : Int,
+  k : Int32,
   eol : Bool,
   eba : Bool,
-  columns : Int,
-  rows : Int,
+  columns : Int32,
+  rows : Int32,
   eob : Bool,
   bone : Bool,
-  dra : Int,
+  dra : Int32,
   input : @pdfio.Input,
 ) -> Array[Byte] raise CodecError {
   let _ = eol
@@ -829,14 +829,14 @@ fn decode_ccittfax(
   let mut refline = Array::make(columns, whiteval)
   let mut currline = Array::make(columns, 0)
   let mut white = true
-  fn output_line(line : Array[Int]) -> Unit {
+  fn output_line(line : Array[Int32]) -> Unit {
     for bit in line {
       output.putbit(bit)
     }
     output.align()
   }
 
-  fn output_span(length : Int, value : Int) -> Unit raise {
+  fn output_span(length : Int32, value : Int32) -> Unit raise {
     if length < 0 {
       raise Failure::Failure("Bad CCITT stream")
     }
@@ -852,7 +852,7 @@ fn decode_ccittfax(
     column = bounded_end
   }
 
-  fn find_b1() -> Int {
+  fn find_b1() -> Int32 {
     let mut pos = column
     if pos >= columns {
       return columns
@@ -868,7 +868,7 @@ fn decode_ccittfax(
     }
   }
 
-  fn find_b2() -> Int {
+  fn find_b2() -> Int32 {
     let mut pos = column
     if pos >= columns {
       return columns

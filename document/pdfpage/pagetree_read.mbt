@@ -193,16 +193,16 @@ pub fn PdfPageDoc::pages_of_pagetree(self : PdfPageDoc) -> Array[Page] raise {
 
 ///|
 fn find_pages_quick(
-  count : Int,
+  count : Int32,
   pages : PdfObject,
   pdf : @pdf.Pdf,
-  stack : Map[Int, Bool],
-) -> Int raise {
+  stack : Map[Int32, Bool],
+) -> Int32 raise {
   if count == 10000 {
     raise @pdf.PdfError::Msg("cycle in page tree")
   }
   let mut resolved = pages
-  let mut objnum : Int? = None
+  let mut objnum : Int32? = None
   match pages {
     Indirect(k) => {
       if stack.contains(k) {
@@ -268,7 +268,7 @@ fn find_pages_quick(
 
 ///|
 /// Count pages in the page tree quickly.
-pub fn PdfPageDoc::pages_of_pagetree_quick(self : PdfPageDoc) -> Int raise {
+pub fn PdfPageDoc::pages_of_pagetree_quick(self : PdfPageDoc) -> Int32 raise {
   let pdf = self.pdf
   let document_catalog = pdf.lookup_obj(pdf.root)
   match document_catalog {
@@ -277,7 +277,7 @@ pub fn PdfPageDoc::pages_of_pagetree_quick(self : PdfPageDoc) -> Int raise {
       let pages = pdf.lookup_fail(
         "No or malformed /Pages", "/Pages", document_catalog,
       )
-      let stack : Map[Int, Bool] = Map([])
+      let stack : Map[Int32, Bool] = Map([])
       find_pages_quick(0, pages, pdf, stack)
     }
   }
@@ -285,13 +285,13 @@ pub fn PdfPageDoc::pages_of_pagetree_quick(self : PdfPageDoc) -> Int raise {
 
 ///|
 /// The last page number.
-pub fn PdfPageDoc::endpage(self : PdfPageDoc) -> Int raise {
+pub fn PdfPageDoc::endpage(self : PdfPageDoc) -> Int32 raise {
   self.pages_of_pagetree_quick()
 }
 
 ///|
 /// Fast page count from the top /Count.
-pub fn PdfPageDoc::endpage_fast(self : PdfPageDoc) -> Int raise {
+pub fn PdfPageDoc::endpage_fast(self : PdfPageDoc) -> Int32 raise {
   let pdf = self.pdf
   let document_catalog = pdf.lookup_obj(pdf.root)
   match document_catalog {

@@ -116,7 +116,7 @@ test "decrypt_pdf returns original when unencrypted" {
       @pdfcryptprimitives.Encryption,
       String,
       String,
-      Int,
+      Int32,
       String,
       String?,
       String?,

@@ -1,5 +1,5 @@
 ///|
-fn write_zero_pad(sb : StringBuilder, width : Int, value : Int) -> Unit {
+fn write_zero_pad(sb : StringBuilder, width : Int32, value : Int32) -> Unit {
   let s = value.to_string()
   let missing = width - s.length()
   if missing > 0 {

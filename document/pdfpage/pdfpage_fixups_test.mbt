@@ -4,7 +4,7 @@ fn fixups_sample_rect() -> @pdf.PdfObject {
 }
 
 ///|
-fn annot_numbers(pdf : @pdf.Pdf, page_obj : @pdf.PdfObject) -> Array[Int] {
+fn annot_numbers(pdf : @pdf.Pdf, page_obj : @pdf.PdfObject) -> Array[Int32] {
   match (pdf.lookup_direct("/Annots", page_obj) : @pdf.PdfObject?) {
     Some(PdfArray(arr)) =>
       arr.filter_map(fn(obj) {

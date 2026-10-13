@@ -170,7 +170,7 @@ pub fn Input::backline(self : Input) -> Unit raise {
 
 ///|
 /// Read `count` characters from `input` without advancing the cursor.
-pub fn Input::read_chunk(self : Input, count : Int) -> String raise {
+pub fn Input::read_chunk(self : Input, count : Int32) -> String raise {
   let pos = (self.pos_in)()
   let sb = StringBuilder()
   let mut i = 0

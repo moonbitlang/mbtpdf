@@ -54,9 +54,9 @@ Simple (non-composite) font structure.
 pub(all) struct SimpleFont {
   fonttype : SimpleFontType
   basefont : String
-  firstchar : Int
-  lastchar : Int
-  widths : Array[Int]
+  firstchar : Int32
+  lastchar : Int32
+  widths : Array[Int32]
   fontdescriptor : FontDescriptor?
   fontmetrics : FontMetrics?
   encoding : Encoding
@@ -105,7 +105,7 @@ pub(all) struct FontDescriptor {
   descent : Double
   avgwidth : Double
   maxwidth : Double
-  flags : Int
+  flags : Int32
   fontbbox : (Double, Double, Double, Double)
   italicangle : Double
   capheight : Double
@@ -113,7 +113,7 @@ pub(all) struct FontDescriptor {
   stemv : Double
   fontfile : FontFile?
   charset : Array[String]?
-  tounicode : Map[Int, String]?
+  tounicode : Map[Int32, String]?
   tounicode_bytes : Map[String, String]?
 }
 ```
@@ -126,7 +126,7 @@ CMap encoding for CID fonts.
 ///|
 pub(all) enum CMapEncoding {
   Predefined(String) // Named CMap (e.g., "/Identity-H")
-  CMap(Int) // Embedded CMap stream object number
+  CMap(Int32) // Embedded CMap stream object number
 }
 ```
 

@@ -290,7 +290,7 @@ fn set_catalog_entry(
 }
 
 ///|
-fn add_spoilers_layer(pdf : @pdf.Pdf) -> Int raise {
+fn add_spoilers_layer(pdf : @pdf.Pdf) -> Int32 raise {
   let ocg : PdfObject = Dictionary([
     ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("SPOILERS")),
@@ -313,7 +313,7 @@ fn add_spoilers_layer(pdf : @pdf.Pdf) -> Int raise {
 ///|
 fn add_spoilers_properties_to_pages(
   pdf : @pdf.Pdf,
-  ocg_num : Int,
+  ocg_num : Int32,
 ) -> @pdf.Pdf raise {
   let pages = @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree()
   for i in 0..<pages.length() {
@@ -332,7 +332,7 @@ fn add_spoilers_properties_to_pages(
 }
 
 ///|
-fn goto_action(refnum : Int) -> PdfObject {
+fn goto_action(refnum : Int32) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
   Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
@@ -357,9 +357,9 @@ fn add_link(
 }
 
 ///|
-fn add_bookmarks(pdf : @pdf.Pdf, refs : Array[Int]) -> @pdf.Pdf raise {
+fn add_bookmarks(pdf : @pdf.Pdf, refs : Array[Int32]) -> @pdf.Pdf raise {
   let marks : Array[@pdfmarks.Bookmark] = []
-  let entries : Array[(String, Int)] = [
+  let entries : Array[(String, Int32)] = [
     ("Cover", 0),
     ("Map", 1),
     ("Crossroads", 2),
@@ -434,7 +434,7 @@ fn cover_ops() -> (Array[Op], (Double, Double, Double, Double)) {
 }
 
 ///|
-fn map_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
+fn map_ops() -> (Array[Op], Array[(Int32, (Double, Double, Double, Double))]) {
   let ops : Array[Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.99, 0.985, 0.97))[:])
   ops.append(
@@ -450,7 +450,7 @@ fn map_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
       (0.45, 0.48, 0.52),
     )[:],
   )
-  let cards : Array[(String, Int, Double, Double, (Double, Double, Double))] = [
+  let cards : Array[(String, Int32, Double, Double, (Double, Double, Double))] = [
     ("Crossroads", 2, 72.0, 310.0, (0.18, 0.48, 0.86)),
     ("Forest", 3, 372.0, 310.0, (0.22, 0.7, 0.5)),
     ("City", 4, 72.0, 190.0, (0.92, 0.33, 0.36)),
@@ -458,7 +458,7 @@ fn map_ops() -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
     ("Museum", 6, 72.0, 70.0, (0.7, 0.45, 0.9)),
     ("The End", 7, 372.0, 70.0, (0.92, 0.75, 0.2)),
   ]
-  let links : Array[(Int, (Double, Double, Double, Double))] = []
+  let links : Array[(Int32, (Double, Double, Double, Double))] = []
   for c in cards {
     let (title, page_i, x, y, accent) = c
     let (btn_ops, rect) = ops_button(x, y, 260.0, 88.0, title, accent)
@@ -486,8 +486,8 @@ fn scene_ops(
   subtitle : String,
   accent : (Double, Double, Double),
   body : Array[String],
-  choices : Array[(String, Int)],
-) -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
+  choices : Array[(String, Int32)],
+) -> (Array[Op], Array[(Int32, (Double, Double, Double, Double))]) {
   let ops : Array[Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, w(), h(), (0.985, 0.985, 0.99))[:])
   ops.append(ops_fill_rect(0.0, h() - 84.0, w(), 84.0, accent)[:])
@@ -501,7 +501,7 @@ fn scene_ops(
     ops.append(ops_text(72.0, y, "/F1", 18.0, line, (0.12, 0.14, 0.18))[:])
     y = y - 28.0
   }
-  let links : Array[(Int, (Double, Double, Double, Double))] = []
+  let links : Array[(Int32, (Double, Double, Double, Double))] = []
   let mut by = 70.0
   for ch in choices {
     let (label, target) = ch
@@ -534,8 +534,8 @@ fn scene_ops(
 
 ///|
 pub async fn run(
-  out_file? : String = "storybook.pdf",
-  quiet? : Bool = false,
+  out_file~ : String = "storybook.pdf",
+  quiet~ : Bool = false,
 ) -> Unit {
   try {
     // Page order:
@@ -655,8 +655,8 @@ pub async fn run(
     fn link_all(
       pdf : @pdf.Pdf,
       page : @pdfpage.Page,
-      refs : Array[Int],
-      links : Array[(Int, (Double, Double, Double, Double))],
+      refs : Array[Int32],
+      links : Array[(Int32, (Double, Double, Double, Double))],
     ) -> @pdfpage.Page raise {
       let mut p = page
       for item in links {

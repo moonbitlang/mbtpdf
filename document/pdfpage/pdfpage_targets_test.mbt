@@ -31,7 +31,7 @@ test "pagenumber_of_target follows GoTo action and fastrefnums" {
     ("/S", Name(PdfName(b"/GoTo"))),
     ("/D", dest_array),
   ])
-  let table : Map[Int, Int] = Map([])
+  let table : Map[Int32, Int32] = Map([])
   table.set(refs[0], 7)
   let dest = @pdfdest.Destination::Action(action)
   assert_eq(
@@ -82,7 +82,7 @@ test "pagenumber_of_target handles target page variants" {
   assert_eq(@pdfpage.PdfPageDoc::new(pdf).pagenumber_of_target(other), 3)
   let refs = pdf.page_reference_numbers()
   let dest = @pdfdest.Destination::Fit(PageObject(refs[0]))
-  let table : Map[Int, Int] = Map([])
+  let table : Map[Int32, Int32] = Map([])
   table.set(refs[0] + 100, 9)
   assert_eq(
     @pdfpage.PdfPageDoc::new(pdf).pagenumber_of_target(dest, fastrefnums=table),

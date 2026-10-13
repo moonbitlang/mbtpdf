@@ -3,12 +3,12 @@
 ///
 pub(all) enum Op {
   Opw(Double)
-  OpJ(Int)
-  Opj(Int)
+  OpJ(Int32)
+  Opj(Int32)
   OpM(Double)
   Opd(Array[Double], Double)
   Opri(String)
-  Opi(Int)
+  Opi(Int32)
   Opgs(String)
   Opq
   OpQ
@@ -39,7 +39,7 @@ pub(all) enum Op {
   OpTz(Double)
   OpTL(Double)
   OpTf(String, Double)
-  OpTr(Int)
+  OpTr(Int32)
   OpTs(Double)
   OpTd(Double, Double)
   OpTD(Double, Double)

@@ -2,23 +2,23 @@
 /// Stream descriptor when bytes are not yet materialized.
 pub(all) struct ToGet {
   input : @pdfio.Input
-  position : Int
-  length : Int
+  position : Int32
+  length : Int32
   crypt : ToGetCrypt
 } derive(Debug(ignore=@pdfio.Input))
 
 ///|
 pub fn ToGet::new(
   input : @pdfio.Input,
-  position : Int,
-  length : Int,
-  crypt? : ToGetCrypt = NoChange,
+  position : Int32,
+  length : Int32,
+  crypt~ : ToGetCrypt = NoChange,
 ) -> ToGet {
   { input, position, length, crypt, }
 }
 
 ///|
-pub fn ToGet::length(self : ToGet) -> Int {
+pub fn ToGet::length(self : ToGet) -> Int32 {
   self.length
 }
 

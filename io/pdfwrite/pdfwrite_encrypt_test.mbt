@@ -60,8 +60,8 @@ fn build_minimal_pdf_for_encrypt() -> @pdf.Pdf {
 fn find_subslice(
   haystack : Array[Byte],
   needle : Array[Byte],
-  start? : Int = 0,
-) -> Int? {
+  start~ : Int32 = 0,
+) -> Int32? {
   if needle.length() == 0 {
     return Some(start)
   }

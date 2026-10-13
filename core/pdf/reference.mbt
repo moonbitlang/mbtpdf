@@ -1,20 +1,20 @@
 ///|
-fn refset_empty() -> Map[Int, Bool] {
+fn refset_empty() -> Map[Int32, Bool] {
   Map([])
 }
 
 ///|
-fn refset_add(n : Int, rs : Map[Int, Bool]) -> Unit {
+fn refset_add(n : Int32, rs : Map[Int32, Bool]) -> Unit {
   rs.set(n, true)
 }
 
 ///|
-fn refset_mem(n : Int, rs : Map[Int, Bool]) -> Bool {
+fn refset_mem(n : Int32, rs : Map[Int32, Bool]) -> Bool {
   rs.contains(n)
 }
 
 ///|
-fn refset_elts(rs : Map[Int, Bool]) -> Array[Int] {
+fn refset_elts(rs : Map[Int32, Bool]) -> Array[Int32] {
   let out = Array(capacity=rs.length())
   for key in rs.keys() {
     out.push(key)
@@ -67,7 +67,7 @@ fn Pdf::referenced_pdfobj(
   self : Pdf,
   no_follow_entries : Array[String],
   no_follow_contains : Array[(String, PdfObject)],
-  found : Map[Int, Bool],
+  found : Map[Int32, Bool],
   obj : PdfObject,
 ) -> Unit {
   match obj {
@@ -121,7 +121,7 @@ pub fn Pdf::objects_referenced(
   no_follow_entries : Array[String],
   no_follow_contains : Array[(String, PdfObject)],
   pdfobject : PdfObject,
-) -> Array[Int] {
+) -> Array[Int32] {
   let found = refset_empty()
   self.referenced_pdfobj(
     no_follow_entries, no_follow_contains, found, pdfobject,
@@ -151,8 +151,8 @@ pub fn Pdf::remove_unreferenced(self : Pdf) -> Unit raise {
 fn Pdf::page_reference_numbers_inner(
   self : Pdf,
   pages_node : PdfObject,
-  node_number : Int,
-) -> Array[Int] {
+  node_number : Int32,
+) -> Array[Int32] {
   if self.lookup_direct("/Type", pages_node) is Some(Name(PdfName(b"/Page"))) {
     [node_number]
   } else {
@@ -177,7 +177,7 @@ fn Pdf::page_reference_numbers_inner(
 
 ///|
 /// Return the page reference numbers in order.
-pub fn Pdf::page_reference_numbers(self : Pdf) -> Array[Int] raise {
+pub fn Pdf::page_reference_numbers(self : Pdf) -> Array[Int32] raise {
   let root = self.lookup_obj(self.root)
   let pages_node = match self.lookup_direct("/Pages", root) {
     Some(p) => p

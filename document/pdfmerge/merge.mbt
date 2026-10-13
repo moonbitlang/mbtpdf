@@ -4,8 +4,8 @@ pub fn PdfMerger::merge_pdfs(
   self : PdfMerger,
   retain_numbering : Bool,
   do_remove_duplicate_fonts : Bool,
-  process_struct_trees? : Bool = true,
-  add_toplevel_document? : Bool = false,
+  process_struct_trees~ : Bool = true,
+  add_toplevel_document~ : Bool = false,
 ) -> @pdf.Pdf raise {
   let names = self.names
   let pdfs = self.pdfs
@@ -29,7 +29,7 @@ pub fn PdfMerger::merge_pdfs(
   })
   let pdf = @pdf.Pdf::empty()
   fn select_pages(
-    range : Array[Int],
+    range : Array[Int32],
     pagelist : Array[@pdfpage.Page],
   ) -> Array[@pdfpage.Page] raise {
     let out = Array(capacity=range.length())
@@ -156,7 +156,7 @@ pub fn PdfMerger::merge_pdfs(
   }
   let new_page_numbers = pdf.page_reference_numbers()
   let changes = combine(old_page_numbers, new_page_numbers)
-  let changes_map : Map[Int, Int] = Map([], capacity=changes.length())
+  let changes_map : Map[Int32, Int32] = Map([], capacity=changes.length())
   for pair in changes {
     changes_map.set(pair.0, pair.1)
   }

@@ -1,5 +1,5 @@
 ///|
-let sbox : Array[Int] = [
+let sbox : Array[Int32] = [
   0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7,
   0xab, 0x76, 0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf,
   0x9c, 0xa4, 0x72, 0xc0, 0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5,
@@ -22,7 +22,7 @@ let sbox : Array[Int] = [
 ]
 
 ///|
-let inv_sbox : Array[Int] = [
+let inv_sbox : Array[Int32] = [
   0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3,
   0xd7, 0xfb, 0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44,
   0xc4, 0xde, 0xe9, 0xcb, 0x54, 0x7b, 0x94, 0x32, 0xa6, 0xc2, 0x23, 0x3d, 0xee, 0x4c,
@@ -45,27 +45,27 @@ let inv_sbox : Array[Int] = [
 ]
 
 ///|
-let rcon : Array[Int] = [
+let rcon : Array[Int32] = [
   0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab,
   0x4d,
 ]
 
 ///|
-fn byte(x : Int) -> Int {
-  Int::land(x, 0xff)
+fn byte(x : Int32) -> Int32 {
+  Int32::land(x, 0xff)
 }
 
 ///|
-fn gmul(a0 : Int, b0 : Int) -> Int {
+fn gmul(a0 : Int32, b0 : Int32) -> Int32 {
   let mut a = a0
   let mut b = b0
   let mut p = 0
   let mut i = 0
   while i < 8 {
-    if Int::land(b, 1) != 0 {
+    if Int32::land(b, 1) != 0 {
       p = p ^ a
     }
-    let high = Int::land(a, 0x80)
+    let high = Int32::land(a, 0x80)
     a = byte(a << 1)
     if high != 0 {
       a = a ^ 0x1b
@@ -77,7 +77,7 @@ fn gmul(a0 : Int, b0 : Int) -> Int {
 }
 
 ///|
-fn sub_bytes(state : Array[Int]) -> Array[Int] {
+fn sub_bytes(state : Array[Int32]) -> Array[Int32] {
   let out = Array::make(16, 0)
   for i in 0..<16 {
     out[i] = sbox[state[i]]
@@ -86,7 +86,7 @@ fn sub_bytes(state : Array[Int]) -> Array[Int] {
 }
 
 ///|
-fn inv_sub_bytes(state : Array[Int]) -> Array[Int] {
+fn inv_sub_bytes(state : Array[Int32]) -> Array[Int32] {
   let out = Array::make(16, 0)
   for i in 0..<16 {
     out[i] = inv_sbox[state[i]]
@@ -95,7 +95,7 @@ fn inv_sub_bytes(state : Array[Int]) -> Array[Int] {
 }
 
 ///|
-fn shift_rows(state : Array[Int]) -> Array[Int] {
+fn shift_rows(state : Array[Int32]) -> Array[Int32] {
   let out = Array::make(16, 0)
   let mut r = 0
   while r < 4 {
@@ -110,7 +110,7 @@ fn shift_rows(state : Array[Int]) -> Array[Int] {
 }
 
 ///|
-fn inv_shift_rows(state : Array[Int]) -> Array[Int] {
+fn inv_shift_rows(state : Array[Int32]) -> Array[Int32] {
   let out = Array::make(16, 0)
   let mut r = 0
   while r < 4 {
@@ -125,7 +125,7 @@ fn inv_shift_rows(state : Array[Int]) -> Array[Int] {
 }
 
 ///|
-fn mix_columns(state : Array[Int]) -> Array[Int] {
+fn mix_columns(state : Array[Int32]) -> Array[Int32] {
   let out = Array::make(16, 0)
   let mut c = 0
   while c < 4 {
@@ -143,7 +143,7 @@ fn mix_columns(state : Array[Int]) -> Array[Int] {
 }
 
 ///|
-fn inv_mix_columns(state : Array[Int]) -> Array[Int] {
+fn inv_mix_columns(state : Array[Int32]) -> Array[Int32] {
   let out = Array::make(16, 0)
   let mut c = 0
   while c < 4 {
@@ -170,10 +170,10 @@ fn inv_mix_columns(state : Array[Int]) -> Array[Int] {
 
 ///|
 fn add_round_key(
-  state : Array[Int],
-  key_schedule : Array[Int],
-  round : Int,
-) -> Array[Int] {
+  state : Array[Int32],
+  key_schedule : Array[Int32],
+  round : Int32,
+) -> Array[Int32] {
   let out = Array::make(16, 0)
   let offset = round * 16
   for i in 0..<16 {
@@ -183,22 +183,22 @@ fn add_round_key(
 }
 
 ///|
-fn rot_word(word : Array[Int]) -> Array[Int] {
+fn rot_word(word : Array[Int32]) -> Array[Int32] {
   [word[1], word[2], word[3], word[0]]
 }
 
 ///|
-fn sub_word(word : Array[Int]) -> Array[Int] {
+fn sub_word(word : Array[Int32]) -> Array[Int32] {
   [sbox[word[0]], sbox[word[1]], sbox[word[2]], sbox[word[3]]]
 }
 
 ///|
-fn expand_key(key : Array[Int], nk : Int) -> (Array[Int], Int) {
+fn expand_key(key : Array[Int32], nk : Int32) -> (Array[Int32], Int32) {
   let nb = 4
   let nr = nk + 6
   let total_words = nb * (nr + 1)
   let key_bytes = Array::make(nk * 4, 0)
-  let limit = Int::min(key.length(), nk * 4)
+  let limit = Int32::min(key.length(), nk * 4)
   let mut k = 0
   while k < limit {
     key_bytes[k] = key[k]
@@ -232,10 +232,10 @@ fn expand_key(key : Array[Int], nk : Int) -> (Array[Int], Int) {
 
 ///|
 fn aes_encrypt_block(
-  key_schedule : Array[Int],
-  nr : Int,
-  block : Array[Int],
-) -> Array[Int] {
+  key_schedule : Array[Int32],
+  nr : Int32,
+  block : Array[Int32],
+) -> Array[Int32] {
   let mut state = add_round_key(block, key_schedule, 0)
   let mut round = 1
   while round < nr {
@@ -253,10 +253,10 @@ fn aes_encrypt_block(
 
 ///|
 fn aes_decrypt_block(
-  key_schedule : Array[Int],
-  nr : Int,
-  block : Array[Int],
-) -> Array[Int] {
+  key_schedule : Array[Int32],
+  nr : Int32,
+  block : Array[Int32],
+) -> Array[Int32] {
   let mut state = add_round_key(block, key_schedule, nr)
   let mut round = nr - 1
   while round > 0 {
@@ -273,7 +273,7 @@ fn aes_decrypt_block(
 }
 
 ///|
-fn get_padding(data : Array[Byte]) -> Int? {
+fn get_padding(data : Array[Byte]) -> Int32? {
   let l = @pdfio.bytes_size(data)
   if l < 16 {
     None
@@ -321,7 +321,7 @@ fn cutshort(data : Array[Byte]) -> Array[Byte] {
 }
 
 ///|
-fn get_blocks(data : Array[Byte]) -> Array[Array[Int]] {
+fn get_blocks(data : Array[Byte]) -> Array[Array[Int32]] {
   let l = @pdfio.bytes_size(data)
   let blocks = []
   let full = if l < 16 { 0 } else { l / 16 }
@@ -355,7 +355,7 @@ fn get_blocks(data : Array[Byte]) -> Array[Array[Int]] {
 }
 
 ///|
-fn bytes_of_blocks(blocks : Array[Array[Int]]) -> Array[Byte] {
+fn bytes_of_blocks(blocks : Array[Array[Int32]]) -> Array[Byte] {
   let out = @pdfio.mkbytes(blocks.length() * 16)
   let mut p = 0
   for block in blocks {
@@ -370,10 +370,10 @@ fn bytes_of_blocks(blocks : Array[Array[Int]]) -> Array[Byte] {
 }
 
 ///|
-let rand_state : Ref[@random.Rand] = Ref(@random.Rand::new())
+let rand_state : Ref[@random.Rand] = Ref(Rand())
 
 ///|
-fn mkiv() -> Array[Int] {
+fn mkiv() -> Array[Int32] {
   let out = Array::make(16, 0)
   let mut i = 0
   while i < 16 {
@@ -388,10 +388,10 @@ fn mkiv() -> Array[Int] {
 /// key, and data. If [remove_padding] is true, padding is removed.
 pub fn PdfCryptPrimitives::aes_decrypt_data(
   _self : PdfCryptPrimitives,
-  nk : Int,
-  key : Array[Int],
+  nk : Int32,
+  key : Array[Int32],
   data : Array[Byte],
-  remove_padding? : Bool = true,
+  remove_padding~ : Bool = true,
 ) -> Array[Byte] {
   let (key_schedule, nr) = expand_key(key, nk)
   // Ciphertext comes from untrusted input: ignore a trailing partial block
@@ -437,10 +437,10 @@ pub fn PdfCryptPrimitives::aes_decrypt_data(
 /// As [aes_decrypt_data] but in ECB mode.
 pub fn PdfCryptPrimitives::aes_decrypt_data_ecb(
   _self : PdfCryptPrimitives,
-  nk : Int,
-  key : Array[Int],
+  nk : Int32,
+  key : Array[Int32],
   data : Array[Byte],
-  remove_padding? : Bool = true,
+  remove_padding~ : Bool = true,
 ) -> Array[Byte] {
   let (key_schedule, nr) = expand_key(key, nk)
   // Ignore a trailing partial block (untrusted input) instead of reading past
@@ -478,10 +478,10 @@ pub fn PdfCryptPrimitives::aes_decrypt_data_ecb(
 /// [aes_encrypt_data nk key data] encrypts with AES (CBC), returning IV+data.
 pub fn PdfCryptPrimitives::aes_encrypt_data(
   _self : PdfCryptPrimitives,
-  nk : Int,
-  key : Array[Int],
+  nk : Int32,
+  key : Array[Int32],
   data : Array[Byte],
-  firstblock? : Array[Int],
+  firstblock? : Array[Int32],
 ) -> Array[Byte] {
   let (key_schedule, nr) = expand_key(key, nk)
   let iv = match firstblock {
@@ -512,8 +512,8 @@ pub fn PdfCryptPrimitives::aes_encrypt_data(
 /// [aes_encrypt_data_ecb nk key data] encrypts data in ECB mode.
 pub fn PdfCryptPrimitives::aes_encrypt_data_ecb(
   _self : PdfCryptPrimitives,
-  nk : Int,
-  key : Array[Int],
+  nk : Int32,
+  key : Array[Int32],
   data : Array[Byte],
 ) -> Array[Byte] {
   let (key_schedule, nr) = expand_key(key, nk)

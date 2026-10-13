@@ -33,8 +33,8 @@ A page label definition.
 pub(all) struct PageLabel {
   labelstyle : LabelStyle
   labelprefix : String?
-  startpage : Int
-  startvalue : Int
+  startpage : Int32
+  startvalue : Int32
 }
 ```
 

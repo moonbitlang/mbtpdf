@@ -1,5 +1,5 @@
 ///|
-fn bytes_string(len : Int, value : Int) -> String {
+fn bytes_string(len : Int32, value : Int32) -> String {
   @pdfio.string_of_int_array(Array::make(len, value))
 }
 

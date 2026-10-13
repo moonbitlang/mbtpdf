@@ -1,14 +1,14 @@
 ///|
 /// PDF date representation.
 pub struct Date {
-  year : Int
-  month : Int
-  day : Int
-  hour : Int
-  minute : Int
-  second : Int
-  hour_offset : Int
-  minute_offset : Int
+  year : Int32
+  month : Int32
+  day : Int32
+  hour : Int32
+  minute : Int32
+  second : Int32
+  hour_offset : Int32
+  minute_offset : Int32
 } derive(Debug)
 
 ///|
@@ -38,7 +38,7 @@ fn Date::check(self : Date) -> Unit raise BadDate {
 }
 
 ///|
-fn abs_int(value : Int) -> Int {
+fn abs_int(value : Int32) -> Int32 {
   if value < 0 {
     -value
   } else {
@@ -47,7 +47,7 @@ fn abs_int(value : Int) -> Int {
 }
 
 ///|
-fn pad_int(value : Int, width : Int) -> String {
+fn pad_int(value : Int32, width : Int32) -> String {
   let s = value.to_string()
   if s.length() >= width {
     s
@@ -64,9 +64,9 @@ fn is_digit(ch : Char) -> Bool {
 ///|
 fn parse_digits(
   chars : Array[Char],
-  pos : Int,
-  count : Int,
-) -> (Int, Int) raise BadDate {
+  pos : Int32,
+  count : Int32,
+) -> (Int32, Int32) raise BadDate {
   if pos + count > chars.length() {
     raise BadDate
   }
@@ -84,9 +84,9 @@ fn parse_digits(
 ///|
 fn optional_twochar_no_tz(
   chars : Array[Char],
-  pos : Int,
-  def : Int,
-) -> (Int, Int) {
+  pos : Int32,
+  def : Int32,
+) -> (Int32, Int32) {
   if pos + 1 < chars.length() &&
     is_digit(chars[pos]) &&
     is_digit(chars[pos + 1]) {
@@ -101,10 +101,10 @@ fn optional_twochar_no_tz(
 ///|
 fn parse_local_time(
   chars : Array[Char],
-  pos : Int,
-  hour_offset : Ref[Int],
-  minute_offset : Ref[Int],
-  sign : Ref[Int],
+  pos : Int32,
+  hour_offset : Ref[Int32],
+  minute_offset : Ref[Int32],
+  sign : Ref[Int32],
 ) -> Unit {
   if pos >= chars.length() {
     return
@@ -136,12 +136,12 @@ fn parse_local_time(
 ///|
 fn optional_twochar(
   chars : Array[Char],
-  pos : Int,
-  def : Int,
-  hour_offset : Ref[Int],
-  minute_offset : Ref[Int],
-  sign : Ref[Int],
-) -> (Int, Int) {
+  pos : Int32,
+  def : Int32,
+  hour_offset : Ref[Int32],
+  minute_offset : Ref[Int32],
+  sign : Ref[Int32],
+) -> (Int32, Int32) {
   if pos >= chars.length() {
     return (def, chars.length())
   }

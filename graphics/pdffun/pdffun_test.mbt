@@ -257,8 +257,8 @@ test "PdfFunction::print covers kinds and array sizes" {
   @pdfe.with_logger(_ => (), fn() {
     let empty_doubles : Array[Double] = []
     let some_doubles : Array[Double] = [0.0, 1.0]
-    let empty_ints : Array[Int] = []
-    let some_ints : Array[Int] = [1, 2]
+    let empty_ints : Array[Int32] = []
+    let some_ints : Array[Int32] = [1, 2]
     let sampled_empty : @pdffun.PdfFunction = {
       func: Sampled({
         size: empty_ints,

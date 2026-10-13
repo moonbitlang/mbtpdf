@@ -1,6 +1,6 @@
 ///|
 /// Encode predictor.
-fn sub_mod(a : Int, b : Int) -> Int {
+fn sub_mod(a : Int32, b : Int32) -> Int32 {
   let mut delta = a - b
   if delta < 0 {
     delta = delta + 256
@@ -9,7 +9,7 @@ fn sub_mod(a : Int, b : Int) -> Int {
 }
 
 ///|
-fn paeth(a : Int, b : Int, c : Int) -> Int {
+fn paeth(a : Int32, b : Int32, c : Int32) -> Int32 {
   let p = a + b - c
   let pa = (p - a).abs()
   let pb = (p - b).abs()
@@ -25,11 +25,11 @@ fn paeth(a : Int, b : Int, c : Int) -> Int {
 
 ///|
 fn encode_png_filter(
-  current : Array[Int],
-  prior : Array[Int],
-  bytes_per_pixel : Int,
-  filter : Int,
-) -> Array[Int] {
+  current : Array[Int32],
+  prior : Array[Int32],
+  bytes_per_pixel : Int32,
+  filter : Int32,
+) -> Array[Int32] {
   let out = Array(capacity=current.length())
   for i in 0..<current.length() {
     let left = if i < bytes_per_pixel {
@@ -57,7 +57,7 @@ fn encode_png_filter(
 }
 
 ///|
-fn predictor_cost(values : Array[Int]) -> Int {
+fn predictor_cost(values : Array[Int32]) -> Int32 {
   let mut total = 0
   for v in values {
     let signed = if v > 127 { v - 256 } else { v }
@@ -68,11 +68,11 @@ fn predictor_cost(values : Array[Int]) -> Int {
 
 ///|
 fn encode_png_line(
-  current : Array[Int],
-  prior : Array[Int],
-  bytes_per_pixel : Int,
-  pred : Int,
-) -> (Int, Array[Int]) {
+  current : Array[Int32],
+  prior : Array[Int32],
+  bytes_per_pixel : Int32,
+  pred : Int32,
+) -> (Int32, Array[Int32]) {
   let filter = if pred == 15 { -1 } else { pred - 10 }
   if filter >= 0 && filter <= 4 {
     let encoded = encode_png_filter(current, prior, bytes_per_pixel, filter)
@@ -95,10 +95,10 @@ fn encode_png_line(
 
 ///|
 fn encode_png_predictor(
-  pred : Int,
-  colors : Int,
-  bpc : Int,
-  columns : Int,
+  pred : Int32,
+  colors : Int32,
+  bpc : Int32,
+  columns : Int32,
   stream : Array[Byte],
 ) -> Array[Byte] raise CodecError {
   if bpc != 8 {
@@ -134,9 +134,9 @@ fn encode_png_predictor(
 
 ///|
 fn encode_tiff_predictor(
-  colors : Int,
-  bpc : Int,
-  columns : Int,
+  colors : Int32,
+  bpc : Int32,
+  columns : Int32,
   stream : Array[Byte],
 ) -> Array[Byte] raise CodecError {
   if bpc != 8 {
@@ -163,10 +163,10 @@ fn encode_tiff_predictor(
 
 ///|
 fn encode_predictor(
-  _pred : Int,
-  _colors : Int,
-  _bpc : Int,
-  _columns : Int,
+  _pred : Int32,
+  _colors : Int32,
+  _bpc : Int32,
+  _columns : Int32,
   _stream : Array[Byte],
 ) -> Array[Byte] raise CodecError {
   let pred = _pred
@@ -184,13 +184,19 @@ fn encode_predictor(
 
 ///|
 fn decode_scanline_pair(
-  prior_decoded : Array[Int],
-  current : Array[Int],
-  pred : Int,
-  bytes_per_pixel : Int,
-) -> Array[Int] raise CodecError {
+  prior_decoded : Array[Int32],
+  current : Array[Int32],
+  pred : Int32,
+  bytes_per_pixel : Int32,
+) -> Array[Int32] raise CodecError {
   let output = current.copy()
-  let get0 = (arr : Array[Int], idx : Int) => if idx < 0 { 0 } else { arr[idx] }
+  let get0 = (arr : Array[Int32], idx : Int32) => {
+    if idx < 0 {
+      0
+    } else {
+      arr[idx]
+    }
+  }
   match pred {
     0 => ()
     1 =>
@@ -208,7 +214,7 @@ fn decode_scanline_pair(
         output[i] = (get0(current, i) + (left + up) / 2) % 256
       }
     4 => {
-      let paeth = (a : Int, b : Int, c : Int) => {
+      let paeth = (a : Int32, b : Int32, c : Int32) => {
         let p = a + b - c
         let pa = (p - a).abs()
         let pb = (p - b).abs()
