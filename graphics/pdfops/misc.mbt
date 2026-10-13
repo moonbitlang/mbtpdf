@@ -8,7 +8,7 @@ pub fn Op::components(
   pdf : @pdf.Pdf,
   resources : @pdf.PdfObject,
   space : @pdf.PdfObject,
-) -> Int raise {
+) -> Int32 raise {
   match space {
     Name(name) => {
       let name_s = name.to_string_bytes()

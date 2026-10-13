@@ -4,8 +4,8 @@ let ctx : @pdfflate.PdfFlate = @pdfflate.PdfFlate::new()
 ///|
 priv struct LsbBitWriter {
   out : Array[Byte]
-  mut cur : Int
-  mut bit_pos : Int
+  mut cur : Int32
+  mut bit_pos : Int32
 }
 
 ///|
@@ -16,8 +16,8 @@ fn LsbBitWriter::new() -> LsbBitWriter {
 ///|
 fn LsbBitWriter::write_bits(
   self : LsbBitWriter,
-  value : Int,
-  count : Int,
+  value : Int32,
+  count : Int32,
 ) -> Unit {
   for i in 0..<count {
     let bit = (value >> i) & 1
@@ -59,7 +59,7 @@ fn run_uncompress(
     }
   }
   let out : Array[Byte] = []
-  let output = (buf : Array[Byte], length : Int) => {
+  let output = (buf : Array[Byte], length : Int32) => {
     for i in 0..<length {
       out.push(buf[i])
     }
@@ -85,7 +85,7 @@ fn run_compress(data : Array[Byte], header : Bool) -> Array[Byte] {
     }
   }
   let out : Array[Byte] = []
-  let output = (buf : Array[Byte], length : Int) => {
+  let output = (buf : Array[Byte], length : Int32) => {
     for i in 0..<length {
       out.push(buf[i])
     }

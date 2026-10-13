@@ -4,7 +4,7 @@ pub type EncryptionValues = (
   @pdfcryptprimitives.Encryption,
   String,
   String,
-  Int,
+  Int32,
   String,
   String?,
   String?,
@@ -23,11 +23,11 @@ pub(all) struct SavedEncryption {
 pub(all) struct DeferredEncryption {
   crypt_type : @pdfcryptprimitives.Encryption
   file_encryption_key : String?
-  obj : Int
-  gen : Int
-  key : Array[Int]
-  keylength : Int
-  r : Int
+  obj : Int32
+  gen : Int32
+  key : Array[Int32]
+  keylength : Int32
+  r : Int32
 } derive(Debug)
 
 ///|

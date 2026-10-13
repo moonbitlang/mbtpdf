@@ -94,12 +94,12 @@ The `Input` struct provides a seekable byte stream:
 ```mbt nocheck
 ///|
 pub struct Input {
-  pos_in : () -> Int // Current position
-  seek_in : (Int) -> Unit // Seek to position
+  pos_in : () -> Int32 // Current position
+  seek_in : (Int32) -> Unit // Seek to position
   input_char : () -> Char? // Read next char
-  input_byte : () -> Int // Read next byte
-  in_channel_length : Int // Total length
-  set_offset : (Int) -> Unit // Set base offset
+  input_byte : () -> Int32 // Read next byte
+  in_channel_length : Int32 // Total length
+  set_offset : (Int32) -> Unit // Set base offset
   source : String // Source description
 }
 ```
@@ -170,12 +170,12 @@ The `Output` struct provides a seekable output stream:
 ```mbt nocheck
 ///|
 pub struct Output {
-  pos_out : () -> Int // Current position
-  seek_out : (Int) -> Unit // Seek to position
+  pos_out : () -> Int32 // Current position
+  seek_out : (Int32) -> Unit // Seek to position
   output_char : (Char) -> Unit // Write char
-  output_byte : (Int) -> Unit // Write byte
+  output_byte : (Int32) -> Unit // Write byte
   output_string : (String) -> Unit // Write string
-  out_channel_length : () -> Int // Written length
+  out_channel_length : () -> Int32 // Written length
   flush : async () -> Unit // Flush buffer
 }
 ```
@@ -275,7 +275,7 @@ test "write bitstream" {
 
 ```mbt nocheck
 ///|
-pub let no_more : Int = -1 // Indicates end of input
+pub let no_more : Int32 = -1 // Indicates end of input
 ```
 
 ## Utility Functions

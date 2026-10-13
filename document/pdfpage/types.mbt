@@ -66,7 +66,7 @@ pub fn Page::blank(paper : @pdfpaper.Paper) -> Page {
 
 ///|
 /// Convert rotation to integers.
-pub fn Rotation::to_int(self : Rotation) -> Int {
+pub fn Rotation::to_int(self : Rotation) -> Int32 {
   match self {
     Rotate0 => 0
     Rotate90 => 90
@@ -77,7 +77,7 @@ pub fn Rotation::to_int(self : Rotation) -> Int {
 
 ///|
 /// Convert an integer to rotation.
-pub fn Rotation::from_int(i : Int) -> Rotation raise {
+pub fn Rotation::from_int(i : Int32) -> Rotation raise {
   let r = i % 360
   match r {
     0 => Rotate0

@@ -48,7 +48,7 @@ priv enum CalcTok {
   LBrace
   RBrace
   Bool(Bool)
-  Int(Int)
+  Int(Int32)
   Real(Double)
   Name(String)
 }
@@ -169,9 +169,9 @@ fn calc_lex(text : String) -> Array[CalcTok] {
 ///|
 fn calc_parse_seq(
   toks : Array[CalcTok],
-  start : Int,
+  start : Int32,
   stop_on_rbrace : Bool,
-) -> (Array[CalcNode], Int) raise {
+) -> (Array[CalcNode], Int32) raise {
   let out = []
   let mut i = start
   while i < toks.length() {

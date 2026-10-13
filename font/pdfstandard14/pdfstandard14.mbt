@@ -14,9 +14,9 @@ pub fn PdfStandard14::new() -> PdfStandard14 {
 ///|
 type AfmTables = (
   Map[String, String],
-  Map[Int, Int],
-  Map[(Int, Int), Int],
-  Map[String, Int],
+  Map[Int32, Int32],
+  Map[(Int32, Int32), Int32],
+  Map[String, Int32],
 )
 
 ///|
@@ -139,7 +139,7 @@ fn lookup_tables(font : @pdffont.StandardFont) -> AfmTables raise {
 pub fn PdfStandard14::baseline_adjustment(
   _self : PdfStandard14,
   font : @pdffont.StandardFont,
-) -> Int {
+) -> Int32 {
   match font {
     TimesRoman => 662 / 2
     TimesBold => 676 / 2
@@ -159,7 +159,7 @@ pub fn PdfStandard14::baseline_adjustment(
 }
 
 ///|
-fn find_kern(kerns : Map[(Int, Int), Int], key : (Int, Int)) -> Int {
+fn find_kern(kerns : Map[(Int32, Int32), Int32], key : (Int32, Int32)) -> Int32 {
   match kerns.get(key) {
     Some(value) => value
     None => 0
@@ -168,12 +168,12 @@ fn find_kern(kerns : Map[(Int, Int), Int], key : (Int, Int)) -> Int {
 
 ///|
 fn find_width(
-  widths : Map[Int, Int],
-  charname_to_width : Map[String, Int],
+  widths : Map[Int32, Int32],
+  charname_to_width : Map[String, Int32],
   encoding : @pdffont.Encoding,
-  encoding_table : Map[Int, String],
-  code : Int,
-) -> Int {
+  encoding_table : Map[Int32, String],
+  code : Int32,
+) -> Int32 {
   match encoding {
     ImplicitInFontFile =>
       match widths.get(code) {
@@ -200,13 +200,13 @@ fn find_width(
 ///|
 fn width(
   dokern : Bool,
-  widths : Map[Int, Int],
-  charname_to_width : Map[String, Int],
+  widths : Map[Int32, Int32],
+  charname_to_width : Map[String, Int32],
   encoding : @pdffont.Encoding,
-  encoding_table : Map[Int, String],
-  kerns : Map[(Int, Int), Int],
-  codes : Array[Int],
-) -> Int {
+  encoding_table : Map[Int32, String],
+  kerns : Map[(Int32, Int32), Int32],
+  codes : Array[Int32],
+) -> Int32 {
   if codes.length() == 0 {
     return 0
   }
@@ -229,7 +229,7 @@ pub fn PdfStandard14::textwidth(
   encoding : @pdffont.Encoding,
   font : @pdffont.StandardFont,
   s : String,
-) -> Int raise {
+) -> Int32 raise {
   let (_, widths, kerns, charname_to_width) = lookup_tables(font)
   let encoding_table = @pdffont.Encoding::table(encoding)
   let codes = Array(capacity=s.length())
@@ -253,7 +253,7 @@ pub fn PdfStandard14::afm_data(
 pub fn PdfStandard14::stemv_of_standard_font(
   _self : PdfStandard14,
   font : @pdffont.StandardFont,
-) -> Int {
+) -> Int32 {
   match font {
     TimesRoman => 116
     TimesBold => 122
@@ -276,7 +276,7 @@ pub fn PdfStandard14::stemv_of_standard_font(
 pub fn PdfStandard14::flags_of_standard_font(
   _self : PdfStandard14,
   font : @pdffont.StandardFont,
-) -> Int {
+) -> Int32 {
   match font {
     Symbol => 65541
     ZapfDingbats => 4

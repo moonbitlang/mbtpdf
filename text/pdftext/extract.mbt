@@ -4,7 +4,7 @@
 ///|
 pub fn PdfText::extract_text(
   self : PdfText,
-  page_break? : String = "\n\n",
+  page_break~ : String = "\n\n",
 ) -> String raise {
   self.extract_text_by_page().join(page_break)
 }
@@ -21,7 +21,7 @@ fn PdfText::extract_text_from_page(
   page : @pdfpage.Page,
 ) -> String raise {
   let builder = StringBuilder()
-  let visited : Map[Int, Bool] = Map([])
+  let visited : Map[Int32, Bool] = Map([])
   self.append_text_from_streams(builder, page.resources, page.content, visited)
   builder.to_string()
 }
@@ -32,7 +32,7 @@ fn PdfText::append_text_from_streams(
   builder : StringBuilder,
   resources : @pdf.PdfObject,
   streams : Array[@pdf.PdfObject],
-  visited : Map[Int, Bool],
+  visited : Map[Int32, Bool],
 ) -> Unit raise {
   let ops = @pdfops.Op::parse_operators(self.pdf, resources, streams)
   let mut in_text = false
@@ -96,7 +96,7 @@ fn PdfText::append_text_from_streams(
     )
   }
 
-  fn mark_visited(obj_num : Int?) -> Bool {
+  fn mark_visited(obj_num : Int32?) -> Bool {
     match obj_num {
       Some(i) =>
         match visited.get(i) {
@@ -115,7 +115,7 @@ fn PdfText::append_text_from_streams(
       Some(Dictionary(entries)) =>
         if entries.search_by(pair => pair.0 == name) is Some(idx) {
           let obj_ref = entries[idx].1
-          let obj_num : Int? = if obj_ref is Indirect(i) {
+          let obj_num : Int32? = if obj_ref is Indirect(i) {
             Some(i)
           } else {
             None

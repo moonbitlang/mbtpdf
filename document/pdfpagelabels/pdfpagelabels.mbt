@@ -17,8 +17,8 @@ pub(all) enum LabelStyle {
 pub(all) struct PageLabel {
   labelstyle : LabelStyle
   labelprefix : String?
-  startpage : Int
-  startvalue : Int
+  startpage : Int32
+  startvalue : Int32
 } derive(Debug)
 
 ///|
@@ -124,7 +124,7 @@ pub fn PdfPageLabels::complete(
 }
 
 ///|
-fn letter_string(n : Int) -> String {
+fn letter_string(n : Int32) -> String {
   if n <= 0 {
     return ""
   }
@@ -139,11 +139,11 @@ fn letter_string(n : Int) -> String {
 }
 
 ///|
-fn roman_upper(n : Int) -> String {
+fn roman_upper(n : Int32) -> String {
   if n <= 0 {
     return ""
   }
-  let symbols : Array[(Int, String)] = [
+  let symbols : Array[(Int32, String)] = [
     (1000, "M"),
     (900, "CM"),
     (500, "D"),
@@ -171,7 +171,7 @@ fn roman_upper(n : Int) -> String {
 }
 
 ///|
-fn string_of_pagenumber(n : Int, style : LabelStyle) -> String {
+fn string_of_pagenumber(n : Int32, style : LabelStyle) -> String {
   match style {
     NoLabelPrefixOnly => ""
     DecimalArabic => n.to_string()
@@ -183,7 +183,7 @@ fn string_of_pagenumber(n : Int, style : LabelStyle) -> String {
 }
 
 ///|
-fn pagelabeltext_of_single(n : Int, label : PageLabel) -> String {
+fn pagelabeltext_of_single(n : Int32, label : PageLabel) -> String {
   let realnumber = n - (label.startpage - label.startvalue)
   let prefix = match label.labelprefix {
     None => ""
@@ -196,7 +196,7 @@ fn pagelabeltext_of_single(n : Int, label : PageLabel) -> String {
 /// Return the text for a page label.
 pub fn PdfPageLabels::pagelabeltext_of_pagenumber(
   _self : PdfPageLabels,
-  n : Int,
+  n : Int32,
   labels : Array[PageLabel],
 ) -> String raise {
   let idx = label_index_for_page(n, labels)
@@ -207,7 +207,7 @@ pub fn PdfPageLabels::pagelabeltext_of_pagenumber(
 }
 
 ///|
-fn pagelabel_of_single(n : Int, label : PageLabel) -> PageLabel {
+fn pagelabel_of_single(n : Int32, label : PageLabel) -> PageLabel {
   let realnumber = n - (label.startpage - label.startvalue)
   {
     labelstyle: label.labelstyle,
@@ -221,7 +221,7 @@ fn pagelabel_of_single(n : Int, label : PageLabel) -> PageLabel {
 /// Single label representing a given page.
 pub fn PdfPageLabels::pagelabel_of_pagenumber(
   _self : PdfPageLabels,
-  n : Int,
+  n : Int32,
   labels : Array[PageLabel],
 ) -> PageLabel raise {
   let idx = label_index_for_page(n, labels)
@@ -232,7 +232,7 @@ pub fn PdfPageLabels::pagelabel_of_pagenumber(
 }
 
 ///|
-fn label_index_for_page(n : Int, labels : Array[PageLabel]) -> Int? {
+fn label_index_for_page(n : Int32, labels : Array[PageLabel]) -> Int32? {
   match labels {
     [] => return None
     _ => ()
@@ -251,10 +251,10 @@ fn label_index_for_page(n : Int, labels : Array[PageLabel]) -> Int? {
 /// Add a range starting at label.startpage, ending at endpage.
 pub fn PdfPageLabels::add_label(
   _self : PdfPageLabels,
-  endpage : Int,
+  endpage : Int32,
   labels : Array[PageLabel],
   label : PageLabel,
-  range_end : Int,
+  range_end : Int32,
 ) -> Array[PageLabel] {
   let (before_or_equal, after) = partition(labels, x => x.startpage <= range_end)
   let before_or_during = before_or_equal.filter(x => {
@@ -338,7 +338,7 @@ pub fn PdfPageLabels::coalesce(
 pub fn PdfPageLabels::merge_pagelabels(
   self : PdfPageLabels,
   pdfs : Array[@pdf.Pdf],
-  ranges : Array[Array[Int]],
+  ranges : Array[Array[Int32]],
 ) -> Array[PageLabel] raise {
   let completed = Array(capacity=pdfs.length())
   for pdf in pdfs {
@@ -461,7 +461,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
 }
 
 ///|
-fn indices_for_length(length : Int) -> Array[Int] {
+fn indices_for_length(length : Int32) -> Array[Int32] {
   let out = Array(capacity=length)
   for i in 1..<=length {
     out.push(i)

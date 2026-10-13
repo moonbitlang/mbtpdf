@@ -1,5 +1,5 @@
 ///|
-fn is_delimiter_byte(b : Int) -> Bool {
+fn is_delimiter_byte(b : Int32) -> Bool {
   match b {
     b if b == '(' => true
     b if b == ')' => true
@@ -16,7 +16,7 @@ fn is_delimiter_byte(b : Int) -> Bool {
 }
 
 ///|
-fn hex_digit(value : Int) -> Char {
+fn hex_digit(value : Int32) -> Char {
   match value {
     0 => '0'
     1 => '1'

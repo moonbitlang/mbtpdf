@@ -67,7 +67,7 @@ test "components handles extra branches and errors" {
       ),
       1,
     )
-    let missing_dict : Result[Int, Error] = try
+    let missing_dict : Result[Int32, Error] = try
       Op::components(pdf, resources, Name(PdfName(b"/MyCS"))) |> Ok
     catch {
       e => Err(e)
@@ -76,13 +76,13 @@ test "components handles extra branches and errors" {
     let resources_empty : @pdf.PdfObject = Dictionary([
       ("/ColorSpace", Dictionary([])),
     ])
-    let missing_entry : Result[Int, Error] = try
+    let missing_entry : Result[Int32, Error] = try
       Op::components(pdf, resources_empty, Name(PdfName(b"/MyCS"))) |> Ok
     catch {
       e => Err(e)
     }
     assert_true(missing_entry is Err(_))
-    let bad_icc : Result[Int, Error] = try
+    let bad_icc : Result[Int32, Error] = try
       Op::components(
         pdf,
         resources,
@@ -93,7 +93,7 @@ test "components handles extra branches and errors" {
       e => Err(e)
     }
     assert_true(bad_icc is Err(_))
-    let bad_device_n : Result[Int, Error] = try
+    let bad_device_n : Result[Int32, Error] = try
       Op::components(
         pdf,
         resources,
@@ -104,7 +104,7 @@ test "components handles extra branches and errors" {
       e => Err(e)
     }
     assert_true(bad_device_n is Err(_))
-    let bad_other : Result[Int, Error] = try
+    let bad_other : Result[Int32, Error] = try
       Op::components(pdf, resources, Integer(1)) |> Ok
     catch {
       e => Err(e)
@@ -133,7 +133,7 @@ test "components errors on array without name leader" {
   @pdfe.with_logger(_ => (), fn() {
     let pdf = @pdf.Pdf::empty()
     let resources : @pdf.PdfObject = Dictionary([])
-    let res : Result[Int, Error] = try
+    let res : Result[Int32, Error] = try
       Op::components(
         pdf,
         resources,

@@ -1,5 +1,5 @@
 ///|
-fn position_1(value : Int, values : Array[Int]) -> Int? {
+fn position_1(value : Int32, values : Array[Int32]) -> Int32? {
   match values[:].search(value) {
     Some(i) => Some(i + 1)
     None => None
@@ -20,8 +20,8 @@ fn matrix_is_identity(m : @pdftransform.TransformMatrix) -> Bool {
 pub fn PdfPageDoc::pagenumber_of_target(
   self : PdfPageDoc,
   target : @pdfdest.Destination,
-  fastrefnums? : Map[Int, Int],
-) -> Int raise {
+  fastrefnums? : Map[Int32, Int32],
+) -> Int32 raise {
   let pdf = self.pdf
   match target {
     NullDestination | NamedDestination(_) | StringDestination(_) => 0
@@ -85,8 +85,8 @@ pub fn[A, B, C] ppstub(
 ///|
 fn change_pages_find_matrix(
   dest : @pdfdest.Destination,
-  mattable : Map[Int, @pdftransform.TransformMatrix],
-  refnumstable : Map[Int, Int],
+  mattable : Map[Int32, @pdftransform.TransformMatrix],
+  refnumstable : Map[Int32, Int32],
 ) -> @pdftransform.TransformMatrix {
   match dest {
     XYZ(tp, _, _, _)
@@ -113,8 +113,8 @@ fn change_pages_find_matrix(
 
 ///|
 fn change_pages_process_bookmarks(
-  mattable : Map[Int, @pdftransform.TransformMatrix],
-  refnumstable : Map[Int, Int],
+  mattable : Map[Int32, @pdftransform.TransformMatrix],
+  refnumstable : Map[Int32, Int32],
   pdf : @pdf.Pdf,
 ) -> @pdf.Pdf raise {
   let bookmarks = @pdfmarks.PdfMarks::new(pdf).read_bookmarks(
@@ -134,10 +134,10 @@ fn change_pages_process_bookmarks(
 ///|
 fn rewrite_dest(
   pdf : @pdf.Pdf,
-  mattable : Map[Int, @pdftransform.TransformMatrix],
-  refnumstable : Map[Int, Int],
+  mattable : Map[Int32, @pdftransform.TransformMatrix],
+  refnumstable : Map[Int32, Int32],
   dest : @pdf.PdfObject,
-) -> Int? raise {
+) -> Int32? raise {
   let parsed_dest = @pdfdest.Destination::read(pdf, dest)
   let tr = change_pages_find_matrix(parsed_dest, mattable, refnumstable)
   if matrix_is_identity(tr) {
@@ -152,8 +152,8 @@ fn rewrite_dest(
 ///|
 fn rewrite_action(
   pdf : @pdf.Pdf,
-  mattable : Map[Int, @pdftransform.TransformMatrix],
-  refnumstable : Map[Int, Int],
+  mattable : Map[Int32, @pdftransform.TransformMatrix],
+  refnumstable : Map[Int32, Int32],
   action : @pdf.PdfObject,
 ) -> @pdf.PdfObject? raise {
   match pdf.lookup_direct("/S", action) {
@@ -172,8 +172,8 @@ fn rewrite_action(
 
 ///|
 fn change_pages_process_annotations(
-  mattable : Map[Int, @pdftransform.TransformMatrix],
-  refnumstable : Map[Int, Int],
+  mattable : Map[Int32, @pdftransform.TransformMatrix],
+  refnumstable : Map[Int32, Int32],
   pdf : @pdf.Pdf,
 ) -> Unit raise {
   let pages = PdfPageDoc::new(pdf).pages_of_pagetree()
@@ -238,8 +238,8 @@ fn rewrite_openaction(pdf : @pdf.Pdf, action : @pdf.PdfObject) -> Unit raise {
 
 ///|
 fn change_pages_process_openaction(
-  mattable : Map[Int, @pdftransform.TransformMatrix],
-  refnumstable : Map[Int, Int],
+  mattable : Map[Int32, @pdftransform.TransformMatrix],
+  refnumstable : Map[Int32, Int32],
   pdf : @pdf.Pdf,
 ) -> Unit raise {
   match pdf.lookup_direct("/OpenAction", pdf.catalog_of_pdf()) {
@@ -276,7 +276,7 @@ fn copy_object_stream_ids(pdf : @pdf.Pdf, basepdf : @pdf.Pdf) -> Unit {
 }
 
 ///|
-fn select_page_ref_change(refs : Array[Int], index_1 : Int) -> Int raise {
+fn select_page_ref_change(refs : Array[Int32], index_1 : Int32) -> Int32 raise {
   if index_1 < 1 || index_1 > refs.length() {
     raise @pdf.PdfError::Msg("change_pages: bad serial number")
   }
@@ -289,8 +289,8 @@ pub fn PdfPageDoc::change_pages(
   self : PdfPageDoc,
   change_references : Bool,
   pages : Array[Page],
-  matrices? : Array[(Int, @pdftransform.TransformMatrix)],
-  changes? : Array[(Int, Int)],
+  matrices? : Array[(Int32, @pdftransform.TransformMatrix)],
+  changes? : Array[(Int32, Int32)],
 ) -> @pdf.Pdf raise {
   let basepdf = self.pdf
   let pdf = @pdf.Pdf::empty()

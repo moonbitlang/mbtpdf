@@ -10,7 +10,7 @@ fn ascii85_pow85() -> Array[Int64] {
 }
 
 ///|
-fn ascii85_byte(value : Int64, shift : Int) -> Byte {
+fn ascii85_byte(value : Int64, shift : Int32) -> Byte {
   let mask = Int64::from_int(0xff)
   ((value >> shift) & mask).to_int().to_byte()
 }
@@ -60,8 +60,8 @@ fn encode_ascii85(stream : Array[Byte]) -> Array[Byte] {
 fn decode_ascii85(input : @pdfio.Input) -> Array[Byte] raise CodecError {
   let pow85 = ascii85_pow85()
   let output = []
-  let mut digits : Array[Int] = Array(capacity=5)
-  fn flush_group(group : Array[Int]) -> Unit {
+  let mut digits : Array[Int32] = Array(capacity=5)
+  fn flush_group(group : Array[Int32]) -> Unit {
     let len = group.length()
     if len < 2 {
       return

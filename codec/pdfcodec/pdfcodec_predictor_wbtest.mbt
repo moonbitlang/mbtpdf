@@ -5,7 +5,7 @@ let predictor_ctx : PdfCodec = PdfCodec::new()
 fn lookup_int_entry(
   entries : Array[(String, @pdf.PdfObject)],
   key : String,
-) -> Int? {
+) -> Int32? {
   match entries.search_by(pair => pair.0 == key) {
     Some(idx) =>
       match entries[idx].1 {
@@ -21,10 +21,10 @@ fn lookup_int_entry(
 fn assert_decode_parms(
   pdf : @pdf.Pdf,
   dict : @pdf.PdfObject,
-  pred : Int,
-  columns : Int,
-  colors : Int,
-  bpc : Int,
+  pred : Int32,
+  columns : Int32,
+  colors : Int32,
+  bpc : Int32,
 ) -> Unit raise {
   match pdf.lookup_direct("/DecodeParms", dict) {
     Some(Dictionary(entries)) => {
@@ -47,7 +47,7 @@ fn assert_decode_parms(
 }
 
 ///|
-fn roundtrip_predictor(pred : Predictor, pred_value : Int) -> Unit raise {
+fn roundtrip_predictor(pred : Predictor, pred_value : Int32) -> Unit raise {
   let pdf = @pdf.Pdf::empty()
   let original = @pdfio.bytes_of_string("abcdefghi")
   let dict = @pdf.PdfObject::Dictionary([

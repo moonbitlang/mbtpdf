@@ -1,5 +1,5 @@
 ///|
-fn stream_compare(pdf : @pdf.Pdf, x : Int, y : Int) -> Int {
+fn stream_compare(pdf : @pdf.Pdf, x : Int32, y : Int32) -> Int32 {
   try {
     let xobj = pdf.lookup_obj(x)
     let yobj = pdf.lookup_obj(y)
@@ -52,7 +52,7 @@ pub fn PdfMergeDoc::remove_duplicate_fonts(self : PdfMergeDoc) -> Unit {
   for group in toprocess {
     match group {
       [keep, .. rest] => {
-        let changetable : Map[Int, Int] = Map([], capacity=rest.length())
+        let changetable : Map[Int32, Int32] = Map([], capacity=rest.length())
         for item in rest {
           changetable.set(item, keep)
         }

@@ -11,7 +11,7 @@ test "PdfName compare, bytes, and show" {
 
 ///|
 test "pdfobjmap_find fails on missing key" {
-  let res : Result[(Ref[@pdf.ObjectData], Int), Error] = try
+  let res : Result[(Ref[@pdf.ObjectData], Int32), Error] = try
     @pdf.pdfobjmap_find(1, @pdf.pdfobjmap_empty()) |> Ok
   catch {
     e => Err(e)

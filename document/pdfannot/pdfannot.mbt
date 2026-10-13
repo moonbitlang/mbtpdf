@@ -30,7 +30,7 @@ pub(all) struct Border {
   vradius : Double
   hradius : Double
   style : Style
-  dasharray : Array[Int]
+  dasharray : Array[Int32]
 } derive(Debug)
 
 ///|
@@ -70,12 +70,12 @@ pub(all) struct Annotation {
   subject : String?
   rectangle : (Double, Double, Double, Double)
   border : Border
-  colour : (Int, Int, Int)?
+  colour : (Int32, Int32, Int32)?
   annotrest : PdfObject
 }
 
 ///|
-fn toint(f : Double) -> Int {
+fn toint(f : Double) -> Int32 {
   f.to_int()
 }
 
@@ -83,7 +83,7 @@ fn toint(f : Double) -> Int {
 fn int_array_of_numbers(
   pdf : @pdf.Pdf,
   values : Array[PdfObject],
-) -> Array[Int] raise {
+) -> Array[Int32] raise {
   let out = Array(capacity=values.length())
   for v in values {
     out.push(toint(pdf.getnum(v)))
@@ -233,7 +233,7 @@ fn read_annotation(pdf : @pdf.Pdf, annot : PdfObject) -> Annotation raise {
 }
 
 ///|
-fn get_popup_parent(pdf : @pdf.Pdf, annotation : PdfObject) -> Int? raise {
+fn get_popup_parent(pdf : @pdf.Pdf, annotation : PdfObject) -> Int32? raise {
   match pdf.direct(annotation) {
     Dictionary(d) =>
       match PdfObject::Dictionary(d).lookup_immediate("/Parent") {
@@ -252,7 +252,7 @@ pub fn PdfAnnot::annotations_of_page(
 ) -> Array[Annotation] raise {
   match self.pdf.lookup_direct("/Annots", page.rest) {
     Some(PdfArray(annotations)) => {
-      let popup_parents : Map[Int, Unit] = Map(
+      let popup_parents : Map[Int32, Unit] = Map(
         [],
         capacity=annotations.length(),
       )
@@ -372,10 +372,10 @@ fn Annotation::to_pdf_object(self : Annotation) -> PdfObject raise {
 /// Make a border.
 pub fn Border::new(
   width : Double,
-  vradius? : Double = 0.0,
-  hradius? : Double = 0.0,
-  style? : Style = NoStyle,
-  dasharray? : Array[Int] = [],
+  vradius~ : Double = 0.0,
+  hradius~ : Double = 0.0,
+  style~ : Style = NoStyle,
+  dasharray~ : Array[Int32] = [],
 ) -> Border {
   { width, vradius, hradius, style, dasharray, }
 }
@@ -385,9 +385,9 @@ pub fn Border::new(
 pub fn Annotation::new(
   subtype : Subtype,
   content? : String,
-  border? : Border = Border::new(0.0),
-  rectangle? : (Double, Double, Double, Double) = (0.0, 0.0, 0.0, 0.0),
-  colour? : (Int, Int, Int),
+  border~ : Border = Border::new(0.0),
+  rectangle~ : (Double, Double, Double, Double) = (0.0, 0.0, 0.0, 0.0),
+  colour? : (Int32, Int32, Int32),
   subject? : String,
 ) -> Annotation {
   {

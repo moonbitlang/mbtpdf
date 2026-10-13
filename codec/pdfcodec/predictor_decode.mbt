@@ -1,10 +1,10 @@
 ///|
 /// Decode predictor (placeholder).
 fn decode_predictor(
-  _pred : Int,
-  _colors : Int,
-  _bpc : Int,
-  _columns : Int,
+  _pred : Int32,
+  _colors : Int32,
+  _bpc : Int32,
+  _columns : Int32,
   _stream : Array[Byte],
 ) -> Array[Byte] raise CodecError {
   let pred = _pred
@@ -48,9 +48,9 @@ fn decode_predictor(
 
 ///|
 fn decode_tiff_predictor(
-  colors : Int,
-  bpc : Int,
-  scanline_width : Int,
+  colors : Int32,
+  bpc : Int32,
+  scanline_width : Int32,
   stream : Array[Byte],
 ) -> Array[Byte] raise CodecError {
   if bpc != 8 {
@@ -77,9 +77,9 @@ fn decode_tiff_predictor(
 
 ///|
 fn decode_png_predictor(
-  bpc : Int,
-  scanline_width : Int,
-  bytes_per_pixel : Int,
+  bpc : Int32,
+  scanline_width : Int32,
+  bytes_per_pixel : Int32,
   stream : Array[Byte],
 ) -> Array[Byte] raise CodecError {
   if bpc != 8 {

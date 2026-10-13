@@ -4,7 +4,7 @@
 ///|
 pub struct CMap {
   map : Array[(String, String)]
-  wmode : Int?
+  wmode : Int32?
 } derive(Debug)
 
 ///|
@@ -22,7 +22,7 @@ fn is_whitespace(c : Char) -> Bool {
 ///|
 fn match_at(
   chars : ArrayView[Char],
-  index : Int,
+  index : Int32,
   token : ArrayView[Char],
 ) -> Bool {
   if index + token.length() > chars.length() {
@@ -39,9 +39,9 @@ fn match_at(
 ///|
 fn get_until(
   chars : ArrayView[Char],
-  start : Int,
+  start : Int32,
   end_token : ArrayView[Char],
-) -> (ArrayView[Char], Int) {
+) -> (ArrayView[Char], Int32) {
   let mut i = start
   while i + end_token.length() <= chars.length() {
     if match_at(chars, i, end_token) {
@@ -68,7 +68,7 @@ let end_bfrange_token : Array[Char] = "endbfrange".to_array()
 let wmode_token : Array[Char] = "/WMode ".to_array()
 
 ///|
-fn get_section(chars : ArrayView[Char], start : Int) -> (Section, Int)? {
+fn get_section(chars : ArrayView[Char], start : Int32) -> (Section, Int32)? {
   let mut i = start
   while i < chars.length() {
     if match_at(chars, i, bfchar_token) {
@@ -109,7 +109,7 @@ fn get_sections(chars : ArrayView[Char]) -> Array[Section] {
 }
 
 ///|
-fn skip_whitespace(chars : ArrayView[Char], start : Int) -> Int {
+fn skip_whitespace(chars : ArrayView[Char], start : Int32) -> Int32 {
   let mut i = start
   while i < chars.length() && is_whitespace(chars[i]) {
     i = i + 1
@@ -120,8 +120,8 @@ fn skip_whitespace(chars : ArrayView[Char], start : Int) -> Int {
 ///|
 fn read_hex_bytes(
   chars : ArrayView[Char],
-  start : Int,
-) -> (Array[Int], Int) raise {
+  start : Int32,
+) -> (Array[Int32], Int32) raise {
   let mut i = skip_whitespace(chars, start)
   if i >= chars.length() {
     fail("Not_found")
@@ -159,17 +159,17 @@ fn is_hex_digit(c : Char) -> Bool {
 }
 
 ///|
-fn read_code(chars : ArrayView[Char], start : Int) -> (String, Int) raise {
+fn read_code(chars : ArrayView[Char], start : Int32) -> (String, Int32) raise {
   let (bytes, next) = read_hex_bytes(chars, start)
   (@pdfio.string_of_int_array(bytes), next)
 }
 
 ///|
-fn read_code_opt(chars : ArrayView[Char], start : Int) -> (String, Int)? {
+fn read_code_opt(chars : ArrayView[Char], start : Int32) -> (String, Int32)? {
   let mut i = skip_whitespace(chars, start)
   while i < chars.length() {
     if chars[i] == '<' {
-      let result : Result[(String, Int), Error] = try
+      let result : Result[(String, Int32), Error] = try
         read_code(chars, i) |> Ok
       catch {
         e => Err(e)
@@ -186,11 +186,11 @@ fn read_code_opt(chars : ArrayView[Char], start : Int) -> (String, Int)? {
 }
 
 ///|
-fn read_unicode_opt(chars : ArrayView[Char], start : Int) -> (String, Int)? {
+fn read_unicode_opt(chars : ArrayView[Char], start : Int32) -> (String, Int32)? {
   let mut i = skip_whitespace(chars, start)
   while i < chars.length() {
     if chars[i] == '<' {
-      let result : Result[(String, Int), Error] = try
+      let result : Result[(String, Int32), Error] = try
         read_code(chars, i) |> Ok
       catch {
         e => Err(e)
@@ -207,12 +207,12 @@ fn read_unicode_opt(chars : ArrayView[Char], start : Int) -> (String, Int)? {
 }
 
 ///|
-fn code_bytes_of_string(code : String) -> Array[Int] {
+fn code_bytes_of_string(code : String) -> Array[Int32] {
   @pdfio.int_array_of_bytes(@pdfio.bytes_of_string(code))
 }
 
 ///|
-fn code_int_of_string(code : String) -> Int {
+fn code_int_of_string(code : String) -> Int32 {
   let bytes = code_bytes_of_string(code)
   let mut value = 0
   for b in bytes {
@@ -222,7 +222,7 @@ fn code_int_of_string(code : String) -> Int {
 }
 
 ///|
-fn code_string_of_int(value : Int, length : Int) -> String {
+fn code_string_of_int(value : Int32, length : Int32) -> String {
   let bytes = Array(capacity=length)
   let mut v = value
   for _ in 0..<length {
@@ -233,7 +233,7 @@ fn code_string_of_int(value : Int, length : Int) -> String {
 }
 
 ///|
-fn increment_code(code : String, delta : Int) -> String {
+fn increment_code(code : String, delta : Int32) -> String {
   if code.length() == 0 {
     return ""
   }
@@ -267,8 +267,8 @@ fn pairs_of_section(section : Section) -> Array[(String, String)] {
       let mut pos = 0
       fn find_dest_marker(
         chars : ArrayView[Char],
-        start : Int,
-      ) -> (Char, Int)? {
+        start : Int32,
+      ) -> (Char, Int32)? {
         let mut i = skip_whitespace(chars, start)
         while i < chars.length() {
           match chars[i] {
@@ -279,7 +279,10 @@ fn pairs_of_section(section : Section) -> Array[(String, String)] {
         None
       }
 
-      fn skip_to_close_bracket(chars : ArrayView[Char], start : Int) -> Int {
+      fn skip_to_close_bracket(
+        chars : ArrayView[Char],
+        start : Int32,
+      ) -> Int32 {
         let mut i = start
         while i < chars.length() && chars[i] != ']' {
           i = i + 1
@@ -359,7 +362,7 @@ fn pairs_of_section(section : Section) -> Array[(String, String)] {
 }
 
 ///|
-fn extract_specifics(data : Array[Byte]) -> Int? {
+fn extract_specifics(data : Array[Byte]) -> Int32? {
   let chars = @pdfio.charlist_of_bytes(data)
   let mut i = 0
   while i + wmode_token.length() <= chars.length() {
@@ -371,7 +374,7 @@ fn extract_specifics(data : Array[Byte]) -> Int? {
         j = j + 1
       }
       if digits.length() > 0 {
-        let parsed : Result[Int, Error] = try
+        let parsed : Result[Int32, Error] = try
           @string.parse_int(String::from_array(digits), base=10) |> Ok
         catch {
           e => Err(e)

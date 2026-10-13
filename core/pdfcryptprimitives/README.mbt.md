@@ -15,7 +15,7 @@ Represents the encryption algorithm types supported by PDF:
 ```moonbit nocheck
 ///|
 pub(all) enum Encryption {
-  ARC4(Int, Int) // (bits, /R revision)
+  ARC4(Int32, Int32) // (bits, /R revision)
   AESV2 // AES-128 CBC (PDF 1.5+)
   AESV3(Bool) // AES-256, Bool indicates ISO mode (revision 6) vs revision 5
 }

@@ -3,8 +3,8 @@ let ccitt_ctx : PdfCodec = PdfCodec::new()
 
 ///|
 fn bitmap_bytes(
-  rows_bits : Array[Array[Int]],
-  columns : Int,
+  rows_bits : Array[Array[Int32]],
+  columns : Int32,
 ) -> Array[Byte] raise {
   let output = @pdfio.BitstreamWrite::new()
   for row in rows_bits {

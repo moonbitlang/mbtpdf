@@ -1696,7 +1696,7 @@ pub fn PdfGlyphList::glyphlist_src(_self : PdfGlyphList) -> Array[Byte] {
 }
 
 ///|
-pub let name_to_pdf : Array[(String, Int)] = [
+pub let name_to_pdf : Array[(String, Int32)] = [
   ("/controlCR", 13),
   ("/controlLF", 10),
   ("/controlHT", 9),
@@ -1933,7 +1933,7 @@ pub let name_to_pdf : Array[(String, Int)] = [
 ]
 
 ///|
-pub let name_to_standard : Array[(String, Int)] = [
+pub let name_to_standard : Array[(String, Int32)] = [
   ("/A", 65),
   ("/AE", 225),
   ("/B", 66),
@@ -2086,7 +2086,7 @@ pub let name_to_standard : Array[(String, Int)] = [
 ]
 
 ///|
-pub let name_to_macroman : Array[(String, Int)] = [
+pub let name_to_macroman : Array[(String, Int32)] = [
   ("/A", 65),
   ("/AE", 174),
   ("/Aacute", 231),
@@ -2296,7 +2296,7 @@ pub let name_to_macroman : Array[(String, Int)] = [
 ]
 
 ///|
-pub let name_to_win : Array[(String, Int)] = [
+pub let name_to_win : Array[(String, Int32)] = [
   ("/A", 65),
   ("/AE", 198),
   ("/Aacute", 193),
@@ -2516,7 +2516,7 @@ pub let name_to_win : Array[(String, Int)] = [
 ]
 
 ///|
-pub let name_to_macexpert : Array[(String, Int)] = [
+pub let name_to_macexpert : Array[(String, Int32)] = [
   ("/AEsmall", 190),
   ("/Aacutesmall", 135),
   ("/Acircumflexsmall", 137),
@@ -2684,7 +2684,7 @@ pub let name_to_macexpert : Array[(String, Int)] = [
 ]
 
 ///|
-pub let name_to_symbol : Array[(String, Int)] = [
+pub let name_to_symbol : Array[(String, Int32)] = [
   ("/Alpha", 65),
   ("/Beta", 66),
   ("/Chi", 67),
@@ -2875,7 +2875,7 @@ pub let name_to_symbol : Array[(String, Int)] = [
 ]
 
 ///|
-pub let name_to_dingbats : Array[(String, Int)] = [
+pub let name_to_dingbats : Array[(String, Int32)] = [
   ("/space", 32),
   ("/a1", 33),
   ("/a2", 34),
@@ -3067,7 +3067,7 @@ pub let name_to_dingbats : Array[(String, Int)] = [
 ]
 
 ///|
-let dingbatmap_arr : Array[(String, Array[Int])] = [
+let dingbatmap_arr : Array[(String, Array[Int32])] = [
   ("/a100", [10078]),
   ("/a101", [10081]),
   ("/a102", [10082]),
@@ -3272,7 +3272,7 @@ let dingbatmap_arr : Array[(String, Array[Int])] = [
 ]
 
 ///|
-let truetypemap_arr : Array[(String, Array[Int])] = [
+let truetypemap_arr : Array[(String, Array[Int32])] = [
   ("/G20", [32]),
   ("/G21", [33]),
   ("/G22", [34]),
@@ -3628,7 +3628,7 @@ let truetypemap_arr : Array[(String, Array[Int])] = [
 ]
 
 ///|
-fn parse_glyphlist_line(line : String) -> (String, Array[Int])? {
+fn parse_glyphlist_line(line : String) -> (String, Array[Int32])? {
   if line.length() == 0 {
     return None
   }
@@ -3647,7 +3647,7 @@ fn parse_glyphlist_line(line : String) -> (String, Array[Int])? {
         if token.length() == 0 {
           continue
         }
-        let value : Int = @string.parse_int(token, base=16) catch {
+        let value : Int32 = @string.parse_int(token, base=16) catch {
           _ => continue
         }
         codes.push(value)
@@ -3658,7 +3658,7 @@ fn parse_glyphlist_line(line : String) -> (String, Array[Int])? {
 }
 
 ///|
-fn parse_glyphlist(input : @pdfio.Input) -> Array[(String, Array[Int])] raise {
+fn parse_glyphlist(input : @pdfio.Input) -> Array[(String, Array[Int32])] raise {
   let lines = input.read_lines()
   let out = Array(capacity=lines.length())
   for line in lines {
@@ -3671,7 +3671,7 @@ fn parse_glyphlist(input : @pdfio.Input) -> Array[(String, Array[Int])] raise {
 }
 
 ///|
-let glyphmap_memo : () -> Array[(String, Array[Int])] raise = @pdfutil.PdfUtil::new().memoize(fn() raise {
+let glyphmap_memo : () -> Array[(String, Array[Int32])] raise = @pdfutil.PdfUtil::new().memoize(fn() raise {
     let decoded = @pdfcodec.PdfCodec::new().decode_flate(
       PdfGlyphList::new().glyphlist_src(),
     )
@@ -3683,7 +3683,7 @@ let glyphmap_memo : () -> Array[(String, Array[Int])] raise = @pdfutil.PdfUtil::
 ///|
 pub fn PdfGlyphList::glyphmap(
   _self : PdfGlyphList,
-) -> Array[(String, Array[Int])] raise {
+) -> Array[(String, Array[Int32])] raise {
   glyphmap_memo()
 }
 
@@ -3694,9 +3694,9 @@ fn contains_digit(s : String) -> Bool {
 
 ///|
 fn revglyph_hashtable_of_dictionary(
-  pairs : Array[(Array[Int], String)],
-) -> Map[Array[Int], String] {
-  let table : Map[Array[Int], String] = Map([], capacity=pairs.length())
+  pairs : Array[(Array[Int32], String)],
+) -> Map[Array[Int32], String] {
+  let table : Map[Array[Int32], String] = Map([], capacity=pairs.length())
   for pair in pairs {
     let key = pair.0
     let value = pair.1
@@ -3712,7 +3712,7 @@ fn revglyph_hashtable_of_dictionary(
 }
 
 ///|
-let glyph_hashes_memo : () -> Map[String, Array[Int]] raise = @pdfutil.PdfUtil::new().memoize(fn() raise {
+let glyph_hashes_memo : () -> Map[String, Array[Int32]] raise = @pdfutil.PdfUtil::new().memoize(fn() raise {
     let combined = []
     combined.append(PdfGlyphList::new().glyphmap())
     combined.append(dingbatmap_arr)
@@ -3724,12 +3724,12 @@ let glyph_hashes_memo : () -> Map[String, Array[Int]] raise = @pdfutil.PdfUtil::
 ///|
 pub fn PdfGlyphList::glyph_hashes(
   _self : PdfGlyphList,
-) -> Map[String, Array[Int]] raise {
+) -> Map[String, Array[Int32]] raise {
   glyph_hashes_memo()
 }
 
 ///|
-let reverse_glyph_hashes_memo : () -> Map[Array[Int], String] raise = @pdfutil.PdfUtil::new().memoize(fn() raise {
+let reverse_glyph_hashes_memo : () -> Map[Array[Int32], String] raise = @pdfutil.PdfUtil::new().memoize(fn() raise {
     let reversed = PdfGlyphList::new().glyphmap().map(pair => (pair.1, pair.0))
     revglyph_hashtable_of_dictionary(reversed)
   },
@@ -3738,16 +3738,16 @@ let reverse_glyph_hashes_memo : () -> Map[Array[Int], String] raise = @pdfutil.P
 ///|
 pub fn PdfGlyphList::reverse_glyph_hashes(
   _self : PdfGlyphList,
-) -> Map[Array[Int], String] raise {
+) -> Map[Array[Int32], String] raise {
   reverse_glyph_hashes_memo()
 }
 
 ///|
-pub let name_to_pdf_hashes : Map[String, Int] = @pdfutil.PdfUtil::new().hashtable_of_dictionary(
+pub let name_to_pdf_hashes : Map[String, Int32] = @pdfutil.PdfUtil::new().hashtable_of_dictionary(
   name_to_pdf,
 )
 
 ///|
-pub let reverse_name_to_pdf_hashes : Map[Int, String] = @pdfutil.PdfUtil::new().hashtable_of_dictionary(
+pub let reverse_name_to_pdf_hashes : Map[Int32, String] = @pdfutil.PdfUtil::new().hashtable_of_dictionary(
   name_to_pdf.map(pair => (pair.1, pair.0)),
 )

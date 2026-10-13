@@ -7,7 +7,7 @@
 pub(all) enum Token {
   LexNull
   LexBool(Bool)
-  LexInt(Int)
+  LexInt(Int32)
   LexReal(Double)
   LexString(String)
   LexName(String)

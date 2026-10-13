@@ -13,7 +13,7 @@ fn print_doubles(values : Array[Double]) -> Unit {
 }
 
 ///|
-fn print_ints(values : Array[Int]) -> Unit {
+fn print_ints(values : Array[Int32]) -> Unit {
   if values.length() == 0 {
     log_line("")
   } else {

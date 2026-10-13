@@ -6,10 +6,10 @@ pub fn lex_object_at(
   oneonly : Bool,
   input : @pdfio.Input,
   read_stream_data : Bool,
-  lexobj : (Int) -> Array[Token] raise,
+  lexobj : (Int32) -> Array[Token] raise,
 ) -> Array[Token] raise {
-  let dict_level : Ref[Int] = { val: 0, }
-  let array_level : Ref[Int] = { val: 0, }
+  let dict_level : Ref[Int32] = { val: 0, }
+  let array_level : Ref[Int32] = { val: 0, }
   let tokens = []
   let mut done = false
   while !done {
@@ -90,7 +90,7 @@ fn trim_trailing_zeros(value : String) -> String {
 }
 
 ///|
-fn slice_from(value : String, start : Int) -> String {
+fn slice_from(value : String, start : Int32) -> String {
   if start < 0 || start > value.length() {
     return ""
   }
@@ -98,7 +98,7 @@ fn slice_from(value : String, start : Int) -> String {
 }
 
 ///|
-fn slice_range(value : String, start : Int, end : Int) -> String {
+fn slice_range(value : String, start : Int32, end : Int32) -> String {
   let len = value.length()
   if start < 0 || start > len || end < start || end > len {
     return ""
@@ -107,7 +107,7 @@ fn slice_range(value : String, start : Int, end : Int) -> String {
 }
 
 ///|
-fn parse_signed_int(value : String) -> Int {
+fn parse_signed_int(value : String) -> Int32 {
   let len = value.length()
   if len == 0 {
     return 0

@@ -1,5 +1,5 @@
 ///|
-fn page_count(pdf : @pdf.Pdf) -> Int raise {
+fn page_count(pdf : @pdf.Pdf) -> Int32 raise {
   @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree().length()
 }
 

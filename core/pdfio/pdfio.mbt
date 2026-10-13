@@ -1,64 +1,64 @@
 ///|
 /// Distinguished value indicating "no more input".
-pub let no_more : Int = -1
+pub let no_more : Int32 = -1
 
 ///|
 /// Input abstraction (seekable stream of bytes).
 pub struct Input {
-  pos_in : () -> Int
-  seek_in : (Int) -> Unit
+  pos_in : () -> Int32
+  seek_in : (Int32) -> Unit
   input_char : () -> Char?
-  input_byte : () -> Int
-  in_channel_length : Int
-  set_offset : (Int) -> Unit
+  input_byte : () -> Int32
+  in_channel_length : Int32
+  set_offset : (Int32) -> Unit
   source : String
 }
 
 ///|
 /// Output abstraction (seekable stream of bytes).
 pub struct Output {
-  pos_out : () -> Int
-  seek_out : (Int) -> Unit
+  pos_out : () -> Int32
+  seek_out : (Int32) -> Unit
   output_char : (Char) -> Unit
-  output_byte : (Int) -> Unit
+  output_byte : (Int32) -> Unit
   output_string : (String) -> Unit
-  out_channel_length : () -> Int
+  out_channel_length : () -> Int32
   flush : async () -> Unit
 }
 
 ///|
 /// Build bytes with the given size, filled with zero.
-pub fn mkbytes(size : Int) -> Array[Byte] {
+pub fn mkbytes(size : Int32) -> Array[Byte] {
   Array::make(size, (0).to_byte())
 }
 
 ///|
 /// Size of bytes.
-pub fn bytes_size(bytes : Array[Byte]) -> Int {
+pub fn bytes_size(bytes : Array[Byte]) -> Int32 {
   bytes.length()
 }
 
 ///|
 /// Get the value at a position in bytes.
-pub fn bget(bytes : Array[Byte], index : Int) -> Int {
+pub fn bget(bytes : Array[Byte], index : Int32) -> Int32 {
   bytes[index].to_int()
 }
 
 ///|
 /// Like bget, but without bounds checking.
-pub fn bget_unsafe(bytes : Array[Byte], index : Int) -> Int {
+pub fn bget_unsafe(bytes : Array[Byte], index : Int32) -> Int32 {
   bytes.unsafe_get(index).to_int()
 }
 
 ///|
 /// Set the value at a position in bytes.
-pub fn bset(bytes : Array[Byte], index : Int, value : Int) -> Unit {
+pub fn bset(bytes : Array[Byte], index : Int32, value : Int32) -> Unit {
   bytes[index] = value.to_byte()
 }
 
 ///|
 /// Like bset, but without bounds checking.
-pub fn bset_unsafe(bytes : Array[Byte], index : Int, value : Int) -> Unit {
+pub fn bset_unsafe(bytes : Array[Byte], index : Int32, value : Int32) -> Unit {
   bytes.unsafe_set(index, value.to_byte())
 }
 
@@ -80,7 +80,7 @@ pub fn bytes_of_caml_bytes(bytes : Bytes) -> Array[Byte] {
 
 ///|
 /// Make bytes from an array of integers (each 0..255).
-pub fn bytes_of_list(values : Array[Int]) -> Array[Byte] {
+pub fn bytes_of_list(values : Array[Int32]) -> Array[Byte] {
   let out = Array(capacity=values.length())
   for v in values {
     out.push(v.to_byte())
@@ -100,7 +100,7 @@ pub fn bytes_of_charlist(values : Array[Char]) -> Array[Byte] {
 
 ///|
 /// Make bytes from a list of integer arrays.
-pub fn bytes_of_arraylist(values : Array[Array[Int]]) -> Array[Byte] {
+pub fn bytes_of_arraylist(values : Array[Array[Int32]]) -> Array[Byte] {
   let mut total = 0
   for v in values {
     total = total + v.length()
@@ -116,31 +116,31 @@ pub fn bytes_of_arraylist(values : Array[Array[Int]]) -> Array[Byte] {
 
 ///|
 /// Make bytes from an integer array.
-pub fn bytes_of_int_array(values : Array[Int]) -> Array[Byte] {
+pub fn bytes_of_int_array(values : Array[Int32]) -> Array[Byte] {
   bytes_of_list(values)
 }
 
 ///|
 /// Integer array from bytes.
-pub fn int_array_of_bytes(bytes : Array[Byte]) -> Array[Int] {
+pub fn int_array_of_bytes(bytes : Array[Byte]) -> Array[Int32] {
   bytes.map(b => b.to_int())
 }
 
 ///|
 /// Integer array from a string (byte-wise).
-pub fn int_array_of_string(s : String) -> Array[Int] {
+pub fn int_array_of_string(s : String) -> Array[Int32] {
   bytes_of_string(s).map(b => b.to_int())
 }
 
 ///|
 /// String from a list of integer arrays.
-pub fn string_of_int_arrays(values : Array[Array[Int]]) -> String {
+pub fn string_of_int_arrays(values : Array[Array[Int32]]) -> String {
   string_of_int_array(values.flatten())
 }
 
 ///|
 /// String from a single int array.
-pub fn string_of_int_array(values : Array[Int]) -> String {
+pub fn string_of_int_array(values : Array[Int32]) -> String {
   string_of_bytes(bytes_of_list(values))
 }
 
@@ -170,7 +170,7 @@ pub fn copybytes(bytes : Array[Byte]) -> Array[Byte] {
 /// Build an input from bytes.
 pub fn Input::of_bytes(
   bytes : Array[Byte],
-  source? : String = "bytes",
+  source~ : String = "bytes",
 ) -> Input {
   let mut pos = 0
   let mut offset = 0
@@ -206,7 +206,7 @@ pub fn Input::of_bytes(
 
 ///|
 /// Build an input from a string.
-pub fn Input::of_string(s : String, source? : String = "string") -> Input {
+pub fn Input::of_string(s : String, source~ : String = "string") -> Input {
   Input::of_bytes(bytes_of_string(s), source~)
 }
 
@@ -266,7 +266,7 @@ pub fn Output::of_write_at(
 
 ///|
 /// Build an input-output, with an initial buffer size.
-pub fn Output::of_bytes(size : Int) -> (Output, Ref[Array[Byte]]) {
+pub fn Output::of_bytes(size : Int32) -> (Output, Ref[Array[Byte]]) {
   let data : Ref[Array[Byte]] = { val: mkbytes(size), }
   (output_of_bytes(data), data)
 }
@@ -312,7 +312,7 @@ pub fn Input::peek_char(self : Input) -> Char? {
 
 ///|
 /// Look at the next byte without advancing the pointer.
-pub fn Input::peek_byte(self : Input) -> Int {
+pub fn Input::peek_byte(self : Input) -> Int32 {
   let r = (self.input_byte)()
   self.rewind()
   r
@@ -375,8 +375,8 @@ pub fn Input::read_lines(self : Input) -> Array[String] raise {
 pub fn Input::setinit(
   self : Input,
   bytes : Array[Byte],
-  offset : Int,
-  length : Int,
+  offset : Int32,
+  length : Int32,
 ) -> Unit raise {
   if length == 0 {
     return
@@ -395,8 +395,8 @@ pub fn Input::setinit(
 /// Bytes with input o..o+l-1.
 pub fn Input::bytes_of_input(
   self : Input,
-  offset : Int,
-  length : Int,
+  offset : Int32,
+  length : Int32,
 ) -> Array[Byte] raise {
   (self.seek_in)(offset)
   let out = mkbytes(length)
@@ -415,8 +415,8 @@ pub fn Input::to_string(self : Input) -> String raise {
 pub fn Output::getinit(
   self : Output,
   bytes : Array[Byte],
-  offset : Int,
-  length : Int,
+  offset : Int32,
+  length : Int32,
 ) -> Unit raise {
   if length == 0 {
     return
@@ -435,25 +435,25 @@ pub fn Output::getinit(
 /// Most-significant-bit-first bitstream over an Input.
 pub struct Bitstream {
   input : Input
-  mut curr_byte : Int
-  mut bit : Int
-  mut bits_read : Int
+  mut curr_byte : Int32
+  mut bit : Int32
+  mut bits_read : Int32
 }
 
 ///|
 /// Position token for Bitstream; details will evolve during implementation.
 pub struct BitstreamPosition {
-  pos : Int
-  curr_byte : Int
-  bit : Int
-  bits_read : Int
+  pos : Int32
+  curr_byte : Int32
+  bit : Int32
+  bits_read : Int32
 } derive(Debug)
 
 ///|
 /// Most-significant-bit-first write bitstream (placeholder).
 pub struct BitstreamWrite {
   bytes : Array[Byte]
-  mut bit : Int
+  mut bit : Int32
 } derive(Debug)
 
 ///|
@@ -501,7 +501,7 @@ pub fn Bitstream::getbit(self : Bitstream) -> Bool raise {
 
 ///|
 /// Read the next bit as an integer, 0 or 1.
-pub fn Bitstream::getbitint(self : Bitstream) -> Int raise {
+pub fn Bitstream::getbitint(self : Bitstream) -> Int32 raise {
   if self.getbit() {
     1
   } else {
@@ -526,7 +526,7 @@ pub fn BitstreamWrite::new() -> BitstreamWrite {
 
 ///|
 /// Put a single bit into a write bitstream.
-pub fn BitstreamWrite::putbit(self : BitstreamWrite, bit : Int) -> Unit {
+pub fn BitstreamWrite::putbit(self : BitstreamWrite, bit : Int32) -> Unit {
   if self.bit == 0 {
     self.bytes.push((0).to_byte())
   }
@@ -546,8 +546,8 @@ pub fn BitstreamWrite::putbit(self : BitstreamWrite, bit : Int) -> Unit {
 /// Put a multi-bit value into a write bitstream.
 pub fn BitstreamWrite::putval(
   self : BitstreamWrite,
-  bits : Int,
-  value : Int,
+  bits : Int32,
+  value : Int32,
 ) -> Unit raise {
   if bits < 0 || bits > 32 {
     fail("putval")
@@ -582,7 +582,7 @@ pub fn BitstreamWrite::bytes(self : BitstreamWrite) -> Array[Byte] {
 fn output_of_bytes(data : Ref[Array[Byte]]) -> Output {
   let mut pos = 0
   let mut highest_written = -1
-  let output_int = (value : Int) => {
+  let output_int = (value : Int32) => {
     if pos > data.val.length() - 1 {
       let new_len = if pos * 2 > 0 { pos * 2 } else { 1 }
       let new_bytes = mkbytes(new_len)
@@ -638,7 +638,7 @@ fn debug_next_char(input : Input) -> Unit {
 
 ///|
 /// Debug the next `count` characters to the log and rewind.
-pub fn debug_next_n_chars(count : Int, input : Input) -> Unit {
+pub fn debug_next_n_chars(count : Int32, input : Input) -> Unit {
   let mut i = 0
   while i < count {
     debug_next_char(input)

@@ -119,7 +119,7 @@ fn circle_points(
   cx : Double,
   cy : Double,
   r : Double,
-  n : Int,
+  n : Int32,
 ) -> Array[(Double, Double)] {
   let out = Array(capacity=n)
   let two_pi = 8.0 * @math.atan(1.0)
@@ -178,7 +178,7 @@ fn set_catalog_entry(
 }
 
 ///|
-fn add_layers(pdf : @pdf.Pdf) -> (Int, Int) raise {
+fn add_layers(pdf : @pdf.Pdf) -> (Int32, Int32) raise {
   let night : PdfObject = Dictionary([
     ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("NIGHT MODE")),
@@ -207,8 +207,8 @@ fn add_layers(pdf : @pdf.Pdf) -> (Int, Int) raise {
 ///|
 fn add_layer_properties_to_pages(
   pdf : @pdf.Pdf,
-  night_num : Int,
-  surprise_num : Int,
+  night_num : Int32,
+  surprise_num : Int32,
 ) -> @pdf.Pdf raise {
   let pages = @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree()
   for i in 0..<pages.length() {
@@ -230,7 +230,7 @@ fn add_layer_properties_to_pages(
 }
 
 ///|
-fn goto_action(refnum : Int) -> PdfObject {
+fn goto_action(refnum : Int32) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
   Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
@@ -260,7 +260,7 @@ fn add_link(
 }
 
 ///|
-fn add_bookmarks(pdf : @pdf.Pdf, refs : Array[Int]) -> @pdf.Pdf raise {
+fn add_bookmarks(pdf : @pdf.Pdf, refs : Array[Int32]) -> @pdf.Pdf raise {
   let titles : Array[String] = [
     "Cover", "Map", "Itinerary", "Coupons", "Postcard", "Packing List",
   ]
@@ -295,7 +295,7 @@ fn tab_colors() -> Array[(Double, Double, Double)] {
 }
 
 ///|
-fn tab_rect(i : Int) -> (Double, Double, Double, Double) {
+fn tab_rect(i : Int32) -> (Double, Double, Double, Double) {
   let x1 = w() - 10.0
   let x0 = x1 - TAB_W
   let y1 = h() - 120.0 - i.to_double() * (TAB_H + 10.0)
@@ -304,7 +304,7 @@ fn tab_rect(i : Int) -> (Double, Double, Double, Double) {
 }
 
 ///|
-fn ops_tabs(active? : Int = -1) -> Array[Op] {
+fn ops_tabs(active~ : Int32 = -1) -> Array[Op] {
   let titles = tab_titles()
   let colors = tab_colors()
   let ops : Array[Op] = []
@@ -920,7 +920,7 @@ fn packing_ops() -> Array[Op] {
 fn add_tabs_links(
   pdf : @pdf.Pdf,
   pages : Array[@pdfpage.Page],
-  refs : Array[Int],
+  refs : Array[Int32],
 ) -> Array[@pdfpage.Page] raise {
   let out = pages
   // tabs correspond to pages 1..5
@@ -943,8 +943,8 @@ fn add_tabs_links(
 /// - Bookmarks for quick navigation
 /// - Optional layers: `NIGHT MODE` (mood) and `SURPRISE` (secret codes)
 pub async fn run(
-  out_file? : String = "travel.pdf",
-  quiet? : Bool = false,
+  out_file~ : String = "travel.pdf",
+  quiet~ : Bool = false,
 ) -> Unit {
   try {
     let (cover, cover_rects) = cover_ops()

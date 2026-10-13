@@ -17,12 +17,12 @@ pub fn PdfFlate::new() -> PdfFlate {
 ///|
 priv struct BitReader {
   data : Array[Byte]
-  mut byte_pos : Int
-  mut bit_pos : Int
+  mut byte_pos : Int32
+  mut bit_pos : Int32
 }
 
 ///|
-fn BitReader::read_bit(self : BitReader) -> Int raise FlateError {
+fn BitReader::read_bit(self : BitReader) -> Int32 raise FlateError {
   if self.byte_pos >= self.data.length() {
     raise Error("uncompress", "unexpected end of input")
   }
@@ -37,7 +37,10 @@ fn BitReader::read_bit(self : BitReader) -> Int raise FlateError {
 }
 
 ///|
-fn BitReader::read_bits(self : BitReader, count : Int) -> Int raise FlateError {
+fn BitReader::read_bits(
+  self : BitReader,
+  count : Int32,
+) -> Int32 raise FlateError {
   let mut value = 0
   for i in 0..<count {
     let bit = self.read_bit()
@@ -55,7 +58,7 @@ fn BitReader::align_byte(self : BitReader) -> Unit {
 }
 
 ///|
-fn BitReader::read_u16_le(self : BitReader) -> Int raise FlateError {
+fn BitReader::read_u16_le(self : BitReader) -> Int32 raise FlateError {
   let lo = self.read_bits(8)
   let hi = self.read_bits(8)
   lo | (hi << 8)
@@ -63,12 +66,12 @@ fn BitReader::read_u16_le(self : BitReader) -> Int raise FlateError {
 
 ///|
 priv struct Huffman {
-  max_bits : Int
-  table : Array[Map[Int, Int]]
+  max_bits : Int32
+  table : Array[Map[Int32, Int32]]
 }
 
 ///|
-fn reverse_bits(code : Int, length : Int) -> Int {
+fn reverse_bits(code : Int32, length : Int32) -> Int32 {
   let mut rev = 0
   for i in 0..<length {
     let bit = (code >> i) & 1
@@ -78,7 +81,7 @@ fn reverse_bits(code : Int, length : Int) -> Int {
 }
 
 ///|
-fn build_huffman(lengths : Array[Int]) -> Huffman {
+fn build_huffman(lengths : Array[Int32]) -> Huffman {
   let mut max_len = 0
   for len in lengths {
     if len > max_len {
@@ -111,7 +114,7 @@ fn build_huffman(lengths : Array[Int]) -> Huffman {
 }
 
 ///|
-fn decode_symbol(reader : BitReader, huff : Huffman) -> Int raise FlateError {
+fn decode_symbol(reader : BitReader, huff : Huffman) -> Int32 raise FlateError {
   let mut code = 0
   for len = 1; len <= huff.max_bits; len = len + 1 {
     let bit = reader.read_bit()
@@ -125,7 +128,7 @@ fn decode_symbol(reader : BitReader, huff : Huffman) -> Int raise FlateError {
 }
 
 ///|
-fn fixed_literal_lengths() -> Array[Int] {
+fn fixed_literal_lengths() -> Array[Int32] {
   let lengths = Array::make(288, 0)
   for i in 0..<=143 {
     lengths[i] = 8
@@ -143,7 +146,7 @@ fn fixed_literal_lengths() -> Array[Int] {
 }
 
 ///|
-fn fixed_distance_lengths() -> Array[Int] {
+fn fixed_distance_lengths() -> Array[Int32] {
   Array::make(32, 5)
 }
 
@@ -154,25 +157,25 @@ let fixed_literal_huffman : Huffman = build_huffman(fixed_literal_lengths())
 let fixed_distance_huffman : Huffman = build_huffman(fixed_distance_lengths())
 
 ///|
-let length_base : Array[Int] = [
+let length_base : Array[Int32] = [
   3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31, 35, 43, 51, 59, 67, 83,
   99, 115, 131, 163, 195, 227, 258,
 ]
 
 ///|
-let length_extra : Array[Int] = [
+let length_extra : Array[Int32] = [
   0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5,
   5, 0,
 ]
 
 ///|
-let dist_base : Array[Int] = [
+let dist_base : Array[Int32] = [
   1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385, 513, 769,
   1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577,
 ]
 
 ///|
-let dist_extra : Array[Int] = [
+let dist_extra : Array[Int32] = [
   0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11,
   12, 12, 13, 13,
 ]
@@ -180,8 +183,8 @@ let dist_extra : Array[Int] = [
 ///|
 fn copy_from_output(
   out : Array[Byte],
-  distance : Int,
-  length : Int,
+  distance : Int32,
+  length : Int32,
 ) -> Unit raise FlateError {
   if distance <= 0 {
     raise Error("uncompress", "invalid distance")
@@ -260,7 +263,7 @@ fn inflate_dynamic(
   let hlit = reader.read_bits(5) + 257
   let hdist = reader.read_bits(5) + 1
   let hclen = reader.read_bits(4) + 4
-  let code_length_order : Array[Int] = [
+  let code_length_order : Array[Int32] = [
     16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15,
   ]
   let code_lengths = Array::make(19, 0)
@@ -356,13 +359,13 @@ fn inflate_dynamic(
 }
 
 ///|
-fn read_all_input(input : (Array[Byte]) -> Int) -> Array[Byte] {
+fn read_all_input(input : (Array[Byte]) -> Int32) -> Array[Byte] {
   let out = []
   let buf = @pdfio.mkbytes(4096)
   fn read_more(
     out : Array[Byte],
     buf : Array[Byte],
-    input : (Array[Byte]) -> Int,
+    input : (Array[Byte]) -> Int32,
   ) -> Unit {
     let n = input(buf)
     if n <= 0 {
@@ -377,7 +380,7 @@ fn read_all_input(input : (Array[Byte]) -> Int) -> Array[Byte] {
 }
 
 ///|
-fn zlib_start_offset(data : Array[Byte]) -> Int raise FlateError {
+fn zlib_start_offset(data : Array[Byte]) -> Int32 raise FlateError {
   if data.length() < 2 {
     raise Error("uncompress", "zlib header too short")
   }
@@ -399,25 +402,25 @@ fn zlib_start_offset(data : Array[Byte]) -> Int raise FlateError {
 /// Compress data using a streaming interface (stored blocks only).
 pub fn PdfFlate::compress(
   _self : PdfFlate,
-  level? : Int = 6,
-  header? : Bool = true,
-  input : (Array[Byte]) -> Int,
-  output : (Array[Byte], Int) -> Unit,
+  level~ : Int32 = 6,
+  header~ : Bool = true,
+  input : (Array[Byte]) -> Int32,
+  output : (Array[Byte], Int32) -> Unit,
 ) -> Unit {
   let _ = level
   let data = read_all_input(input)
   let one = @pdfio.mkbytes(1)
-  fn write_byte(value : Int) -> Unit {
+  fn write_byte(value : Int32) -> Unit {
     one[0] = value.to_byte()
     output(one, 1)
   }
 
-  fn write_u16_le(value : Int) -> Unit {
+  fn write_u16_le(value : Int32) -> Unit {
     write_byte(value & 0xff)
     write_byte((value >> 8) & 0xff)
   }
 
-  fn write_bytes(data : Array[Byte], offset : Int, length : Int) -> Unit {
+  fn write_bytes(data : Array[Byte], offset : Int32, length : Int32) -> Unit {
     if length == 0 {
       return
     }
@@ -428,7 +431,7 @@ pub fn PdfFlate::compress(
     output(chunk, length)
   }
 
-  fn adler32(data : Array[Byte]) -> Int {
+  fn adler32(data : Array[Byte]) -> Int32 {
     let mod_adler = 65521
     let mut s1 = 1
     let mut s2 = 0
@@ -441,8 +444,8 @@ pub fn PdfFlate::compress(
 
   fn write_stored_block(
     data : Array[Byte],
-    offset : Int,
-    length : Int,
+    offset : Int32,
+    length : Int32,
     is_final : Bool,
   ) -> Unit {
     let header_byte = if is_final { 1 } else { 0 }
@@ -486,9 +489,9 @@ pub fn PdfFlate::compress(
 /// Uncompress data using a streaming interface.
 pub fn PdfFlate::uncompress(
   _self : PdfFlate,
-  header? : Bool = true,
-  input : (Array[Byte]) -> Int,
-  output : (Array[Byte], Int) -> Unit,
+  header~ : Bool = true,
+  input : (Array[Byte]) -> Int32,
+  output : (Array[Byte], Int32) -> Unit,
 ) -> Unit raise FlateError {
   let data = read_all_input(input)
   let start = if header { zlib_start_offset(data) } else { 0 }

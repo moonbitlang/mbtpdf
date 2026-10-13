@@ -31,7 +31,7 @@ pub(all) enum ColourSpace {
   CalRGB(Point, Point, Array[Double], Array[Double])
   Lab(Point, Point, Array[Double])
   ICCBased(ICCBased)
-  Indexed(ColourSpace, Map[Int, Array[Int]])
+  Indexed(ColourSpace, Map[Int32, Array[Int32]])
   Pattern
   PatternWithBaseColourspace(ColourSpace)
   Separation(String, ColourSpace, @pdffun.PdfFunction)
@@ -59,7 +59,7 @@ ICC profile color space details.
 ```moonbit nocheck
 ///|
 pub(all) struct ICCBased {
-  icc_n : Int
+  icc_n : Int32
   icc_alternate : ColourSpace
   icc_range : Array[Double]
   icc_metadata : @pdf.PdfObject?

@@ -25,7 +25,7 @@ pub using @pdfcrypt {type EncryptionMethod, type Permission}
 /// Read a PDF from a file.
 pub async fn read_file(
   filename : String,
-  revision? : Int,
+  revision? : Int32,
   user_password? : String,
   owner_password? : String,
 ) -> @pdf.Pdf {

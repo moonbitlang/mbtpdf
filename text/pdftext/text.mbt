@@ -19,19 +19,19 @@ pub fn PdfTextUtil::new() -> PdfTextUtil {
 
 ///|
 pub struct TextExtractor {
-  convert : (Int) -> (String, Array[Int])
+  convert : (Int32) -> (String, Array[Int32])
   tounicode : Map[String, String]?
-  tounicode_lengths : Array[Int]
+  tounicode_lengths : Array[Int32]
   font : @pdffont.Font
 }
 
 ///|
-fn odd(n : Int) -> Bool {
+fn odd(n : Int32) -> Bool {
   n % 2 != 0
 }
 
 ///|
-fn flatten_int_arrays(arrays : Array[Array[Int]]) -> Array[Int] {
+fn flatten_int_arrays(arrays : Array[Array[Int32]]) -> Array[Int32] {
   let mut total = 0
   for arr in arrays {
     total = total + arr.length()
@@ -44,7 +44,7 @@ fn flatten_int_arrays(arrays : Array[Array[Int]]) -> Array[Int] {
 }
 
 ///|
-fn tounicode_length_list(map : Map[String, String]) -> Array[Int] {
+fn tounicode_length_list(map : Map[String, String]) -> Array[Int32] {
   let lengths = Array(capacity=map.length())
   for key, _ in map {
     let len = @pdfio.bytes_of_string(key).length()
@@ -58,15 +58,15 @@ fn tounicode_length_list(map : Map[String, String]) -> Array[Int] {
 
 ///|
 fn bytes_slice_to_string(
-  bytes : Array[Int],
-  start : Int,
-  length : Int,
+  bytes : Array[Int32],
+  start : Int32,
+  length : Int32,
 ) -> String {
   @pdfio.string_of_int_array(bytes[start:start + length].to_owned())
 }
 
 ///|
-fn code_int_of_string(code : String) -> Int {
+fn code_int_of_string(code : String) -> Int32 {
   let bytes = @pdfio.bytes_of_string(code)
   let mut value = 0
   for b in bytes {
@@ -78,12 +78,12 @@ fn code_int_of_string(code : String) -> Int {
 ///|
 pub fn PdfTextUtil::utf16be_of_codepoint(
   _self : PdfTextUtil,
-  u : Int,
-) -> Array[Int] raise {
+  u : Int32,
+) -> Array[Int32] raise {
   if u < 0 || u > 0x10ffff {
     raise Failure::Failure("utf16be_of_codepoints")
   }
-  let bytes_of_double = (x : Int) => [x >> 8, x & 255]
+  let bytes_of_double = (x : Int32) => [x >> 8, x & 255]
   if u < 0x10000 {
     bytes_of_double(u)
   } else {
@@ -97,7 +97,7 @@ pub fn PdfTextUtil::utf16be_of_codepoint(
 ///|
 pub fn PdfTextUtil::utf16be_of_codepoints(
   self : PdfTextUtil,
-  codepoints : Array[Int],
+  codepoints : Array[Int32],
 ) -> String raise {
   // Each codepoint expands to <= 4 bytes, plus BOM.
   let bytes = Array(capacity=2 + codepoints.length() * 4)
@@ -110,7 +110,7 @@ pub fn PdfTextUtil::utf16be_of_codepoints(
 }
 
 ///|
-fn codepoints_of_utf16be_inner(bytes : Array[Int]) -> Array[Int] raise {
+fn codepoints_of_utf16be_inner(bytes : Array[Int32]) -> Array[Int32] raise {
   let out = Array(capacity=bytes.length() / 2)
   let len = bytes.length()
   let mut i = 0
@@ -120,7 +120,7 @@ fn codepoints_of_utf16be_inner(bytes : Array[Int]) -> Array[Int] raise {
     }
     let w1 = (bytes[i] << 8) | bytes[i + 1]
     match w1 {
-      0xd800..=0xdbff => {
+      0xd800..<=0xdbff => {
         if i + 3 >= len {
           raise Failure::Failure("codepoints_of_utf16be")
         }
@@ -134,7 +134,7 @@ fn codepoints_of_utf16be_inner(bytes : Array[Int]) -> Array[Int] raise {
           raise Failure::Failure("codepoints_of_utf16be")
         }
       }
-      0xdc00..=0xdfff => raise Failure::Failure("codepoints_of_utf16be")
+      0xdc00..<=0xdfff => raise Failure::Failure("codepoints_of_utf16be")
       _ => {
         out.push(w1)
         i = i + 2
@@ -148,7 +148,7 @@ fn codepoints_of_utf16be_inner(bytes : Array[Int]) -> Array[Int] raise {
 pub fn PdfTextUtil::codepoints_of_utf16be(
   _self : PdfTextUtil,
   str : String,
-) -> Array[Int] raise {
+) -> Array[Int32] raise {
   let bytes = @pdfio.int_array_of_bytes(@pdfio.bytes_of_string(str))
   codepoints_of_utf16be_inner(bytes)
 }
@@ -157,7 +157,7 @@ pub fn PdfTextUtil::codepoints_of_utf16be(
 pub fn PdfTextUtil::table_of_encoding(
   _self : PdfTextUtil,
   encoding : @pdffont.Encoding,
-) -> Map[Int, String] {
+) -> Map[Int32, String] {
   Encoding::table(encoding)
 }
 
@@ -165,7 +165,7 @@ pub fn PdfTextUtil::table_of_encoding(
 pub fn PdfTextUtil::reverse_table_of_encoding(
   _self : PdfTextUtil,
   encoding : @pdffont.Encoding,
-) -> Map[String, Int] {
+) -> Map[String, Int32] {
   Encoding::reverse_table(encoding)
 }
 
@@ -177,7 +177,7 @@ pub fn TextExtractor::new(font : @pdffont.Font) -> TextExtractor {
     _ => ImplicitInFontFile
   }
   let table = PdfTextUtil::new().table_of_encoding(encoding)
-  let convert = (i : Int) => {
+  let convert = (i : Int32) => {
     try {
       match table.get(i) {
         Some(decoded) =>
@@ -234,7 +234,7 @@ fn is_shift_jis_cmap(name : String) -> Bool {
 fn codepoints_of_predefined_cmap(
   font : @pdffont.Font,
   text : String,
-) -> Array[Int]? {
+) -> Array[Int32]? {
   match font {
     CIDKeyedFont(_, _, Predefined(name)) =>
       if is_shift_jis_cmap(name) {
@@ -251,7 +251,7 @@ fn codepoints_of_predefined_cmap(
 pub fn TextExtractor::glyphnames_and_codepoints_of_text(
   self : TextExtractor,
   text : String,
-) -> Array[(String, Array[Int])] raise {
+) -> Array[(String, Array[Int32])] raise {
   match self.tounicode {
     Some(map) => {
       let bytes = @pdfio.int_array_of_bytes(@pdfio.bytes_of_string(text))
@@ -314,7 +314,7 @@ pub fn TextExtractor::glyphnames_and_codepoints_of_text(
 pub fn TextExtractor::codepoints_of_text(
   self : TextExtractor,
   text : String,
-) -> Array[Int] raise {
+) -> Array[Int32] raise {
   let pairs = self.glyphnames_and_codepoints_of_text(text)
   let out = []
   for pair in pairs {
@@ -334,8 +334,8 @@ pub fn TextExtractor::glyphnames_of_text(
 ///|
 fn charcode_extractor_of_font_real(
   font : @pdffont.Font,
-  debug? : Bool = false,
-) -> ((Int) -> Int?) raise {
+  debug~ : Bool = false,
+) -> ((Int32) -> Int32?) raise {
   if debug {
     @pdfutil.PdfUtil::new().flprint(font.to_string() + "\n")
   }
@@ -371,7 +371,7 @@ fn charcode_extractor_of_font_real(
   }
   let reverse_table = PdfTextUtil::new().reverse_table_of_encoding(encoding)
   let reverse_glyph_hashes = @pdfglyphlist.PdfGlyphList::new().reverse_glyph_hashes()
-  (codepoint : Int) => {
+  (codepoint : Int32) => {
     if debug {
       @pdfutil.PdfUtil::new().flprint("Input codepoint: \{codepoint}\n")
     }
@@ -401,8 +401,8 @@ fn charcode_extractor_of_font_real(
 pub fn PdfText::charcode_extractor_of_font(
   self : PdfText,
   fontdict : @pdf.PdfObject,
-  debug? : Bool = false,
-) -> ((Int) -> Int?) raise {
+  debug~ : Bool = false,
+) -> ((Int32) -> Int32?) raise {
   charcode_extractor_of_font_real(self.read_font(fontdict), debug~)
 }
 
@@ -415,8 +415,8 @@ pub fn PdfTextUtil::is_unicode(_self : PdfTextUtil, s : String) -> Bool {
 ///|
 pub fn PdfTextUtil::codepoint_of_pdfdocencoding_character(
   _self : PdfTextUtil,
-  i : Int,
-) -> Int raise {
+  i : Int32,
+) -> Int32 raise {
   if i < 0 || i > 255 {
     raise Failure::Failure("codepoint_of_pdfdocencoding_character out of range")
   }
@@ -453,8 +453,8 @@ pub fn PdfTextUtil::codepoint_of_pdfdocencoding_character(
 ///|
 pub fn PdfTextUtil::get_utf8_chars(
   _self : PdfTextUtil,
-  c : Int,
-) -> Array[Int] raise {
+  c : Int32,
+) -> Array[Int32] raise {
   if c <= 0x7f {
     [c]
   } else if c <= 0x7ff {
@@ -480,7 +480,7 @@ pub fn PdfTextUtil::get_utf8_chars(
 ///|
 pub fn PdfTextUtil::utf8_of_codepoints(
   self : PdfTextUtil,
-  codepoints : Array[Int],
+  codepoints : Array[Int32],
 ) -> String raise {
   let bytes = @pdfio.bytes_of_int_array(
     flatten_int_arrays(codepoints.map(cp => self.get_utf8_chars(cp))),
@@ -492,7 +492,7 @@ pub fn PdfTextUtil::utf8_of_codepoints(
 pub fn PdfTextUtil::codepoints_of_pdfdocstring(
   self : PdfTextUtil,
   s : String,
-) -> Array[Int] raise {
+) -> Array[Int32] raise {
   if self.is_unicode(s) {
     let body = s[2:].to_owned()
     self.codepoints_of_utf16be(body)
@@ -511,7 +511,7 @@ pub fn PdfTextUtil::utf8_of_pdfdocstring(
 }
 
 ///|
-fn codepoints_of_utf8_inner(values : Array[Int]) -> Array[Int] raise {
+fn codepoints_of_utf8_inner(values : Array[Int32]) -> Array[Int32] raise {
   let out = []
   let mut i = 0
   while i < values.length() {
@@ -563,7 +563,7 @@ fn codepoints_of_utf8_inner(values : Array[Int]) -> Array[Int] raise {
 pub fn PdfTextUtil::codepoints_of_utf8(
   _self : PdfTextUtil,
   s : String,
-) -> Array[Int] raise {
+) -> Array[Int32] raise {
   let bytes = @utf8.encode(s)
   let values = @pdfio.int_array_of_bytes(@pdfio.bytes_of_caml_bytes(bytes))
   codepoints_of_utf8_inner(values)
@@ -572,7 +572,7 @@ pub fn PdfTextUtil::codepoints_of_utf8(
 ///|
 pub fn PdfTextUtil::pdfdocstring_of_codepoints(
   self : PdfTextUtil,
-  codepoints : Array[Int],
+  codepoints : Array[Int32],
 ) -> String raise {
   let reverse_glyph_hashes = @pdfglyphlist.PdfGlyphList::new().reverse_glyph_hashes()
   let encoded = []

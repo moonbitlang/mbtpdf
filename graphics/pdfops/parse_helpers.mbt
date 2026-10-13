@@ -1,5 +1,8 @@
 ///|
-fn split_lexemes(lexemes : Array[Lexeme], start : Int) -> (Array[Lexeme], Int) {
+fn split_lexemes(
+  lexemes : Array[Lexeme],
+  start : Int32,
+) -> (Array[Lexeme], Int32) {
   let section : Array[Lexeme] = []
   let mut i = start
   let len = lexemes.length()
@@ -25,7 +28,7 @@ fn lexeme_real(lexeme : Lexeme) -> Double? {
 }
 
 ///|
-fn lexeme_int(lexeme : Lexeme) -> Int? {
+fn lexeme_int(lexeme : Lexeme) -> Int32? {
   match lexeme {
     Obj(LexInt(value)) => Some(value)
     Obj(LexReal(value)) => Some(value.to_int())

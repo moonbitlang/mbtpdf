@@ -169,8 +169,8 @@ fn header_ops(section : String, title : String) -> Array[Op] {
 
 ///|
 fn footer_ops(
-  page_index_1 : Int,
-  total_pages : Int,
+  page_index_1 : Int32,
+  total_pages : Int32,
   progress0_1 : Double,
 ) -> Array[Op] {
   let ops : Array[Op] = []
@@ -242,8 +242,8 @@ fn slide_ops(
   title : String,
   body : Array[Op],
   note : String?,
-  page_index_1 : Int,
-  total_pages : Int,
+  page_index_1 : Int32,
+  total_pages : Int32,
 ) -> Array[Op] {
   let ops : Array[Op] = []
   ops.append(ops_fill_rect(0.0, 0.0, SLIDE_W, SLIDE_H, theme_bg())[:])
@@ -265,7 +265,7 @@ fn bullet_slide_body(
   x : Double,
   y_top : Double,
   bullets : Array[String],
-  shown : Int,
+  shown : Int32,
 ) -> Array[Op] {
   let ops : Array[Op] = []
   let line_h = 26.0
@@ -332,8 +332,8 @@ fn section_slide_body(section : String) -> Array[Op] {
 
 ///|
 fn toc_slide_body(
-  entries : Array[(String, Int)],
-) -> (Array[Op], Array[(Int, (Double, Double, Double, Double))]) {
+  entries : Array[(String, Int32)],
+) -> (Array[Op], Array[(Int32, (Double, Double, Double, Double))]) {
   let ops : Array[Op] = []
   ops.append(ops_text(MARGIN_X, 420.0, "/F0", 30.0, "Outline", theme_ink())[:])
   ops.append(
@@ -347,7 +347,7 @@ fn toc_slide_body(
     )[:],
   )
   let mut y = 340.0
-  let rects : Array[(Int, (Double, Double, Double, Double))] = []
+  let rects : Array[(Int32, (Double, Double, Double, Double))] = []
   for entry in entries {
     let (name, page_i) = entry
     ops.append(ops_text(MARGIN_X, y, "/F1", 22.0, name, theme_accent())[:])
@@ -383,7 +383,7 @@ fn set_catalog_entry(
 }
 
 ///|
-fn add_notes_layer(pdf : @pdf.Pdf) -> Int raise {
+fn add_notes_layer(pdf : @pdf.Pdf) -> Int32 raise {
   let ocg_notes : PdfObject = Dictionary([
     ("/Type", Name(PdfName(b"/OCG"))),
     ("/Name", PdfString("NOTES")),
@@ -406,7 +406,7 @@ fn add_notes_layer(pdf : @pdf.Pdf) -> Int raise {
 ///|
 fn add_notes_properties_to_pages(
   pdf : @pdf.Pdf,
-  notes_num : Int,
+  notes_num : Int32,
 ) -> @pdf.Pdf raise {
   let pages = @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree()
   for i in 0..<pages.length() {
@@ -425,7 +425,7 @@ fn add_notes_properties_to_pages(
 }
 
 ///|
-fn goto_action(refnum : Int) -> PdfObject {
+fn goto_action(refnum : Int32) -> PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
   Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
@@ -452,7 +452,7 @@ fn add_link(
 ///|
 fn add_nav_links(
   pdf : @pdf.Pdf,
-  toc_links : Array[(Int, (Double, Double, Double, Double))],
+  toc_links : Array[(Int32, (Double, Double, Double, Double))],
 ) -> @pdf.Pdf raise {
   let refs = pdf.page_reference_numbers()
   let pages = @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree()
@@ -496,7 +496,7 @@ fn add_nav_links(
 ///|
 fn add_bookmarks(
   pdf : @pdf.Pdf,
-  section_starts : Array[(String, Int)],
+  section_starts : Array[(String, Int32)],
 ) -> @pdf.Pdf raise {
   let refs = pdf.page_reference_numbers()
   let marks : Array[@pdfmarks.Bookmark] = []
@@ -538,7 +538,7 @@ priv enum SlideBody {
   Title(String, String)
   Toc
   SectionDivider(String)
-  Bullets(Array[String], Int)
+  Bullets(Array[String], Int32)
   PipelineDiagram
   CodeSnippet
   Takeaways(Array[String])
@@ -556,12 +556,12 @@ priv struct SlideDef {
 ///|
 fn build_deck() -> (
   Array[@pdfpage.Page],
-  Array[(String, Int)],
-  Array[(Int, (Double, Double, Double, Double))],
+  Array[(String, Int32)],
+  Array[(Int32, (Double, Double, Double, Double))],
 ) raise {
   // Section start indices are 1-based slide indices (for TOC/bookmarks).
-  let section_starts : Array[(String, Int)] = []
-  let toc_entries : Array[(String, Int)] = []
+  let section_starts : Array[(String, Int32)] = []
+  let toc_entries : Array[(String, Int32)] = []
   let slides : Array[SlideDef] = []
   fn push_slide(
     slides : Array[SlideDef],
@@ -575,8 +575,8 @@ fn build_deck() -> (
 
   fn begin_section(
     slides : Array[SlideDef],
-    section_starts : Array[(String, Int)],
-    toc_entries : Array[(String, Int)],
+    section_starts : Array[(String, Int32)],
+    toc_entries : Array[(String, Int32)],
     name : String,
     note : String?,
   ) -> Unit {
@@ -685,7 +685,7 @@ fn build_deck() -> (
   )
   let total = slides.length()
   let pages : Array[@pdfpage.Page] = Array(capacity=total)
-  let mut toc_links : Array[(Int, (Double, Double, Double, Double))] = []
+  let mut toc_links : Array[(Int32, (Double, Double, Double, Double))] = []
   for i in 0..<total {
     let slide = slides[i]
     let body_ops = match (slide.body : SlideBody) {
@@ -808,8 +808,8 @@ fn build_deck() -> (
 
 ///|
 pub async fn run(
-  out_file? : String = "deck.pdf",
-  quiet? : Bool = false,
+  out_file~ : String = "deck.pdf",
+  quiet~ : Bool = false,
 ) -> Unit {
   try {
     let (pages, section_starts, toc_links) = build_deck()

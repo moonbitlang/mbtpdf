@@ -9,10 +9,10 @@ pub struct PdfRead {
 
 ///|
 pub fn PdfRead::new(
-  read_debug? : Bool = @pdfe.read_debug.val,
-  error_on_malformed? : Bool = false,
-  debug_always_treat_malformed? : Bool = false,
-  logger? : (String) -> Unit = @pdfe.logger.val,
+  read_debug~ : Bool = @pdfe.read_debug.val,
+  error_on_malformed~ : Bool = false,
+  debug_always_treat_malformed~ : Bool = false,
+  logger~ : (String) -> Unit = @pdfe.logger.val,
 ) -> PdfRead {
   { read_debug, error_on_malformed, debug_always_treat_malformed, logger, }
 }
@@ -21,7 +21,7 @@ pub fn PdfRead::new(
 /// Read a PDF from an input.
 pub fn PdfRead::pdf_of_input(
   self : PdfRead,
-  revision? : Int,
+  revision? : Int32,
   user_password : String?,
   owner_password : String?,
   input : @pdfio.Input,
@@ -33,7 +33,7 @@ pub fn PdfRead::pdf_of_input(
 /// Read a PDF from an input, lazily.
 pub fn PdfRead::pdf_of_input_lazy(
   self : PdfRead,
-  revision? : Int,
+  revision? : Int32,
   user_password : String?,
   owner_password : String?,
   input : @pdfio.Input,
@@ -43,7 +43,7 @@ pub fn PdfRead::pdf_of_input_lazy(
 
 ///|
 /// Return number of revisions.
-pub fn PdfRead::revisions(self : PdfRead, input : @pdfio.Input) -> Int raise {
+pub fn PdfRead::revisions(self : PdfRead, input : @pdfio.Input) -> Int32 raise {
   try {
     let _ = read_pdf_internal(self, Some(-1), None, None, input, false)
     0
@@ -67,7 +67,7 @@ pub fn PdfRead::what_encryption(
       @pdfcryptprimitives.Encryption,
       String,
       String,
-      Int,
+      Int32,
       String,
       String?,
       String?,
@@ -120,7 +120,7 @@ pub fn PdfRead::permissions(
       @pdfcryptprimitives.Encryption,
       String,
       String,
-      Int,
+      Int32,
       String,
       String?,
       String?,
@@ -153,7 +153,7 @@ pub fn PdfRead::is_linearized(self : PdfRead, input : @pdfio.Input) -> Bool {
 
 ///|
 /// Read a PDF header.
-fn read_header(ctx : PdfRead, input : @pdfio.Input) -> (Int, Int) raise {
+fn read_header(ctx : PdfRead, input : @pdfio.Input) -> (Int32, Int32) raise {
   fn get8chars(input : @pdfio.Input) -> Array[Char] {
     let out = Array(capacity=8)
     let mut ok = true
@@ -172,7 +172,7 @@ fn read_header(ctx : PdfRead, input : @pdfio.Input) -> (Int, Int) raise {
     }
   }
 
-  fn digits_to_int(digits : Array[Char]) -> Int {
+  fn digits_to_int(digits : Array[Char]) -> Int32 {
     let mut value = 0
     for d in digits {
       value = value * 10 + (d.to_int() - '0')
@@ -186,11 +186,11 @@ fn read_header(ctx : PdfRead, input : @pdfio.Input) -> (Int, Int) raise {
     let chars = get8chars(input)
     match chars {
       ['%', 'P', 'D', 'F', '-', major_char, '.', minor_char] => {
-        if !(major_char is ('0'..='9')) {
+        if !(major_char is ('0'..<='9')) {
           return (2, 0)
         }
         let minor_digits = []
-        if minor_char is ('0'..='9') {
+        if minor_char is ('0'..<='9') {
           minor_digits.push(minor_char)
         }
         if minor_digits.length() == 0 {

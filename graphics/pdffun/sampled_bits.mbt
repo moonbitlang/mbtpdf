@@ -1,9 +1,9 @@
 ///|
 fn read_samples(
   data : Array[Byte],
-  count : Int,
-  bits_per_sample : Int,
-) -> Array[Int] {
+  count : Int32,
+  bits_per_sample : Int32,
+) -> Array[Int32] {
   let out = Array(capacity=count)
   let bit_pos = Ref(0)
   for _ in 0..<count {
@@ -13,7 +13,7 @@ fn read_samples(
 }
 
 ///|
-fn read_bits(data : Array[Byte], bit_pos : Ref[Int], bits : Int) -> Int {
+fn read_bits(data : Array[Byte], bit_pos : Ref[Int32], bits : Int32) -> Int32 {
   let mut value = 0
   for _ in 0..<bits {
     let byte_index = bit_pos.val / 8

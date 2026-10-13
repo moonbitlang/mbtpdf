@@ -47,7 +47,7 @@ test "write_encoding handles builtins and custom diffs" {
     ("/Subtype", Name(PdfName(b"/Type0"))),
   ])
   let implicit = ctx.read_encoding(implicit_dict)
-  let implicit_result : Result[Int, Error] = try
+  let implicit_result : Result[Int32, Error] = try
     ctx.write_encoding(implicit) |> Ok
   catch {
     e => Err(e)

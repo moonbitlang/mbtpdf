@@ -12,7 +12,7 @@ pub fn recurse_array(
 fn recurse_dict(
   f : (PdfObject) -> PdfObject,
   elts : Array[(String, PdfObject)],
-  preserve_order? : Bool = false,
+  preserve_order~ : Bool = false,
 ) -> PdfObject {
   let _ = preserve_order
   let out = Array(capacity=elts.length())
@@ -26,7 +26,7 @@ fn recurse_dict(
 /// Iterate over all objects in a document.
 pub fn Pdf::objiter(
   self : Pdf,
-  f : (Int, PdfObject) -> Unit raise?,
+  f : (Int32, PdfObject) -> Unit raise?,
 ) -> Unit raise? {
   for key in self.objnumbers() {
     f(key, self.lookup_obj(key))
@@ -37,7 +37,7 @@ pub fn Pdf::objiter(
 /// Iterate over all objects in a document, ordered by object number.
 pub fn Pdf::objiter_inorder(
   self : Pdf,
-  f : (Int, PdfObject) -> Unit raise?,
+  f : (Int32, PdfObject) -> Unit raise?,
 ) -> Unit raise? {
   self.objiter(f)
 }
@@ -46,7 +46,7 @@ pub fn Pdf::objiter_inorder(
 /// Iterate over all objects in a document with generation numbers.
 pub fn Pdf::objiter_gen(
   self : Pdf,
-  f : (Int, Int, PdfObject) -> Unit raise?,
+  f : (Int32, Int32, PdfObject) -> Unit raise?,
 ) -> Unit raise? {
   let entries = self.objects.objects.to_array()
   entries.sort_by((a, b) => a.0 - b.0)
@@ -82,7 +82,7 @@ pub fn Pdf::objselfmap(
 pub fn Pdf::objselect(
   self : Pdf,
   f : (PdfObject) -> Bool raise?,
-) -> Array[Int] raise? {
+) -> Array[Int32] raise? {
   // Upper bound: all objects could match.
   let out = Array(capacity=self.objects.objects.length())
   self.objiter((num, obj) => if f(obj) { out.push(num) })
@@ -91,7 +91,7 @@ pub fn Pdf::objselect(
 
 ///|
 fn Pdf::nullify_deleted_page_references(self : Pdf) -> Unit raise {
-  fn nullify(numbers : Map[Int, Bool], obj : PdfObject) -> PdfObject {
+  fn nullify(numbers : Map[Int32, Bool], obj : PdfObject) -> PdfObject {
     match obj {
       Indirect(i) => if numbers.contains(i) { Null } else { obj }
       PdfArray(elts) => recurse_array(v => nullify(numbers, v), elts)
@@ -134,9 +134,9 @@ fn Pdf::nullify_deleted_page_references(self : Pdf) -> Unit raise {
 /// Renumber indirect references using a change table.
 pub fn Pdf::renumber_object_parsed(
   self : Pdf,
-  changes : Map[Int, Int],
+  changes : Map[Int32, Int32],
   obj : PdfObject,
-  preserve_order? : Bool = false,
+  preserve_order~ : Bool = false,
 ) -> PdfObject {
   match obj {
     Indirect(i) =>

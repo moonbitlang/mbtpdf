@@ -10,7 +10,7 @@ fn[T] assert_is_err(res : Result[T, Error]) -> Unit raise {
 fn dict_entries_has_int(
   entries : Array[(String, @pdf.PdfObject)],
   key : String,
-  value : Int,
+  value : Int32,
 ) -> Bool {
   entries[:].any(fn(entry) {
     match entry {
@@ -38,7 +38,7 @@ fn sample_rect() -> @pdf.PdfObject {
 }
 
 ///|
-fn empty_stream(pdf : @pdf.Pdf) -> Int {
+fn empty_stream(pdf : @pdf.Pdf) -> Int32 {
   let dict : @pdf.PdfObject = Dictionary([("/Length", Integer(0))])
   pdf.addobj(Stream(Ref((dict, Got(@pdfio.mkbytes(0))))))
 }
@@ -231,7 +231,7 @@ test "pages_of_pagetree errors when typ is missing and /Kids malformed" {
 ///|
 test "add_pagetree errors on empty page list and bad rest" {
   let pdf = @pdf.Pdf::empty()
-  let res : Result[(@pdf.Pdf, Int), Error] = try
+  let res : Result[(@pdf.Pdf, Int32), Error] = try
     @pdfpage.PdfPageDoc::new(pdf).add_pagetree([]) |> Ok
   catch {
     e => Err(e)
@@ -247,7 +247,7 @@ test "add_pagetree errors on empty page list and bad rest" {
     rotate=Rotate0,
     rest=Integer(0),
   )
-  let res2 : Result[(@pdf.Pdf, Int), Error] = try
+  let res2 : Result[(@pdf.Pdf, Int32), Error] = try
     @pdfpage.PdfPageDoc::new(@pdf.Pdf::empty()).add_pagetree([bad_page]) |> Ok
   catch {
     e => Err(e)

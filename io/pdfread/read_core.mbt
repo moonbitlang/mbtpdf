@@ -1,16 +1,16 @@
 ///|
 priv suberror ReadPdfError {
-  Revisions(Int)
+  Revisions(Int32)
   BadRevision
 }
 
 ///|
 fn is_digit(c : Char) -> Bool {
-  c is ('0'..='9')
+  c is ('0'..<='9')
 }
 
 ///|
-fn read_startxref(input : @pdfio.Input) -> Int raise {
+fn read_startxref(input : @pdfio.Input) -> Int32 raise {
   @pdfsyntax.find_eof(input)
   input.backline()
   input.ignoreuntil(false, is_digit)
@@ -55,7 +55,7 @@ fn read_trailer_dict_from_table(
 
 ///|
 fn sanitize_trailerdict(
-  object_count : Int,
+  object_count : Int32,
   trailerdict : @pdf.PdfObject,
 ) -> @pdf.PdfObject raise {
   let mut cleaned = trailerdict
@@ -71,7 +71,7 @@ fn sanitize_trailerdict(
 }
 
 ///|
-fn version_from_catalog(ctx : PdfRead, pdf : @pdf.Pdf) -> (Int, Int)? {
+fn version_from_catalog(ctx : PdfRead, pdf : @pdf.Pdf) -> (Int32, Int32)? {
   match pdf.lookup_direct("/Version", pdf.lookup_obj(pdf.root)) {
     Some(Name(name)) => {
       let s = name.to_string_bytes()
@@ -94,7 +94,7 @@ fn version_from_catalog(ctx : PdfRead, pdf : @pdf.Pdf) -> (Int, Int)? {
 ///|
 fn read_pdf_internal(
   ctx : PdfRead,
-  revision : Int?,
+  revision : Int32?,
   user_password : String?,
   owner_password : String?,
   input : @pdfio.Input,
@@ -121,11 +121,11 @@ fn read_pdf_internal(
     let mut xref_offset = read_startxref(input)
     let mut first_trailer = true
     let mut trailerdict = @pdf.PdfObject::Dictionary([])
-    let xrefs : Map[Int, XRef] = Map([])
-    let postdeletes : Map[Int, Bool] = Map([])
+    let xrefs : Map[Int32, XRef] = Map([])
+    let postdeletes : Map[Int32, Bool] = Map([])
     fn add_entries(
-      entries : Array[(Int, XRef)],
-      xrefs : Map[Int, XRef],
+      entries : Array[(Int32, XRef)],
+      xrefs : Map[Int32, XRef],
     ) -> Unit {
       for pair in entries {
         if xrefs.get(pair.0) is None {
@@ -255,7 +255,7 @@ fn read_pdf_internal(
       was_linearized,
       saved_encryption: None,
     }
-    fn remove_postdelete(pdf : @pdf.Pdf, objnum : Int) -> Unit {
+    fn remove_postdelete(pdf : @pdf.Pdf, objnum : Int32) -> Unit {
       match pdf.lookup_obj(objnum) {
         Stream(r) => {
           let (dict, _) = r.val

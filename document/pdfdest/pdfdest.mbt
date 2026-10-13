@@ -4,8 +4,8 @@ type PdfObject = @pdf.PdfObject
 ///|
 /// Target pages for destinations.
 pub(all) enum TargetPage {
-  PageObject(Int)
-  OtherDocPageNumber(Int)
+  PageObject(Int32)
+  OtherDocPageNumber(Int32)
 } derive(Debug)
 
 ///|
@@ -125,7 +125,7 @@ fn read_array_destination(
 pub fn Destination::read(
   pdf : @pdf.Pdf,
   pdfobject : PdfObject,
-  shallow? : Bool = false,
+  shallow~ : Bool = false,
 ) -> Destination raise {
   let resolved = pdf.direct(pdfobject)
   match resolved {

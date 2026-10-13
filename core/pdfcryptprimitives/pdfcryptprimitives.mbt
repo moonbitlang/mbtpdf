@@ -1,7 +1,7 @@
 ///|
 /// Types of encryption.
 pub(all) enum Encryption {
-  ARC4(Int, Int)
+  ARC4(Int32, Int32)
   AESV2
   AESV3(Bool)
 } derive(Debug)
@@ -16,7 +16,7 @@ pub(all) enum Encryption {
 ///
 /// This is a small convenience API to avoid scattering the same `match` in
 /// multiple packages.
-pub fn Encryption::r_and_keylength(self : Encryption) -> (Int, Int) {
+pub fn Encryption::r_and_keylength(self : Encryption) -> (Int32, Int32) {
   match self {
     ARC4(bits, r) => (r, bits)
     AESV2 => (4, 128)
@@ -35,7 +35,7 @@ pub fn PdfCryptPrimitives::new() -> PdfCryptPrimitives {
 }
 
 ///|
-fn bytes_of_int_arrays(values : Array[Array[Int]]) -> Array[Byte] {
+fn bytes_of_int_arrays(values : Array[Array[Int32]]) -> Array[Byte] {
   let mut total = 0
   for v in values {
     total = total + v.length()
@@ -57,24 +57,24 @@ fn bytes_of_int_arrays(values : Array[Array[Int]]) -> Array[Byte] {
 pub fn PdfCryptPrimitives::find_hash(
   self : PdfCryptPrimitives,
   crypt_type : Encryption,
-  obj : Int,
-  gen : Int,
-  key : Array[Int],
-  keylength : Int,
-) -> Array[Int] {
+  obj : Int32,
+  gen : Int32,
+  key : Array[Int32],
+  keylength : Int32,
+) -> Array[Int32] {
   let from_obj = [
-    Int::land(obj, 0xff),
-    Int::land(obj >> 8, 0xff),
-    Int::land(obj >> 16, 0xff),
+    Int32::land(obj, 0xff),
+    Int32::land(obj >> 8, 0xff),
+    Int32::land(obj >> 16, 0xff),
   ]
-  let from_gen = [Int::land(gen, 0xff), Int::land(gen >> 8, 0xff)]
+  let from_gen = [Int32::land(gen, 0xff), Int32::land(gen >> 8, 0xff)]
   let extra = match crypt_type {
     AESV2 => [0x73, 0x41, 0x6c, 0x54]
     _ => []
   }
   let digest_input = bytes_of_int_arrays([key, from_obj, from_gen, extra])
   let digest = self.md5(digest_input)
-  let out_len = Int::min(16, keylength / 8 + 5)
+  let out_len = Int32::min(16, keylength / 8 + 5)
   let out = Array::make(out_len, 0)
   for i in 0..<out_len {
     out[i] = @pdfio.bget(digest, i)
@@ -89,11 +89,11 @@ pub fn PdfCryptPrimitives::decrypt_stream_data(
   crypt_type : Encryption,
   encrypt : Bool,
   file_encryption_key : String?,
-  obj : Int,
-  gen : Int,
-  key : Array[Int],
-  keylength : Int,
-  r : Int,
+  obj : Int32,
+  gen : Int32,
+  key : Array[Int32],
+  keylength : Int32,
+  r : Int32,
   data : Array[Byte],
 ) -> Array[Byte] raise {
   if r == 5 || r == 6 {

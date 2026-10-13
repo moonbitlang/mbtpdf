@@ -30,8 +30,8 @@ fn get_int_param(
   pdf : @pdf.Pdf,
   parms : @pdf.PdfObject?,
   key : String,
-  default_value : Int,
-) -> Int {
+  default_value : Int32,
+) -> Int32 {
   match parms {
     Some(obj) =>
       match pdf.lookup_direct(key, obj) {

@@ -1,5 +1,5 @@
 ///|
-fn page_objnum(pdf : @pdf.Pdf, index : Int) -> Int raise {
+fn page_objnum(pdf : @pdf.Pdf, index : Int32) -> Int32 raise {
   match @pdfpage.PdfPageDoc::new(pdf).page_object_number(index) {
     Some(objnum) => objnum
     None => raise @pdf.PdfError::Msg("missing page")
@@ -29,12 +29,12 @@ fn set_catalog_entry(
 }
 
 ///|
-fn dest_for_page(page_objnum : Int) -> @pdf.PdfObject {
+fn dest_for_page(page_objnum : Int32) -> @pdf.PdfObject {
   PdfArray([Indirect(page_objnum), Name(PdfName(b"/Fit"))])
 }
 
 ///|
-fn xyz_dest_for_page(page_objnum : Int) -> @pdf.PdfObject {
+fn xyz_dest_for_page(page_objnum : Int32) -> @pdf.PdfObject {
   @pdfdest.Destination::XYZ(
     PageObject(page_objnum),
     Some(0.0),
@@ -51,7 +51,7 @@ fn action_for_dest(dest : @pdf.PdfObject) -> @pdf.PdfObject {
 ///|
 fn update_page_annots(
   pdf : @pdf.Pdf,
-  page_objnum : Int,
+  page_objnum : Int32,
   annots : Array[@pdf.PdfObject],
 ) -> Unit raise {
   let page_obj = pdf.lookup_obj(page_objnum)
@@ -67,8 +67,8 @@ fn update_page_annots(
 ///|
 fn add_bookmarks_for_pages(
   pdf : @pdf.Pdf,
-  page1 : Int,
-  page2 : Int,
+  page1 : Int32,
+  page2 : Int32,
 ) -> @pdf.Pdf raise {
   let marks : Array[@pdfmarks.Bookmark] = [
     {

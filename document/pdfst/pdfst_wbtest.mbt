@@ -4,7 +4,7 @@ fn sample_rect() -> @pdf.PdfObject {
 }
 
 ///|
-fn build_page_pdf(count : Int) -> @pdf.Pdf raise {
+fn build_page_pdf(count : Int32) -> @pdf.Pdf raise {
   let pdf = @pdf.Pdf::empty()
 
   // Create placeholder /Pages root so pages can reference it as /Parent.
@@ -63,7 +63,7 @@ fn build_two_page_pdf() -> @pdf.Pdf raise {
 }
 
 ///|
-fn install_struct_root(pdf : @pdf.Pdf, root : @pdf.PdfObject) -> Int raise {
+fn install_struct_root(pdf : @pdf.Pdf, root : @pdf.PdfObject) -> Int32 raise {
   let root_num = pdf.addobj(root)
   let catalog_num = match
     (pdf.trailerdict.lookup_immediate("/Root") : @pdf.PdfObject?) {
@@ -77,7 +77,7 @@ fn install_struct_root(pdf : @pdf.Pdf, root : @pdf.PdfObject) -> Int raise {
 }
 
 ///|
-fn add_struct_tree(pdf : @pdf.Pdf) -> (Int, Int) raise {
+fn add_struct_tree(pdf : @pdf.Pdf) -> (Int32, Int32) raise {
   let page_refs = pdf.page_reference_numbers()
   let struct1 : @pdf.PdfObject = Dictionary([("/Pg", Indirect(page_refs[0]))])
   let struct2 : @pdf.PdfObject = Dictionary([("/Pg", Indirect(page_refs[1]))])

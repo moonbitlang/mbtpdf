@@ -17,7 +17,7 @@ async fn main {
 }
 
 ///|
-pub async fn run(args : Array[String], quiet? : Bool = false) -> Unit {
+pub async fn run(args : Array[String], quiet~ : Bool = false) -> Unit {
   if args.length() != 3 {
     if !quiet {
       println("Syntax: pdftest <input> <output>")

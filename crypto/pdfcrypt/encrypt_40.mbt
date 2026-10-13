@@ -2,7 +2,7 @@
 fn encrypt_pdf_40bit_inner(
   owner : String,
   user : String,
-  p : Int,
+  p : Int32,
   user_pw : String,
   id : String,
   pdf : @pdf.Pdf,

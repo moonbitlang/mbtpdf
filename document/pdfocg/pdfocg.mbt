@@ -47,7 +47,7 @@ pub(all) enum OcgAppDict {
 /// Placeholder for optional content order tree.
 pub(all) enum OcgOrderTree {
   Leaf
-  Branch(Int, OcgOrderTree, OcgOrderTree)
+  Branch(Int32, OcgOrderTree, OcgOrderTree)
 } derive(Debug)
 
 ///|
@@ -56,20 +56,20 @@ pub(all) struct OcgConfig {
   ocgconfig_name : String?
   ocgconfig_creator : String?
   ocgconfig_basestate : OcgState
-  ocgconfig_on : Array[Int]?
-  ocgconfig_off : Array[Int]?
+  ocgconfig_on : Array[Int32]?
+  ocgconfig_off : Array[Int32]?
   ocgconfig_intent : Array[String]
   ocgconfig_usage_application_dictionaries : Array[OcgAppDict]?
   ocgconfig_order : OcgOrderTree?
   ocgconfig_listmode : OcgListMode
-  ocgconfig_rbgroups : Array[Array[Int]]
-  ocgconfig_locked : Array[Int]
+  ocgconfig_rbgroups : Array[Array[Int32]]
+  ocgconfig_locked : Array[Int32]
 } derive(Debug)
 
 ///|
 /// Optional content properties.
 pub(all) struct OcgProperties {
-  ocgs : Array[(Int, Ocg)]
+  ocgs : Array[(Int32, Ocg)]
   ocg_default_config : OcgConfig
   ocg_configs : Array[OcgConfig]
 } derive(Debug)
@@ -258,7 +258,7 @@ pub fn PdfOcg::write(self : PdfOcg, ocg : OcgProperties) -> Unit {
 }
 
 ///|
-fn print_ocg(pair : (Int, Ocg)) -> Unit {
+fn print_ocg(pair : (Int32, Ocg)) -> Unit {
   let num = pair.0
   let ocg = pair.1
   @pdfutil.PdfUtil::new().flprint("OCG \{num}\n")

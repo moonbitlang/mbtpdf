@@ -1,10 +1,13 @@
 ///|
-fn clear_object_stream_ids(ids : Map[Int, Int]) -> Unit {
+fn clear_object_stream_ids(ids : Map[Int32, Int32]) -> Unit {
   ids.clear()
 }
 
 ///|
-fn split_into_groups(items : Array[Int], group_size : Int) -> Array[Array[Int]] {
+fn split_into_groups(
+  items : Array[Int32],
+  group_size : Int32,
+) -> Array[Array[Int32]] {
   let groups = []
   let mut index = 0
   while index < items.length() {
@@ -29,7 +32,7 @@ fn generate_object_stream_hints(
   if !preserve_existing {
     clear_object_stream_ids(pdf.objects.object_stream_ids)
   }
-  let indirect_lengths : Map[Int, Bool] = Map(
+  let indirect_lengths : Map[Int32, Bool] = Map(
     [],
     capacity=pdf.objects.objects.length(),
   )
@@ -79,8 +82,8 @@ fn generate_object_stream_hints(
 }
 
 ///|
-fn build_object_stream_groups(pdf : @pdf.Pdf) -> Array[(Int, Array[Int])] {
-  let groups : Map[Int, Array[Int]] = Map(
+fn build_object_stream_groups(pdf : @pdf.Pdf) -> Array[(Int32, Array[Int32])] {
+  let groups : Map[Int32, Array[Int32]] = Map(
     [],
     capacity=pdf.objects.object_stream_ids.length(),
   )
@@ -121,9 +124,9 @@ fn build_object_stream_groups(pdf : @pdf.Pdf) -> Array[(Int, Array[Int])] {
 fn bake_object_streams(
   pdf : @pdf.Pdf,
   compress : Bool,
-  groups : Array[(Int, Array[Int])],
-) -> Map[Int, (Int, Int)] raise {
-  let entries : Map[Int, (Int, Int)] = Map(
+  groups : Array[(Int32, Array[Int32])],
+) -> Map[Int32, (Int32, Int32)] raise {
+  let entries : Map[Int32, (Int32, Int32)] = Map(
     [],
     capacity=pdf.objects.object_stream_ids.length(),
   )

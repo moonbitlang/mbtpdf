@@ -41,7 +41,7 @@ test "write_encoding covers mac and custom encodings" {
     ("/BaseFont", Name(PdfName(b"/CustomFont"))),
   ])
   let implicit_encoding = ctx.read_encoding(font_dict)
-  let implicit_result : Result[Int, Error] = try
+  let implicit_result : Result[Int32, Error] = try
     ctx.write_encoding(implicit_encoding) |> Ok
   catch {
     e => Err(e)
@@ -58,14 +58,14 @@ test "write_font errors on unsupported fonts" {
     ("/BaseFont", Name(PdfName(b"/CustomFont"))),
   ])
   let simple_font = ctx.read_font(simple_dict)
-  let simple_result : Result[Int, Error] = try
+  let simple_result : Result[Int32, Error] = try
     ctx.write_font(simple_font) |> Ok
   catch {
     e => Err(e)
   }
   assert_true(simple_result is Err(_))
   let cid_font = ctx.read_font(cid_font_dict("/Identity-H"))
-  let cid_result : Result[Int, Error] = try
+  let cid_result : Result[Int32, Error] = try
     ctx.write_font(cid_font) |> Ok
   catch {
     e => Err(e)
@@ -74,7 +74,7 @@ test "write_font errors on unsupported fonts" {
 }
 
 ///|
-fn add_font_descriptor(pdf : @pdf.Pdf, fontfile_obj : Int?) -> Int {
+fn add_font_descriptor(pdf : @pdf.Pdf, fontfile_obj : Int32?) -> Int32 {
   let entries : Array[(String, @pdf.PdfObject)] = [
     ("/Type", Name(PdfName(b"/FontDescriptor"))),
     ("/Ascent", Integer(700)),
@@ -90,7 +90,7 @@ fn add_font_descriptor(pdf : @pdf.Pdf, fontfile_obj : Int?) -> Int {
 }
 
 ///|
-fn add_fontfile_stream(pdf : @pdf.Pdf) -> Int {
+fn add_fontfile_stream(pdf : @pdf.Pdf) -> Int32 {
   let data = @pdfio.bytes_of_string("ttf")
   let dict : @pdf.PdfObject = Dictionary([
     ("/Length", Integer(@pdfio.bytes_size(data))),
@@ -99,7 +99,7 @@ fn add_fontfile_stream(pdf : @pdf.Pdf) -> Int {
 }
 
 ///|
-fn add_tounicode_stream(pdf : @pdf.Pdf) -> Int {
+fn add_tounicode_stream(pdf : @pdf.Pdf) -> Int32 {
   let bytes = @pdftext.PdfTextUtil::new().tounicode_map(33, ["A"])
   let dict : @pdf.PdfObject = Dictionary([
     ("/Length", Integer(@pdfio.bytes_size(bytes))),
@@ -109,9 +109,9 @@ fn add_tounicode_stream(pdf : @pdf.Pdf) -> Int {
 
 ///|
 fn truetype_font_dict(
-  font_descriptor : Int?,
+  font_descriptor : Int32?,
   encoding_name : String,
-  tounicode_obj : Int?,
+  tounicode_obj : Int32?,
 ) -> @pdf.PdfObject {
   let entries : Array[(String, @pdf.PdfObject)] = [
     ("/Subtype", Name(PdfName(b"/TrueType"))),
@@ -133,7 +133,7 @@ fn truetype_font_dict(
 }
 
 ///|
-fn type3_font_dict_extra(font_descriptor : Int?) -> @pdf.PdfObject {
+fn type3_font_dict_extra(font_descriptor : Int32?) -> @pdf.PdfObject {
   let entries : Array[(String, @pdf.PdfObject)] = [
     ("/Subtype", Name(PdfName(b"/Type3"))),
     ("/BaseFont", Name(PdfName(b"/DummyType3"))),
@@ -224,7 +224,7 @@ test "write_font errors when truetype descriptor missing" {
   let ctx = @pdftext.PdfText::new(pdf)
   let font_dict = truetype_font_dict(None, "/WinAnsiEncoding", None)
   let font = ctx.read_font(font_dict)
-  let result : Result[Int, Error] = try ctx.write_font(font) |> Ok catch {
+  let result : Result[Int32, Error] = try ctx.write_font(font) |> Ok catch {
     e => Err(e)
   }
   assert_true(result is Err(_))
@@ -237,7 +237,7 @@ test "write_font errors when truetype fontfile missing" {
   let fd = add_font_descriptor(pdf, None)
   let font_dict = truetype_font_dict(Some(fd), "/WinAnsiEncoding", None)
   let font = ctx.read_font(font_dict)
-  let result : Result[Int, Error] = try ctx.write_font(font) |> Ok catch {
+  let result : Result[Int32, Error] = try ctx.write_font(font) |> Ok catch {
     e => Err(e)
   }
   assert_true(result is Err(_))

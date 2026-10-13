@@ -32,17 +32,17 @@ fn split_whitespace(line : String) -> Array[String] {
 }
 
 ///|
-fn parse_int(token : String) -> Int raise {
+fn parse_int(token : String) -> Int32 raise {
   @string.parse_int(token, base=10)
 }
 
 ///|
-fn read_char_metrics_line(line : String) -> (String, (Int, Int)) raise {
+fn read_char_metrics_line(line : String) -> (String, (Int32, Int32)) raise {
   let parts = split_whitespace(line)
   let mut name = ""
-  let mut charnum : Int? = None
-  let mut width : Int? = None
-  fn is_field_label(parts : Array[String], idx : Int) -> Bool {
+  let mut charnum : Int32? = None
+  let mut width : Int32? = None
+  fn is_field_label(parts : Array[String], idx : Int32) -> Bool {
     idx == 0 || parts[idx - 1] == ";"
   }
 
@@ -71,7 +71,7 @@ fn read_char_metrics_line(line : String) -> (String, (Int, Int)) raise {
 }
 
 ///|
-fn read_kern_line(line : String) -> (String, String, Int) raise {
+fn read_kern_line(line : String) -> (String, String, Int32) raise {
   let parts = split_whitespace(line)
   if parts.length() >= 4 && parts[0] == "KPX" {
     let kern = parse_int(parts[3])
@@ -115,7 +115,7 @@ fn split_header(line : String) -> (String, String) {
 }
 
 ///|
-fn lookup_charnum(table : Map[String, (Int, Int)], name : String) -> Int {
+fn lookup_charnum(table : Map[String, (Int32, Int32)], name : String) -> Int32 {
   match table.get(name) {
     Some(pair) => pair.0
     None => -1
@@ -127,9 +127,9 @@ fn get_tables(
   lines : Array[String],
 ) -> (
   Array[(String, String)],
-  Array[(Int, Int)],
-  Array[(Int, Int, Int)],
-  Array[(String, Int)],
+  Array[(Int32, Int32)],
+  Array[(Int32, Int32, Int32)],
+  Array[(String, Int32)],
 ) raise {
   let char_metrics_lines = extract_section(
     lines, "StartCharMetrics", "EndCharMetrics",
@@ -155,7 +155,7 @@ fn get_tables(
       Some(read_char_metrics_line(line))
     }
   })
-  let charmetrics_hash : Map[String, (Int, Int)] = Map(
+  let charmetrics_hash : Map[String, (Int32, Int32)] = Map(
     [],
     capacity=charmetrics.length(),
   )
@@ -195,9 +195,9 @@ pub fn PdfAfm::read(
   input : @pdfio.Input,
 ) -> (
   Array[(String, String)],
-  Array[(Int, Int)],
-  Array[(Int, Int, Int)],
-  Array[(String, Int)],
+  Array[(Int32, Int32)],
+  Array[(Int32, Int32, Int32)],
+  Array[(String, Int32)],
 ) raise {
   let lines = input.read_lines()
   get_tables(lines)

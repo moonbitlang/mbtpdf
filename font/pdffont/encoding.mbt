@@ -2,8 +2,8 @@
 /// Encoding table utilities.
 
 ///|
-fn add_encoding(table : Map[Int, String], encoding : Encoding) -> Unit {
-  let addvals = (vals : Array[(String, Int)]) => {
+fn add_encoding(table : Map[Int32, String], encoding : Encoding) -> Unit {
+  let addvals = (vals : Array[(String, Int32)]) => {
     for pair in vals {
       table.set(pair.1, pair.0)
     }
@@ -26,16 +26,16 @@ fn add_encoding(table : Map[Int, String], encoding : Encoding) -> Unit {
 }
 
 ///|
-pub fn Encoding::table(self : Encoding) -> Map[Int, String] {
-  let table : Map[Int, String] = Map([], capacity=203)
+pub fn Encoding::table(self : Encoding) -> Map[Int32, String] {
+  let table : Map[Int32, String] = Map([], capacity=203)
   add_encoding(table, self)
   table
 }
 
 ///|
-pub fn Encoding::reverse_table(self : Encoding) -> Map[String, Int] {
-  let table : Map[String, Int] = Map([], capacity=203)
-  let addvals = (vals : Array[(String, Int)]) => {
+pub fn Encoding::reverse_table(self : Encoding) -> Map[String, Int32] {
+  let table : Map[String, Int32] = Map([], capacity=203)
+  let addvals = (vals : Array[(String, Int32)]) => {
     for pair in vals {
       table.set(pair.0, pair.1)
     }

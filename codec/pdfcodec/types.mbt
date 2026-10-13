@@ -4,20 +4,20 @@ pub(all) enum Encoding {
   ASCIIHex
   ASCII85
   RunLength
-  LZW(Int)
+  LZW(Int32)
   Flate
-  CCITT(Int, Int)
-  CCITTG4(Int, Int)
+  CCITT(Int32, Int32)
+  CCITTG4(Int32, Int32)
 } derive(Debug)
 
 ///|
 pub struct PdfCodec {
   // Keep configuration on the codec instance instead of global `Ref` state.
-  flate_level : Int
+  flate_level : Int32
 }
 
 ///|
-pub fn PdfCodec::new(flate_level? : Int = 6) -> PdfCodec {
+pub fn PdfCodec::new(flate_level~ : Int32 = 6) -> PdfCodec {
   { flate_level, }
 }
 
@@ -91,7 +91,7 @@ pub fn PdfCodec::encode_flate(
     }
   }
   let out : Array[Byte] = []
-  let output = (buf : Array[Byte], length : Int) => out.append(buf[:length])
+  let output = (buf : Array[Byte], length : Int32) => out.append(buf[:length])
   @pdfflate.PdfFlate::new().compress(
     level=self.flate_level,
     header=true,

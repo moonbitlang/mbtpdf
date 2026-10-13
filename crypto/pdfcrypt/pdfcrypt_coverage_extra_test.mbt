@@ -1,5 +1,5 @@
 ///|
-fn encrypt_objnum(pdf : @pdf.Pdf) -> Int raise {
+fn encrypt_objnum(pdf : @pdf.Pdf) -> Int32 raise {
   match (pdf.trailerdict.lookup_immediate("/Encrypt") : @pdf.PdfObject?) {
     Some(Indirect(i)) => i
     _ => raise Failure::Failure("expected /Encrypt indirect")

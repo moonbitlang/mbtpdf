@@ -71,7 +71,7 @@ pub(all) struct Border {
   vradius : Double
   hradius : Double
   style : Style
-  dasharray : Array[Int]
+  dasharray : Array[Int32]
 }
 ```
 
@@ -87,7 +87,7 @@ pub(all) struct Annotation {
   subject : String?
   rectangle : (Double, Double, Double, Double)
   border : Border
-  colour : (Int, Int, Int)?
+  colour : (Int32, Int32, Int32)?
   annotrest : @pdf.PdfObject
 }
 ```

@@ -1,6 +1,6 @@
 ///|
 fn parse_lexemes(
-  compatibility : Ref[Int],
+  compatibility : Ref[Int32],
   lexemes : Array[Lexeme],
 ) -> Array[Op] raise {
   let ops : Array[Op] = []

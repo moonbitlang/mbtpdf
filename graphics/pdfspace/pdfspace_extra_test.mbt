@@ -4,14 +4,14 @@ fn mk_point(x : Double, y : Double, z : Double) -> @pdf.PdfObject {
 }
 
 ///|
-fn stream_of_bytes(values : Array[Int]) -> @pdf.PdfObject {
+fn stream_of_bytes(values : Array[Int32]) -> @pdf.PdfObject {
   let dict : @pdf.PdfObject = Dictionary([])
   let data = @pdfio.bytes_of_list(values)
   Stream(Ref((dict, Got(data))))
 }
 
 ///|
-fn icc_stream_with_n(n : Int) -> @pdf.PdfObject {
+fn icc_stream_with_n(n : Int32) -> @pdf.PdfObject {
   let dict : @pdf.PdfObject = Dictionary([("/N", Integer(n))])
   let data = @pdfio.bytes_of_list([0, 1, 2, 3])
   Stream(Ref((dict, Got(data))))
@@ -327,7 +327,7 @@ test "read_colourspace ICCBased defaults alternate by N" {
 ///|
 test "write_colourspace Indexed unsupported base returns null" {
   let pdf = @pdf.Pdf::empty()
-  let table : Map[Int, Array[Int]] = Map([])
+  let table : Map[Int32, Array[Int32]] = Map([])
   table.set(0, [0, 0, 0])
   let space : @pdfspace.ColourSpace = Indexed(Pattern, table)
   let obj = @pdfe.with_logger(_ => (), fn() { space.to_pdf_object(pdf) })
@@ -397,7 +397,7 @@ test "write_colourspace DeviceN includes non-dict attributes" {
 ///|
 test "write_colourspace Indexed handles DeviceGray and DeviceCMYK" {
   let pdf = @pdf.Pdf::empty()
-  let table_gray : Map[Int, Array[Int]] = Map([])
+  let table_gray : Map[Int32, Array[Int32]] = Map([])
   table_gray.set(0, [0])
   let gray = @pdfspace.ColourSpace::Indexed(DeviceGray, table_gray).to_pdf_object(
     pdf,
@@ -406,7 +406,7 @@ test "write_colourspace Indexed handles DeviceGray and DeviceCMYK" {
     PdfArray([Name(PdfName(b"/Indexed")), _, _, _]) => ()
     _ => fail("expected indexed DeviceGray")
   }
-  let table_cmyk : Map[Int, Array[Int]] = Map([])
+  let table_cmyk : Map[Int32, Array[Int32]] = Map([])
   table_cmyk.set(0, [0, 0, 0, 0])
   let cmyk = @pdfspace.ColourSpace::Indexed(DeviceCMYK, table_cmyk).to_pdf_object(
     pdf,
@@ -502,7 +502,7 @@ test "ColourSpace::to_string covers variants" {
     @pdfspace.ColourSpace::Separation("Spot", DeviceRGB, sample_tint_function()).to_string(),
     "Separation (/DeviceRGB)",
   )
-  let table : Map[Int, Array[Int]] = Map([])
+  let table : Map[Int32, Array[Int32]] = Map([])
   table.set(0, [0, 0, 0])
   assert_eq(
     @pdfspace.ColourSpace::Indexed(DeviceRGB, table).to_string(),
@@ -736,7 +736,7 @@ test "write_colourspace writes ICCBased metadata and range" {
 ///|
 test "write_colourspace handles indexed empty table and deviceN attrs" {
   let pdf = @pdf.Pdf::empty()
-  let empty_table : Map[Int, Array[Int]] = Map([])
+  let empty_table : Map[Int32, Array[Int32]] = Map([])
   let indexed = @pdfspace.ColourSpace::Indexed(DeviceRGB, empty_table).to_pdf_object(
     pdf,
   )

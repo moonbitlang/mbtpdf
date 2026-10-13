@@ -12,7 +12,7 @@ fn make_stream(dict : @pdf.PdfObject, data : Array[Byte]) -> @pdf.PdfObject {
 }
 
 ///|
-fn assert_integer(obj : @pdf.PdfObject, expected : Int) -> Unit raise {
+fn assert_integer(obj : @pdf.PdfObject, expected : Int32) -> Unit raise {
   match obj {
     Integer(value) => assert_eq(value, expected)
     _ => fail("expected integer")
@@ -20,7 +20,7 @@ fn assert_integer(obj : @pdf.PdfObject, expected : Int) -> Unit raise {
 }
 
 ///|
-fn assert_some_integer(obj : @pdf.PdfObject?, expected : Int) -> Unit raise {
+fn assert_some_integer(obj : @pdf.PdfObject?, expected : Int32) -> Unit raise {
   match obj {
     Some(Integer(value)) => assert_eq(value, expected)
     Some(_) => fail("expected integer")

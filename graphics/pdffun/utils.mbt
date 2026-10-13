@@ -26,12 +26,12 @@ fn split_pairs(
 }
 
 ///|
-fn many(value : Double, count : Int) -> Array[Double] {
+fn many(value : Double, count : Int32) -> Array[Double] {
   Array::make(count, value)
 }
 
 ///|
-fn min(a : Int, b : Int) -> Int {
+fn min(a : Int32, b : Int32) -> Int32 {
   if a < b {
     a
   } else {
@@ -51,7 +51,7 @@ fn interleave_lists(a : Array[Double], b : Array[Double]) -> Array[Double] {
 }
 
 ///|
-fn product(values : Array[Int]) -> Int {
+fn product(values : Array[Int32]) -> Int32 {
   let mut total = 1
   for value in values {
     total = total * value
@@ -118,7 +118,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
 }
 
 ///|
-fn[T] select(index : Int, items : Array[T]) -> T raise BadFunctionEvaluation {
+fn[T] select(index : Int32, items : Array[T]) -> T raise BadFunctionEvaluation {
   if index <= 0 || index > items.length() {
     raise Msg("select")
   }
@@ -149,7 +149,7 @@ fn eval_function_sampled(
     clamp_double(i, 0.0, size.to_double() - 1.0)
   })
   let vals_to_read = range.length() / 2
-  let read_table = (inputs : Array[Int]) => {
+  let read_table = (inputs : Array[Int32]) => {
     if inputs.length() != s.size.length() {
       raise BadFunctionEvaluation::Msg("Incompatible /Size with inputs")
     }

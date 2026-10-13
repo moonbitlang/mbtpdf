@@ -66,8 +66,8 @@ test "stemv_of_standard_font covers all fonts" {
 test "textwidth handles missing widths and kerning" {
   let font = @pdffont.StandardFont::TimesRoman
   let missing = String::from_array([
-    Int::unsafe_to_char(999),
-    Int::unsafe_to_char(998),
+    Int32::unsafe_to_char(999),
+    Int32::unsafe_to_char(998),
   ])
   let (_, widths, kerns, widths_by_name) = @pdfstandard14.PdfStandard14::new().afm_data(
     font,
@@ -119,7 +119,7 @@ test "textwidth handles empty string and unicode fallback" {
     false, encoding, font, "",
   )
   assert_eq(width_empty, 0)
-  let unicode = String::from_array([Int::unsafe_to_char(256)])
+  let unicode = String::from_array([Int32::unsafe_to_char(256)])
   let width_space = @pdfstandard14.PdfStandard14::new().textwidth(
     false, encoding, font, unicode,
   )

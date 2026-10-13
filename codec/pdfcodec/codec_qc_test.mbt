@@ -16,7 +16,7 @@ fn random_byte(rs : @quickcheck.RandomState) -> Byte {
 priv struct Data(Array[Byte]) derive(Debug)
 
 ///|
-fn gen_data(size : Int, rs : @quickcheck.RandomState) -> Array[Byte] {
+fn gen_data(size : Int32, rs : @quickcheck.RandomState) -> Array[Byte] {
   let kind = rs.next_uint(limit=10).reinterpret_as_int()
   match kind {
     0 | 1 | 2 => {
@@ -242,7 +242,7 @@ test "prop: decode_pdfstream undoes a chain of encodings" {
 priv struct PredCase {
   lzw : Bool
   pred : @pdfcodec.Predictor
-  columns : Int
+  columns : Int32
   data : Array[Byte]
 } derive(Debug)
 
@@ -316,7 +316,7 @@ fn decode_named(name : String, data : Array[Byte]) -> Array[Byte]? {
 /// Hex text: hex digits in either case, arbitrary PDF whitespace between them,
 /// optionally terminated by `>`.
 priv struct HexText {
-  nibbles : Array[Int]
+  nibbles : Array[Int32]
   text : Array[Byte]
   terminated : Bool
 } derive(Debug)
@@ -391,7 +391,7 @@ fn encode_bytes(
 ///|
 test "prop: ASCII85Decode ignores whitespace inserted anywhere" {
   @quickcheck.check(
-    (input : (Data, Array[(UInt, Byte)])) => {
+    (input : (Data, Array[(UInt32, Byte)])) => {
       let (Data(data), inserts) = input
       let enc = encode_bytes(ASCII85, data)
       let ws = [b' ', b'\n', b'\r', b'\t', b'\x0c', b'\x00']
@@ -443,8 +443,8 @@ test "prop: ASCII encoders emit only their alphabet with bounded expansion" {
 ///|
 priv struct BitWriter {
   bytes : Array[Byte]
-  mut cur : Int
-  mut nbits : Int
+  mut cur : Int32
+  mut nbits : Int32
 }
 
 ///|
@@ -454,7 +454,7 @@ fn BitWriter::new() -> BitWriter {
 
 ///|
 /// Write `n` bits of `value`, least significant bit first.
-fn BitWriter::bits(self : BitWriter, value : Int, n : Int) -> Unit {
+fn BitWriter::bits(self : BitWriter, value : Int32, n : Int32) -> Unit {
   for i in 0..<n {
     self.cur = self.cur | (((value >> i) & 1) << self.nbits)
     self.nbits = self.nbits + 1
@@ -468,7 +468,7 @@ fn BitWriter::bits(self : BitWriter, value : Int, n : Int) -> Unit {
 
 ///|
 /// Write a Huffman code (most significant bit first).
-fn BitWriter::code(self : BitWriter, code : Int, n : Int) -> Unit {
+fn BitWriter::code(self : BitWriter, code : Int32, n : Int32) -> Unit {
   for i = n - 1; i >= 0; i = i - 1 {
     self.bits((code >> i) & 1, 1)
   }
@@ -486,7 +486,7 @@ fn BitWriter::align(self : BitWriter) -> Unit {
 ///|
 priv enum DeflateOp {
   Lit(Byte)
-  Copy(Int, Int) // (length 3..=258, distance 1..=32768)
+  Copy(Int32, Int32) // (length 3..=258, distance 1..=32768)
 } derive(Debug)
 
 ///|
@@ -500,10 +500,10 @@ priv struct DeflateCase(Array[DeflateBlock]) derive(Debug)
 
 ///|
 fn gen_ops(
-  size : Int,
-  produced : Int,
+  size : Int32,
+  produced : Int32,
   rs : @quickcheck.RandomState,
-) -> (Array[DeflateOp], Int) {
+) -> (Array[DeflateOp], Int32) {
   let n = rs
     .next_uint(limit=(size * 4 + 1).reinterpret_as_uint())
     .reinterpret_as_int()
@@ -576,31 +576,31 @@ fn deflate_model(blocks : Array[DeflateBlock]) -> Array[Byte] {
 }
 
 ///|
-let rfc_len_base : Array[Int] = [
+let rfc_len_base : Array[Int32] = [
   3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31, 35, 43, 51, 59, 67, 83,
   99, 115, 131, 163, 195, 227, 258,
 ]
 
 ///|
-let rfc_len_extra : Array[Int] = [
+let rfc_len_extra : Array[Int32] = [
   0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5,
   5, 0,
 ]
 
 ///|
-let rfc_dist_base : Array[Int] = [
+let rfc_dist_base : Array[Int32] = [
   1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385, 513, 769,
   1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577,
 ]
 
 ///|
-let rfc_dist_extra : Array[Int] = [
+let rfc_dist_extra : Array[Int32] = [
   0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11,
   12, 12, 13, 13,
 ]
 
 ///|
-fn fixed_lit(w : BitWriter, sym : Int) -> Unit {
+fn fixed_lit(w : BitWriter, sym : Int32) -> Unit {
   if sym < 144 {
     w.code(0x30 + sym, 8)
   } else if sym < 256 {
@@ -613,7 +613,7 @@ fn fixed_lit(w : BitWriter, sym : Int) -> Unit {
 }
 
 ///|
-fn find_index(bases : Array[Int], v : Int) -> Int {
+fn find_index(bases : Array[Int32], v : Int32) -> Int32 {
   let mut i = bases.length() - 1
   while bases[i] > v {
     i = i - 1
@@ -622,7 +622,7 @@ fn find_index(bases : Array[Int], v : Int) -> Int {
 }
 
 ///|
-fn adler32(data : Array[Byte]) -> Int {
+fn adler32(data : Array[Byte]) -> Int32 {
   let mut a = 1
   let mut b = 0
   for x in data {
@@ -904,7 +904,7 @@ test "prop: decode_from_bytes never aborts on malformed data or parameters" {
 }
 
 ///|
-fn ccitt_dict(columns : Int) -> @pdf.PdfObject {
+fn ccitt_dict(columns : Int32) -> @pdf.PdfObject {
   Dictionary([
     ("/Filter", Name(@pdf.PdfName::of_string("/CCITTFaxDecode"))),
     (
@@ -931,7 +931,7 @@ test "regression: CCITTFaxDecode rejects non-positive /Columns" {
   // them per code; with this input (found by the robustness property) a run
   // then overflowed `column + length` (2147483645 + 1154) into a negative
   // index and aborted.
-  let g4 : Array[Int] = [
+  let g4 : Array[Int32] = [
     120, 156, 193, 190, 178, 215, 127, 208, 95, 252, 235, 176, 188, 177, 31, 125,
     38, 91, 24, 120, 247, 201, 205, 161, 144, 184, 196, 55, 150, 57, 196, 206, 250,
     49, 241, 141, 60, 68, 86, 101, 46, 169, 33, 194, 222, 162,
@@ -960,7 +960,7 @@ test "regression: predictor rejects negative /Colors and /Columns" {
   // Used to abort (negative Array::make / out-of-bounds index). Zero keeps
   // its existing meaning (empty scanlines).
   let enc = qc_codec.encode_flate(Array::makei(12, i => i.to_byte()))
-  let dict = (pred : Int, colors : Int, columns : Int) => {
+  let dict = (pred : Int32, colors : Int32, columns : Int32) => {
     @pdf.PdfObject::Dictionary([
       ("/Filter", Name(@pdf.PdfName::of_string("/FlateDecode"))),
       (
@@ -1016,9 +1016,9 @@ test "regression: LZWDecode honours /Predictor" {
 ///|
 fn predictor_dict(
   filter : String,
-  colors : Int,
-  bpc : Int,
-  columns : Int,
+  colors : Int32,
+  bpc : Int32,
+  columns : Int32,
 ) -> @pdf.PdfObject {
   Dictionary([
     ("/Filter", Name(@pdf.PdfName::of_string(filter))),

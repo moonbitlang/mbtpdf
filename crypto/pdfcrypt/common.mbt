@@ -1,13 +1,13 @@
 ///|
 /// Padding bytes used by PDF encryption.
-let paddings : Array[Int] = [
+let paddings : Array[Int32] = [
   0x28, 0xbf, 0x4e, 0x5e, 0x4e, 0x75, 0x8a, 0x41, 0x64, 0x00, 0x4e, 0x56, 0xff, 0xfa,
   0x01, 0x08, 0x2e, 0x2e, 0x00, 0xb6, 0xd0, 0x68, 0x3e, 0x80, 0x2f, 0x0c, 0xa9, 0xfe,
   0x64, 0x53, 0x69, 0x7a,
 ]
 
 ///|
-fn bytes_of_int_arrays(values : Array[Array[Int]]) -> Array[Byte] {
+fn bytes_of_int_arrays(values : Array[Array[Int32]]) -> Array[Byte] {
   let mut total = 0
   for v in values {
     total = total + v.length()
@@ -24,17 +24,17 @@ fn bytes_of_int_arrays(values : Array[Array[Int]]) -> Array[Byte] {
 }
 
 ///|
-fn int_array_prefix(values : Array[Int], len : Int) -> Array[Int] {
+fn int_array_prefix(values : Array[Int32], len : Int32) -> Array[Int32] {
   values[:len].to_owned()
 }
 
 ///|
-fn bytes_prefix(values : Array[Byte], len : Int) -> Array[Byte] {
+fn bytes_prefix(values : Array[Byte], len : Int32) -> Array[Byte] {
   values[:len].to_owned()
 }
 
 ///|
-fn array_equal(a : Array[Int], b : Array[Int]) -> Bool {
+fn array_equal(a : Array[Int32], b : Array[Int32]) -> Bool {
   a[:].equal(b[:])
 }
 
@@ -44,9 +44,9 @@ fn bytes_equal(a : Array[Byte], b : Array[Byte]) -> Bool {
 }
 
 ///|
-fn pad_password(password : Array[Int]) -> Array[Int] {
+fn pad_password(password : Array[Int32]) -> Array[Int32] {
   let pw = Array::make(32, 0)
-  let len = Int::min(password.length(), 32)
+  let len = Int32::min(password.length(), 32)
   for i in 0..<len {
     pw[i] = password[i]
   }
@@ -59,7 +59,7 @@ fn pad_password(password : Array[Int]) -> Array[Int] {
 }
 
 ///|
-fn mkkey(key : Array[Int], x : Int) -> Array[Int] {
+fn mkkey(key : Array[Int32], x : Int32) -> Array[Int32] {
   let out = key.copy()
   for k in 0..<out.length() {
     out[k] = out[k] ^ x
@@ -83,7 +83,7 @@ fn make_utf8(pw : String) -> String {
 let zero_iv : String = @pdfio.string_of_bytes(@pdfio.mkbytes(16))
 
 ///|
-let rand_state : Ref[@random.Rand] = Ref(@random.Rand::new())
+let rand_state : Ref[@random.Rand] = Ref(Rand())
 
 ///|
 fn mksalt() -> String {

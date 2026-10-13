@@ -11,7 +11,7 @@ fn is_encryption_error(err : Error) -> Bool {
 fn should_fallback_on_error(
   ctx : PdfRead,
   err : Error,
-  revision : Int?,
+  revision : Int32?,
 ) -> Bool {
   if ctx.error_on_malformed {
     return false
@@ -46,7 +46,7 @@ fn advance_to_integer(input : @pdfio.Input) -> Bool {
 fn read_malformed_pdf_objects(
   input : @pdfio.Input,
   read_stream_data : Bool,
-) -> (@pdf.PdfObjMap, Int) raise {
+) -> (@pdf.PdfObjMap, Int32) raise {
   let objects : @pdf.PdfObjMap = Map([])
   let mut max_obj = 0
   (input.seek_in)(0)
@@ -102,7 +102,7 @@ fn read_malformed_pdf_objects(
 }
 
 ///|
-fn trailer_boundary_ok(input : @pdfio.Input, pos : Int, len : Int) -> Bool {
+fn trailer_boundary_ok(input : @pdfio.Input, pos : Int32, len : Int32) -> Bool {
   let before_ok = if pos == 0 {
     true
   } else {
@@ -163,7 +163,7 @@ fn read_malformed_trailerdicts(
 }
 
 ///|
-fn find_catalog_object(objects : @pdf.PdfObjMap) -> Int? {
+fn find_catalog_object(objects : @pdf.PdfObjMap) -> Int32? {
   for entry in objects {
     let objnum = entry.0
     let (obj_ref, _gen) = entry.1
@@ -182,7 +182,7 @@ fn find_catalog_object(objects : @pdf.PdfObjMap) -> Int? {
 ///|
 fn read_malformed_pdf(
   ctx : PdfRead,
-  revision : Int?,
+  revision : Int32?,
   user_password : String?,
   owner_password : String?,
   input : @pdfio.Input,

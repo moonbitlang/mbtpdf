@@ -19,7 +19,7 @@ pub fn PdfStructTrees::new(pdfs : Array[@pdf.Pdf]) -> PdfStructTrees {
 }
 
 ///|
-fn ilist(start : Int, finish : Int) -> Array[Int] {
+fn ilist(start : Int32, finish : Int32) -> Array[Int32] {
   if finish < start {
     return []
   }
@@ -31,7 +31,7 @@ fn ilist(start : Int, finish : Int) -> Array[Int] {
 }
 
 ///|
-fn setminus(full : Array[Int], remove : Array[Int]) -> Array[Int] {
+fn setminus(full : Array[Int32], remove : Array[Int32]) -> Array[Int32] {
   let remove_set = Map([], capacity=remove.length())
   for v in remove {
     remove_set.set(v, ())
@@ -46,7 +46,7 @@ fn setminus(full : Array[Int], remove : Array[Int]) -> Array[Int] {
 }
 
 ///|
-fn set_of_ints(values : Array[Int]) -> Map[Int, Unit] {
+fn set_of_ints(values : Array[Int32]) -> Map[Int32, Unit] {
   let out = Map([], capacity=values.length())
   for v in values {
     out.set(v, ())
@@ -55,7 +55,7 @@ fn set_of_ints(values : Array[Int]) -> Map[Int, Unit] {
 }
 
 ///|
-fn dedup_ints(values : Array[Int]) -> Array[Int] {
+fn dedup_ints(values : Array[Int32]) -> Array[Int32] {
   let set = set_of_ints(values)
   let out = Array(capacity=set.length())
   for key, _ in set {
@@ -66,8 +66,8 @@ fn dedup_ints(values : Array[Int]) -> Array[Int] {
 
 ///|
 fn dedup_pairs(
-  values : Array[(Int, @pdf.PdfObject)],
-) -> Array[(Int, @pdf.PdfObject)] {
+  values : Array[(Int32, @pdf.PdfObject)],
+) -> Array[(Int32, @pdf.PdfObject)] {
   let set = Map([], capacity=values.length())
   for pair in values {
     set.set(pair.0, pair.1)
@@ -96,7 +96,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
 /// Trim the structure tree to match a subset of pages.
 pub fn PdfStructTree::trim_structure_tree(
   self : PdfStructTree,
-  range : Array[Int],
+  range : Array[Int32],
 ) -> Unit raise {
   let pdf = self.pdf
   let objnums = pdf.page_reference_numbers()
@@ -112,8 +112,8 @@ pub fn PdfStructTree::trim_structure_tree(
     return
   }
   let remove_set = set_of_ints(page_objnums_to_remove)
-  let del : Ref[Array[Int]] = { val: [], }
-  let replaceobjs : Ref[Array[(Int, @pdf.PdfObject)]] = { val: [], }
+  let del : Ref[Array[Int32]] = { val: [], }
+  let replaceobjs : Ref[Array[(Int32, @pdf.PdfObject)]] = { val: [], }
   pdf.objiter((n, o) => {
     match pdf.direct(o) {
       Dictionary(d) =>
@@ -166,7 +166,7 @@ pub fn PdfStructTree::trim_structure_tree(
   fn process_indirect(
     d : Array[(String, @pdf.PdfObject)],
     objs : Array[@pdf.PdfObject],
-    n : Int,
+    n : Int32,
   ) -> Unit raise {
     match process(objs) {
       None => ()
@@ -233,7 +233,7 @@ pub fn PdfStructTrees::renumber_parent_trees(
   for tree in parent_trees {
     total_entries = total_entries + tree.length()
   }
-  let mapping : Map[(Int, Int), Int] = Map([], capacity=total_entries)
+  let mapping : Map[(Int32, Int32), Int32] = Map([], capacity=total_entries)
   let mut next = 0
   for i, tree in parent_trees {
     let pdfn = i + 1
@@ -244,8 +244,8 @@ pub fn PdfStructTrees::renumber_parent_trees(
     }
   }
   fn rewrite(
-    pdfn : Int,
-    mapping : Map[(Int, Int), Int],
+    pdfn : Int32,
+    mapping : Map[(Int32, Int32), Int32],
     obj : @pdf.PdfObject,
   ) -> @pdf.PdfObject {
     match obj {
@@ -371,8 +371,8 @@ pub fn PdfStructTrees::renumber_parent_trees(
 pub fn PdfStructTree::merge_structure_trees(
   self : PdfStructTree,
   pdfs : Array[@pdf.Pdf],
-  add_toplevel_document? : Bool = false,
-) -> Int? raise {
+  add_toplevel_document~ : Bool = false,
+) -> Int32? raise {
   let pdf = self.pdf
   fn get_all(
     struct_roots : Array[@pdf.PdfObject],

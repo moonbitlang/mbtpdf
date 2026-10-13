@@ -2,22 +2,22 @@
 fn find_key(
   no_encrypt_metadata : Bool,
   password : String,
-  r : Int,
+  r : Int32,
   o : String,
-  p : Int,
+  p : Int32,
   id : String,
-  keylength : Int,
-) -> Array[Int] {
+  keylength : Int32,
+) -> Array[Int32] {
   let prims = @pdfcryptprimitives.PdfCryptPrimitives::new()
   let password_ints = @pdfio.int_array_of_string(password)
   let o_ints = @pdfio.int_array_of_string(o)
   let id_ints = @pdfio.int_array_of_string(id)
   let pw = pad_password(password_ints)
   let from_p = [
-    Int::land(p, 0xff),
-    Int::land(p >> 8, 0xff),
-    Int::land(p >> 16, 0xff),
-    Int::land(p >> 24, 0xff),
+    Int32::land(p, 0xff),
+    Int32::land(p >> 8, 0xff),
+    Int32::land(p >> 16, 0xff),
+    Int32::land(p >> 24, 0xff),
   ]
   let rev4_no_metadata = if r >= 4 && no_encrypt_metadata {
     [255, 255, 255, 255]
@@ -47,12 +47,12 @@ fn find_key(
 fn authenticate_user(
   no_encrypt_metadata : Bool,
   password : String,
-  r : Int,
+  r : Int32,
   u : String,
   o : String,
-  p : Int,
+  p : Int32,
   id : String,
-  keylength : Int,
+  keylength : Int32,
 ) -> Bool {
   let prims = @pdfcryptprimitives.PdfCryptPrimitives::new()
   let u_ints = @pdfio.int_array_of_string(u)
@@ -84,7 +84,11 @@ fn authenticate_user(
 }
 
 ///|
-fn owner_key(padded_owner : Array[Int], keylength : Int, r : Int) -> Array[Int] {
+fn owner_key(
+  padded_owner : Array[Int32],
+  keylength : Int32,
+  r : Int32,
+) -> Array[Int32] {
   let prims = @pdfcryptprimitives.PdfCryptPrimitives::new()
   let mut d = prims.md5(@pdfio.bytes_of_int_array(padded_owner))
   if r >= 3 {
@@ -99,10 +103,10 @@ fn owner_key(padded_owner : Array[Int], keylength : Int, r : Int) -> Array[Int] 
 
 ///|
 fn mk_owner(
-  r : Int,
+  r : Int32,
   owner_pw : String,
   user_pw : String,
-  keylength : Int,
+  keylength : Int32,
 ) -> String {
   let prims = @pdfcryptprimitives.PdfCryptPrimitives::new()
   let source = if owner_pw == "" { user_pw } else { owner_pw }
@@ -129,10 +133,10 @@ fn mk_user(
   no_encrypt_metadata : Bool,
   user_pw : String,
   o : String,
-  p : Int,
+  p : Int32,
   id : String,
-  r : Int,
-  keylength : Int,
+  r : Int32,
+  keylength : Int32,
 ) -> String {
   let prims = @pdfcryptprimitives.PdfCryptPrimitives::new()
   let key = find_key(no_encrypt_metadata, user_pw, r, o, p, id, keylength)

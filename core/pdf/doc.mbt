@@ -5,37 +5,37 @@ pub(all) enum ObjectData {
   ParsedAlreadyDecrypted(PdfObject)
   ToParse
   ToParseFromObjectStream(
-    Map[Int, Array[Int]],
-    Int,
-    Int,
-    (Int, Array[Int]) -> Array[(Int, (Ref[ObjectData], Int))]
+    Map[Int32, Array[Int32]],
+    Int32,
+    Int32,
+    (Int32, Array[Int32]) -> Array[(Int32, (Ref[ObjectData], Int32))]
   )
 }
 
 ///|
-type PdfObjMapKey = Int
+type PdfObjMapKey = Int32
 
 ///|
-type PdfObjMapEntry = (Ref[ObjectData], Int)
+type PdfObjMapEntry = (Ref[ObjectData], Int32)
 
 ///|
-pub type PdfObjMap = Map[Int, (Ref[ObjectData], Int)]
+pub type PdfObjMap = Map[Int32, (Ref[ObjectData], Int32)]
 
 ///|
 /// Container for document objects.
 pub(all) struct PdfObjects {
-  mut max_obj_num : Int
+  mut max_obj_num : Int32
   parse : ((PdfObjMapKey) -> PdfObject)?
   objects : PdfObjMap
-  object_stream_ids : Map[Int, Int]
+  object_stream_ids : Map[Int32, Int32]
 }
 
 ///|
 /// In-memory PDF document.
 pub(all) struct Pdf {
-  major : Int
-  minor : Int
-  root : Int
+  major : Int32
+  minor : Int32
+  root : Int32
   objects : PdfObjects
   mut trailerdict : PdfObject
   was_linearized : Bool
@@ -86,13 +86,13 @@ pub fn Pdf::empty() -> Pdf {
 
 ///|
 /// Return the size of the object map.
-pub fn Pdf::objcard(self : Pdf) -> Int {
+pub fn Pdf::objcard(self : Pdf) -> Int32 {
   self.objects.objects.length()
 }
 
 ///|
 /// Return the object numbers in ascending order.
-pub fn Pdf::objnumbers(self : Pdf) -> Array[Int] {
+pub fn Pdf::objnumbers(self : Pdf) -> Array[Int32] {
   let entries = self.objects.objects.to_array()
   entries.sort_by((a, b) => a.0 - b.0)
   entries.map(pair => pair.0)
@@ -100,13 +100,13 @@ pub fn Pdf::objnumbers(self : Pdf) -> Array[Int] {
 
 ///|
 /// Remove the given object.
-pub fn Pdf::removeobj(self : Pdf, objnum : Int) -> Unit {
+pub fn Pdf::removeobj(self : Pdf, objnum : Int32) -> Unit {
   self.objects.objects.remove(objnum)
 }
 
 ///|
 /// Add an object. Returns the number chosen.
-pub fn Pdf::addobj(self : Pdf, obj : PdfObject) -> Int {
+pub fn Pdf::addobj(self : Pdf, obj : PdfObject) -> Int32 {
   let next = self.objects.max_obj_num + 1
   self.addobj_given_num((next, obj))
   next
@@ -114,7 +114,7 @@ pub fn Pdf::addobj(self : Pdf, obj : PdfObject) -> Int {
 
 ///|
 /// Same as addobj, but pick a number ourselves.
-pub fn Pdf::addobj_given_num(self : Pdf, pair : (Int, PdfObject)) -> Unit {
+pub fn Pdf::addobj_given_num(self : Pdf, pair : (Int32, PdfObject)) -> Unit {
   let (num, obj) = pair
   if num > self.objects.max_obj_num {
     self.objects.max_obj_num = num

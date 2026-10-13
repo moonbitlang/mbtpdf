@@ -17,7 +17,7 @@ test "read_header returns default on malformed major" {
 ///|
 test "read_header errors on missing minor digits" {
   let input = @pdfio.Input::of_string("%PDF-1.X")
-  let res : Result[(Int, Int), Error] = try
+  let res : Result[(Int32, Int32), Error] = try
     read_header(PdfRead::new(), input) |> Ok
   catch {
     e => Err(e)

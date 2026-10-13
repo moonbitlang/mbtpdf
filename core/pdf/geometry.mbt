@@ -144,7 +144,7 @@ fn Pdf::transform_quadpoint_single(
 }
 
 ///|
-fn[T] split_into(values : Array[T], size : Int) -> Array[Array[T]] {
+fn[T] split_into(values : Array[T], size : Int32) -> Array[Array[T]] {
   let out = Array(capacity=(values.length() + size - 1) / size)
   for i = 0; i < values.length(); i = i + size {
     let part = Array(capacity=size)

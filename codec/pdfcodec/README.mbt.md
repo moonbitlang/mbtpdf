@@ -19,10 +19,10 @@ pub(all) enum Encoding {
   ASCIIHex
   ASCII85
   RunLength
-  LZW(Int) // EarlyChange
+  LZW(Int32) // EarlyChange
   Flate
-  CCITT(Int, Int) // Columns, Rows
-  CCITTG4(Int, Int) // Columns, Rows
+  CCITT(Int32, Int32) // Columns, Rows
+  CCITTG4(Int32, Int32) // Columns, Rows
 }
 ```
 

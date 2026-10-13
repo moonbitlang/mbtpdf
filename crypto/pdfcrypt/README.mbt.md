@@ -18,7 +18,7 @@ The `pdfcrypt` package provides:
 pub(all) enum EncryptionMethod {
   AES256 // AES 256-bit (recommended, PDF 2.0)
   AES128 // AES 128-bit (PDF 1.6+)
-  ARC4(Int) // RC4 with key length (legacy)
+  ARC4(Int32) // RC4 with key length (legacy)
 }
 ```
 

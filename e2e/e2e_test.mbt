@@ -60,12 +60,12 @@ async fn write_pdf(path : String, pdf : @pdf.Pdf) -> Unit {
 }
 
 ///|
-fn page_count(pdf : @pdf.Pdf) -> Int raise {
+fn page_count(pdf : @pdf.Pdf) -> Int32 raise {
   @pdfpage.PdfPageDoc::new(pdf).pages_of_pagetree_quick()
 }
 
 ///|
-fn full_range(count : Int) -> Array[Int] {
+fn full_range(count : Int32) -> Array[Int32] {
   let out = Array(capacity=count)
   for i in 1..<=count {
     out.push(i)
@@ -76,7 +76,7 @@ fn full_range(count : Int) -> Array[Int] {
 ///|
 fn assert_merged_label_prefixes(
   labels : Array[@pdfpagelabels.PageLabel],
-  left_count : Int,
+  left_count : Int32,
 ) -> Unit raise {
   let mut found_left = false
   let mut found_right = false
@@ -106,7 +106,7 @@ fn assert_merged_label_prefixes(
 fn add_named_destination(
   pdf : @pdf.Pdf,
   name : String,
-  page_obj : Int,
+  page_obj : Int32,
 ) -> Unit raise {
   let dest = @pdfdest.Destination::Fit(PageObject(page_obj))
   let tree_builder = @pdftree.PdfTree::new(pdf)
@@ -234,7 +234,7 @@ fn make_alt_presentation_dict(name : String, tag : String) -> @pdf.PdfObject {
 fn make_bulk_named_dest_entries(
   pdf : @pdf.Pdf,
   prefix : String,
-  count : Int,
+  count : Int32,
 ) -> Array[(String, @pdf.PdfObject)] raise {
   let page_obj = match @pdfpage.PdfPageDoc::new(pdf).page_object_number(1) {
     Some(objnum) => objnum
@@ -252,7 +252,7 @@ fn make_bulk_named_dest_entries(
 ///|
 fn make_bulk_url_entries(
   prefix : String,
-  count : Int,
+  count : Int32,
 ) -> Array[(String, @pdf.PdfObject)] {
   let entries = Array(capacity=count)
   for i in 0..<count {
@@ -372,7 +372,7 @@ fn read_ocg_config_names(pdf : @pdf.Pdf) -> Array[String] raise {
 }
 
 ///|
-fn read_ocg_on_count(pdf : @pdf.Pdf) -> Int raise {
+fn read_ocg_on_count(pdf : @pdf.Pdf) -> Int32 raise {
   let catalog = pdf.catalog_of_pdf()
   let ocprops = match pdf.lookup_direct("/OCProperties", catalog) {
     Some(obj) => obj
@@ -391,8 +391,8 @@ fn read_ocg_on_count(pdf : @pdf.Pdf) -> Int raise {
 ///|
 fn add_struct_tree_root(
   pdf : @pdf.Pdf,
-  page_ref : Int,
-  parent_key : Int,
+  page_ref : Int32,
+  parent_key : Int32,
 ) -> Unit raise {
   let struct_elem : @pdf.PdfObject = Dictionary([
     ("/Type", Name(PdfName(b"/StructElem"))),
@@ -651,7 +651,7 @@ fn assert_alt_presentation_entry(
 ///|
 fn assert_destination_page(
   dest : @pdfdest.Destination,
-  expected_obj : Int,
+  expected_obj : Int32,
 ) -> Unit raise {
   match dest {
     Fit(PageObject(obj))

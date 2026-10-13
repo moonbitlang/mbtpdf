@@ -1,16 +1,16 @@
 ///|
 priv enum PtreeObjnumbers {
-  OLf(ArrayView[Int], Int, Int)
-  OBr(ArrayView[Int], PtreeObjnumbers, PtreeObjnumbers, Int, Int)
+  OLf(ArrayView[Int32], Int32, Int32)
+  OBr(ArrayView[Int32], PtreeObjnumbers, PtreeObjnumbers, Int32, Int32)
 }
 
 ///|
 fn pagetree_with_objnumbers(
   toplevel : Bool,
-  old_pagetree_root_num : Int,
-  objnumsource : () -> Int,
-  objnumbers : ArrayView[Int],
-  parent : Int,
+  old_pagetree_root_num : Int32,
+  objnumsource : () -> Int32,
+  objnumbers : ArrayView[Int32],
+  parent : Int32,
 ) -> PtreeObjnumbers raise {
   if objnumbers.length() < 10 {
     let this_num = if toplevel { old_pagetree_root_num } else { objnumsource() }
@@ -29,7 +29,11 @@ fn pagetree_with_objnumbers(
 }
 
 ///|
-fn buildnode(kids : ArrayView[Int], parent : Int, count : Int) -> PdfObject {
+fn buildnode(
+  kids : ArrayView[Int32],
+  parent : Int32,
+  count : Int32,
+) -> PdfObject {
   let kid_refs = []
   for kid in kids {
     kid_refs.push(PdfObject::Indirect(kid))
@@ -46,7 +50,7 @@ fn buildnode(kids : ArrayView[Int], parent : Int, count : Int) -> PdfObject {
 }
 
 ///|
-fn objnumfrom(node : PtreeObjnumbers) -> Int {
+fn objnumfrom(node : PtreeObjnumbers) -> Int32 {
   match node {
     OLf(_, _, o) => o
     OBr(_, _, _, _, o) => o
@@ -54,7 +58,7 @@ fn objnumfrom(node : PtreeObjnumbers) -> Int {
 }
 
 ///|
-fn countof(node : PtreeObjnumbers) -> Int {
+fn countof(node : PtreeObjnumbers) -> Int32 {
   match node {
     OLf(objnumbers, _, _) => objnumbers.length()
     OBr(objnumbers, left, right, _, _) =>
@@ -86,7 +90,7 @@ fn objects_of_ptree_objnumbers(pdf : @pdf.Pdf, node : PtreeObjnumbers) -> Unit {
 ///|
 fn pdf_of_pages_build_pagetree(
   tree : PtreeObjnumbers,
-  objnumbers : Array[Int],
+  objnumbers : Array[Int32],
   pdf : @pdf.Pdf,
 ) -> PdfObject {
   match tree {
@@ -104,7 +108,7 @@ fn pdf_of_pages_build_pagetree(
 }
 
 ///|
-fn select_page_ref(refs : Array[Int], index_1 : Int) -> Int raise {
+fn select_page_ref(refs : Array[Int32], index_1 : Int32) -> Int32 raise {
   if index_1 < 1 {
     raise @pdf.PdfError::Msg("pdf_of_pages")
   }
@@ -115,7 +119,7 @@ fn select_page_ref(refs : Array[Int], index_1 : Int) -> Int raise {
 }
 
 ///|
-fn range_to_set(range : Array[Int]) -> Map[Int, Unit] {
+fn range_to_set(range : Array[Int32]) -> Map[Int32, Unit] {
   let out = Map([], capacity=range.length())
   for page in range {
     out.set(page, ())
@@ -124,7 +128,7 @@ fn range_to_set(range : Array[Int]) -> Map[Int, Unit] {
 }
 
 ///|
-fn build_fastrefnums(refnums : Array[Int]) -> Map[Int, Int] {
+fn build_fastrefnums(refnums : Array[Int32]) -> Map[Int32, Int32] {
   let out = Map([], capacity=refnums.length())
   for i in 0..<refnums.length() {
     out.set(refnums[i], i + 1)
@@ -136,9 +140,9 @@ fn build_fastrefnums(refnums : Array[Int]) -> Map[Int, Int] {
 /// Build a PDF containing a subset of pages.
 pub fn PdfPageDoc::pdf_of_pages(
   self : PdfPageDoc,
-  range : Array[Int],
-  retain_numbering? : Bool = false,
-  process_struct_tree? : Bool = false,
+  range : Array[Int32],
+  retain_numbering~ : Bool = false,
+  process_struct_tree~ : Bool = false,
 ) -> @pdf.Pdf raise {
   let basepdf = self.pdf
   match range {
@@ -210,7 +214,7 @@ pub fn PdfPageDoc::pdf_of_pages(
     Dictionary(d) => d
     _ => []
   }
-  let objnumbers : Array[Int] = Array(capacity=range.length())
+  let objnumbers : Array[Int32] = Array(capacity=range.length())
   for page in range {
     objnumbers.push(select_page_ref(page_numbers, page))
   }

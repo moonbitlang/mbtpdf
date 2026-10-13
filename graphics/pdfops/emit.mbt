@@ -494,10 +494,10 @@ pub fn Op::stream_of_ops(ops : Array[Op]) -> @pdf.PdfObject raise {
 
 ///|
 fn parse_operator(
-  compatibility : Ref[Int],
+  compatibility : Ref[Int32],
   lexemes : Array[Lexeme],
-  start : Int,
-) -> (Op, Int) raise {
+  start : Int32,
+) -> (Op, Int32) raise {
   if start >= lexemes.length() {
     return (OpUnknown(""), start)
   }
@@ -514,7 +514,7 @@ fn parse_operator(
     LexInlineImage(data) => return (InlineImage(data), next_index)
     Op(op) => {
       let operand_count = section.length() - 1
-      fn as_real(index : Int) -> Double? {
+      fn as_real(index : Int32) -> Double? {
         if index < operand_count {
           lexeme_real(section[index])
         } else {
@@ -522,7 +522,7 @@ fn parse_operator(
         }
       }
 
-      fn as_int(index : Int) -> Int? {
+      fn as_int(index : Int32) -> Int32? {
         if index < operand_count {
           lexeme_int(section[index])
         } else {
@@ -530,7 +530,7 @@ fn parse_operator(
         }
       }
 
-      fn as_name(index : Int) -> String? {
+      fn as_name(index : Int32) -> String? {
         if index < operand_count {
           lexeme_name(section[index])
         } else {
@@ -538,7 +538,7 @@ fn parse_operator(
         }
       }
 
-      fn as_string(index : Int) -> String? {
+      fn as_string(index : Int32) -> String? {
         if index < operand_count {
           lexeme_string(section[index])
         } else {

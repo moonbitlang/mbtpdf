@@ -766,7 +766,7 @@ async test "extract text SFAA Japanese" {
 
 ///|
 fn build_unicode_pdf() -> @pdf.Pdf raise {
-  let codepoints : Array[Int] = ['你', '好', '世', '界', '☺']
+  let codepoints : Array[Int32] = ['你', '好', '世', '界', '☺']
   let pdf = @pdf.Pdf::empty()
   let text = @pdftext.PdfTextUtil::new().utf16be_of_codepoints(codepoints)
   let font : @pdf.PdfObject = Dictionary([

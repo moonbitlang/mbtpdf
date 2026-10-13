@@ -32,7 +32,7 @@ fn custom_encoding_font_dict() -> @pdf.PdfObject {
 }
 
 ///|
-fn simple_font_with_tounicode(tounicode_ref : Int) -> @pdf.PdfObject {
+fn simple_font_with_tounicode(tounicode_ref : Int32) -> @pdf.PdfObject {
   Dictionary([
     ("/Subtype", Name(PdfName(b"/Type1"))),
     ("/BaseFont", Name(PdfName(b"/Helvetica"))),
@@ -82,7 +82,7 @@ test "utf16be conversions" {
     @pdfio.string_of_int_array([0x00, 0x41, 0xd8, 0x3d, 0xde, 0x00]),
   )
   debug_inspect(decoded, content="[65, 128888]")
-  let invalid_len : Result[Array[Int], Error] = try
+  let invalid_len : Result[Array[Int32], Error] = try
     @pdftext.PdfTextUtil::new().codepoints_of_utf16be(
       @pdfio.string_of_int_array([0x00]),
     )
@@ -91,7 +91,7 @@ test "utf16be conversions" {
     e => Err(e)
   }
   assert_true(invalid_len is Err(_))
-  let invalid_cp : Result[Array[Int], Error] = try
+  let invalid_cp : Result[Array[Int32], Error] = try
     @pdftext.PdfTextUtil::new().utf16be_of_codepoint(0x110000) |> Ok
   catch {
     e => Err(e)
@@ -127,7 +127,7 @@ test "pdfdocstring conversions" {
     @pdftext.PdfTextUtil::new().codepoints_of_pdfdocstring(pdfdoc_cjk),
     content="[20013]",
   )
-  let bad : Result[Int, Error] = try
+  let bad : Result[Int32, Error] = try
     @pdftext.PdfTextUtil::new().codepoint_of_pdfdocencoding_character(300) |> Ok
   catch {
     e => Err(e)
@@ -149,7 +149,7 @@ test "shift_jis decoder covers ascii and error branches" {
 test "charcode extractor debug handles bad tounicode values" {
   let pdf = @pdf.Pdf::empty()
   let ctx = @pdftext.PdfText::new(pdf)
-  let tounicode : Map[Int, String] = Map([])
+  let tounicode : Map[Int32, String] = Map([])
   tounicode.set(33, @pdfio.string_of_int_array([0xd8, 0x00]))
   let tounicode_ref = ctx.write_tounicode(tounicode)
   let font = simple_font_with_tounicode(tounicode_ref)
@@ -181,7 +181,7 @@ test "utf8 conversion helpers" {
   for i in 0..<expected.length() {
     assert_eq(bytes[i], expected[i])
   }
-  let invalid_utf8 : Result[Array[Int], Error] = try
+  let invalid_utf8 : Result[Array[Int32], Error] = try
     @pdftext.PdfTextUtil::new().get_utf8_chars(0x110000) |> Ok
   catch {
     e => Err(e)
@@ -216,7 +216,7 @@ test "encoding tables and extractors" {
 test "tounicode and cmap extraction" {
   let pdf = @pdf.Pdf::empty()
   let ctx = @pdftext.PdfText::new(pdf)
-  let tounicode : Map[Int, String] = Map([])
+  let tounicode : Map[Int32, String] = Map([])
   tounicode.set(33, @pdfio.string_of_int_array([0x00, 0x42]))
   let tounicode_ref = ctx.write_tounicode(tounicode)
   let extractor = ctx.text_extractor_of_font(
@@ -238,7 +238,7 @@ test "tounicode and cmap extraction" {
   assert_eq(identity_pairs.length(), 2)
   debug_inspect(identity_pairs[0].1, content="[65]")
   debug_inspect(identity_pairs[1].1, content="[66]")
-  let odd_res : Result[Array[(String, Array[Int])], Error] = try
+  let odd_res : Result[Array[(String, Array[Int32])], Error] = try
     identity_extractor.glyphnames_and_codepoints_of_text(
       @pdfio.string_of_int_array([0x00]),
     )

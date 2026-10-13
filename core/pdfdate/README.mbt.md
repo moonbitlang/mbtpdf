@@ -15,14 +15,14 @@ Represents a PDF date with all components:
 ```moonbit nocheck
 ///|
 pub struct Date {
-  year : Int // 0-9999
-  month : Int // 1-12
-  day : Int // 1-31
-  hour : Int // 0-23
-  minute : Int // 0-59
-  second : Int // 0-59
-  hour_offset : Int // -23 to +23 (timezone hours)
-  minute_offset : Int // -59 to +59 (timezone minutes)
+  year : Int32 // 0-9999
+  month : Int32 // 1-12
+  day : Int32 // 1-31
+  hour : Int32 // 0-23
+  minute : Int32 // 0-59
+  second : Int32 // 0-59
+  hour_offset : Int32 // -23 to +23 (timezone hours)
+  minute_offset : Int32 // -59 to +59 (timezone minutes)
 }
 ```
 

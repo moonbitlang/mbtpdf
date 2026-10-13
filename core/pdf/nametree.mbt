@@ -1,6 +1,6 @@
 ///|
 /// Name tree helpers.
-fn compare_string(a : String, b : String) -> Int {
+fn compare_string(a : String, b : String) -> Int32 {
   // IMPORTANT:
   // - `StringView::compare` uses *shortlex* order (length-first), which is not a
   //   traditional lexicographical string ordering.
@@ -26,7 +26,7 @@ fn[T] flatten(lists : Array[Array[T]]) -> Array[T] {
 }
 
 ///|
-fn key_compare(a : PdfObject, b : PdfObject) -> Int? {
+fn key_compare(a : PdfObject, b : PdfObject) -> Int32? {
   match (a, b) {
     (PdfString(sa), PdfString(sb)) => Some(compare_string(sa, sb))
     (Integer(ia), Integer(ib)) => Some(ia - ib)

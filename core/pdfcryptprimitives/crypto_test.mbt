@@ -22,7 +22,7 @@ test "arc4 crypt matches known vector" {
 
 ///|
 test "aes ecb encrypt/decrypt uses standard vector" {
-  let key : Array[Int] = [
+  let key : Array[Int32] = [
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c,
     0x0d, 0x0e, 0x0f,
   ]
@@ -49,7 +49,7 @@ test "aes ecb encrypt/decrypt uses standard vector" {
 
 ///|
 test "decrypt_stream_data arc4 roundtrip" {
-  let key : Array[Int] = [1, 2, 3, 4, 5]
+  let key : Array[Int32] = [1, 2, 3, 4, 5]
   let data = @pdfio.bytes_of_string("secret")
   let crypt_type = @pdfcryptprimitives.Encryption::ARC4(40, 4)
   let enc = @pdfcryptprimitives.PdfCryptPrimitives::new().decrypt_stream_data(
@@ -86,7 +86,7 @@ test "arc4 crypt returns copy when key is empty" {
 
 ///|
 test "aes ecb encrypt/decrypt handles empty data" {
-  let key : Array[Int] = [
+  let key : Array[Int32] = [
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c,
     0x0d, 0x0e, 0x0f,
   ]
@@ -103,7 +103,7 @@ test "aes ecb encrypt/decrypt handles empty data" {
 
 ///|
 test "aes ecb remove_padding keeps data for invalid padding" {
-  let key : Array[Int] = [
+  let key : Array[Int32] = [
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c,
     0x0d, 0x0e, 0x0f,
   ]

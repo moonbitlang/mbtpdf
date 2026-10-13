@@ -6,7 +6,7 @@
 // of the 64-byte (MD5, SHA-256) and 128-byte (SHA-384/512) block functions.
 
 ///|
-fn pattern_msg(n : Int) -> Array[Byte] {
+fn pattern_msg(n : Int32) -> Array[Byte] {
   Array::makei(n, i => ((i * 31 + n * 7 + 13) & 0xff).to_byte())
 }
 
@@ -23,7 +23,7 @@ fn to_hex(bytes : Array[Byte]) -> String {
 }
 
 ///|
-fn hex_prefix(bytes : Array[Byte], n : Int) -> String {
+fn hex_prefix(bytes : Array[Byte], n : Int32) -> String {
   to_hex(bytes[:n].to_owned())
 }
 
@@ -32,7 +32,7 @@ let prims : @pdfcryptprimitives.PdfCryptPrimitives = @pdfcryptprimitives.PdfCryp
 
 ///|
 /// A message length in `0..=150`, biased towards block-padding boundaries.
-priv struct MsgLen(Int) derive(Debug)
+priv struct MsgLen(Int32) derive(Debug)
 
 ///|
 impl @quickcheck.Arbitrary for MsgLen with fn arbitrary(size, rs) {
@@ -52,7 +52,7 @@ impl @quickcheck.Shrink for MsgLen
 priv struct Payload(Array[Byte]) derive(Debug)
 
 ///|
-fn gen_bytes(len : Int, rs : @quickcheck.RandomState) -> Array[Byte] {
+fn gen_bytes(len : Int32, rs : @quickcheck.RandomState) -> Array[Byte] {
   Array::makei(len, _ => rs.next_uint(limit=256).reinterpret_as_int().to_byte())
 }
 
@@ -75,9 +75,9 @@ impl @quickcheck.Shrink for Payload with fn shrink(self) {
 ///|
 /// An AES key: `nk` 32-bit words (4, 6 or 8) of random key bytes, plus an IV.
 priv struct AesKey {
-  nk : Int
-  key : Array[Int]
-  iv : Array[Int]
+  nk : Int32
+  key : Array[Int32]
+  iv : Array[Int32]
 } derive(Debug)
 
 ///|
@@ -302,7 +302,7 @@ test "ARC4 known vectors" {
 
 ///|
 /// ARC4 key: 1..=32 bytes (PDF uses 5..=16).
-priv struct Arc4Key(Array[Int]) derive(Debug)
+priv struct Arc4Key(Array[Int32]) derive(Debug)
 
 ///|
 impl @quickcheck.Arbitrary for Arc4Key with fn arbitrary(size, rs) {
@@ -345,10 +345,10 @@ test "prop: ARC4 keystream does not depend on the plaintext" {
 /// Parameters for PDF Algorithm 1 (per-object key derivation).
 priv struct ObjKeyParams {
   aes : Bool
-  obj : Int
-  gen : Int
-  key : Array[Int]
-  keylength : Int
+  obj : Int32
+  gen : Int32
+  key : Array[Int32]
+  keylength : Int32
 } derive(Debug)
 
 ///|
@@ -379,7 +379,7 @@ test "prop: find_hash implements PDF Algorithm 1" {
         ARC4(p.keylength, 3)
       }
       let got = prims.find_hash(crypt_type, p.obj, p.gen, p.key, p.keylength)
-      let input : Array[Int] = []
+      let input : Array[Int32] = []
       input.append(p.key)
       input.append([
         p.obj & 0xff,
@@ -405,11 +405,11 @@ test "prop: find_hash implements PDF Algorithm 1" {
 ///|
 test "prop: decrypt_stream_data(encrypt=false) inverts encrypt=true" {
   @quickcheck.check(
-    (input : (ObjKeyParams, Payload, Int)) => {
+    (input : (ObjKeyParams, Payload, Int32)) => {
       let (p, Payload(msg), mode) = input
       let (crypt_type, r, file_key) : (
         @pdfcryptprimitives.Encryption,
-        Int,
+        Int32,
         String?,
       ) = match mode.abs() % 4 {
         0 => (ARC4(p.keylength, 3), 3, None)

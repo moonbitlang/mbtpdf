@@ -1,5 +1,5 @@
 ///|
-fn repeat_char(ch : Char, count : Int) -> String {
+fn repeat_char(ch : Char, count : Int32) -> String {
   let sb = StringBuilder()
   for _ in 0..<count {
     sb.write_char(ch)

@@ -20,7 +20,7 @@ async fn run_async_unit(load : async () -> Unit) -> Unit {
 ///|
 pub async fn input_of_file(
   filename : String,
-  source? : String = "file",
+  source~ : String = "file",
 ) -> @pdfio.Input {
   let bytes = read_data_to_bytes(() => @fs.read_file(filename))
   @pdfio.Input::of_bytes(bytes, source~)
@@ -29,7 +29,7 @@ pub async fn input_of_file(
 ///|
 pub async fn input_of_channel(
   ch : @fs.File,
-  source? : String = "channel",
+  source~ : String = "channel",
 ) -> @pdfio.Input {
   let bytes = read_data_to_bytes(() => ch.read_all())
   @pdfio.Input::of_bytes(bytes, source~)

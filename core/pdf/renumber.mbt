@@ -1,6 +1,6 @@
 ///|
 fn check_object_contains_renumbering(
-  changes : Map[Int, Int],
+  changes : Map[Int32, Int32],
   obj : PdfObject,
 ) -> Bool {
   match obj {
@@ -19,9 +19,9 @@ fn check_object_contains_renumbering(
 
 ///|
 /// Calculate the change table required to renumber objects 1..n.
-pub fn Pdf::changes(self : Pdf) -> Map[Int, Int] {
+pub fn Pdf::changes(self : Pdf) -> Map[Int32, Int32] {
   let keys = self.objnumbers()
-  let table : Map[Int, Int] = Map([], capacity=keys.length())
+  let table : Map[Int32, Int32] = Map([], capacity=keys.length())
   let mut num = 1
   for key in keys {
     table.set(key, num)
@@ -34,8 +34,8 @@ pub fn Pdf::changes(self : Pdf) -> Map[Int, Int] {
 /// Renumber a PDF's objects using a change table.
 pub fn Pdf::renumber(
   self : Pdf,
-  change_table : Map[Int, Int],
-  preserve_order? : Bool = false,
+  change_table : Map[Int32, Int32],
+  preserve_order~ : Bool = false,
 ) -> Pdf {
   let root = match change_table.get(self.root) {
     Some(value) => value
@@ -103,7 +103,7 @@ pub fn renumber_pdfs(pdfs : Array[Pdf]) -> Array[Pdf] {
   let mut base = 1
   for pdf in pdfs {
     let keys = pdf.objnumbers()
-    let changes : Map[Int, Int] = Map([], capacity=keys.length())
+    let changes : Map[Int32, Int32] = Map([], capacity=keys.length())
     let mut i = 0
     for key in keys {
       changes.set(key, base + i)

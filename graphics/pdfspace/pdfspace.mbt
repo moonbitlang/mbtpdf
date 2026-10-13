@@ -5,7 +5,7 @@ pub type Point = (Double, Double, Double)
 ///|
 /// ICC based colourspace details.
 pub(all) struct ICCBased {
-  icc_n : Int
+  icc_n : Int32
   icc_alternate : ColourSpace
   icc_range : Array[Double]
   icc_metadata : PdfObject?
@@ -22,7 +22,7 @@ pub(all) enum ColourSpace {
   CalRGB(Point, Point, Array[Double], Array[Double])
   Lab(Point, Point, Array[Double])
   ICCBased(ICCBased)
-  Indexed(ColourSpace, Map[Int, Array[Int]])
+  Indexed(ColourSpace, Map[Int32, Array[Int32]])
   Pattern
   PatternWithBaseColourspace(ColourSpace)
   Separation(String, ColourSpace, @pdffun.PdfFunction)
@@ -83,14 +83,14 @@ fn get_basic_table_colourspace(space : ColourSpace) -> ColourSpace {
 ///|
 fn build_table(
   data : Array[Byte],
-  hival : Int,
-  components : Int,
-) -> Map[Int, Array[Int]] raise {
+  hival : Int32,
+  components : Int32,
+) -> Map[Int32, Array[Int32]] raise {
   let total = (hival + 1) * components
   if @pdfio.bytes_size(data) < total {
     raise @pdf.PdfError::Msg("Pdfspace: bad table")
   }
-  let table : Map[Int, Array[Int]] = Map([], capacity=hival + 1)
+  let table : Map[Int32, Array[Int32]] = Map([], capacity=hival + 1)
   let mut offset = 0
   for x in 0..<=hival {
     let row = Array(capacity=components)
@@ -302,7 +302,7 @@ pub fn ColourSpace::read(
 }
 
 ///|
-fn interleave_defaults(n : Int) -> Array[Double] {
+fn interleave_defaults(n : Int32) -> Array[Double] {
   let out = Array(capacity=2 * n)
   for _ in 0..<n {
     out.push(0.0)
@@ -392,7 +392,7 @@ fn is_empty_dict(obj : PdfObject) -> Bool {
 }
 
 ///|
-fn components_of_colourspace(space : ColourSpace) -> Int {
+fn components_of_colourspace(space : ColourSpace) -> Int32 {
   match get_basic_table_colourspace(space) {
     DeviceGray | CalGray(_, _, _) => 1
     DeviceRGB | CalRGB(_, _, _, _) | Lab(_, _, _) => 3
@@ -403,9 +403,9 @@ fn components_of_colourspace(space : ColourSpace) -> Int {
 
 ///|
 fn table_bytes(
-  table : Map[Int, Array[Int]],
-  hival : Int,
-  components : Int,
+  table : Map[Int32, Array[Int32]],
+  hival : Int32,
+  components : Int32,
 ) -> Array[Byte] {
   let total = if hival >= 0 { (hival + 1) * components } else { 0 }
   let data = @pdfio.mkbytes(total)

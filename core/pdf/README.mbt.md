@@ -17,14 +17,14 @@ The central enum representing all PDF value types:
 pub(all) enum PdfObject {
   Null
   Boolean(Bool)
-  Integer(Int)
+  Integer(Int32)
   Real(Double)
   String(String)
   Name(PdfName)
   Array(Array[PdfObject])
   Dictionary(Array[(String, PdfObject)])
   Stream(Ref[(PdfObject, Stream)])
-  Indirect(Int)
+  Indirect(Int32)
 }
 ```
 
@@ -45,9 +45,9 @@ The in-memory document representation:
 ```mbt nocheck
 ///|
 pub(all) struct Pdf {
-  major : Int // PDF major version
-  minor : Int // PDF minor version
-  root : Int // Object number of document catalog
+  major : Int32 // PDF major version
+  minor : Int32 // PDF minor version
+  root : Int32 // Object number of document catalog
   objects : PdfObjects // All objects in the document
   mut trailerdict : PdfObject
   was_linearized : Bool

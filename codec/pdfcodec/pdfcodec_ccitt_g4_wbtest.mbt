@@ -1,5 +1,5 @@
 ///|
-fn bytes_from_runs(start_white : Bool, runs : Array[Int]) -> Array[Byte] {
+fn bytes_from_runs(start_white : Bool, runs : Array[Int32]) -> Array[Byte] {
   let writer = @pdfio.BitstreamWrite::new()
   let mut white = start_white
   for run in runs {
@@ -13,7 +13,7 @@ fn bytes_from_runs(start_white : Bool, runs : Array[Int]) -> Array[Byte] {
 }
 
 ///|
-fn build_runs() -> Array[Int] {
+fn build_runs() -> Array[Int32] {
   let runs = []
   for i = 1; i <= 63; i = i + 1 {
     runs.push(i)
@@ -25,7 +25,7 @@ fn build_runs() -> Array[Int] {
 }
 
 ///|
-fn bytes_from_rows(rows : Array[Array[Int]]) -> Array[Byte] {
+fn bytes_from_rows(rows : Array[Array[Int32]]) -> Array[Byte] {
   let writer = @pdfio.BitstreamWrite::new()
   for row in rows {
     let mut white = true

@@ -2,7 +2,7 @@
 fn encrypt_pdf_128bit_inner(
   owner : String,
   user : String,
-  p : Int,
+  p : Int32,
   user_pw : String,
   id : String,
   pdf : @pdf.Pdf,
@@ -47,7 +47,7 @@ fn encrypt_pdf_128bit_inner(
 fn encrypt_pdf_128bit_inner_r4(
   owner : String,
   user : String,
-  p : Int,
+  p : Int32,
   user_pw : String,
   id : String,
   pdf : @pdf.Pdf,

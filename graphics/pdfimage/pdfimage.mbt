@@ -13,15 +13,15 @@ pub(all) enum PixelLayout {
 pub(all) enum Image {
   JPEG(Array[Byte], Array[Double]?)
   JPEG2000(Array[Byte], Array[Double]?)
-  JBIG2(Array[Byte], Array[Double]?, Int?)
-  Raw(Int, Int, PixelLayout, Array[Byte])
+  JBIG2(Array[Byte], Array[Double]?, Int32?)
+  Raw(Int32, Int32, PixelLayout, Array[Byte])
 } derive(Debug)
 
 ///|
 type PdfObject = @pdf.PdfObject
 
 ///|
-fn odd(n : Int) -> Bool {
+fn odd(n : Int32) -> Bool {
   n % 2 != 0
 }
 
@@ -35,7 +35,7 @@ fn fmin(a : Double, b : Double) -> Double {
 }
 
 ///|
-fn toint(f : Double) -> Int {
+fn toint(f : Double) -> Int32 {
   f.to_int()
 }
 
@@ -47,7 +47,7 @@ fn invert_bits(bytes : Array[Byte]) -> Unit {
 }
 
 ///|
-fn decode(fs : Array[Double], bpc : Int, image : Array[Byte]) -> Unit raise {
+fn decode(fs : Array[Double], bpc : Int32, image : Array[Byte]) -> Unit raise {
   if fs.length() == 0 {
     return
   }
@@ -64,7 +64,7 @@ fn decode(fs : Array[Double], bpc : Int, image : Array[Byte]) -> Unit raise {
     return
   }
   let max_val = (1 << bpc) - 1
-  let interpolate = (dmin : Double, dmax : Double, x : Int) => {
+  let interpolate = (dmin : Double, dmax : Double, x : Int32) => {
     if max_val <= 0 {
       0
     } else {
@@ -101,7 +101,7 @@ fn real_array(values : Array[Double]) -> Array[PdfObject] {
 }
 
 ///|
-fn repeat_decode_pairs(count : Int) -> Array[PdfObject] {
+fn repeat_decode_pairs(count : Int32) -> Array[PdfObject] {
   let out = Array(capacity=count * 2)
   for _ in 0..<count {
     out.push(PdfObject::Real(0.0))
@@ -200,7 +200,12 @@ fn decode_to_image(pdf : @pdf.Pdf, stream : @pdf.PdfObject) -> Unit raise {
 }
 
 ///|
-fn rgb_of_cmyk(c : Int, m : Int, y : Int, k : Int) -> (Int, Int, Int) {
+fn rgb_of_cmyk(
+  c : Int32,
+  m : Int32,
+  y : Int32,
+  k : Int32,
+) -> (Int32, Int32, Int32) {
   let c = Double::from_int(c)
   let m = Double::from_int(m)
   let y = Double::from_int(y)
@@ -213,8 +218,8 @@ fn rgb_of_cmyk(c : Int, m : Int, y : Int, k : Int) -> (Int, Int, Int) {
 
 ///|
 fn read_cmyk_8bpp_as_rgb24(
-  width : Int,
-  height : Int,
+  width : Int32,
+  height : Int32,
   data : Array[Byte],
 ) -> Array[Byte] {
   let out = @pdfio.mkbytes(width * height * 3)
@@ -233,8 +238,8 @@ fn read_cmyk_8bpp_as_rgb24(
 
 ///|
 fn read_gray_8bpp_as_rgb24(
-  width : Int,
-  height : Int,
+  width : Int32,
+  height : Int32,
   data : Array[Byte],
 ) -> Array[Byte] {
   let out = @pdfio.mkbytes(width * height * 3)
@@ -249,8 +254,8 @@ fn read_gray_8bpp_as_rgb24(
 
 ///|
 fn read_1bpp_as_rgb24(
-  width : Int,
-  height : Int,
+  width : Int32,
+  height : Int32,
   data : Array[Byte],
 ) -> Array[Byte] {
   let out = @pdfio.mkbytes(width * height * 3)
@@ -273,8 +278,8 @@ fn read_1bpp_as_rgb24(
 
 ///|
 fn read_4bpp_gray_as_rgb24(
-  width : Int,
-  height : Int,
+  width : Int32,
+  height : Int32,
   data : Array[Byte],
 ) -> Array[Byte] {
   let out = @pdfio.mkbytes(width * height * 3)
@@ -297,9 +302,9 @@ fn read_4bpp_gray_as_rgb24(
 
 ///|
 fn read_8bpp_indexed_as_rgb24(
-  table : Map[Int, Array[Int]],
-  width : Int,
-  height : Int,
+  table : Map[Int32, Array[Int32]],
+  width : Int32,
+  height : Int32,
   data : Array[Byte],
 ) -> Array[Byte] raise {
   let out = @pdfio.mkbytes(width * height * 3)
@@ -361,8 +366,8 @@ fn rgb_of_xyz(x : Double, y : Double, z : Double) -> (Double, Double, Double) {
 
 ///|
 fn convert_lab_to_rgb(
-  width : Int,
-  height : Int,
+  width : Int32,
+  height : Int32,
   p : (Double, Double, Double),
   _q : (Double, Double, Double),
   _rs : Array[Double],
@@ -389,9 +394,9 @@ fn convert_lab_to_rgb(
 
 ///|
 fn read_8bpp_lab_indexed_as_rgb24(
-  table : Map[Int, Array[Int]],
-  width : Int,
-  height : Int,
+  table : Map[Int32, Array[Int32]],
+  width : Int32,
+  height : Int32,
   p : (Double, Double, Double),
   q : (Double, Double, Double),
   rs : Array[Double],
@@ -404,9 +409,9 @@ fn read_8bpp_lab_indexed_as_rgb24(
 
 ///|
 fn read_8bpp_cmyk_indexed_as_rgb24(
-  table : Map[Int, Array[Int]],
-  width : Int,
-  height : Int,
+  table : Map[Int32, Array[Int32]],
+  width : Int32,
+  height : Int32,
   data : Array[Byte],
 ) -> Array[Byte] raise {
   let out = @pdfio.mkbytes(width * height * 3)
@@ -427,9 +432,9 @@ fn read_8bpp_cmyk_indexed_as_rgb24(
 
 ///|
 fn read_4bpp_indexed_as_rgb24(
-  table : Map[Int, Array[Int]],
-  width : Int,
-  height : Int,
+  table : Map[Int32, Array[Int32]],
+  width : Int32,
+  height : Int32,
   data : Array[Byte],
 ) -> Array[Byte] raise {
   let out = @pdfio.mkbytes(width * height * 3)
@@ -477,9 +482,9 @@ fn read_4bpp_indexed_as_rgb24(
 
 ///|
 fn read_4bpp_cmyk_indexed_as_rgb24(
-  table : Map[Int, Array[Int]],
-  width : Int,
-  height : Int,
+  table : Map[Int32, Array[Int32]],
+  width : Int32,
+  height : Int32,
   data : Array[Byte],
 ) -> Array[Byte] raise {
   let out = @pdfio.mkbytes(width * height * 3)
@@ -530,8 +535,8 @@ fn read_4bpp_cmyk_indexed_as_rgb24(
 ///|
 fn read_separation_cmyk_as_rgb24(
   fnn : @pdffun.PdfFunction,
-  width : Int,
-  height : Int,
+  width : Int32,
+  height : Int32,
   data : Array[Byte],
 ) -> Array[Byte] raise {
   let out = @pdfio.mkbytes(width * height * 3)
@@ -591,7 +596,7 @@ fn is_cmyk_base(space : @pdfspace.ColourSpace) -> Bool {
 }
 
 ///|
-fn bpc_value(bpc : @pdf.PdfObject?) -> Int? {
+fn bpc_value(bpc : @pdf.PdfObject?) -> Int32? {
   match bpc {
     Some(Integer(n)) => Some(n)
     _ => None
@@ -602,11 +607,11 @@ fn bpc_value(bpc : @pdf.PdfObject?) -> Int? {
 
 ///|
 pub fn Image::from_raw(
-  size : Int,
+  size : Int32,
   colspace : @pdfspace.ColourSpace,
   bpc : @pdf.PdfObject?,
-  width : Int,
-  height : Int,
+  width : Int32,
+  height : Int32,
   data : Array[Byte],
 ) -> Image raise {
   let bpc_val = bpc_value(bpc)
@@ -770,8 +775,8 @@ pub fn Image::bpc(pdf : @pdf.Pdf, dict : @pdf.PdfObject) -> @pdf.PdfObject? {
 pub fn Image::from_stream_data(
   pdf : @pdf.Pdf,
   resources : @pdf.PdfObject,
-  width : Int,
-  height : Int,
+  width : Int32,
+  height : Int32,
   dict : @pdf.PdfObject,
   data : Array[Byte],
 ) -> Image raise {

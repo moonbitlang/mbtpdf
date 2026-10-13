@@ -1,8 +1,8 @@
 ///|
 fn merge_bookmarks(
-  changes : Array[(Int, Int)],
+  changes : Array[(Int32, Int32)],
   pdfs : Array[@pdf.Pdf],
-  ranges : Array[Array[Int]],
+  ranges : Array[Array[Int32]],
   pdf : @pdf.Pdf,
 ) -> @pdf.Pdf {
   try {
@@ -27,12 +27,12 @@ fn merge_bookmarks(
       out
     }
     fn process_mark(
-      oldnums : Array[Int],
-      changes : Array[(Int, Int)],
+      oldnums : Array[Int32],
+      changes : Array[(Int32, Int32)],
       mark : @pdfmarks.Bookmark,
     ) -> @pdfmarks.Bookmark? raise {
       let changes_rev = changes.map(pair => (pair.1, pair.0))
-      fn pageobjectnumber_of_target(t : @pdfdest.Destination) -> Int raise {
+      fn pageobjectnumber_of_target(t : @pdfdest.Destination) -> Int32 raise {
         match t {
           NullDestination => 0
           NamedDestination(name) => {
@@ -137,7 +137,7 @@ fn merge_bookmarks(
       if contains_int(oldnums, objnum) || is_null {
         let change_targetpage = fn(
           target : @pdfdest.TargetPage,
-          newnum : Int,
+          newnum : Int32,
         ) -> @pdfdest.TargetPage {
           match target {
             OtherDocPageNumber(n) => OtherDocPageNumber(n)
@@ -146,7 +146,7 @@ fn merge_bookmarks(
         }
         let change_target_destinationpage = fn(
           target : @pdfdest.Destination,
-          newnum : Int,
+          newnum : Int32,
         ) -> @pdfdest.Destination {
           match target {
             Action(a) => Action(a)

@@ -43,8 +43,8 @@ fn parse_R(tokens : Array[Token]) -> Array[ParseItem] {
 ///|
 fn parse_dictionary(
   items : Array[ParseItem],
-  start : Int,
-) -> (ParseItem, Int) raise {
+  start : Int32,
+) -> (ParseItem, Int32) raise {
   let remaining = items.length() - start
   let entries = Array(capacity=remaining / 2)
   let mut i = start + 1
@@ -66,7 +66,10 @@ fn parse_dictionary(
 }
 
 ///|
-fn parse_array(items : Array[ParseItem], start : Int) -> (ParseItem, Int) raise {
+fn parse_array(
+  items : Array[ParseItem],
+  start : Int32,
+) -> (ParseItem, Int32) raise {
   let remaining = items.length() - start
   let values = Array(capacity=remaining)
   let mut i = start + 1
@@ -87,7 +90,10 @@ fn parse_array(items : Array[ParseItem], start : Int) -> (ParseItem, Int) raise 
 }
 
 ///|
-fn parse_value(items : Array[ParseItem], start : Int) -> (ParseItem, Int) raise {
+fn parse_value(
+  items : Array[ParseItem],
+  start : Int32,
+) -> (ParseItem, Int32) raise {
   if start >= items.length() {
     raise @pdf.PdfError::Msg("parse_value")
   }
@@ -127,7 +133,7 @@ fn parse_to_tree(items : Array[ParseItem]) -> Array[ParseItem] raise {
 fn parse_finish(
   items : Array[ParseItem],
   failure_is_ok : Bool,
-) -> (Int, PdfObject) raise {
+) -> (Int32, PdfObject) raise {
   match items {
     [Parsed(obj)] => return (0, obj)
     [
@@ -170,8 +176,8 @@ fn parse_finish(
 /// Parse a PDF object from tokens.
 pub fn parse(
   tokens : Array[Token],
-  failure_is_ok? : Bool = false,
-) -> (Int, PdfObject) raise {
+  failure_is_ok~ : Bool = false,
+) -> (Int32, PdfObject) raise {
   parse_finish(parse_to_tree(parse_R(tokens)), failure_is_ok) catch {
     err => if failure_is_ok { (0, Null) } else { raise err }
   }

@@ -5,12 +5,12 @@ type PdfObject = @pdf.PdfObject
 ///|
 /// Bookmark entry.
 pub(all) struct Bookmark {
-  level : Int
+  level : Int32
   text : String
   target : @pdfdest.Destination
   isopen : Bool
   colour : (Double, Double, Double)
-  flags : Int
+  flags : Int32
 }
 
 ///|
@@ -59,11 +59,11 @@ pub fn PdfMarks::remove_bookmarks(self : PdfMarks) -> @pdf.Pdf raise {
 
 ///|
 priv enum Ntree {
-  Br(Int, PdfObject, Array[Ntree], Bool)
+  Br(Int32, PdfObject, Array[Ntree], Bool)
 }
 
 ///|
-fn ntree_objnum(node : Ntree) -> Int {
+fn ntree_objnum(node : Ntree) -> Int32 {
   match node {
     Br(i, _, _, _) => i
   }
@@ -113,7 +113,7 @@ fn[T] extremes(items : Array[T]) -> (T, T) raise {
 }
 
 ///|
-fn fresh(source : Ref[Int], pdf : @pdf.Pdf) -> Int {
+fn fresh(source : Ref[Int32], pdf : @pdf.Pdf) -> Int32 {
   source.val = source.val + 1
   pdf.objects.max_obj_num + source.val
 }
@@ -129,7 +129,7 @@ fn any_open_nodes(nodes : Array[Ntree]) -> Bool {
 }
 
 ///|
-fn total_visible(nodes : Array[Ntree]) -> Int {
+fn total_visible(nodes : Array[Ntree]) -> Int32 {
   let mut total = 0
   for node in nodes {
     total = total + 1
@@ -141,24 +141,24 @@ fn total_visible(nodes : Array[Ntree]) -> Int {
 }
 
 ///|
-fn add_root_parent(root_objnum : Int, node : Ntree) -> Ntree raise {
+fn add_root_parent(root_objnum : Int32, node : Ntree) -> Ntree raise {
   let obj = ntree_obj(node).add_entry("/Parent", Indirect(root_objnum))
   Br(ntree_objnum(node), obj, ntree_children(node), ntree_isopen(node))
 }
 
 ///|
 fn flatten_tree(
-  source : Ref[Int],
+  source : Ref[Int32],
   pdf : @pdf.Pdf,
   tree : Array[Ntree],
-) -> (Array[(Int, PdfObject)], Int) raise {
+) -> (Array[(Int32, PdfObject)], Int32) raise {
   if tree.length() == 0 {
     let n = fresh(source, pdf)
     return ([(n, Dictionary([]))], n)
   }
   let root_objnum = fresh(source, pdf)
   let tree = tree.map(node => add_root_parent(root_objnum, node))
-  fn really_flatten(node : Ntree) -> Array[(Int, PdfObject)] {
+  fn really_flatten(node : Ntree) -> Array[(Int32, PdfObject)] {
     let out = []
     out.push((ntree_objnum(node), ntree_obj(node)))
     let children = ntree_children(node)
@@ -200,7 +200,7 @@ fn add_count(node : Ntree) -> Ntree raise {
 }
 
 ///|
-fn add_parent(parent : Int?, node : Ntree) -> Ntree raise {
+fn add_parent(parent : Int32?, node : Ntree) -> Ntree raise {
   let obj = match parent {
     None => ntree_obj(node)
     Some(parent_num) =>
@@ -325,7 +325,7 @@ fn node_of_line(
   title : String,
   target : @pdfdest.Destination,
   colour : (Double, Double, Double),
-  flags : Int,
+  flags : Int32,
 ) -> PdfObject {
   let entries : Array[(String, PdfObject)] = [("/Title", PdfString(title))]
   let dest = target.to_pdf_object()
@@ -349,7 +349,7 @@ fn node_of_line(
 
 ///|
 fn make_outline_ntree(
-  source : Ref[Int],
+  source : Ref[Int32],
   pdf : @pdf.Pdf,
   marks : ArrayView[Bookmark],
 ) -> Array[Ntree] {
@@ -430,7 +430,7 @@ pub fn PdfMarks::add_bookmarks(
 fn traverse_outlines_lb(
   pdf : @pdf.Pdf,
   outlines : PdfObject,
-  indent : Ref[Int],
+  indent : Ref[Int32],
   preserve_actions : Bool,
   out : Ref[Array[Bookmark]],
 ) -> Unit raise {
@@ -445,7 +445,7 @@ fn traverse_outlines_lb(
 fn do_until_no_next_lb(
   pdf : @pdf.Pdf,
   outline : PdfObject,
-  indent : Ref[Int],
+  indent : Ref[Int32],
   preserve_actions : Bool,
   out : Ref[Array[Bookmark]],
 ) -> Unit raise {
@@ -521,7 +521,7 @@ fn do_until_no_next_lb(
 /// Read all bookmarks from the document.
 pub fn PdfMarks::read_bookmarks(
   self : PdfMarks,
-  preserve_actions? : Bool = false,
+  preserve_actions~ : Bool = false,
 ) -> Array[Bookmark] raise {
   let pdf = self.pdf
   match pdf.lookup_direct("/Root", pdf.trailerdict) {

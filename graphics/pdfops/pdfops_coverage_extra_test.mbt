@@ -580,7 +580,7 @@ test "Op::components errors on unknown colourspace array" {
       Name(PdfName(b"/NotAColourSpace")),
       Null,
     ])
-    let res : Result[Int, Error] = try
+    let res : Result[Int32, Error] = try
       @pdfops.Op::components(pdf, resources, bad) |> Ok
     catch {
       e => Err(e)

@@ -22,9 +22,9 @@ pub type FontMetrics = Array[Double]
 
 ///|
 pub(all) enum FontFile {
-  FontFile(Int)
-  FontFile2(Int)
-  FontFile3(Int)
+  FontFile(Int32)
+  FontFile2(Int32)
+  FontFile3(Int32)
 } derive(Debug)
 
 ///|
@@ -33,7 +33,7 @@ pub(all) struct FontDescriptor {
   descent : Double
   avgwidth : Double
   maxwidth : Double
-  flags : Int
+  flags : Int32
   fontbbox : (Double, Double, Double, Double)
   italicangle : Double
   capheight : Double
@@ -41,12 +41,12 @@ pub(all) struct FontDescriptor {
   stemv : Double
   fontfile : FontFile?
   charset : Array[String]?
-  tounicode : Map[Int, String]?
+  tounicode : Map[Int32, String]?
   tounicode_bytes : Map[String, String]?
 }
 
 ///|
-pub type Differences = Array[(String, Int)]
+pub type Differences = Array[(String, Int32)]
 
 ///|
 pub(all) enum Encoding {
@@ -63,9 +63,9 @@ pub(all) enum Encoding {
 pub(all) struct SimpleFont {
   fonttype : SimpleFontType
   basefont : String
-  firstchar : Int
-  lastchar : Int
-  widths : Array[Int]
+  firstchar : Int32
+  lastchar : Int32
+  widths : Array[Int32]
   fontdescriptor : FontDescriptor?
   fontmetrics : FontMetrics?
   encoding : Encoding
@@ -113,7 +113,7 @@ pub fn StandardFont::to_string(self : StandardFont) -> String {
 pub(all) struct CIDSystemInfo {
   registry : String
   ordering : String
-  supplement : Int
+  supplement : Int32
 } derive(Debug)
 
 ///|
@@ -121,14 +121,14 @@ pub(all) struct CompositeCIDFont {
   cid_system_info : CIDSystemInfo
   cid_basefont : String
   cid_fontdescriptor : FontDescriptor
-  cid_widths : Array[(Int, Double)]
-  cid_default_width : Int
+  cid_widths : Array[(Int32, Double)]
+  cid_default_width : Int32
 }
 
 ///|
 pub(all) enum CMapEncoding {
   Predefined(String)
-  CMap(Int)
+  CMap(Int32)
 } derive(Debug)
 
 ///|

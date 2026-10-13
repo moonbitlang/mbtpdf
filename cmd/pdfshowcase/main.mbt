@@ -77,7 +77,7 @@ fn ops_text(
   size : Double,
   text : String,
   rgb : (Double, Double, Double),
-  rotate_rad? : Double = 0.0,
+  rotate_rad~ : Double = 0.0,
 ) -> Array[@pdfops.Op] {
   let (r, g, b) = rgb
   let tr = if rotate_rad == 0.0 {
@@ -119,7 +119,7 @@ fn ops_stroke_rect(
 ///|
 fn ops_poly_path(
   points : Array[(Double, Double)],
-  close? : Bool = true,
+  close~ : Bool = true,
 ) -> Array[@pdfops.Op] {
   match points {
     [] => []
@@ -164,7 +164,7 @@ fn circle_points(
   cx : Double,
   cy : Double,
   r : Double,
-  n : Int,
+  n : Int32,
 ) -> Array[(Double, Double)] {
   let out = Array(capacity=n)
   let two_pi = 2.0 * pi()
@@ -660,7 +660,7 @@ fn add_bookmarks(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
     return pdf
   }
   let marks : Array[@pdfmarks.Bookmark] = []
-  let entries : Array[(String, Int)] = [
+  let entries : Array[(String, Int32)] = [
     ("Cover", 0),
     ("Procedural Spirograph", 1),
     ("DAY / NIGHT Layers", 2),
@@ -686,7 +686,7 @@ fn add_bookmarks(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
 }
 
 ///|
-fn goto_action(refnum : Int) -> @pdf.PdfObject {
+fn goto_action(refnum : Int32) -> @pdf.PdfObject {
   let dest = @pdfdest.Destination::Fit(PageObject(refnum)).to_pdf_object()
   Dictionary([("/S", Name(PdfName(b"/GoTo"))), ("/D", dest)])
 }
@@ -768,7 +768,7 @@ fn add_nav_links(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
   // Map page: clickable cards -> internal navigation.
   if pages.length() >= 7 {
     let map_i = 3
-    let cards : Array[((Double, Double, Double, Double), Int)] = [
+    let cards : Array[((Double, Double, Double, Double), Int32)] = [
       ((54.0, 620.0, 285.0, 760.0), 1),
       ((310.0, 620.0, 541.0, 760.0), 2),
       ((54.0, 440.0, 285.0, 580.0), 4),
@@ -796,8 +796,8 @@ fn add_nav_links(pdf : @pdf.Pdf) -> @pdf.Pdf raise {
 
 ///|
 pub async fn run(
-  out_file? : String = "showcase.pdf",
-  quiet? : Bool = false,
+  out_file~ : String = "showcase.pdf",
+  quiet~ : Bool = false,
 ) -> Unit {
   try {
     let pages : Array[@pdfpage.Page] = [

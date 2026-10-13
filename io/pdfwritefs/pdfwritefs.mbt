@@ -22,9 +22,9 @@ pub fn PdfWriteFs::of_writer(writer : @pdfwrite.PdfWrite) -> PdfWriteFs {
 ///|
 pub async fn PdfWriteFs::pdf_to_channel(
   self : PdfWriteFs,
-  preserve_objstm? : Bool = false,
-  generate_objstm? : Bool = false,
-  compress_objstm? : Bool = false,
+  preserve_objstm~ : Bool = false,
+  generate_objstm~ : Bool = false,
+  compress_objstm~ : Bool = false,
   recrypt? : String,
   encryption : @pdfwrite.Encryption?,
   build_new_id : Bool,
@@ -61,9 +61,9 @@ pub async fn PdfWriteFs::pdf_to_channel(
 ///|
 pub async fn PdfWriteFs::pdf_to_file_options(
   self : PdfWriteFs,
-  preserve_objstm? : Bool = false,
-  generate_objstm? : Bool = false,
-  compress_objstm? : Bool = false,
+  preserve_objstm~ : Bool = false,
+  generate_objstm~ : Bool = false,
+  compress_objstm~ : Bool = false,
   recrypt? : String,
   encryption : @pdfwrite.Encryption?,
   build_new_id : Bool,
